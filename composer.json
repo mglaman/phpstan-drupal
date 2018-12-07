@@ -1,0 +1,19 @@
+{
+    "name": "mglaman/phpstan-drupal",
+    "description": "Drupal extension and rules for PHPStan",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Matt Glaman",
+            "email": "nmd.matt@gmail.com"
+        }
+    ],
+    "require": {
+        "php": "^7.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "PHPStan\\": "src/"
+        }
+    }
+}
