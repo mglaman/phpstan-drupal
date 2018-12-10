@@ -13,6 +13,8 @@ class Bootstrap {
 
 	private $drupalRoot;
 
+	private $modules = [];
+
 	public function __construct() {
 		$autoload_file = $GLOBALS['composerAutoloadFile'];
 		/** @noinspection PhpIncludeInspection */
@@ -36,8 +38,9 @@ class Bootstrap {
 	}
 
 	public function register(): void {
+		require $this->drupalRoot . '/core/includes/bootstrap.inc';
 		$core_namespaces = $this->getCoreNamespaces();
-		$module_namespaces = $this->getModuleNamespaces();
+		$module_namespaces = $this->loadModules();
 
 		$namespaces = array_merge($core_namespaces, $module_namespaces);
 
@@ -77,28 +80,23 @@ class Bootstrap {
 		return $namespaces;
 	}
 
-	protected function getModuleNamespaces(): array {
-		// @todo inspect root level modules in core/modules and modules/contrib
-		$modules = [
-			'commerce',
-			// @todo submodules have incorrect paths.
-			'commerce_price',
-			'commerce_store',
-			'views',
-			'user',
-			'datetime',
-		];
-		foreach ($modules as $module) {
-			if (is_dir($this->drupalRoot . '/core/modules/' . $module)) {
-				$module_path = $this->drupalRoot . '/core/modules/' . $module;
+	protected function loadModules(): array {
+		$listing = new ExtensionDiscovery($this->drupalRoot);
+		$listing->setProfileDirectories([]);
+		$profiles = $listing->scan('profile');
+		$profile_directories = array_map(function ($profile) {
+			return $profile->getPath();
+		}, $profiles);
+		$listing->setProfileDirectories($profile_directories);
+
+		$this->modules = $listing->scan('module');
+		$namespaces = [];
+		foreach ($this->modules as $module_name => $module) {
+			$namespaces["Drupal\\$module_name"] = $this->drupalRoot . '/' . $module->getPath() . '/src';
+
+			if ($module->getExtensionFilename()) {
+				require $this->drupalRoot . '/' . $module->getPath() . '/' . $module->getExtensionFilename();
 			}
-			elseif (is_dir($this->drupalRoot . '/modules/contrib/' . $module)) {
-				$module_path = $this->drupalRoot . '/modules/contrib/' . $module;
-			}
-			else {
-				continue;
-			}
-			$namespaces["Drupal\\$module"] = $module_path . '/src';
 		}
 
 		return $namespaces;
