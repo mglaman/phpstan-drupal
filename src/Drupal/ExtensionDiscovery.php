@@ -20,29 +20,29 @@ class ExtensionDiscovery {
 	/**
 	 * Origin directory weight: sites/all.
 	 */
-	const ORIGIN_SITES_ALL = 2;
+	private const ORIGIN_SITES_ALL = 2;
 
 	/**
 	 * Origin directory weight: Site-wide directory.
 	 */
-	const ORIGIN_ROOT = 3;
+	private const ORIGIN_ROOT = 3;
 
 	/**
 	 * Origin directory weight: Parent site directory of a test site environment.
 	 */
-	const ORIGIN_PARENT_SITE = 4;
+	private const ORIGIN_PARENT_SITE = 4;
 
 	/**
 	 * Origin directory weight: Site-specific directory.
 	 */
-	const ORIGIN_SITE = 5;
+	private const ORIGIN_SITE = 5;
 
 	/**
 	 * Regular expression to match PHP function names.
 	 *
 	 * @see http://php.net/manual/functions.user-defined.php
 	 */
-	const PHP_FUNCTION_PATTERN = '/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*$/';
+	private const PHP_FUNCTION_PATTERN = '/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*$/';
 
 	/**
 	 * Previously discovered files keyed by origin directory and extension type.
@@ -132,14 +132,11 @@ class ExtensionDiscovery {
 	 * @param string $type
 	 *   The extension type to search for. One of 'profile', 'module', 'theme', or
 	 *   'theme_engine'.
-	 * @param bool $include_tests
-	 *   (optional) Whether to explicitly include or exclude test extensions. By
-	 *   default, test extensions are only discovered when in a test environment.
 	 *
 	 * @return \Drupal\Core\Extension\Extension[]
 	 *   An associative array of Extension objects, keyed by extension name.
 	 */
-	public function scan($type, $include_tests = NULL) {
+	public function scan($type) {
 		// Search the core directory.
 		$searchdirs[static::ORIGIN_CORE] = 'core';
 
@@ -153,23 +150,15 @@ class ExtensionDiscovery {
 
 		$searchdirs[static::ORIGIN_SITE] = $this->sitePath;
 
-		// Unless an explicit value has been passed, manually check whether we are
-		// in a test environment, in which case test extensions must be included.
-		// Test extensions can also be included for debugging purposes by setting a
-		// variable in settings.php.
-		if (!isset($include_tests)) {
-			$include_tests = false;
-		}
-
 		$files = [];
 		foreach ($searchdirs as $dir) {
 			// Discover all extensions in the directory, unless we did already.
-			if (!isset(static::$files[$this->root][$dir][$include_tests])) {
-				static::$files[$this->root][$dir][$include_tests] = $this->scanDirectory($dir, $include_tests);
+			if (!isset(static::$files[$this->root][$dir])) {
+				static::$files[$this->root][$dir] = $this->scanDirectory($dir);
 			}
 			// Only return extensions of the requested type.
-			if (isset(static::$files[$this->root][$dir][$include_tests][$type])) {
-				$files += static::$files[$this->root][$dir][$include_tests][$type];
+			if (isset(static::$files[$this->root][$dir][$type])) {
+				$files += static::$files[$this->root][$dir][$type];
 			}
 		}
 
@@ -323,9 +312,6 @@ class ExtensionDiscovery {
 	 *
 	 * @param string $dir
 	 *   A relative base directory path to scan, without trailing slash.
-	 * @param bool $include_tests
-	 *   Whether to include test extensions. If FALSE, all 'tests' directories are
-	 *   excluded in the search.
 	 *
 	 * @return array
 	 *   An associative array whose keys are extension type names and whose values
@@ -334,7 +320,7 @@ class ExtensionDiscovery {
 	 *
 	 * @see \Drupal\Core\Extension\Discovery\RecursiveExtensionFilterIterator
 	 */
-	protected function scanDirectory($dir, $include_tests) {
+	protected function scanDirectory($dir) {
 		$files = [];
 
 		// In order to scan top-level directories, absolute directory paths have to
@@ -342,8 +328,8 @@ class ExtensionDiscovery {
 		// include_paths will not be consulted). Retain the relative originating
 		// directory being scanned, so relative paths can be reconstructed below
 		// (all paths are expected to be relative to $this->root).
-		$dir_prefix = ($dir == '' ? '' : "$dir/");
-		$absolute_dir = ($dir == '' ? $this->root : $this->root . "/$dir");
+		$dir_prefix = ($dir === '' ? '' : "$dir/");
+		$absolute_dir = ($dir === '' ? $this->root : $this->root . "/$dir");
 
 		if (!is_dir($absolute_dir)) {
 			return $files;
@@ -369,7 +355,7 @@ class ExtensionDiscovery {
 		// would recurse into the entire filesystem directory tree without any kind
 		// of limitations.
 		$filter = new RecursiveExtensionFilterIterator($directory_iterator, $ignore_directories);
-		$filter->acceptTests($include_tests);
+		$filter->acceptTests(TRUE);
 
 		// The actual recursive filesystem scan is only invoked by instantiating the
 		// RecursiveIteratorIterator.
@@ -408,7 +394,7 @@ class ExtensionDiscovery {
 
 			// Determine whether the extension has a main extension file.
 			// For theme engines, the file extension is .engine.
-			if ($type == 'theme_engine') {
+			if ($type === 'theme_engine') {
 				$filename = $name . '.engine';
 			}
 			// For profiles/modules/themes, it is the extension type.

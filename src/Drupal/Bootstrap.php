@@ -39,6 +39,7 @@ class Bootstrap {
 
 	public function register(): void {
 		require $this->drupalRoot . '/core/includes/bootstrap.inc';
+		require $this->drupalRoot . '/core/includes/entity.inc';
 		$core_namespaces = $this->getCoreNamespaces();
 		$module_namespaces = $this->loadModules();
 
@@ -52,6 +53,14 @@ class Bootstrap {
 			}
 			$this->autoloader->addPsr4($prefix . '\\', $paths);
 		}
+
+		// Add core test namespaces.
+		$core_tests_dir = $this->drupalRoot . '/core/tests';
+		$this->autoloader->add('Drupal\\Tests', $core_tests_dir);
+		$this->autoloader->add('Drupal\\TestSite', $core_tests_dir);
+		$this->autoloader->add('Drupal\\KernelTests', $core_tests_dir);
+		$this->autoloader->add('Drupal\\FunctionalTests', $core_tests_dir);
+		$this->autoloader->add('Drupal\\FunctionalJavascriptTests', $core_tests_dir);
 	}
 
 	/**
@@ -92,11 +101,33 @@ class Bootstrap {
 		$this->modules = $listing->scan('module');
 		$namespaces = [];
 		foreach ($this->modules as $module_name => $module) {
-			$namespaces["Drupal\\$module_name"] = $this->drupalRoot . '/' . $module->getPath() . '/src';
+			$module_dir = $this->drupalRoot . '/' . $module->getPath();
+			$namespaces["Drupal\\$module_name"] = $module_dir . '/src';
 
-			if ($module->getExtensionFilename()) {
-				require $this->drupalRoot . '/' . $module->getPath() . '/' . $module->getExtensionFilename();
+			// @see drupal_phpunit_get_extension_namespaces
+			$module_test_dir = $module_dir . '/tests/src';
+			if (is_dir($module_test_dir)) {
+				$suite_names = ['Unit', 'Kernel', 'Functional', 'FunctionalJavascript'];
+				foreach ($suite_names as $suite_name) {
+					$suite_dir = $module_test_dir . '/' . $suite_name;
+					if (is_dir($suite_dir)) {
+						// Register the PSR-4 directory for PHPUnit-based suites.
+						$namespaces["Drupal\\Tests\\$module_name\\$suite_name"] = $suite_dir;
+					}
+
+					// Extensions can have a \Drupal\extension\Traits namespace for
+					// cross-suite trait code.
+					$trait_dir = $module_test_dir . '/Traits';
+					if (is_dir($trait_dir)) {
+						$namespaces["Drupal\\Tests\\$module_name\\Traits"] = $trait_dir;
+					}
+				}
 			}
+			// Need to ensure .module is enabled.
+			if ($module->getExtensionFilename()) {
+				require $module_dir . '/' . $module->getExtensionFilename();
+			}
+
 		}
 
 		return $namespaces;
