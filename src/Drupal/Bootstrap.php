@@ -39,7 +39,9 @@ class Bootstrap {
 
 	public function register(): void {
 		require $this->drupalRoot . '/core/includes/bootstrap.inc';
+		require $this->drupalRoot . '/core/includes/common.inc';
 		require $this->drupalRoot . '/core/includes/entity.inc';
+		require $this->drupalRoot . '/core/includes/menu.inc';
 		$core_namespaces = $this->getCoreNamespaces();
 		$module_namespaces = $this->loadModules();
 
@@ -127,7 +129,23 @@ class Bootstrap {
 			if ($module->getExtensionFilename()) {
 				require $module_dir . '/' . $module->getExtensionFilename();
 			}
-
+			// Add .post_update.php
+			if (file_exists($module_dir . '/' . $module_name . '.post_update.php')) {
+				require $module_dir . '/' . $module_name . '.post_update.php';
+			}
+			// Add misc .inc that are magically allowed via hook_hook_info.
+			$magic_hook_info_includes = [
+				'views',
+				'views_execution',
+				'tokens',
+				'search_api',
+				'pathauto',
+			];
+			foreach ($magic_hook_info_includes as $hook_info_include) {
+				if (file_exists($module_dir . "/$module_name.$hook_info_include.inc")) {
+					require $module_dir . "/$module_name.$hook_info_include.inc";
+				}
+			}
 		}
 
 		return $namespaces;
