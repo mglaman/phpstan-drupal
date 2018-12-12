@@ -9,11 +9,16 @@
         }
     ],
     "require": {
-        "php": "^7.1"
+        "php": "^7.1",
+        "phpstan/phpstan": "^0.10.6"
     },
     "autoload": {
         "psr-4": {
             "PHPStan\\": "src/"
         }
+    },
+    "require-dev": {
+        "phpstan/phpstan-strict-rules": "^0.10.1",
+        "squizlabs/php_codesniffer": "^3.3"
     }
 }
