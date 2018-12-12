@@ -20,5 +20,8 @@
     "require-dev": {
         "phpstan/phpstan-strict-rules": "^0.10.1",
         "squizlabs/php_codesniffer": "^3.3"
+    },
+    "suggest": {
+        "phpstan/phpstan-deprecation-rules": "For catching deprecations, especially in Drupal core."
     }
 }
