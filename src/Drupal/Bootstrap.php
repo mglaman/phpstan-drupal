@@ -55,6 +55,8 @@ class Bootstrap
         require $this->drupalRoot . '/core/includes/common.inc';
         require $this->drupalRoot . '/core/includes/entity.inc';
         require $this->drupalRoot . '/core/includes/menu.inc';
+        require $this->drupalRoot . '/core/includes/database.inc';
+        require $this->drupalRoot . '/core/includes/file.inc';
         $core_namespaces = $this->getCoreNamespaces();
         $module_namespaces = $this->loadModules();
 
