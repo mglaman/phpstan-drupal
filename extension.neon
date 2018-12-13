@@ -9,3 +9,5 @@ parameters:
 		- inc
 extensions:
 	rulesOverride: PHPStan\DependencyInjection\RulesOverrideExtension
+rules:
+	- PHPStan\Rules\Classes\PluginManagerInspectionRule
