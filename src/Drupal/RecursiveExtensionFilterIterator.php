@@ -6,6 +6,8 @@ namespace PHPStan\Drupal;
  * Filters a RecursiveDirectoryIterator to discover extensions.
  *
  * Locally bundled version of \Drupal\Core\Extension\Discovery\RecursiveExtensionFilterIterator.
+ *
+ * @method bool isDir()
  */
 class RecursiveExtensionFilterIterator extends \RecursiveFilterIterator
 {
@@ -55,13 +57,6 @@ class RecursiveExtensionFilterIterator extends \RecursiveFilterIterator
     ];
 
     /**
-     * Whether to include test directories when recursing.
-     *
-     * @var bool
-     */
-    protected $acceptTests = false;
-
-    /**
      * Construct a RecursiveExtensionFilterIterator.
      *
      * @param \RecursiveIterator $iterator
@@ -77,23 +72,6 @@ class RecursiveExtensionFilterIterator extends \RecursiveFilterIterator
     }
 
     /**
-     * Controls whether test directories will be scanned.
-     *
-     * @param bool $flag
-     *   Pass FALSE to skip all test directories in the discovery. If TRUE,
-     *   extensions in test directories will be discovered and only the global
-     *   directory blacklist in RecursiveExtensionFilterIterator::$blacklist is
-     *   applied.
-     */
-    public function acceptTests($flag = false): void
-    {
-        $this->acceptTests = $flag;
-        if (!$this->acceptTests) {
-            $this->blacklist[] = 'tests';
-        }
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function getChildren(): \RecursiveFilterIterator
@@ -102,8 +80,6 @@ class RecursiveExtensionFilterIterator extends \RecursiveFilterIterator
         if ($filter instanceof self) {
             // Pass on the blacklist.
             $filter->blacklist = $this->blacklist;
-            // Pass the $acceptTests flag forward to child iterators.
-            $filter->acceptTests($this->acceptTests);
         }
         return $filter;
     }
@@ -119,7 +95,7 @@ class RecursiveExtensionFilterIterator extends \RecursiveFilterIterator
         if ($name[0] === '.') {
             return false;
         }
-        if (method_exists($this, 'isDir') && $this->isDir()) {
+        if ($this->isDir()) {
             // If this is a subdirectory of a base search path, only recurse into the
             // fixed list of expected extension type directory names. Required for
             // scanning the top-level/root directory; without this condition, we would

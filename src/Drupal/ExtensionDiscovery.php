@@ -303,9 +303,9 @@ class ExtensionDiscovery
      *   are associative arrays of \Drupal\Core\Extension\Extension objects, keyed
      *   by absolute path name.
      *
-     * @see \Drupal\Core\Extension\Discovery\RecursiveExtensionFilterIterator
+     * @see \PHPStan\Drupal\RecursiveExtensionFilterIterator
      */
-    protected function scanDirectory($dir)
+    protected function scanDirectory($dir): array
     {
         $files = [];
 
@@ -341,7 +341,6 @@ class ExtensionDiscovery
         // would recurse into the entire filesystem directory tree without any kind
         // of limitations.
         $filter = new RecursiveExtensionFilterIterator($directory_iterator, $ignore_directories);
-        $filter->acceptTests(true);
 
         // The actual recursive filesystem scan is only invoked by instantiating the
         // RecursiveIteratorIterator.
