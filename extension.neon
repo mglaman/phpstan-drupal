@@ -7,3 +7,5 @@ parameters:
 		- module
 		- theme
 		- inc
+extensions:
+	rulesOverride: PHPStan\DependencyInjection\RulesOverrideExtension
