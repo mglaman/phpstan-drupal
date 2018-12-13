@@ -1,7 +1,9 @@
 parameters:
-    bootstrap: %rootDir%/../../mglaman/phpstan-drupal/phpstan-bootstrap.php
-    fileExtensions:
-        - php
-        - module
-        - theme
-        - inc
+	excludes_analyse:
+		- *.api.php
+	bootstrap: %rootDir%/../../mglaman/phpstan-drupal/phpstan-bootstrap.php
+	fileExtensions:
+		- php
+		- module
+		- theme
+		- inc
