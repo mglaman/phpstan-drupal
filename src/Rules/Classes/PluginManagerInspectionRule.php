@@ -4,8 +4,9 @@ namespace PHPStan\Rules\Classes;
 
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
+use PHPStan\Rules\Rule;
 
-class PluginManagerInspectionRule implements \PHPStan\Rules\Rule
+class PluginManagerInspectionRule implements Rule
 {
     public function getNodeType(): string
     {
@@ -33,7 +34,6 @@ class PluginManagerInspectionRule implements \PHPStan\Rules\Rule
             // @todo inspect annotated plugin managers.
         }
 
-        $hasCacheBackendSet = false;
         $hasAlterInfoSet = false;
 
         foreach ($node->stmts as $stmt) {
@@ -43,10 +43,7 @@ class PluginManagerInspectionRule implements \PHPStan\Rules\Rule
                         $statement = $statement->expr;
                     }
                     if ($statement instanceof Node\Expr\MethodCall) {
-                        if ((string) $statement->name === 'setCacheBackend') {
-                            $hasCacheBackendSet = true;
-                        }
-                        elseif ((string) $statement->name === 'alterInfo') {
+                        if ((string) $statement->name === 'alterInfo') {
                             $hasAlterInfoSet = true;
                         }
                     }
@@ -54,9 +51,6 @@ class PluginManagerInspectionRule implements \PHPStan\Rules\Rule
             }
         }
 
-        if (!$hasCacheBackendSet) {
-            $errors[] = 'Missing cache backend declaration for performance.';
-        }
         if (!$hasAlterInfoSet) {
             $errors[] = 'Plugin definitions cannot be altered.';
         }

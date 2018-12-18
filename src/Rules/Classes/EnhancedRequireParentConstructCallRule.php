@@ -31,8 +31,11 @@ class EnhancedRequireParentConstructCallRule extends RequireParentConstructCallR
 
         // Provides specific handling for Drupal instances where not calling the parent __construct is "okay."
         $classReflection = $scope->getClassReflection()->getNativeReflection();
-        if (!$classReflection->isInterface() && !$classReflection->isAnonymous() && $classReflection->implementsInterface('Drupal\Component\Plugin\PluginManagerInterface')) {
-            // @todo Add Rule to check plugin manager classes for __construct check if non-YAML and other inspections.
+        if (
+            !$classReflection->isInterface()
+            && !$classReflection->isAnonymous()
+            && $classReflection->implementsInterface('Drupal\Component\Plugin\PluginManagerInterface')
+        ) {
             return [];
         }
 
