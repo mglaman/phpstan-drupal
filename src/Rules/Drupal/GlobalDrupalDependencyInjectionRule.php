@@ -26,8 +26,12 @@ class GlobalDrupalDependencyInjectionRule implements Rule
         }
 
         $whitelist = [
-            // The classes in the typed data system cannot use dependency injection.
+            // Typed data objects cannot use dependency injection.
             'Drupal\Core\TypedData\TypedDataInterface',
+            // Render elements cannot use dependency injection.
+            'Drupal\Core\Render\Element\ElementInterface',
+            'Drupal\Core\Render\Element\FormElementInterface',
+            'Drupal\config_translation\FormElement\ElementInterface',
         ];
         $classReflection = $scope->getClassReflection()->getNativeReflection();
         foreach ($whitelist as $item) {
