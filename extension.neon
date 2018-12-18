@@ -12,3 +12,4 @@ extensions:
 rules:
 	- PHPStan\Rules\Classes\PluginManagerInspectionRule
 	- PHPStan\Rules\Drupal\PluginManager\PluginManagerSetsCacheBackendRule
+	- PHPStan\Rules\Drupal\Coder\DiscouragedFunctionsRule
