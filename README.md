@@ -24,3 +24,14 @@ services:
 		tags:
 			- phpstan.rules.rule
 ```
+
+## Excluding tests from analysis
+
+To exclude tests from analysis, add the following parameter
+
+```
+parameters:
+	excludes_analyse:
+		- *Test.php
+		- *TestBase.php
+```
