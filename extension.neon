@@ -11,5 +11,6 @@ extensions:
 	rulesOverride: PHPStan\DependencyInjection\RulesOverrideExtension
 rules:
 	- PHPStan\Rules\Classes\PluginManagerInspectionRule
-	- PHPStan\Rules\Drupal\PluginManager\PluginManagerSetsCacheBackendRule
 	- PHPStan\Rules\Drupal\Coder\DiscouragedFunctionsRule
+	- PHPStan\Rules\Drupal\GlobalDrupalDependencyInjectionRule
+	- PHPStan\Rules\Drupal\PluginManager\PluginManagerSetsCacheBackendRule
