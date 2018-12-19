@@ -178,7 +178,11 @@ class Bootstrap
             $module_dir = $this->drupalRoot . '/' . $module->getPath();
             // Need to ensure .module is enabled.
             if ($module->getExtensionFilename() !== null) {
-                require $module_dir . '/' . $module->getExtensionFilename();
+                try {
+                    require $module_dir . '/' . $module->getExtensionFilename();
+                } catch (\Throwable $e) {
+                    // Something prevent the extension file from loading.
+                }
             }
             // Add .post_update.php
             if (file_exists($module_dir . '/' . $module_name . '.post_update.php')) {
@@ -209,7 +213,11 @@ class Bootstrap
             $theme_dir = $this->drupalRoot . '/' . $theme->getPath();
             // Need to ensure .theme is enabled.
             if ($theme->getExtensionFilename() !== null) {
-                require $theme_dir . '/' . $theme->getExtensionFilename();
+                try {
+                    require $theme_dir . '/' . $theme->getExtensionFilename();
+                } catch (\Throwable $e) {
+                    // Something prevent the extension file from loading.
+                }
             }
         }
     }
