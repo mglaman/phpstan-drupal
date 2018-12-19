@@ -18,9 +18,19 @@ class Bootstrap
     private $drupalRoot;
 
     /**
+     * @var \PHPStan\Drupal\ExtensionDiscovery
+     */
+    private $extensionDiscovery;
+
+    /**
      * @var array
      */
     private $modules = [];
+
+    /**
+     * @var array
+     */
+    private $themes = [];
 
     public function __construct()
     {
@@ -51,6 +61,17 @@ class Bootstrap
 
     public function register(): void
     {
+        $this->extensionDiscovery = new ExtensionDiscovery($this->drupalRoot);
+        $this->extensionDiscovery->setProfileDirectories([]);
+        $profiles = $this->extensionDiscovery->scan('profile');
+        $profile_directories = array_map(function ($profile) {
+            return $profile->getPath();
+        }, $profiles);
+        $this->extensionDiscovery->setProfileDirectories($profile_directories);
+
+        $this->modules = $this->extensionDiscovery->scan('module');
+        $this->themes = $this->extensionDiscovery->scan('theme');
+
         require $this->drupalRoot . '/core/includes/bootstrap.inc';
         require $this->drupalRoot . '/core/includes/common.inc';
         require $this->drupalRoot . '/core/includes/entity.inc';
@@ -58,9 +79,10 @@ class Bootstrap
         require $this->drupalRoot . '/core/includes/database.inc';
         require $this->drupalRoot . '/core/includes/file.inc';
         $core_namespaces = $this->getCoreNamespaces();
-        $module_namespaces = $this->loadModules();
+        $module_namespaces = $this->getModuleNamespaces();
+        $theme_namespaces = $this->getThemeNamespaces();
 
-        $namespaces = array_merge($core_namespaces, $module_namespaces);
+        $namespaces = array_merge($core_namespaces, $module_namespaces, $theme_namespaces);
 
         foreach ($namespaces as $prefix => $paths) {
             if (is_array($paths)) {
@@ -78,6 +100,9 @@ class Bootstrap
         $this->autoloader->add('Drupal\\KernelTests', $core_tests_dir);
         $this->autoloader->add('Drupal\\FunctionalTests', $core_tests_dir);
         $this->autoloader->add('Drupal\\FunctionalJavascriptTests', $core_tests_dir);
+
+        $this->loadModules();
+        $this->loadThemes();
     }
 
     /**
@@ -106,17 +131,8 @@ class Bootstrap
         return $namespaces;
     }
 
-    protected function loadModules(): array
+    protected function getModuleNamespaces(): array
     {
-        $listing = new ExtensionDiscovery($this->drupalRoot);
-        $listing->setProfileDirectories([]);
-        $profiles = $listing->scan('profile');
-        $profile_directories = array_map(function ($profile) {
-            return $profile->getPath();
-        }, $profiles);
-        $listing->setProfileDirectories($profile_directories);
-
-        $this->modules = $listing->scan('module');
         $namespaces = [];
         foreach ($this->modules as $module_name => $module) {
             $module_dir = $this->drupalRoot . '/' . $module->getPath();
@@ -141,6 +157,25 @@ class Bootstrap
                     }
                 }
             }
+        }
+
+        return $namespaces;
+    }
+
+    protected function getThemeNamespaces(): array
+    {
+        $namespaces = [];
+        foreach ($this->themes as $theme_name => $theme) {
+            $theme_dir = $this->drupalRoot . '/' . $theme->getPath();
+            $namespaces["Drupal\\$theme_name"] = $theme_dir . '/src';
+        }
+        return $namespaces;
+    }
+
+    protected function loadModules(): void
+    {
+        foreach ($this->modules as $module_name => $module) {
+            $module_dir = $this->drupalRoot . '/' . $module->getPath();
             // Need to ensure .module is enabled.
             if ($module->getExtensionFilename() !== null) {
                 require $module_dir . '/' . $module->getExtensionFilename();
@@ -163,7 +198,19 @@ class Bootstrap
                 }
             }
         }
+    }
 
-        return $namespaces;
+    protected function loadThemes(): void
+    {
+        foreach ($this->themes as $theme_name => $theme) {
+            if ($theme_name === 'bootstrap') {
+                continue;
+            }
+            $theme_dir = $this->drupalRoot . '/' . $theme->getPath();
+            // Need to ensure .theme is enabled.
+            if ($theme->getExtensionFilename() !== null) {
+                require $theme_dir . '/' . $theme->getExtensionFilename();
+            }
+        }
     }
 }
