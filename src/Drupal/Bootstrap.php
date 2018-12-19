@@ -24,7 +24,7 @@ class Bootstrap
 
     public function __construct()
     {
-        $autoload_file = $GLOBALS['composerAutoloadFile'];
+        $autoload_file = $GLOBALS['autoloaderInWorkingDirectory'];
         /** @noinspection PhpIncludeInspection */
         $this->autoloader = require $autoload_file;
         if (!$this->autoloader instanceof ClassLoader) {
