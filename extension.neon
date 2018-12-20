@@ -8,8 +8,19 @@ parameters:
 		- inc
 extensions:
 	drupal: PHPStan\DependencyInjection\DrupalExtension
+drupal:
+	entityTypeStorageMapping:
+		node: Drupal\node\NodeStorage
+		taxonomy_term: Drupal\taxonomy\TermStorage
+		user: Drupal\user\UserStorage
 rules:
 	- PHPStan\Rules\Classes\PluginManagerInspectionRule
 	- PHPStan\Rules\Drupal\Coder\DiscouragedFunctionsRule
 	- PHPStan\Rules\Drupal\GlobalDrupalDependencyInjectionRule
 	- PHPStan\Rules\Drupal\PluginManager\PluginManagerSetsCacheBackendRule
+services:
+	-
+		class: PHPStan\Type\EntityTypeManagerGetStorageDynamicReturnTypeExtension
+		arguments:
+			entityTypeStorageMapping: %drupal.entityTypeStorageMapping%
+		tags: [phpstan.broker.dynamicMethodReturnTypeExtension]

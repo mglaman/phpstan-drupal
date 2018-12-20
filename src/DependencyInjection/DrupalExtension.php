@@ -80,6 +80,8 @@ class DrupalExtension extends CompilerExtension
         $this->modules = $config['modules'] ?? [];
         $this->themes = $config['themes'] ?? [];
 
+        $builder->parameters['drupal']['entityTypeStorageMapping'] = $config['entityTypeStorageMapping'];
+
         $builder = $this->getContainerBuilder();
         foreach ($builder->getDefinitions() as $definition) {
             $factory = $definition->getFactory();
