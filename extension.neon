@@ -1,13 +1,12 @@
 parameters:
 	excludes_analyse:
 		- *.api.php
+	bootstrap: %rootDir%/../../mglaman/phpstan-drupal/phpstan-bootstrap.php
 	fileExtensions:
-		- php
 		- module
 		- theme
 		- inc
 extensions:
-	rulesOverride: PHPStan\DependencyInjection\RulesOverrideExtension
 	drupal: PHPStan\DependencyInjection\DrupalExtension
 rules:
 	- PHPStan\Rules\Classes\PluginManagerInspectionRule
