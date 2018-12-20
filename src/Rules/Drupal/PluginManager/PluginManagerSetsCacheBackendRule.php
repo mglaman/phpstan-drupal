@@ -5,6 +5,7 @@ namespace PHPStan\Rules\Drupal\PluginManager;
 use PhpParser\Node;
 use PhpParser\Node\Stmt\ClassMethod;
 use PHPStan\Analyser\Scope;
+use PHPStan\ShouldNotHappenException;
 
 class PluginManagerSetsCacheBackendRule extends AbstractPluginManagerRule
 {
@@ -35,6 +36,10 @@ class PluginManagerSetsCacheBackendRule extends AbstractPluginManagerRule
             return [];
         }
 
+        if ($scope->getClassReflection() === null) {
+            throw new ShouldNotHappenException();
+        }
+
         $classReflection = $scope->getClassReflection()->getNativeReflection();
 
         if (!$this->isPluginManager($classReflection)) {
@@ -45,26 +50,30 @@ class PluginManagerSetsCacheBackendRule extends AbstractPluginManagerRule
         $hasCacheTags = false;
         $misnamedCacheTagWarnings = [];
 
-        foreach ($node->stmts as $statement) {
+        foreach ($node->stmts ?? [] as $statement) {
             if ($statement instanceof Node\Stmt\Expression) {
                 $statement = $statement->expr;
             }
-            if (($statement instanceof Node\Expr\MethodCall) && (string)$statement->name === 'setCacheBackend') {
-                $hasCacheBackendSet = true;
-
+            if (($statement instanceof Node\Expr\MethodCall) &&
+                ($statement->name instanceof Node\Identifier) &&
+                $statement->name->name === 'setCacheBackend') {
                 // setCacheBackend accepts a cache backend, the cache key, and optional (but suggested) cache tags.
                 $setCacheBackendArgs = $statement->args;
 
-                $cacheKey = $setCacheBackendArgs[1]->value->value;
+                $cacheKey = $setCacheBackendArgs[1]->value;
+                if (!$cacheKey instanceof Node\Scalar\String_) {
+                    continue;
+                }
+                $hasCacheBackendSet = true;
+
                 if (isset($setCacheBackendArgs[2])) {
                     /** @var \PhpParser\Node\Expr\Array_ $cacheTags */
                     $cacheTags = $setCacheBackendArgs[2]->value;
-                    if (!empty($cacheTags->items)) {
+                    if (count($cacheTags->items) > 0) {
                         $hasCacheTags = true;
                         foreach ($cacheTags->items as $item) {
-                            if (
-                                ($item->value instanceof Node\Scalar\String_) &&
-                                strpos($item->value->value, $cacheKey) === false) {
+                            if (($item->value instanceof Node\Scalar\String_) &&
+                                strpos($item->value->value, $cacheKey->value) === false) {
                                 $misnamedCacheTagWarnings[] = $item->value->value;
                             }
                         }
@@ -88,5 +97,4 @@ class PluginManagerSetsCacheBackendRule extends AbstractPluginManagerRule
 
         return $errors;
     }
-
 }

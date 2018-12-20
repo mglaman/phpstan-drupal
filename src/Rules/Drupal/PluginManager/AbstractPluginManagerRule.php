@@ -14,5 +14,4 @@ abstract class AbstractPluginManagerRule implements Rule
             !$classReflection->isAnonymous() &&
             $classReflection->implementsInterface('Drupal\Component\Plugin\PluginManagerInterface');
     }
-
 }

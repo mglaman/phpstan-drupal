@@ -11,12 +11,17 @@ use PHPStan\Drupal\ExtensionDiscovery;
 
 class DrupalExtension extends CompilerExtension
 {
-
+    /**
+     * @var array
+     */
     protected $defaultConfig = [
         'modules' => [],
         'themes' => [],
     ];
 
+    /**
+     * @var string
+     */
     private $autoloaderPath;
 
     /**
@@ -43,8 +48,19 @@ class DrupalExtension extends CompilerExtension
      */
     protected $themeData = [];
 
+    /**
+     * @var array
+     */
     private $modules = [];
+
+    /**
+     * @var array
+     */
     private $themes = [];
+
+    /**
+     * @var \PHPStan\Drupal\ExtensionDiscovery
+     */
     private $extensionDiscovery;
 
     public function loadConfiguration(): void

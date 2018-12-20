@@ -53,12 +53,8 @@ class DiscouragedFunctionsRule implements Rule
         ];
 
         if (in_array($name, $discouragedFunctions, true)) {
-            var_dump($name);
             return [sprintf('Calls to function %s should not exist.', $name)];
         }
         return [];
-
     }
-
-
 }

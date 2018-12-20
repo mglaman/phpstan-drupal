@@ -4,7 +4,9 @@ namespace PHPStan\Rules\Drupal;
 
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
+use PHPStan\Reflection\MethodReflection;
 use PHPStan\Rules\Rule;
+use PHPStan\ShouldNotHappenException;
 
 class GlobalDrupalDependencyInjectionRule implements Rule
 {
@@ -24,6 +26,9 @@ class GlobalDrupalDependencyInjectionRule implements Rule
         if (!$scope->isInClass() && !$scope->isInTrait()) {
             return [];
         }
+        if ($scope->getClassReflection() === null) {
+            throw new ShouldNotHappenException();
+        }
 
         $whitelist = [
             // Typed data objects cannot use dependency injection.
@@ -40,8 +45,8 @@ class GlobalDrupalDependencyInjectionRule implements Rule
             }
         }
 
-        if ($scope->getFunctionName() === null) {
-            throw new \PHPStan\ShouldNotHappenException();
+        if ($scope->getFunctionName() === null || !($scope->getFunction() instanceof MethodReflection)) {
+            throw new ShouldNotHappenException();
         }
         // Static methods have to invoke \Drupal.
         if ($scope->getFunction()->isStatic()) {
@@ -51,7 +56,5 @@ class GlobalDrupalDependencyInjectionRule implements Rule
         return [
             '\Drupal calls should be avoided in classes, use dependency injection instead'
         ];
-
     }
-
 }

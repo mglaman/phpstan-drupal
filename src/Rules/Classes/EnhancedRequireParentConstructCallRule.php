@@ -4,21 +4,23 @@ namespace PHPStan\Rules\Classes;
 
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
+use PHPStan\ShouldNotHappenException;
 
-class EnhancedRequireParentConstructCallRule extends RequireParentConstructCallRule {
+class EnhancedRequireParentConstructCallRule extends RequireParentConstructCallRule
+{
 
     /**
      * @param Node $node
      * @param \PHPStan\Analyser\Scope $scope
      * @return string[]
-     * @throws \PHPStan\ShouldNotHappenException
+     * @throws ShouldNotHappenException
      */
     public function processNode(Node $node, Scope $scope): array
     {
         assert($node instanceof Node\Stmt\ClassMethod);
 
         if (!$scope->isInClass()) {
-            throw new \PHPStan\ShouldNotHappenException();
+            throw new ShouldNotHappenException();
         }
 
         if ($scope->isInTrait()) {
@@ -30,9 +32,11 @@ class EnhancedRequireParentConstructCallRule extends RequireParentConstructCallR
         }
 
         // Provides specific handling for Drupal instances where not calling the parent __construct is "okay."
+        if ($scope->getClassReflection() === null) {
+            throw new ShouldNotHappenException();
+        }
         $classReflection = $scope->getClassReflection()->getNativeReflection();
-        if (
-            !$classReflection->isInterface()
+        if (!$classReflection->isInterface()
             && !$classReflection->isAnonymous()
             && $classReflection->implementsInterface('Drupal\Component\Plugin\PluginManagerInterface')
         ) {
@@ -41,6 +45,4 @@ class EnhancedRequireParentConstructCallRule extends RequireParentConstructCallR
 
         return parent::processNode($node, $scope);
     }
-
-
 }

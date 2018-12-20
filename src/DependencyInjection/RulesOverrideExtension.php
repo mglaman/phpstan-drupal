@@ -11,10 +11,13 @@ class RulesOverrideExtension extends \Nette\DI\CompilerExtension
     {
         $builder = $this->getContainerBuilder();
         foreach ($builder->getDefinitions() as $definition) {
-            if ($definition->getFactory()->entity === RequireParentConstructCallRule::class) {
+            $factory = $definition->getFactory();
+            if ($factory === null) {
+                continue;
+            }
+            if ($factory->entity === RequireParentConstructCallRule::class) {
                 $definition->setFactory(EnhancedRequireParentConstructCallRule::class);
             }
         }
-
     }
 }
