@@ -4,6 +4,7 @@ namespace PHPStan\DependencyInjection;
 
 use Nette\DI\CompilerExtension;
 use Nette\DI\Config\Helpers;
+use PHPStan\Drupal\ExtensionDiscovery;
 use PHPStan\Rules\Classes\EnhancedRequireParentConstructCallRule;
 use PHPStan\Rules\Classes\RequireParentConstructCallRule;
 
@@ -90,6 +91,23 @@ class DrupalExtension extends CompilerExtension
             }
             if ($factory->entity === RequireParentConstructCallRule::class) {
                 $definition->setFactory(EnhancedRequireParentConstructCallRule::class);
+            }
+        }
+
+        // Build the service definitions...
+        $extensionDiscovery = new ExtensionDiscovery($this->drupalRoot);
+        $extensionDiscovery->setProfileDirectories([]);
+        $profiles = $extensionDiscovery->scan('profile');
+        $profile_directories = array_map(function ($profile) {
+            return $profile->getPath();
+        }, $profiles);
+        $extensionDiscovery->setProfileDirectories($profile_directories);
+
+        foreach ($extensionDiscovery->scan('module') as $extension) {
+            $module_dir = $this->drupalRoot . '/' . $extension->getPath();
+            $servicesFileName = $module_dir . '/' . $extension->getName() . '.services.yml';
+            if (file_exists($servicesFileName)) {
+                // @todo load and parse, push basic definitions into container parameters
             }
         }
     }
