@@ -8,6 +8,7 @@ use PhpParser\Node\Scalar\String_;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\ParametersAcceptorSelector;
+use PHPStan\ShouldNotHappenException;
 
 class EntityTypeManagerGetStorageDynamicReturnTypeExtension implements DynamicMethodReturnTypeExtension
 {
@@ -38,7 +39,8 @@ class EntityTypeManagerGetStorageDynamicReturnTypeExtension implements DynamicMe
     ): Type {
         $returnType = ParametersAcceptorSelector::selectSingle($methodReflection->getVariants())->getReturnType();
         if (!isset($methodCall->args[0])) {
-            return $returnType;
+            // Parameter is required.
+            throw new ShouldNotHappenException();
         }
 
         $arg1 = $methodCall->args[0]->value;

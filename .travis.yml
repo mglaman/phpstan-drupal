@@ -4,8 +4,6 @@ php:
   - 7.2
   - 7.3
 
-before_script:
-  - if php --ri xdebug >/dev/null; then phpenv config-rm xdebug.ini; fi
 before_install:
   - composer self-update
   - composer global require "hirak/prestissimo:^0.3"
@@ -14,6 +12,7 @@ install:
 script:
   - ./vendor/bin/phpcs src
   - ./vendor/bin/phpstan analyze src
+  - ./vendor/bin/phpunit
 cache:
   directories:
     - $HOME/.composer/cache
