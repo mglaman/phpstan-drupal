@@ -4,9 +4,25 @@ namespace PHPStan\Drupal;
 
 class DrupalServiceDefinition
 {
+
+    /**
+     * @var string
+     */
     private $id;
+
+    /**
+     * @var string|null
+     */
     private $class;
+
+    /**
+     * @var bool
+     */
     private $public;
+
+    /**
+     * @var string|null
+     */
     private $alias;
 
     public function __construct(string $id, ?string $class, bool $public = true, ?string $alias = null)
@@ -48,6 +64,4 @@ class DrupalServiceDefinition
     {
         return $this->alias;
     }
-
 }
-

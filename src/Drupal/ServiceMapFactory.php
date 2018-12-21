@@ -4,6 +4,9 @@ namespace PHPStan\Drupal;
 
 class ServiceMapFactory implements ServiceMapFactoryInterface
 {
+    /**
+     * @var array
+     */
     private $drupalServices;
 
     public function __construct(array $drupalServiceMap = [])
@@ -15,5 +18,4 @@ class ServiceMapFactory implements ServiceMapFactoryInterface
     {
         return new ServiceMap($this->drupalServices);
     }
-
 }

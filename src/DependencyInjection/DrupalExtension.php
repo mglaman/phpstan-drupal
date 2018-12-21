@@ -161,7 +161,7 @@ class DrupalExtension extends CompilerExtension
         }
     }
 
-    protected function camelize($id)
+    protected function camelize(string $id): string
     {
         return strtr(ucwords(strtr($id, ['_' => ' ', '.' => '_ ', '\\' => '_ '])), [' ' => '']);
     }

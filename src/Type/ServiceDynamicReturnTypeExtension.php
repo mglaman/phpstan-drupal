@@ -3,6 +3,7 @@
 namespace PHPStan\Type;
 
 use PhpParser\Node\Expr\MethodCall;
+use PhpParser\Node\Scalar\String_;
 use PHPStan\Analyser\Scope;
 use PHPStan\Drupal\DrupalServiceDefinition;
 use PHPStan\Drupal\ServiceMap;
@@ -43,7 +44,13 @@ class ServiceDynamicReturnTypeExtension implements DynamicMethodReturnTypeExtens
             return $returnType;
         }
 
-        $serviceId = (string)$methodCall->args[0]->value->value;
+        $arg1 = $methodCall->args[0]->value;
+        if (!$arg1 instanceof String_) {
+            // @todo determine what these types are.
+            return $returnType;
+        }
+
+        $serviceId = $arg1->value;
 
         if ($methodReflection->getName() === 'get') {
             $service = $this->serviceMap->getService($serviceId);
@@ -59,5 +66,4 @@ class ServiceDynamicReturnTypeExtension implements DynamicMethodReturnTypeExtens
 
         throw new ShouldNotHappenException();
     }
-
 }

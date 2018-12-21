@@ -4,7 +4,5 @@ namespace PHPStan\Drupal;
 
 interface ServiceMapFactoryInterface
 {
-
     public function create(): ServiceMap;
-
 }
