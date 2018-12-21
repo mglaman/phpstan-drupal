@@ -19,8 +19,16 @@ rules:
 	- PHPStan\Rules\Drupal\GlobalDrupalDependencyInjectionRule
 	- PHPStan\Rules\Drupal\PluginManager\PluginManagerSetsCacheBackendRule
 services:
+	drupal.serviceMapFactory:
+		class: PHPStan\Drupal\ServiceMapFactoryInterface
+		factory: PHPStan\Drupal\ServiceMapFactory(%drupalServiceMap%)
+	-
+		class: @drupal.serviceMapFactory::create()
 	-
 		class: PHPStan\Type\EntityTypeManagerGetStorageDynamicReturnTypeExtension
 		arguments:
 			entityTypeStorageMapping: %drupal.entityTypeStorageMapping%
+		tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
+	-
+		class: PHPStan\Type\ServiceDynamicReturnTypeExtension
 		tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
