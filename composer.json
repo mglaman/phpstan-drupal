@@ -10,7 +10,8 @@
     ],
     "require": {
         "php": "^7.1",
-        "phpstan/phpstan": "^0.10.6"
+        "phpstan/phpstan": "^0.10.6",
+        "symfony/yaml": "^4.2"
     },
     "autoload": {
         "psr-4": {
