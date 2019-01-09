@@ -29,5 +29,5 @@
 		"branch-alias": {
 			"dev-master": "0.11-dev"
 		}
-	},
+	}
 }
