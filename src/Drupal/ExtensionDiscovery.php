@@ -358,6 +358,13 @@ class ExtensionDiscovery
                 continue;
             }
 
+            // This test module has a function declaration that conflicts with another module. Explicitly skip it.
+            // @see https://www.drupal.org/project/drupal/issues/3020142
+            // @todo remove when Drupal core fixed.
+            if ($fileinfo->getBasename('.info.yml') === 'no_transitions_css') {
+                continue;
+            }
+
             // Determine extension type from info file.
             $type = false;
             $file = $fileinfo->openFile('r');
