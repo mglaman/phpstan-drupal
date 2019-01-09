@@ -25,9 +25,9 @@
     "suggest": {
         "phpstan/phpstan-deprecation-rules": "For catching deprecations, especially in Drupal core."
     },
-    "extra": {
-        "branch-alias": {
-            "dev-master": "1.x-dev"
-        }
-    }
+	"extra": {
+		"branch-alias": {
+			"dev-master": "0.11-dev"
+		}
+	},
 }
