@@ -16,7 +16,7 @@ class Bootstrap
     ];
 
     /**
-     * @var string
+     * @var ?string
      */
     private $autoloaderPath;
 
@@ -55,7 +55,7 @@ class Bootstrap
     private $themes = [];
 
     /**
-     * @var \PHPStan\Drupal\ExtensionDiscovery
+     * @var ?\PHPStan\Drupal\ExtensionDiscovery
      */
     private $extensionDiscovery;
 
@@ -81,19 +81,21 @@ class Bootstrap
         if (is_dir($project_root . '/core')) {
             $this->drupalRoot = $project_root;
         }
+        $drupalRoot = null;
         foreach (['web', 'docroot'] as $possible_docroot) {
             if (is_dir("$project_root/$possible_docroot/core")) {
-                $this->drupalRoot = "$project_root/$possible_docroot";
+                $drupalRoot = "$project_root/$possible_docroot";
             }
         }
-        if ($this->drupalRoot === null) {
+        if ($drupalRoot === null) {
             throw new \InvalidArgumentException('Unable to determine the Drupal root');
         }
+        $this->drupalRoot = $drupalRoot;
 
         $this->extensionDiscovery = new ExtensionDiscovery($this->drupalRoot);
         $this->extensionDiscovery->setProfileDirectories([]);
         $profiles = $this->extensionDiscovery->scan('profile');
-        $profile_directories = array_map(function ($profile) {
+        $profile_directories = array_map(function (\PHPStan\Drupal\Extension $profile) : string {
             return $profile->getPath();
         }, $profiles);
         $this->extensionDiscovery->setProfileDirectories($profile_directories);

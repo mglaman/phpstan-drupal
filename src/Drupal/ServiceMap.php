@@ -13,6 +13,8 @@ class ServiceMap
      */
     public function __construct(array $drupalServices)
     {
+        $this->services = [];
+
         foreach ($drupalServices as $serviceId => $serviceDefinition) {
             // @todo support factories
             if (!isset($serviceDefinition['class'])) {

@@ -197,7 +197,7 @@ class ExtensionDiscovery
             return $all_files;
         }
 
-        $all_files = array_filter($all_files, function ($file) {
+        $all_files = array_filter($all_files, function (\PHPStan\Drupal\Extension $file) : bool {
             if (strpos($file->subpath, 'profiles') !== 0) {
                 // This extension doesn't belong to a profile, ignore it.
                 return true;

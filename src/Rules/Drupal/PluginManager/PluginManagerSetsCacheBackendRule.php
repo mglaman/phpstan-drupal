@@ -36,11 +36,13 @@ class PluginManagerSetsCacheBackendRule extends AbstractPluginManagerRule
             return [];
         }
 
-        if ($scope->getClassReflection() === null) {
+        $scopeClassReflection = $scope->getClassReflection();
+
+        if ($scopeClassReflection === null) {
             throw new ShouldNotHappenException();
         }
 
-        $classReflection = $scope->getClassReflection()->getNativeReflection();
+        $classReflection = $scopeClassReflection->getNativeReflection();
 
         if (!$this->isPluginManager($classReflection)) {
             return [];
@@ -71,6 +73,7 @@ class PluginManagerSetsCacheBackendRule extends AbstractPluginManagerRule
                     $cacheTags = $setCacheBackendArgs[2]->value;
                     if (count($cacheTags->items) > 0) {
                         $hasCacheTags = true;
+                        /** @var \PhpParser\Node\Expr\ArrayItem $item */
                         foreach ($cacheTags->items as $item) {
                             if (($item->value instanceof Node\Scalar\String_) &&
                                 strpos($item->value->value, $cacheKey->value) === false) {
