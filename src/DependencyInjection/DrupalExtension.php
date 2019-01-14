@@ -20,7 +20,7 @@ class DrupalExtension extends CompilerExtension
     ];
 
     /**
-     * @var string
+     * @var ?string
      */
     private $autoloaderPath;
 
@@ -62,17 +62,20 @@ class DrupalExtension extends CompilerExtension
             throw new \InvalidArgumentException('Cannot determine the realpath of the autoloader.');
         }
         $project_root = dirname($realpath, 2);
+        $drupalRoot = null;
         if (is_dir($project_root . '/core')) {
-            $this->drupalRoot = $project_root;
+            $drupalRoot = $project_root;
         }
         foreach (['web', 'docroot'] as $possible_docroot) {
             if (is_dir("$project_root/$possible_docroot/core")) {
-                $this->drupalRoot = "$project_root/$possible_docroot";
+                $drupalRoot = "$project_root/$possible_docroot";
             }
         }
-        if ($this->drupalRoot === null) {
+        if ($drupalRoot === null) {
             throw new \InvalidArgumentException('Unable to determine the Drupal root');
         }
+
+        $this->drupalRoot = $drupalRoot;
 
         $builder = $this->getContainerBuilder();
         $builder->parameters['drupalRoot'] = $this->drupalRoot;
@@ -99,7 +102,7 @@ class DrupalExtension extends CompilerExtension
         $extensionDiscovery = new ExtensionDiscovery($this->drupalRoot);
         $extensionDiscovery->setProfileDirectories([]);
         $profiles = $extensionDiscovery->scan('profile');
-        $profile_directories = array_map(function ($profile) {
+        $profile_directories = array_map(function (\PHPStan\Drupal\Extension $profile) : string {
             return $profile->getPath();
         }, $profiles);
         $extensionDiscovery->setProfileDirectories($profile_directories);
@@ -139,7 +142,7 @@ class DrupalExtension extends CompilerExtension
                 // Prevent \Nette\DI\ContainerBuilder::completeStatement from array_walk_recursive into the arguments
                 // and thinking these are real services for PHPStan's container.
                 if (isset($serviceDefinition['arguments']) && is_array($serviceDefinition['arguments'])) {
-                    array_walk($serviceDefinition['arguments'], function (&$argument) {
+                    array_walk($serviceDefinition['arguments'], function (string &$argument) : void {
                         $argument = str_replace('@', '', $argument);
                     });
                 }

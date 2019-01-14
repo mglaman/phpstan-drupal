@@ -31,11 +31,13 @@ class EnhancedRequireParentConstructCallRule extends RequireParentConstructCallR
             return [];
         }
 
+        $scopeClassReflection = $scope->getClassReflection();
+
         // Provides specific handling for Drupal instances where not calling the parent __construct is "okay."
-        if ($scope->getClassReflection() === null) {
+        if ($scopeClassReflection === null) {
             throw new ShouldNotHappenException();
         }
-        $classReflection = $scope->getClassReflection()->getNativeReflection();
+        $classReflection = $scopeClassReflection->getNativeReflection();
         if (!$classReflection->isInterface()
             && !$classReflection->isAnonymous()
             && $classReflection->implementsInterface('Drupal\Component\Plugin\PluginManagerInterface')
