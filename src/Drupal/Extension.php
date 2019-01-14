@@ -139,6 +139,8 @@ class Extension
         if ($this->filename !== null) {
             return $this->getPath() . '/' . $this->filename;
         }
+
+        return null;
     }
 
     /**
