@@ -51,7 +51,7 @@ class GlobalDrupalDependencyInjectionRule implements Rule
         }
 
         $scopeFunction = $scope->getFunction();
-        if(!($scopeFunction instanceof MethodReflection)) {
+        if (!($scopeFunction instanceof MethodReflection)) {
             throw new ShouldNotHappenException();
         }
         // Static methods have to invoke \Drupal.
