@@ -38,6 +38,9 @@ class GlobalDrupalDependencyInjectionRule implements Rule
             'Drupal\Core\Render\Element\ElementInterface',
             'Drupal\Core\Render\Element\FormElementInterface',
             'Drupal\config_translation\FormElement\ElementInterface',
+            // Entities don't use services for now
+            // @see https://www.drupal.org/project/drupal/issues/2913224
+            'Drupal\Core\Entity\EntityInterface',
         ];
         $classReflection = $scopeClassReflection->getNativeReflection();
         foreach ($whitelist as $item) {
