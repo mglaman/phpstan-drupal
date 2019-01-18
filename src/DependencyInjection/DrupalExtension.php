@@ -142,7 +142,7 @@ class DrupalExtension extends CompilerExtension
                 // Prevent \Nette\DI\ContainerBuilder::completeStatement from array_walk_recursive into the arguments
                 // and thinking these are real services for PHPStan's container.
                 if (isset($serviceDefinition['arguments']) && is_array($serviceDefinition['arguments'])) {
-                    array_walk($serviceDefinition['arguments'], function (string &$argument) : void {
+                    array_walk($serviceDefinition['arguments'], function (&$argument) : void {
                         $argument = str_replace('@', '', $argument);
                     });
                 }
