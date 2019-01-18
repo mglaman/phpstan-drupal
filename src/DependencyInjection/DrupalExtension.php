@@ -55,6 +55,7 @@ class DrupalExtension extends CompilerExtension
 
     public function loadConfiguration(): void
     {
+        $builder = $this->getContainerBuilder();
 
         $this->autoloaderPath = $GLOBALS['autoloaderInWorkingDirectory'];
         $realpath = realpath($this->autoloaderPath);
@@ -66,18 +67,19 @@ class DrupalExtension extends CompilerExtension
         if (is_dir($project_root . '/core')) {
             $drupalRoot = $project_root;
         }
-        foreach (['web', 'docroot'] as $possible_docroot) {
-            if (is_dir("$project_root/$possible_docroot/core")) {
-                $drupalRoot = "$project_root/$possible_docroot";
+
+        if (isset($builder->parameters['docroot'])) {
+            if (is_dir(sprintf('%s/%s', $builder->parameters['docroot'], 'core'))) {
+                $drupalRoot = $builder->parameters['docroot'];
             }
         }
+
         if ($drupalRoot === null) {
             throw new \InvalidArgumentException('Unable to determine the Drupal root');
         }
 
         $this->drupalRoot = $drupalRoot;
 
-        $builder = $this->getContainerBuilder();
         $builder->parameters['drupalRoot'] = $this->drupalRoot;
 
         $config = Helpers::merge($this->config, $this->defaultConfig);
