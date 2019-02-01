@@ -2,6 +2,7 @@
 
 namespace PHPStan\DependencyInjection;
 
+use DrupalFinder\DrupalFinder;
 use Nette\DI\CompilerExtension;
 use Nette\DI\Config\Helpers;
 use PHPStan\Drupal\ExtensionDiscovery;
@@ -18,11 +19,6 @@ class DrupalExtension extends CompilerExtension
         'modules' => [],
         'themes' => [],
     ];
-
-    /**
-     * @var ?string
-     */
-    private $autoloaderPath;
 
     /**
      * @var string
@@ -55,27 +51,9 @@ class DrupalExtension extends CompilerExtension
 
     public function loadConfiguration(): void
     {
-
-        $this->autoloaderPath = $GLOBALS['autoloaderInWorkingDirectory'];
-        $realpath = realpath($this->autoloaderPath);
-        if ($realpath === false) {
-            throw new \InvalidArgumentException('Cannot determine the realpath of the autoloader.');
-        }
-        $project_root = dirname($realpath, 2);
-        $drupalRoot = null;
-        if (is_dir($project_root . '/core')) {
-            $drupalRoot = $project_root;
-        }
-        foreach (['web', 'docroot'] as $possible_docroot) {
-            if (is_dir("$project_root/$possible_docroot/core")) {
-                $drupalRoot = "$project_root/$possible_docroot";
-            }
-        }
-        if ($drupalRoot === null) {
-            throw new \InvalidArgumentException('Unable to determine the Drupal root');
-        }
-
-        $this->drupalRoot = $drupalRoot;
+        $finder = new DrupalFinder();
+        $finder->locateRoot(getcwd());
+        $this->drupalRoot = $finder->getDrupalRoot();
 
         $builder = $this->getContainerBuilder();
         $builder->parameters['drupalRoot'] = $this->drupalRoot;

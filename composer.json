@@ -11,7 +11,8 @@
     "require": {
         "php": "^7.1",
         "phpstan/phpstan": "^0.10.6",
-        "symfony/yaml": "~3.4.5|^4.2"
+        "symfony/yaml": "~3.4.5|^4.2",
+        "webflo/drupal-finder": "^1.1"
     },
     "autoload": {
         "psr-4": {
