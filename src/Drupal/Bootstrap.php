@@ -74,7 +74,7 @@ class Bootstrap
         }, $profiles);
         $this->extensionDiscovery->setProfileDirectories($profile_directories);
 
-        $this->moduleData = $this->extensionDiscovery->scan('module');
+        $this->moduleData = array_merge($this->extensionDiscovery->scan('module'), $profiles);
         $this->themeData = $this->extensionDiscovery->scan('theme');
 
         $this->loadLegacyIncludes();
