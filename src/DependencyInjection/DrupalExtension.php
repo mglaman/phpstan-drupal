@@ -58,12 +58,13 @@ class DrupalExtension extends CompilerExtension
         $builder = $this->getContainerBuilder();
         $builder->parameters['drupalRoot'] = $this->drupalRoot;
 
+        /** @var array */
         $config = Helpers::merge($this->config, $this->defaultConfig);
 
         $this->modules = $config['modules'] ?? [];
         $this->themes = $config['themes'] ?? [];
 
-        $builder->parameters['drupal']['entityTypeStorageMapping'] = $config['entityTypeStorageMapping'];
+        $builder->parameters['drupal']['entityTypeStorageMapping'] = $config['entityTypeStorageMapping'] ?? [];
 
         $builder = $this->getContainerBuilder();
         foreach ($builder->getDefinitions() as $definition) {
