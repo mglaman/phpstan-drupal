@@ -17,8 +17,8 @@ includes:
 
 ## Enabling rules one-by-one
 
-If you don't want to start using all the available strict rules at once but only one or two, you can! Just don't include 
-the whole `rules.neon` from this package in your configuration, but look at its contents and copy only the rules you 
+If you don't want to start using all the available strict rules at once but only one or two, you can! Just don't include
+the whole `rules.neon` from this package in your configuration, but look at its contents and copy only the rules you
 want to your configuration under the `services` key:
 
 ```
@@ -40,11 +40,44 @@ parameters:
 		- *TestBase.php
 ```
 
+## Deprecation testing
+
+Add the deprecation rules to your Drupal project's dependencies
+
+```
+composer require phpstan/phpstan-deprecation-rules
+```
+
+Edit your `phpstan.neon` to look like the following:
+
+```
+includes:
+	- vendor/mglaman/phpstan-drupal/extension.neon
+	- vendor/phpstan/phpstan-deprecation-rules/rules.neon
+```
+
+To only handle deprecation testing, use a `phpstan.neon` like this:
+
+```
+parameters:
+	customRulesetUsed: true
+	reportUnmatchedIgnoredErrors: false
+	# Ignore phpstan-drupal extension's rules.
+	ignoreErrors:
+		- '#\Drupal calls should be avoided in classes, use dependency injection instead#'
+		- '#Plugin definitions cannot be altered.#'
+		- '#Missing cache backend declaration for performance.#'
+		- '#Plugin manager has cache backend specified but does not declare cache tags.#'
+includes:
+	- vendor/mglaman/phpstan-drupal/extension.neon
+	- vendor/phpstan/phpstan-deprecation-rules/rules.neon
+```
+
 ## Adapting to your project
 
 ### Entity storage mappings.
 
-The `EntityTypeManagerGetStorageDynamicReturnTypeExtension` service helps map dynamic return types. This inspects the 
+The `EntityTypeManagerGetStorageDynamicReturnTypeExtension` service helps map dynamic return types. This inspects the
 passed entity type ID and tries to return a known storage class, besides the default `EntityStorageInterface`. The
 default mapping can be found in `extension.neon`. For example:
 
