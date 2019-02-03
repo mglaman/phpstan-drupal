@@ -37,7 +37,7 @@ class Extension
      *
      * Note that SplFileInfo is a PHP resource and resources cannot be serialized.
      *
-     * @var \SplFileInfo
+     * @var ?\SplFileInfo
      */
     protected $splFileInfo;
 
@@ -51,12 +51,12 @@ class Extension
     /**
      * @var string
      */
-    public $subpath;
+    public $subpath = '';
 
     /**
      * @var string
      */
-    public $origin;
+    public $origin = '';
 
     /**
      * Constructs a new Extension object.
@@ -139,6 +139,8 @@ class Extension
         if ($this->filename !== null) {
             return $this->getPath() . '/' . $this->filename;
         }
+
+        return null;
     }
 
     /**

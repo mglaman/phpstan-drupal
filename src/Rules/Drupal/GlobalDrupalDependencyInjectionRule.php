@@ -26,7 +26,8 @@ class GlobalDrupalDependencyInjectionRule implements Rule
         if (!$scope->isInClass() && !$scope->isInTrait()) {
             return [];
         }
-        if ($scope->getClassReflection() === null) {
+        $scopeClassReflection = $scope->getClassReflection();
+        if ($scopeClassReflection === null) {
             throw new ShouldNotHappenException();
         }
 
@@ -37,19 +38,27 @@ class GlobalDrupalDependencyInjectionRule implements Rule
             'Drupal\Core\Render\Element\ElementInterface',
             'Drupal\Core\Render\Element\FormElementInterface',
             'Drupal\config_translation\FormElement\ElementInterface',
+            // Entities don't use services for now
+            // @see https://www.drupal.org/project/drupal/issues/2913224
+            'Drupal\Core\Entity\EntityInterface',
         ];
-        $classReflection = $scope->getClassReflection()->getNativeReflection();
+        $classReflection = $scopeClassReflection->getNativeReflection();
         foreach ($whitelist as $item) {
             if ($classReflection->implementsInterface($item)) {
                 return [];
             }
         }
 
-        if ($scope->getFunctionName() === null || !($scope->getFunction() instanceof MethodReflection)) {
+        if ($scope->getFunctionName() === null) {
+            throw new ShouldNotHappenException();
+        }
+
+        $scopeFunction = $scope->getFunction();
+        if (!($scopeFunction instanceof MethodReflection)) {
             throw new ShouldNotHappenException();
         }
         // Static methods have to invoke \Drupal.
-        if ($scope->getFunction()->isStatic()) {
+        if ($scopeFunction->isStatic()) {
             return [];
         }
 

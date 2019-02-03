@@ -2,7 +2,7 @@
 
 namespace PHPStan\Drupal;
 
-use Composer\Autoload\ClassLoader;
+use DrupalFinder\DrupalFinder;
 use Nette\Utils\Finder;
 
 class Bootstrap
@@ -14,11 +14,6 @@ class Bootstrap
         'modules' => [],
         'themes' => [],
     ];
-
-    /**
-     * @var string
-     */
-    private $autoloaderPath;
 
     /**
      * @var \Composer\Autoload\ClassLoader
@@ -55,7 +50,7 @@ class Bootstrap
     private $themes = [];
 
     /**
-     * @var \PHPStan\Drupal\ExtensionDiscovery
+     * @var ?\PHPStan\Drupal\ExtensionDiscovery
      */
     private $extensionDiscovery;
 
@@ -66,34 +61,15 @@ class Bootstrap
 
     public function register(): void
     {
-
-        $this->autoloaderPath = $GLOBALS['autoloaderInWorkingDirectory'];
-        /** @noinspection PhpIncludeInspection */
-        $this->autoloader = require $this->autoloaderPath;
-        if (!$this->autoloader instanceof ClassLoader) {
-            throw new \InvalidArgumentException('Unable to determine the Composer class loader for Drupal');
-        }
-        $realpath = realpath($this->autoloaderPath);
-        if ($realpath === false) {
-            throw new \InvalidArgumentException('Cannot determine the realpath of the autoloader.');
-        }
-        $project_root = dirname($realpath, 2);
-        if (is_dir($project_root . '/core')) {
-            $this->drupalRoot = $project_root;
-        }
-        foreach (['web', 'docroot'] as $possible_docroot) {
-            if (is_dir("$project_root/$possible_docroot/core")) {
-                $this->drupalRoot = "$project_root/$possible_docroot";
-            }
-        }
-        if ($this->drupalRoot === null) {
-            throw new \InvalidArgumentException('Unable to determine the Drupal root');
-        }
+        $finder = new DrupalFinder();
+        $finder->locateRoot(getcwd());
+        $this->autoloader = include $finder->getVendorDir() . '/autoload.php';
+        $this->drupalRoot = $finder->getDrupalRoot();
 
         $this->extensionDiscovery = new ExtensionDiscovery($this->drupalRoot);
         $this->extensionDiscovery->setProfileDirectories([]);
         $profiles = $this->extensionDiscovery->scan('profile');
-        $profile_directories = array_map(function ($profile) {
+        $profile_directories = array_map(function (\PHPStan\Drupal\Extension $profile) : string {
             return $profile->getPath();
         }, $profiles);
         $this->extensionDiscovery->setProfileDirectories($profile_directories);
