@@ -4,8 +4,6 @@ php:
   - 7.2
   - 7.3
 
-before_script:
-  - if php --ri xdebug >/dev/null; then phpenv config-rm xdebug.ini; fi
 before_install:
   - composer global require "hirak/prestissimo:^0.3"
 install:
@@ -14,6 +12,7 @@ script:
   # Inspections
   - ./vendor/bin/phpcs src
   - ./vendor/bin/phpstan analyze src
+  - ./vendor/bin/phpunit
 
   # Try to add to a Drupal setup.
   - composer create-project drupal-composer/drupal-project:8.x-dev $TRAVIS_BUILD_DIR/../drupal --no-interaction
