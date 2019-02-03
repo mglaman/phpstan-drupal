@@ -7,13 +7,24 @@ php:
 before_script:
   - if php --ri xdebug >/dev/null; then phpenv config-rm xdebug.ini; fi
 before_install:
-  - composer self-update
   - composer global require "hirak/prestissimo:^0.3"
 install:
   - composer install --no-interaction
 script:
+  # Inspections
   - ./vendor/bin/phpcs src
   - ./vendor/bin/phpstan analyze src
+
+  # Try to add to a Drupal setup.
+  - composer create-project drupal-composer/drupal-project:8.x-dev $TRAVIS_BUILD_DIR/../drupal --no-interaction
+  - cd $TRAVIS_BUILD_DIR/../drupal
+
+  # Install dependency.
+  - composer config repositories.0 path $TRAVIS_BUILD_DIR
+  - composer require mglaman/phpstan-drupal
+  - cp $TRAVIS_BUILD_DIR/tests/fixtures/drupal-phpstan.neon phpstan.neon
+  - ./vendor/bin/phpstan analyze web/core/install.php
+
 cache:
   directories:
     - $HOME/.composer/cache
