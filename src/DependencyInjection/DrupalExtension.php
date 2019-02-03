@@ -93,8 +93,8 @@ class DrupalExtension extends CompilerExtension
         $serviceClassProviders = [
             'core' => 'Drupal\Core\CoreServiceProvider',
         ];
-
-        foreach ($extensionDiscovery->scan('module') as $extension) {
+        $extensions = array_merge($extensionDiscovery->scan('module'), $profiles);
+        foreach ($extensions as $extension) {
             $module_dir = $this->drupalRoot . '/' . $extension->getPath();
             $moduleName = $extension->getName();
             $servicesFileName = $module_dir . '/' . $moduleName . '.services.yml';
