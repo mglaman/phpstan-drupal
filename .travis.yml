@@ -21,7 +21,8 @@ script:
 
   # Install dependency.
   - composer config repositories.0 path $TRAVIS_BUILD_DIR
-  - composer require mglaman/phpstan-drupal
+  - cat composer.json
+  - composer require mglaman/phpstan-drupal *@dev
   - cp $TRAVIS_BUILD_DIR/tests/fixtures/drupal-phpstan.neon phpstan.neon
   - ./vendor/bin/phpstan analyze web/core/install.php
 
