@@ -18,23 +18,19 @@ class ServiceMap
         foreach ($drupalServices as $serviceId => $serviceDefinition) {
             // @todo support factories
             if (!isset($serviceDefinition['class'])) {
-                continue;
+                if (isset($serviceDefinition['alias'], $drupalServices[$serviceDefinition['alias']])) {
+                    $serviceDefinition['class'] = $drupalServices[$serviceDefinition['alias']]['class'];
+                } else {
+                    continue;
+                }
             }
             $this->services[$serviceId] = new DrupalServiceDefinition(
-                $serviceId,
+                (string) $serviceId,
                 $serviceDefinition['class'],
                 $serviceDefinition['public'] ?? true,
                 $serviceDefinition['alias'] ?? null
             );
         }
-    }
-
-    /**
-     * @return DrupalServiceDefinition[]
-     */
-    public function getServices(): array
-    {
-        return $this->services;
     }
 
     public function getService(string $id): ?DrupalServiceDefinition
