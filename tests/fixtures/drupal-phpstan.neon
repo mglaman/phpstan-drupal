@@ -2,6 +2,6 @@ parameters:
 	excludes_analyse:
 		- *Test.php
 		- *TestBase.php
-    level: 0
+	level: 0
 includes:
 	- vendor/mglaman/phpstan-drupal/extension.neon
