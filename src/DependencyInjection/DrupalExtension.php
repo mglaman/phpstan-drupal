@@ -52,7 +52,7 @@ class DrupalExtension extends CompilerExtension
     public function loadConfiguration(): void
     {
         $finder = new DrupalFinder();
-        $finder->locateRoot(getcwd());
+        $finder->locateRoot(dirname($GLOBALS['autoloaderInWorkingDirectory'], 2));
         $this->drupalRoot = $finder->getDrupalRoot();
 
         $builder = $this->getContainerBuilder();
