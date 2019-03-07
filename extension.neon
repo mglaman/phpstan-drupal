@@ -6,6 +6,9 @@ parameters:
 		- module
 		- theme
 		- inc
+		- install
+		- profile
+		- engine
 extensions:
 	drupal: PHPStan\DependencyInjection\DrupalExtension
 drupal:
