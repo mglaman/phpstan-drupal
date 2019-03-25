@@ -24,11 +24,11 @@ script:
   # Test that a known non-failing file doesn't error out.
   - ./vendor/bin/phpstan analyze web/core/install.php
   # Verify test fixtures are ignored.
-  - ./vendor/bin/phpstan analyze web/core/modules/migrate_drupal --no-progress | grep -q "tests/fixtures" && echo 1 || echo 0
+  - ./vendor/bin/phpstan analyze web/core/modules/migrate_drupal --no-progress | grep -q "tests/fixtures" && false || true
 
   # Check "Cannot redeclare token_theme() due to blazy_test.module"
   - composer require drupal/token drupal/blazy
-  - ./vendor/bin/phpstan analyze web/modules/contrib/blazy --no-progress
+  - ./vendor/bin/phpstan analyze web/modules/contrib/blazy --no-progress || if (($? == 255)); then false; else true; fi
 
 cache:
   directories:
