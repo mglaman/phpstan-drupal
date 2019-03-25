@@ -28,14 +28,14 @@ class Bootstrap
     /**
      * List of available modules.
      *
-     * @var \PHPStan\Drupal\Extension[]
+     * @var Extension[]
      */
     protected $moduleData = [];
 
     /**
      * List of available themes.
      *
-     * @var \PHPStan\Drupal\Extension[]
+     * @var Extension[]
      */
     protected $themeData = [];
 
@@ -69,12 +69,16 @@ class Bootstrap
         $this->extensionDiscovery = new ExtensionDiscovery($this->drupalRoot);
         $this->extensionDiscovery->setProfileDirectories([]);
         $profiles = $this->extensionDiscovery->scan('profile');
-        $profile_directories = array_map(function (\PHPStan\Drupal\Extension $profile) : string {
+        $profile_directories = array_map(static function (Extension $profile) : string {
             return $profile->getPath();
         }, $profiles);
         $this->extensionDiscovery->setProfileDirectories($profile_directories);
 
         $this->moduleData = array_merge($this->extensionDiscovery->scan('module'), $profiles);
+        usort($this->moduleData, static function (Extension $a, Extension $b) {
+            // blazy_test causes errors, ensure it is loaded last.
+            return $a->getName() === 'blazy_test' ? 10 : 0;
+        });
         $this->themeData = $this->extensionDiscovery->scan('theme');
 
         $this->loadLegacyIncludes();
