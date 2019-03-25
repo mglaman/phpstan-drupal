@@ -2,6 +2,8 @@ parameters:
 	excludes_analyse:
 		- *.api.php
 		- */tests/fixtures/*.php
+		# Ignore an error caused by loading Blazy before Token
+		- */blazy/tests/modules/blazy_test/blazy_test.module
 	bootstrap: %rootDir%/../../mglaman/phpstan-drupal/phpstan-bootstrap.php
 	fileExtensions:
 		- module
