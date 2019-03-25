@@ -75,10 +75,10 @@ class Bootstrap
         $this->extensionDiscovery->setProfileDirectories($profile_directories);
 
         $this->moduleData = array_merge($this->extensionDiscovery->scan('module'), $profiles);
-//        usort($this->moduleData, static function (Extension $a, Extension $b) {
-//            // blazy_test causes errors, ensure it is loaded last.
-//            return $a->getName() === 'blazy_test' ? 10 : 0;
-//        });
+        usort($this->moduleData, static function (Extension $a, Extension $b) {
+            // blazy_test causes errors, ensure it is loaded last.
+            return $a->getName() === 'blazy_test' ? 10 : 0;
+        });
         $this->themeData = $this->extensionDiscovery->scan('theme');
 
         $this->loadLegacyIncludes();
