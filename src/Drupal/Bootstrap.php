@@ -151,7 +151,8 @@ class Bootstrap
     }
     protected function addModuleNamespaces(): void
     {
-        foreach ($this->moduleData as $module_name => $module) {
+        foreach ($this->moduleData as $module) {
+            $module_name = $module->getName();
             $module_dir = $this->drupalRoot . '/' . $module->getPath();
             $this->namespaces["Drupal\\$module_name"] = $module_dir . '/src';
 
