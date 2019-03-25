@@ -45,7 +45,7 @@ parameters:
 Add the deprecation rules to your Drupal project's dependencies
 
 ```
-composer require phpstan/phpstan-deprecation-rules
+composer require --dev phpstan/phpstan-deprecation-rules
 ```
 
 Edit your `phpstan.neon` to look like the following:
