@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.com/mglaman/phpstan-drupal.svg?branch=master)](https://travis-ci.com/mglaman/phpstan-drupal)
 
-Extension for PHPStan to allow analysis of Drupal code.
+Extension for [PHPStan](https://github.com/phpstan/phpstan) to allow analysis of Drupal code.
 
 ## Usage
 
