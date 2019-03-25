@@ -8,23 +8,27 @@ before_install:
   - composer global require "hirak/prestissimo:^0.3"
 install:
   - composer install --no-interaction
+  - composer create-project drupal-composer/drupal-project:8.x-dev $TRAVIS_BUILD_DIR/../drupal --no-interaction --no-progress
 script:
   # Inspections
   - ./vendor/bin/phpcs src
   - ./vendor/bin/phpstan analyze src
   - ./vendor/bin/phpunit
 
-  # Try to add to a Drupal setup.
-  - composer create-project drupal-composer/drupal-project:8.x-dev $TRAVIS_BUILD_DIR/../drupal --no-interaction
+  # Install package to a Drupal project. Use repository key 1 to not override Drupal's packagist endpoint.
   - cd $TRAVIS_BUILD_DIR/../drupal
-
-  # Install dependency.
-  - composer config repositories.0 path $TRAVIS_BUILD_DIR
-  - cat composer.json
+  - composer config repositories.1 path $TRAVIS_BUILD_DIR
   - composer require mglaman/phpstan-drupal *@dev
   - cp $TRAVIS_BUILD_DIR/tests/fixtures/drupal-phpstan.neon phpstan.neon
+
+  # Test that a known non-failing file doesn't error out.
   - ./vendor/bin/phpstan analyze web/core/install.php
-  - ./vendor/bin/phpstan analyze web/core/modules/migrate_drupal --no-progress | grep -q "tests/fixtures" && echo 1 || echo 0
+  # Verify test fixtures are ignored.
+  - ./vendor/bin/phpstan analyze web/core/modules/migrate_drupal --no-progress | grep -q "tests/fixtures" && false || true
+
+  # Check "Cannot redeclare token_theme() due to blazy_test.module"
+  - composer require drupal/token drupal/blazy
+  - ./vendor/bin/phpstan analyze web/modules/contrib/blazy --no-progress || if (($? == 255)); then false; else true; fi
 
 cache:
   directories:
