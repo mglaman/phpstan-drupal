@@ -24,6 +24,7 @@ script:
   - composer require mglaman/phpstan-drupal *@dev
   - cp $TRAVIS_BUILD_DIR/tests/fixtures/drupal-phpstan.neon phpstan.neon
   - ./vendor/bin/phpstan analyze web/core/install.php
+  - ./vendor/bin/phpstan analyze web/core/modules/migrate_drupal --no-progress | grep -q "tests/fixtures" && echo 1 || echo 0
 
 cache:
   directories:
