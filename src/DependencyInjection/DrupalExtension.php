@@ -5,6 +5,7 @@ namespace PHPStan\DependencyInjection;
 use DrupalFinder\DrupalFinder;
 use Nette\DI\CompilerExtension;
 use Nette\DI\Config\Helpers;
+use Nette\DI\Definitions\FactoryDefinition;
 use PHPStan\Drupal\ExtensionDiscovery;
 use PHPStan\Rules\Classes\EnhancedRequireParentConstructCallRule;
 use PHPStan\Rules\Classes\RequireParentConstructCallRule;
@@ -68,12 +69,11 @@ class DrupalExtension extends CompilerExtension
 
         $builder = $this->getContainerBuilder();
         foreach ($builder->getDefinitions() as $definition) {
-            $factory = $definition->getFactory();
-            if ($factory === null) {
-                continue;
-            }
-            if ($factory->entity === RequireParentConstructCallRule::class) {
-                $definition->setFactory(EnhancedRequireParentConstructCallRule::class);
+            if ($definition instanceof FactoryDefinition) {
+                $factory = $definition->getFactory();
+                if ($factory->entity === RequireParentConstructCallRule::class) {
+                    $definition->setFactory(EnhancedRequireParentConstructCallRule::class);
+                }
             }
         }
 

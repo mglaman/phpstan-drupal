@@ -27,7 +27,7 @@ services:
 		class: PHPStan\Drupal\ServiceMapFactoryInterface
 		factory: PHPStan\Drupal\ServiceMapFactory(%drupalServiceMap%)
 	-
-		class: @drupal.serviceMapFactory::create()
+		factory: @drupal.serviceMapFactory::create()
 	-
 		class: PHPStan\Type\EntityTypeManagerGetStorageDynamicReturnTypeExtension
 		arguments:
