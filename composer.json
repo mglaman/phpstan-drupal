@@ -19,6 +19,11 @@
         "squizlabs/php_codesniffer": "^3.3",
         "phpunit/phpunit": "^7.5"
     },
+    "conflict": {
+        "nette/di": ">=3.0"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
     "suggest": {
         "phpstan/phpstan-deprecation-rules": "For catching deprecations, especially in Drupal core."
     },
