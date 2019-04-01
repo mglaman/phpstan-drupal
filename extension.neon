@@ -24,10 +24,10 @@ rules:
 	- PHPStan\Rules\Drupal\PluginManager\PluginManagerSetsCacheBackendRule
 services:
 	drupal.serviceMapFactory:
-		class: PHPStan\Drupal\ServiceMapFactoryInterface
+		class: PHPStan\Drupal\ServiceMapFactory
 		factory: PHPStan\Drupal\ServiceMapFactory(%drupalServiceMap%)
 	-
-		class: @drupal.serviceMapFactory::create()
+		factory: @drupal.serviceMapFactory::create()
 	-
 		class: PHPStan\Type\EntityTypeManagerGetStorageDynamicReturnTypeExtension
 		arguments:
