@@ -62,7 +62,7 @@ class Bootstrap
     public function register(): void
     {
         $finder = new DrupalFinder();
-        $finder->locateRoot(dirname($GLOBALS['autoloaderInWorkingDirectory'], 2));
+        $finder->locateRoot(dirname($GLOBALS['composerAutoloadFile'], 2));
         $this->autoloader = include $finder->getVendorDir() . '/autoload.php';
         $this->drupalRoot = $finder->getDrupalRoot();
 
