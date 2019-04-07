@@ -61,10 +61,8 @@ class Bootstrap
 
     public function register(): void
     {
-        $finder = new DrupalFinder();
-        $finder->locateRoot(dirname($GLOBALS['autoloaderInWorkingDirectory'], 2));
-        $this->autoloader = include $finder->getVendorDir() . '/autoload.php';
-        $this->drupalRoot = $finder->getDrupalRoot();
+        $this->drupalRoot = realpath($GLOBALS['drupalRoot']);
+        $this->autoloader = include realpath($GLOBALS['drupalVendorDir']) . '/autoload.php';
 
         $this->extensionDiscovery = new ExtensionDiscovery($this->drupalRoot);
         $this->extensionDiscovery->setProfileDirectories([]);
@@ -80,13 +78,11 @@ class Bootstrap
             return $a->getName() === 'blazy_test' ? 10 : 0;
         });
         $this->themeData = $this->extensionDiscovery->scan('theme');
-
-        $this->loadLegacyIncludes();
-
         $this->addCoreNamespaces();
         $this->addModuleNamespaces();
         $this->addThemeNamespaces();
         $this->registerPs4Namespaces($this->namespaces);
+        $this->loadLegacyIncludes();
 
         foreach ($this->moduleData as $extension) {
             $this->loadExtension($extension);
@@ -134,12 +130,7 @@ class Bootstrap
             $path = $this->drupalRoot . '/core/lib/Drupal/' . $parent_directory;
             $parent_namespace = 'Drupal\\' . $parent_directory;
             foreach (new \DirectoryIterator($path) as $component) {
-                $pathname = $component->getPathname();
-                if (!$component->isDot() && $component->isDir() && (
-                        is_dir($pathname . '/Plugin') ||
-                        is_dir($pathname . '/Entity') ||
-                        is_dir($pathname . '/Element')
-                    )) {
+                if (!$component->isDot() && $component->isDir()) {
                     $this->namespaces[$parent_namespace . '\\' . $component->getFilename()] = $path . '/' . $component->getFilename();
                 }
             }

@@ -2,7 +2,6 @@ parameters:
 	excludes_analyse:
 		- *.api.php
 		- */tests/fixtures/*.php
-	bootstrap: %rootDir%/../../mglaman/phpstan-drupal/phpstan-bootstrap.php
 	fileExtensions:
 		- module
 		- theme
