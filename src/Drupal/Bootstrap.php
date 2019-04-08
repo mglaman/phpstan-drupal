@@ -95,7 +95,8 @@ class Bootstrap
             $module_dir = $this->drupalRoot . '/' . $extension->getPath();
             // Add .install
             if (file_exists($module_dir . '/' . $module_name . '.install')) {
-                require $module_dir . '/' . $module_name . '.install';
+                // Causes errors on Drupal container not initialized
+                // require $module_dir . '/' . $module_name . '.install';
             }
             // Add .post_update.php
             if (file_exists($module_dir . '/' . $module_name . '.post_update.php')) {
