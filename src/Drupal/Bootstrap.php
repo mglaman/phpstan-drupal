@@ -91,7 +91,10 @@ class Bootstrap
             $module_dir = $this->drupalRoot . '/' . $extension->getPath();
             // Add .install
             if (file_exists($module_dir . '/' . $module_name . '.install')) {
-                require $module_dir . '/' . $module_name . '.install';
+                $ignored_install_files = ['entity_test', 'entity_test_update', 'update_test_schema'];
+                if (!in_array($module_name, $ignored_install_files, true)) {
+                    require $module_dir . '/' . $module_name . '.install';
+                }
             }
             // Add .post_update.php
             if (file_exists($module_dir . '/' . $module_name . '.post_update.php')) {
@@ -126,6 +129,7 @@ class Bootstrap
 
     protected function addCoreNamespaces(): void
     {
+        require $this->drupalRoot . '/core/lib/Drupal.php';
         foreach (['Core', 'Component'] as $parent_directory) {
             $path = $this->drupalRoot . '/core/lib/Drupal/' . $parent_directory;
             $parent_namespace = 'Drupal\\' . $parent_directory;
