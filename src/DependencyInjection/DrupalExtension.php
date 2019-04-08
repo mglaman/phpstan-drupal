@@ -3,6 +3,7 @@
 namespace PHPStan\DependencyInjection;
 
 use DrupalFinder\DrupalFinder;
+use Nette;
 use Nette\DI\CompilerExtension;
 use Nette\DI\Config\Helpers;
 use PHPStan\Drupal\ExtensionDiscovery;
@@ -18,12 +19,18 @@ class DrupalExtension extends CompilerExtension
     protected $defaultConfig = [
         'modules' => [],
         'themes' => [],
+        'drupal_root' => '',
     ];
 
     /**
      * @var string
      */
     private $drupalRoot;
+
+    /**
+     * @var string
+     */
+    private $drupalVendorDir;
 
     /**
      * List of available modules.
@@ -51,15 +58,27 @@ class DrupalExtension extends CompilerExtension
 
     public function loadConfiguration(): void
     {
-        $finder = new DrupalFinder();
-        $finder->locateRoot(dirname($GLOBALS['autoloaderInWorkingDirectory'], 2));
-        $this->drupalRoot = $finder->getDrupalRoot();
-
-        $builder = $this->getContainerBuilder();
-        $builder->parameters['drupalRoot'] = $this->drupalRoot;
-
         /** @var array */
         $config = Helpers::merge($this->config, $this->defaultConfig);
+
+        $finder = new DrupalFinder();
+
+        if ($config['drupal_root'] !== '' && realpath($config['drupal_root']) !== false && is_dir($config['drupal_root'])) {
+            $start_path = $config['drupal_root'];
+        } else {
+            $start_path = dirname($GLOBALS['autoloaderInWorkingDirectory'], 2);
+        }
+
+        $finder->locateRoot($start_path);
+        $this->drupalRoot = $finder->getDrupalRoot();
+        $this->drupalVendorDir = $finder->getVendorDir();
+        if (! (bool) $this->drupalRoot || ! (bool) $this->drupalVendorDir) {
+            throw new \RuntimeException("Unable to detect Drupal at $start_path");
+        }
+
+        $builder = $this->getContainerBuilder();
+        $builder->parameters['bootstrap'] = dirname(__DIR__, 2) . '/phpstan-bootstrap.php';
+        $builder->parameters['drupalRoot'] = $this->drupalRoot;
 
         $this->modules = $config['modules'] ?? [];
         $this->themes = $config['themes'] ?? [];
@@ -81,7 +100,7 @@ class DrupalExtension extends CompilerExtension
         $extensionDiscovery = new ExtensionDiscovery($this->drupalRoot);
         $extensionDiscovery->setProfileDirectories([]);
         $profiles = $extensionDiscovery->scan('profile');
-        $profile_directories = array_map(function (\PHPStan\Drupal\Extension $profile) : string {
+        $profile_directories = array_map(static function (\PHPStan\Drupal\Extension $profile) : string {
             return $profile->getPath();
         }, $profiles);
         $extensionDiscovery->setProfileDirectories($profile_directories);
@@ -151,5 +170,12 @@ class DrupalExtension extends CompilerExtension
     protected function camelize(string $id): string
     {
         return strtr(ucwords(strtr($id, ['_' => ' ', '.' => '_ ', '\\' => '_ '])), [' ' => '']);
+    }
+
+    public function afterCompile(Nette\PhpGenerator\ClassType $class)
+    {
+        // @todo find a non-hack way to pass the Drupal roots to the bootstrap file.
+        $class->getMethod('initialize')->addBody('$GLOBALS["drupalRoot"] = ?;', [$this->drupalRoot]);
+        $class->getMethod('initialize')->addBody('$GLOBALS["drupalVendorDir"] = ?;', [$this->drupalVendorDir]);
     }
 }
