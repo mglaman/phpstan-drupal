@@ -63,7 +63,7 @@ class DrupalExtension extends CompilerExtension
 
         $finder = new DrupalFinder();
 
-        if ($config['drupal_root'] !== '' && is_dir($config['drupal_root'])) {
+        if ($config['drupal_root'] !== '' && realpath($config['drupal_root']) !== false && is_dir($config['drupal_root'])) {
             $start_path = $config['drupal_root'];
         } else {
             $start_path = dirname($GLOBALS['autoloaderInWorkingDirectory'], 2);

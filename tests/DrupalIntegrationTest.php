@@ -14,9 +14,6 @@ final class DrupalIntegrationTest extends TestCase {
         $this->assertCount(0, $errors);
     }
 
-    /**
-     * @covers \PHPStan\Rules\Drupal\GlobalDrupalDependencyInjectionRule
-     */
     public function testDeprecatedUrlFunction() {
         $errors = $this->runAnalyze(__DIR__ . '/fixtures/drupal/modules/phpstan_fixtures/src/UsesDeprecatedUrlFunction.php');
         $this->assertCount(2, $errors);
