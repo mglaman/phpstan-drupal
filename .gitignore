@@ -2,4 +2,6 @@ composer.phar
 composer.lock
 /vendor/
 /clover.xml
-/tests/fixtures/drupal
+/tests/fixtures/drupal/
+# @todo fix this, currently need to force add.
+!/tests/fixtures/drupal/modules/*

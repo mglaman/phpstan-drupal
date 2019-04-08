@@ -1,0 +1,5 @@
+<?php
+
+function phpstan_fixtures_included() {
+
+}

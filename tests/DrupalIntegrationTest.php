@@ -14,11 +14,19 @@ final class DrupalIntegrationTest extends TestCase {
         $this->assertCount(0, $errors);
     }
 
-    public function testIncludesBootstrap() {
-        $errors = $this->runAnalyze(__DIR__ . '/fixtures/drupal/core/includes/bootstrap.inc');
-        $this->assertCount(0, $errors);
+    /**
+     * @covers \PHPStan\Rules\Drupal\GlobalDrupalDependencyInjectionRule
+     */
+    public function testDeprecatedUrlFunction() {
+        $errors = $this->runAnalyze(__DIR__ . '/fixtures/drupal/modules/phpstan_fixtures/src/UsesDeprecatedUrlFunction.php');
+        $this->assertCount(2, $errors);
+        $error = array_shift($errors);
+        $this->assertEquals('\Drupal calls should be avoided in classes, use dependency injection instead', $error->getMessage());
+        $error = array_shift($errors);
+        $this->assertEquals('Call to deprecated method url() of class Drupal.', $error->getMessage());
     }
-    public function testForAFailure() {
+
+    public function testDeprecatedImplements() {
         $errors = $this->runAnalyze(__DIR__ . '/fixtures/drupal/core/lib/Drupal/Core/Entity/EntityManager.php');
         $this->assertCount(1, $errors);
         $error = reset($errors);
