@@ -45,6 +45,11 @@ final class DrupalIntegrationTest extends TestCase {
         }
     }
 
+    public function testDrupalTestInChildSiteContant() {
+        $errors = $this->runAnalyze(__DIR__ . '/fixtures/drupal/modules/phpstan_fixtures/src/DrupalTestInChildSiteContant.php');
+        $this->assertCount(0, $errors);
+    }
+
     private function runAnalyze(string $path) {
         $rootDir = __DIR__ . '/fixtures/drupal';
         $containerFactory = new ContainerFactory($rootDir);
