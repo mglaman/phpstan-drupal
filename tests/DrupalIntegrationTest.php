@@ -31,6 +31,20 @@ final class DrupalIntegrationTest extends TestCase {
         $this->assertEquals('Class Drupal\Core\Entity\EntityManager implements deprecated interface Drupal\Core\Entity\EntityManagerInterface.', $error->getMessage());
     }
 
+    public function testTestSuiteAutoloading() {
+        $paths = [
+            __DIR__ . '/fixtures/drupal/core/tests/TestSuites/FunctionalJavascriptTestSuite.php',
+            __DIR__ . '/fixtures/drupal/core/tests/TestSuites/FunctionalTestSuite.php',
+            __DIR__ . '/fixtures/drupal/core/tests/TestSuites/KernelTestSuite.php',
+            __DIR__ . '/fixtures/drupal/core/tests/TestSuites/TestSuiteBase.php',
+            __DIR__ . '/fixtures/drupal/core/tests/TestSuites/UnitTestSuite.php',
+        ];
+        foreach ($paths as $path) {
+            $errors = $this->runAnalyze($path);
+            $this->assertCount(0, $errors, $path);
+        }
+    }
+
     private function runAnalyze(string $path) {
         $rootDir = __DIR__ . '/fixtures/drupal';
         $containerFactory = new ContainerFactory($rootDir);
