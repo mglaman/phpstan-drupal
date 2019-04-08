@@ -19,7 +19,7 @@ class DrupalExtension extends CompilerExtension
     protected $defaultConfig = [
         'modules' => [],
         'themes' => [],
-        'drupal_root' => null,
+        'drupal_root' => '',
     ];
 
     /**
@@ -63,7 +63,7 @@ class DrupalExtension extends CompilerExtension
 
         $finder = new DrupalFinder();
 
-        if (is_dir($config['drupal_root'])) {
+        if ($config['drupal_root'] !== '' && is_dir($config['drupal_root'])) {
             $start_path = $config['drupal_root'];
         } else {
             $start_path = dirname($GLOBALS['autoloaderInWorkingDirectory'], 2);
@@ -72,7 +72,7 @@ class DrupalExtension extends CompilerExtension
         $finder->locateRoot($start_path);
         $this->drupalRoot = $finder->getDrupalRoot();
         $this->drupalVendorDir = $finder->getVendorDir();
-        if (!$this->drupalRoot || !$this->drupalVendorDir) {
+        if (! (bool) $this->drupalRoot || ! (bool) $this->drupalVendorDir) {
             throw new \RuntimeException("Unable to detect Drupal at $start_path");
         }
 

@@ -61,7 +61,11 @@ class Bootstrap
 
     public function register(): void
     {
-        $this->drupalRoot = realpath($GLOBALS['drupalRoot']);
+        $drupalRoot = realpath($GLOBALS['drupalRoot']);
+        if ($drupalRoot === false) {
+            throw new \RuntimeException('Cannot determine the Drupal root from ' . $drupalRoot);
+        }
+        $this->drupalRoot = $drupalRoot;
         $this->autoloader = include realpath($GLOBALS['drupalVendorDir']) . '/autoload.php';
 
         $this->extensionDiscovery = new ExtensionDiscovery($this->drupalRoot);
