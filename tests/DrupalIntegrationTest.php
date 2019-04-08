@@ -2,6 +2,7 @@
 
 namespace PHPStan\Drupal;
 
+use Drupal\Core\DependencyInjection\ContainerNotInitializedException;
 use PHPStan\Analyser\Analyser;
 use PHPStan\DependencyInjection\ContainerFactory;
 use PHPStan\File\FileHelper;
@@ -53,7 +54,12 @@ final class DrupalIntegrationTest extends TestCase {
                 (static function (string $file): void {
                     require_once $file;
                 })($bootstrapFile);
-            } catch (\Throwable $e) {
+            } catch (ContainerNotInitializedException $e) {
+                $trace = $e->getTrace();
+                $offending_file = $trace[1];
+                $this->fail(sprintf('%s called the Drupal container from unscoped code.', $offending_file['file']));
+            }
+            catch (\Throwable $e) {
                 $this->fail('Could not load the bootstrap file');
             }
         }
