@@ -1,0 +1,10 @@
+parameters:
+	excludes_analyse:
+		- *Test.php
+		- *TestBase.php
+	level: 7
+drupal:
+	drupal_root: fixtures/drupal
+includes:
+	- ../../../extension.neon
+	- ../../../vendor/phpstan/phpstan-deprecation-rules/rules.neon

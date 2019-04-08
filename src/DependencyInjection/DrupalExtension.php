@@ -72,6 +72,9 @@ class DrupalExtension extends CompilerExtension
         $finder->locateRoot($start_path);
         $this->drupalRoot = $finder->getDrupalRoot();
         $this->drupalVendorDir = $finder->getVendorDir();
+        if (!$this->drupalRoot || !$this->drupalVendorDir) {
+            throw new \RuntimeException("Unable to detect Drupal at $start_path");
+        }
 
         $builder = $this->getContainerBuilder();
         $builder->parameters['bootstrap'] = dirname(__DIR__, 2) . '/phpstan-bootstrap.php';

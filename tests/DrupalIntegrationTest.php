@@ -10,25 +10,27 @@ use PHPUnit\Framework\TestCase;
 final class DrupalIntegrationTest extends TestCase {
 
     public function testInstallPhp() {
-        $errors = $this->runAnalyze(__DIR__ . '/../vendor/drupal/drupal/core/install.php');
+        $errors = $this->runAnalyze(__DIR__ . '/fixtures/drupal/core/install.php');
         $this->assertCount(0, $errors);
     }
 
     public function testIncludesBootstrap() {
-        $errors = $this->runAnalyze(__DIR__ . '/../vendor/drupal/drupal/core/includes/bootstrap.inc');
+        $errors = $this->runAnalyze(__DIR__ . '/fixtures/drupal/core/includes/bootstrap.inc');
         $this->assertCount(0, $errors);
     }
     public function testForAFailure() {
-        $errors = $this->runAnalyze(__DIR__ . '/../vendor/drupal/drupal/core/lib/Drupal/Core/Entity/EntityManager.php');
-        $this->assertCount(0, $errors);
+        $errors = $this->runAnalyze(__DIR__ . '/fixtures/drupal/core/lib/Drupal/Core/Entity/EntityManager.php');
+        $this->assertCount(1, $errors);
+        $error = reset($errors);
+        $this->assertEquals('Class Drupal\Core\Entity\EntityManager implements deprecated interface Drupal\Core\Entity\EntityManagerInterface.', $error->getMessage());
     }
 
     private function runAnalyze(string $path) {
-        $rootDir = __DIR__ . '/../vendor/drupal/drupal';
+        $rootDir = __DIR__ . '/fixtures/drupal';
         $containerFactory = new ContainerFactory($rootDir);
         $container = $containerFactory->create(
             sys_get_temp_dir() . '/' . time() . 'phpstan',
-            [__DIR__ . '/fixtures/phpunit-drupal-phpstan.neon'],
+            [__DIR__ . '/fixtures/config/phpunit-drupal-phpstan.neon'],
             []
         );
         $fileHelper = $container->getByType(FileHelper::class);
