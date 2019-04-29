@@ -23,6 +23,8 @@ script:
 
   # Test that a known non-failing file doesn't error out.
   - ./vendor/bin/phpstan analyze web/core/install.php --debug
+  - ./vendor/bin/phpstan analyze web/core/modules/dynamic_page_cache --debug
+
   # Verify test fixtures are ignored.
   - ./vendor/bin/phpstan analyze web/core/modules/migrate_drupal --no-progress | grep -q "tests/fixtures" && false || true
 
