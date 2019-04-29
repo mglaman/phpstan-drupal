@@ -145,12 +145,12 @@ class Bootstrap
         }
 
         // Add core test namespaces.
-        $core_tests_dir = $this->drupalRoot . '/core/tests';
-        $this->autoloader->add('Drupal\\Tests', $core_tests_dir);
-        $this->autoloader->add('Drupal\\TestSite', $core_tests_dir);
-        $this->autoloader->add('Drupal\\KernelTests', $core_tests_dir);
-        $this->autoloader->add('Drupal\\FunctionalTests', $core_tests_dir);
-        $this->autoloader->add('Drupal\\FunctionalJavascriptTests', $core_tests_dir);
+        $core_tests_dir = $this->drupalRoot . '/core/tests/Drupal';
+        $this->autoloader->add('Drupal\\Tests', $core_tests_dir . '/Tests');
+        $this->autoloader->add('Drupal\\TestSite', $core_tests_dir . '/TestSite');
+        $this->autoloader->add('Drupal\\KernelTests', $core_tests_dir . '/KernelTests');
+        $this->autoloader->add('Drupal\\FunctionalTests', $core_tests_dir . '/FunctionalTests');
+        $this->autoloader->add('Drupal\\FunctionalJavascriptTests', $core_tests_dir . '/FunctionalJavascriptTests');
     }
     protected function addModuleNamespaces(): void
     {
