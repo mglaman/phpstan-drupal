@@ -58,9 +58,10 @@ final class DrupalIntegrationTest extends TestCase {
 
     private function runAnalyze(string $path) {
         $rootDir = __DIR__ . '/fixtures/drupal';
+        $tmpDir = sys_get_temp_dir() . '/' . time() . 'phpstan';
         $containerFactory = new ContainerFactory($rootDir);
         $container = $containerFactory->create(
-            sys_get_temp_dir() . '/' . time() . 'phpstan',
+            $tmpDir,
             [__DIR__ . '/fixtures/config/phpunit-drupal-phpstan.neon'],
             []
         );

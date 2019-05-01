@@ -22,7 +22,7 @@ class TestDrushCommands extends DrushCommands {
     }
 
     public function batchProcess() {
-        drush_baCkend_batch_process();
+        drush_backend_batch_process();
     }
 
 }
