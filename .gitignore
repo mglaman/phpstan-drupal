@@ -2,5 +2,4 @@ composer.phar
 composer.lock
 /vendor/
 /clover.xml
-/tests/fixtures/drupal/core
 .circleci/config_local.yml

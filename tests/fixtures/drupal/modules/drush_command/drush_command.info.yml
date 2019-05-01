@@ -1,0 +1,3 @@
+name: drush_command
+type: module
+core: 8.x
