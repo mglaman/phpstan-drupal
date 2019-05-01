@@ -180,7 +180,10 @@ class DrupalExtension extends CompilerExtension
 
         // DRUPAL_TEST_IN_CHILD_SITE is only defined in the \Drupal\Core\DrupalKernel::bootEnvironment method when
         // Drupal is bootstrapped. Since we don't actually invoke the bootstrapping of Drupal, define the constant here
-        // as `false`.
-        $class->getMethod('initialize')->addBody('define("DRUPAL_TEST_IN_CHILD_SITE", ?);', [false]);
+        // as `false`. And we have to conditionally define it due to our own PHPUnit tests
+        $class->getMethod('initialize')->addBody('
+if (!defined("DRUPAL_TEST_IN_CHILD_SITE")) {
+  define("DRUPAL_TEST_IN_CHILD_SITE", ?);
+}', [false]);
     }
 }
