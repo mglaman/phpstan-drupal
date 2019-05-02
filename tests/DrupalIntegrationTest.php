@@ -50,11 +50,18 @@ final class DrupalIntegrationTest extends TestCase {
         $this->assertCount(0, $errors);
     }
 
+    public function testDrupalModuleWithDrushCommands() {
+        $path = __DIR__ . '/fixtures/drupal/modules/drush_command/src/Commands/TestDrushCommands.php';
+        $errors = $this->runAnalyze($path);
+        $this->assertCount(0, $errors, print_r($errors, true));
+    }
+
     private function runAnalyze(string $path) {
         $rootDir = __DIR__ . '/fixtures/drupal';
+        $tmpDir = sys_get_temp_dir() . '/' . time() . 'phpstan';
         $containerFactory = new ContainerFactory($rootDir);
         $container = $containerFactory->create(
-            sys_get_temp_dir() . '/' . time() . 'phpstan',
+            $tmpDir,
             [__DIR__ . '/fixtures/config/phpunit-drupal-phpstan.neon'],
             []
         );

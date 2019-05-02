@@ -66,7 +66,9 @@ class Bootstrap
             throw new \RuntimeException('Cannot determine the Drupal root from ' . $drupalRoot);
         }
         $this->drupalRoot = $drupalRoot;
-        $this->autoloader = include realpath($GLOBALS['drupalVendorDir']) . '/autoload.php';
+
+        $drupalVendorRoot = realpath($GLOBALS['drupalVendorDir']);
+        $this->autoloader = include $drupalVendorRoot . '/autoload.php';
 
         $this->extensionDiscovery = new ExtensionDiscovery($this->drupalRoot);
         $this->extensionDiscovery->setProfileDirectories([]);
@@ -120,6 +122,17 @@ class Bootstrap
         }
         foreach ($this->themeData as $extension) {
             $this->loadExtension($extension);
+        }
+
+        if (class_exists(\Drush\Drush::class)) {
+            $reflect = new \ReflectionClass(\Drush\Drush::class);
+            if ($reflect->getFileName() !== false) {
+                $drushDir = dirname($reflect->getFileName(), 2);
+                /** @var \SplFileInfo $file */
+                foreach (Finder::findFiles('*.inc')->in($drushDir . '/includes') as $file) {
+                    require_once $file->getPathname();
+                }
+            }
         }
     }
 
