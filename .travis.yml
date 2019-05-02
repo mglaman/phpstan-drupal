@@ -30,6 +30,7 @@ script:
 
   # Check "Cannot redeclare token_theme() due to blazy_test.module"
   - composer require drupal/token drupal/blazy
+  - ./vendor/bin/phpstan analyze web/modules/contrib/token --no-progress || if (($? == 255)); then false; else true; fi
   - ./vendor/bin/phpstan analyze web/modules/contrib/blazy --no-progress || if (($? == 255)); then false; else true; fi
 
 cache:
