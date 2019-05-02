@@ -42,33 +42,6 @@ commands:
             composer require mglaman/phpstan-drupal *@dev
             cp ~/repo/tests/fixtures/config/drupal-phpstan.neon /tmp/drupal/phpstan.neon
             ./vendor/bin/phpstan --version
-  global-require:
-    steps:
-      - run:
-          name: Add PHPStan
-          command: |
-            composer global require phpstan/phpstan
-      - run:
-          name: Remove vendor directory
-          command: |
-            rm -rf vendor
-      - run:
-          name: Add project as a global dependency
-          command: |
-            composer global config repositories.phpstanDrupal '{"type": "path", "url": "~/repo", "options": { "symlink": false }}'
-      - run:
-          name: Add globally
-          command: |
-            composer global require mglaman/phpstan-drupal *@dev
-      - run:
-          name: Add Composer global path
-          command: |
-            echo 'export PATH="$HOME/.composer/vendor/bin:$PATH"' >> $BASH_ENV
-            echo $BASH_ENV
-      - run:
-          name: Check drupal-check can be executed
-          command: |
-            phpstan --version
 jobs:
   build:
     <<: *defaults
@@ -94,16 +67,32 @@ jobs:
           name: Run against a file
           command: |
             cd /tmp/drupal
-            ./vendor/bin/phpstan analyze core/install.php
+            ./vendor/bin/phpstan analyze core/install.php --debug
       - run:
           name: Run against a module
           command: |
             cd /tmp/drupal
-            ./vendor/bin/phpstan analyze core/modules/dynamic_page_cache | grep -q "not found and could not be autoloaded." && false || true
-
+            ./vendor/bin/phpstan analyze core/modules/dynamic_page_cache --debug
+  test_drupal_project:
+    <<: *defaults
+    steps:
+      - start-project
+      - create-drupal-project
+      - local-require
+      - run:
+          name: Run against a file
+          command: |
+            cd /tmp/drupal
+            ./vendor/bin/phpstan analyze web/core/install.php --debug
+      - run:
+          name: Run against a module
+          command: |
+            cd /tmp/drupal
+            ./vendor/bin/phpstan analyze web/core/modules/dynamic_page_cache --debug
 workflows:
   version: 2
   tests:
     jobs:
       - build
       - test_drupal
+      - test_drupal_project
