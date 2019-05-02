@@ -126,10 +126,12 @@ class Bootstrap
 
         if (class_exists(\Drush\Drush::class)) {
             $reflect = new \ReflectionClass(\Drush\Drush::class);
-            $drushDir = dirname($reflect->getFileName(), 2);
-            /** @var \SplFileInfo $file */
-            foreach (Finder::findFiles('*.inc')->in($drushDir . '/includes') as $file) {
-                require $file->getPathname();
+            if ($reflect->getFileName() !== false) {
+                $drushDir = dirname($reflect->getFileName(), 2);
+                /** @var \SplFileInfo $file */
+                foreach (Finder::findFiles('*.inc')->in($drushDir . '/includes') as $file) {
+                    require_once $file->getPathname();
+                }
             }
         }
     }
