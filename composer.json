@@ -37,7 +37,7 @@
         }
     },
     "autoload-dev": {
-        "classmap": ["tests/"]
+        "classmap": ["tests/src"]
     },
     "extra": {
         "installer-paths": {
