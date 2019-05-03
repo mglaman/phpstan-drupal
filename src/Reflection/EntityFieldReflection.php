@@ -2,6 +2,7 @@
 
 namespace PHPStan\Reflection;
 
+use PHPStan\Type\MixedType;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\Type;
 
@@ -27,12 +28,23 @@ class EntityFieldReflection implements PropertyReflection
 
     public function getType(): Type
     {
-        if ($this->propertyName == 'original') {
-          // See Drupal\Core\Entity\EntityStorageBase::doPreSave
+        if ($this->propertyName === 'original') {
+            if ($this->declaringClass->isSubclassOf('Drupal\Core\Entity\ContentEntityInterface')) {
+                $objectType = 'Drupal\Core\Entity\ContentEntityInterface';
+            } elseif ($this->declaringClass->isSubclassOf('Drupal\Core\Config\Entity\ConfigEntityInterface')) {
+                $objectType = 'Drupal\Core\Config\Entity\ConfigEntityInterface';
+            } else {
+                $objectType = 'Drupal\Core\Entity\EntityInterface';
+            }
+            return new ObjectType($objectType);
+        }
+
+        if ($this->declaringClass->isSubclassOf('Drupal\Core\Entity\ContentEntityInterface')) {
+            // Assume the property is a field.
             return new ObjectType('Drupal\Core\Field\FieldItemListInterface');
         }
 
-        return new ObjectType('Drupal\Core\Field\FieldItemListInterface');
+        return new MixedType();
     }
 
     public function getDeclaringClass(): ClassReflection

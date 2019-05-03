@@ -2,9 +2,9 @@
 
 namespace PHPStan\Reflection;
 
-use PHPStan\Type\IntegerType;
-use PHPStan\Type\MixedType;
+use PHPStan\Type\NullType;
 use PHPStan\Type\ObjectType;
+use PHPStan\Type\StringType;
 use PHPStan\Type\Type;
 
 /**
@@ -27,25 +27,28 @@ class FieldItemListPropertyReflection implements PropertyReflection
         $this->propertyName = $propertyName;
     }
 
-    public static function canHandleProperty(string $propertyName): bool
+    public static function canHandleProperty(ClassReflection $classReflection, string $propertyName): bool
     {
+        // @todo use the class reflection and be more specific about handled properties.
+        // Currently \PHPStan\Reflection\EntityFieldReflection::getType always passes FieldItemListInterface.
         $names = ['entity', 'value', 'target_id'];
         return in_array($propertyName, $names, true);
     }
 
     public function getType(): Type
     {
-        if ($this->propertyName == 'entity') {
-          // It was a EntityReferenceFieldItemList
-            return new ObjectType('Drupal\Core\Entity\FieldableEntityInterface');
+        if ($this->propertyName === 'entity') {
+            return new ObjectType('Drupal\Core\Entity\EntityInterface');
         }
-        if ($this->propertyName == 'target_id') {
-          // It was a EntityReferenceFieldItemList
-            return new IntegerType();
+        if ($this->propertyName === 'target_id') {
+            return new StringType();
         }
-        if ($this->propertyName == 'value') {
-            return new MixedType();
+        if ($this->propertyName === 'value') {
+            return new StringType();
         }
+
+        // Fallback.
+        return new NullType();
     }
 
     public function getDeclaringClass(): ClassReflection
