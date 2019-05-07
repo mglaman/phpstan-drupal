@@ -19,6 +19,21 @@ class DeprecationRulesTest extends AnalyzerTestBase
 
     public function dataDeprecatedSamples(): \Generator
     {
+//        yield [
+//            __DIR__ . '/../fixtures/drupal/modules/phpstan_fixtures/src/UsesDeprecatedUrlFunction.php',
+//            2,
+//            [
+//                '\Drupal calls should be avoided in classes, use dependency injection instead',
+//                'Call to deprecated method url() of class Drupal.'
+//            ]
+//        ];
+//        yield [
+//            __DIR__ . '/../fixtures/drupal/core/lib/Drupal/Core/Entity/EntityManager.php',
+//            1,
+//            [
+//                'Class Drupal\Core\Entity\EntityManager implements deprecated interface Drupal\Core\Entity\EntityManagerInterface.'
+//            ]
+//        ];
         yield [
             __DIR__ . '/../fixtures/drupal/modules/phpstan_fixtures/src/UsesDeprecatedUrlFunction.php',
             2,
