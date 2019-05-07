@@ -41,7 +41,7 @@ abstract class AnalyzerTestBase extends TestCase {
                 $this->fail(sprintf('%s called the Drupal container from unscoped code.', $offending_file['file']));
             }
             catch (\Throwable $e) {
-                $this->fail('Could not load the bootstrap file');
+                $this->fail('Could not load the bootstrap file: ' . $e->getMessage());
             }
         }
 
