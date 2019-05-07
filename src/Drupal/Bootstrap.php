@@ -230,9 +230,11 @@ class Bootstrap
         try {
             require $path;
         } catch (ContainerNotInitializedException $e) {
+            $path = str_replace(dirname($this->drupalRoot) . '/', '', $path);
             // This can happen when drupal_get_path or drupal_get_filename are used outside of the scope of a function.
-            @trigger_error("$path invoked the Drupal container outside of the scope of a function or class method. It was skipped for analysis.", E_USER_WARNING);
+            @trigger_error("$path invoked the Drupal container outside of the scope of a function or class method. It was not loaded.", E_USER_WARNING);
         } catch (\Throwable $e) {
+            $path = str_replace(dirname($this->drupalRoot) . '/', '', $path);
             // Something prevented the extension file from loading.
             @trigger_error("$path failed loading due to {$e->getMessage()}", E_USER_WARNING);
         }
