@@ -38,5 +38,13 @@ Url::fromRoute().'
 in Drupal 8.0.0, will be removed before Drupal 9.0.0.'
             ]
         ];
+        yield [
+            __DIR__ . '/../fixtures/drupal/modules/phpstan_fixtures/src/DeprecatedGlobalConstants.php',
+            2,
+            [
+                'Call to deprecated constant DATETIME_STORAGE_TIMEZONE.',
+                'Call to deprecated constant DATETIME_DATE_STORAGE_FORMAT.',
+            ]
+        ];
     }
 }
