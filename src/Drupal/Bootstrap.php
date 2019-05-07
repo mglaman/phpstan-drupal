@@ -2,6 +2,7 @@
 
 namespace PHPStan\Drupal;
 
+use Drupal\Core\DependencyInjection\ContainerNotInitializedException;
 use DrupalFinder\DrupalFinder;
 use Nette\Utils\Finder;
 
@@ -99,12 +100,12 @@ class Bootstrap
             if (file_exists($module_dir . '/' . $module_name . '.install')) {
                 $ignored_install_files = ['entity_test', 'entity_test_update', 'update_test_schema'];
                 if (!in_array($module_name, $ignored_install_files, true)) {
-                    require $module_dir . '/' . $module_name . '.install';
+                    $this->loadAndCatchErrors($module_dir . '/' . $module_name . '.install');
                 }
             }
             // Add .post_update.php
             if (file_exists($module_dir . '/' . $module_name . '.post_update.php')) {
-                require $module_dir . '/' . $module_name . '.post_update.php';
+                $this->loadAndCatchErrors($module_dir . '/' . $module_name . '.post_update.php');
             }
             // Add misc .inc that are magically allowed via hook_hook_info.
             $magic_hook_info_includes = [
@@ -116,7 +117,7 @@ class Bootstrap
             ];
             foreach ($magic_hook_info_includes as $hook_info_include) {
                 if (file_exists($module_dir . "/$module_name.$hook_info_include.inc")) {
-                    require $module_dir . "/$module_name.$hook_info_include.inc";
+                    $this->loadAndCatchErrors($module_dir . "/$module_name.$hook_info_include.inc");
                 }
             }
         }
@@ -221,6 +222,19 @@ class Bootstrap
         } catch (\Throwable $e) {
             // Something prevented the extension file from loading.
             // This can happen when drupal_get_path or drupal_get_filename are used outside of the scope of a function.
+        }
+    }
+
+    protected function loadAndCatchErrors(string $path): void
+    {
+        try {
+            require $path;
+        } catch (ContainerNotInitializedException $e) {
+            // This can happen when drupal_get_path or drupal_get_filename are used outside of the scope of a function.
+            @trigger_error("$path invoked the Drupal container outside of the scope of a function or class method. It was skipped for analysis.", E_USER_WARNING);
+        } catch (\Throwable $e) {
+            // Something prevented the extension file from loading.
+            @trigger_error("$path failed loading due to {$e->getMessage()}", E_USER_WARNING);
         }
     }
 }
