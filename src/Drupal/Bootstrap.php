@@ -5,6 +5,7 @@ namespace PHPStan\Drupal;
 use Drupal\Core\DependencyInjection\ContainerNotInitializedException;
 use DrupalFinder\DrupalFinder;
 use Nette\Utils\Finder;
+use Symfony\Component\Yaml\Yaml;
 
 class Bootstrap
 {
@@ -27,6 +28,11 @@ class Bootstrap
     private $drupalRoot;
 
     /**
+     * @var string
+     */
+    private $drupalVendorDir;
+
+    /**
      * List of available modules.
      *
      * @var Extension[]
@@ -41,16 +47,6 @@ class Bootstrap
     protected $themeData = [];
 
     /**
-     * @var array
-     */
-    private $modules = [];
-
-    /**
-     * @var array
-     */
-    private $themes = [];
-
-    /**
      * @var ?\PHPStan\Drupal\ExtensionDiscovery
      */
     private $extensionDiscovery;
@@ -60,31 +56,81 @@ class Bootstrap
      */
     private $namespaces = [];
 
+    /**
+     * @var \PHPStan\DependencyInjection\Container
+     */
+    private $container;
+
+    public function __construct(\PHPStan\DependencyInjection\Container $container)
+    {
+        $this->container = $container;
+    }
+
+    private function registerServiceMap()
+    {
+        $serviceYamls = [
+            'core' => $this->drupalRoot . '/core/core.services.yml',
+        ];
+        $serviceClassProviders = [
+            'core' => 'Drupal\Core\CoreServiceProvider',
+        ];
+        foreach ($this->moduleData as $extension) {
+            $module_dir = $this->drupalRoot . '/' . $extension->getPath();
+            $moduleName = $extension->getName();
+            $servicesFileName = $module_dir . '/' . $moduleName . '.services.yml';
+            if (file_exists($servicesFileName)) {
+                $serviceYamls[$moduleName] = $servicesFileName;
+            }
+
+            $camelized = $this->camelize($extension->getName());
+            $name = "{$camelized}ServiceProvider";
+            $class = "Drupal\\{$moduleName}\\{$name}";
+
+            if (class_exists($class)) {
+                $serviceClassProviders[$moduleName] = $class;
+            }
+        }
+
+        foreach ($serviceYamls as $extension => $serviceYaml) {
+            $yaml = Yaml::parseFile($serviceYaml);
+            // Weed out service files which only provide parameters.
+            if (!isset($yaml['services']) || !is_array($yaml['services'])) {
+                continue;
+            }
+            foreach ($yaml['services'] as $serviceId => $serviceDefinition) {
+                // Prevent \Nette\DI\ContainerBuilder::completeStatement from array_walk_recursive into the arguments
+                // and thinking these are real services for PHPStan's container.
+                if (isset($serviceDefinition['arguments']) && is_array($serviceDefinition['arguments'])) {
+                    array_walk($serviceDefinition['arguments'], function (&$argument) : void {
+                        if (is_array($argument)) {
+                            // @todo fix for @http_kernel.controller.argument_metadata_factory
+                            $argument = '';
+                        } else {
+                            $argument = str_replace('@', '', $argument);
+                        }
+                    });
+                }
+                // @todo sanitize "calls" and "configurator" and "factory"
+                /**
+                jsonapi.params.enhancer:
+                class: Drupal\jsonapi\Routing\JsonApiParamEnhancer
+                calls:
+                - [setContainer, ['@service_container']]
+                tags:
+                - { name: route_enhancer }
+                 */
+                unset($serviceDefinition['tags'], $serviceDefinition['calls'], $serviceDefinition['configurator'], $serviceDefinition['factory']);
+                //$builder->parameters['drupalServiceMap'][$serviceId] = $serviceDefinition;
+            }
+        }
+    }
+
     public function register(): void
     {
-        $drupalRoot = realpath($GLOBALS['drupalRoot']);
-        if ($drupalRoot === false) {
-            throw new \RuntimeException('Cannot determine the Drupal root from ' . $drupalRoot);
-        }
-        $this->drupalRoot = $drupalRoot;
+        $this->registerDrupalPath();
+        $this->autoloader = include $this->drupalVendorDir . '/autoload.php';
+        $this->registerExtensionData();
 
-        $drupalVendorRoot = realpath($GLOBALS['drupalVendorDir']);
-        $this->autoloader = include $drupalVendorRoot . '/autoload.php';
-
-        $this->extensionDiscovery = new ExtensionDiscovery($this->drupalRoot);
-        $this->extensionDiscovery->setProfileDirectories([]);
-        $profiles = $this->extensionDiscovery->scan('profile');
-        $profile_directories = array_map(static function (Extension $profile) : string {
-            return $profile->getPath();
-        }, $profiles);
-        $this->extensionDiscovery->setProfileDirectories($profile_directories);
-
-        $this->moduleData = array_merge($this->extensionDiscovery->scan('module'), $profiles);
-        usort($this->moduleData, static function (Extension $a, Extension $b) {
-            // blazy_test causes errors, ensure it is loaded last.
-            return $a->getName() === 'blazy_test' ? 10 : 0;
-        });
-        $this->themeData = $this->extensionDiscovery->scan('theme');
         $this->addCoreNamespaces();
         $this->addModuleNamespaces();
         $this->addThemeNamespaces();
@@ -139,6 +185,50 @@ class Bootstrap
                 }
             }
         }
+    }
+
+    private function registerDrupalPath(): void
+    {
+        $drupalRoot = $this->container->getParameter('drupal_root');
+        if ($drupalRoot !== '' && realpath($drupalRoot) !== false && is_dir($drupalRoot)) {
+            $start_path = realpath($drupalRoot);
+        } else {
+            $start_path = $this->container->getParameter('currentWorkingDirectory');
+        }
+        if ($start_path === false) {
+            throw new \RuntimeException('Cannot determine the Drupal root from ' . $start_path);
+        }
+        $finder = new DrupalFinder();
+        $finder->locateRoot($start_path);
+        $this->drupalRoot = $finder->getDrupalRoot();
+        $this->drupalVendorDir = $finder->getVendorDir();
+        if (! (bool) $this->drupalRoot || ! (bool) $this->drupalVendorDir) {
+            throw new \RuntimeException("Unable to detect Drupal at $start_path");
+        }
+
+        // DRUPAL_TEST_IN_CHILD_SITE is only defined in the \Drupal\Core\DrupalKernel::bootEnvironment method when
+        // Drupal is bootstrapped. Since we don't actually invoke the bootstrapping of Drupal, define the constant here
+        // as `false`. And we have to conditionally define it due to our own PHPUnit tests
+        if (!defined('DRUPAL_TEST_IN_CHILD_SITE')) {
+            define('DRUPAL_TEST_IN_CHILD_SITE', false);
+        }
+    }
+    private function registerExtensionData(): void
+    {
+        $this->extensionDiscovery = new ExtensionDiscovery($this->drupalRoot);
+        $this->extensionDiscovery->setProfileDirectories([]);
+        $profiles = $this->extensionDiscovery->scan('profile');
+        $profile_directories = array_map(static function (Extension $profile) : string {
+            return $profile->getPath();
+        }, $profiles);
+        $this->extensionDiscovery->setProfileDirectories($profile_directories);
+
+        $this->moduleData = array_merge($this->extensionDiscovery->scan('module'), $profiles);
+        usort($this->moduleData, static function (Extension $a, Extension $b) {
+            // blazy_test causes errors, ensure it is loaded last.
+            return $a->getName() === 'blazy_test' ? 10 : 0;
+        });
+        $this->themeData = $this->extensionDiscovery->scan('theme');
     }
 
     protected function loadLegacyIncludes(): void
@@ -243,4 +333,10 @@ class Bootstrap
             @trigger_error("$path failed loading due to {$e->getMessage()}", E_USER_WARNING);
         }
     }
+
+    protected function camelize(string $id): string
+    {
+        return strtr(ucwords(strtr($id, ['_' => ' ', '.' => '_ ', '\\' => '_ '])), [' ' => '']);
+    }
+
 }

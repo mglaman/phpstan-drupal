@@ -1,0 +1,8 @@
+{
+  "extra": [
+    "This is mocked so the vendor root is properly detected"
+  ],
+  "config": {
+    "vendor-dir": "../../../vendor"
+  }
+}

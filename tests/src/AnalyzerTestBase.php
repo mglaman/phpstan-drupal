@@ -22,28 +22,16 @@ abstract class AnalyzerTestBase extends TestCase {
         $fileHelper = $container->getByType(FileHelper::class);
         assert($fileHelper !== null);
 
-        $bootstrapFile = $container->parameters['bootstrap'];
-        $this->assertEquals(dirname(__DIR__, 2) . '/phpstan-bootstrap.php', $bootstrapFile);
+        $autoloadFiles = $container->parameters['autoload_files'];
+        self::assertContains(dirname(__DIR__, 2) . '/drupal-autoloader.php', $autoloadFiles);
+
         // Mock the autoloader.
         $GLOBALS['drupalVendorDir'] = dirname(__DIR__, 2) . '/vendor';
-        if ($bootstrapFile !== null) {
-            $bootstrapFile = $fileHelper->normalizePath($bootstrapFile);
-            if (!is_file($bootstrapFile)) {
-                $this->fail('Bootstrap file not found');
-            }
-            try {
-                (static function (string $file): void {
-                    require_once $file;
-                })($bootstrapFile);
-            } catch (ContainerNotInitializedException $e) {
-                $trace = $e->getTrace();
-                $offending_file = $trace[1];
-                $this->fail(sprintf('%s called the Drupal container from unscoped code.', $offending_file['file']));
-            }
-            catch (\Throwable $e) {
-                $this->fail('Could not load the bootstrap file: ' . $e->getMessage());
-            }
-        }
+		foreach ($container->parameters['autoload_files'] as $parameterAutoloadFile) {
+			(static function (string $file) use ($container): void {
+				require_once $file;
+			})($fileHelper->normalizePath($parameterAutoloadFile));
+		}
 
         $analyser = $container->getByType(Analyser::class);
         assert($analyser !== null);

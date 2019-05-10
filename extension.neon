@@ -1,4 +1,7 @@
 parameters:
+	# @todo this must persist in a DI extension due unexpanded relative path.
+	#autoload_files:
+	#	- drupal-autoloader.php
 	excludes_analyse:
 		- *.api.php
 		- */tests/fixtures/*.php

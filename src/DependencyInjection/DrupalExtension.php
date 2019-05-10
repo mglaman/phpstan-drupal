@@ -60,32 +60,12 @@ class DrupalExtension extends CompilerExtension
     {
         /** @var array */
         $config = Nette\Schema\Helpers::merge($this->config, $this->defaultConfig);
-
-        $finder = new DrupalFinder();
-
-        if ($config['drupal_root'] !== '' && realpath($config['drupal_root']) !== false && is_dir($config['drupal_root'])) {
-            $start_path = $config['drupal_root'];
-        } else {
-            $start_path = dirname($GLOBALS['autoloaderInWorkingDirectory'], 2);
-        }
-
-        $finder->locateRoot($start_path);
-        $this->drupalRoot = $finder->getDrupalRoot();
-        $this->drupalVendorDir = $finder->getVendorDir();
-        if (! (bool) $this->drupalRoot || ! (bool) $this->drupalVendorDir) {
-            throw new \RuntimeException("Unable to detect Drupal at $start_path");
-        }
-
         $builder = $this->getContainerBuilder();
-        $builder->parameters['bootstrap'] = dirname(__DIR__, 2) . '/phpstan-bootstrap.php';
-        $builder->parameters['drupalRoot'] = $this->drupalRoot;
-
-        $this->modules = $config['modules'] ?? [];
-        $this->themes = $config['themes'] ?? [];
-
+        $builder->parameters['autoload_files'][] = dirname(__DIR__, 2) . '/drupal-autoloader.php';
+        $builder->parameters['drupal_root'] = $config['drupal_root'];
         $builder->parameters['drupal']['entityTypeStorageMapping'] = $config['entityTypeStorageMapping'] ?? [];
+        $builder->parameters['drupalServiceMap'] = [];
 
-        $builder = $this->getContainerBuilder();
         foreach ($builder->getDefinitions() as $definition) {
             if ($definition instanceof Nette\DI\Definitions\FactoryDefinition) {
                 $resultDefinition = $definition->getResultDefinition();
@@ -95,6 +75,12 @@ class DrupalExtension extends CompilerExtension
                 }
             }
         }
+        return;
+
+        $this->modules = $config['modules'] ?? [];
+        $this->themes = $config['themes'] ?? [];
+
+        $builder = $this->getContainerBuilder();
 
         // Build the service definitions...
         $extensionDiscovery = new ExtensionDiscovery($this->drupalRoot);
@@ -149,7 +135,6 @@ class DrupalExtension extends CompilerExtension
                         }
                     });
                 }
-                unset($serviceDefinition['tags']);
                 // @todo sanitize "calls" and "configurator" and "factory"
                 /**
                 jsonapi.params.enhancer:
@@ -159,31 +144,9 @@ class DrupalExtension extends CompilerExtension
                     tags:
                         - { name: route_enhancer }
                  */
-                unset($serviceDefinition['calls']);
-                unset($serviceDefinition['configurator']);
-                unset($serviceDefinition['factory']);
+                unset($serviceDefinition['tags'], $serviceDefinition['calls'], $serviceDefinition['configurator'], $serviceDefinition['factory']);
                 $builder->parameters['drupalServiceMap'][$serviceId] = $serviceDefinition;
             }
         }
-    }
-
-    protected function camelize(string $id): string
-    {
-        return strtr(ucwords(strtr($id, ['_' => ' ', '.' => '_ ', '\\' => '_ '])), [' ' => '']);
-    }
-
-    public function afterCompile(Nette\PhpGenerator\ClassType $class)
-    {
-        // @todo find a non-hack way to pass the Drupal roots to the bootstrap file.
-        $class->getMethod('initialize')->addBody('$GLOBALS["drupalRoot"] = ?;', [$this->drupalRoot]);
-        $class->getMethod('initialize')->addBody('$GLOBALS["drupalVendorDir"] = ?;', [$this->drupalVendorDir]);
-
-        // DRUPAL_TEST_IN_CHILD_SITE is only defined in the \Drupal\Core\DrupalKernel::bootEnvironment method when
-        // Drupal is bootstrapped. Since we don't actually invoke the bootstrapping of Drupal, define the constant here
-        // as `false`. And we have to conditionally define it due to our own PHPUnit tests
-        $class->getMethod('initialize')->addBody('
-if (!defined("DRUPAL_TEST_IN_CHILD_SITE")) {
-  define("DRUPAL_TEST_IN_CHILD_SITE", ?);
-}', [false]);
     }
 }

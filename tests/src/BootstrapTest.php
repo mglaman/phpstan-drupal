@@ -3,6 +3,7 @@
 namespace PHPStan\Drupal;
 
 use Drupal\Core\DependencyInjection\ContainerNotInitializedException;
+use PHPStan\DependencyInjection\Container;
 use PHPStan\DependencyInjection\ContainerFactory;
 use PHPStan\File\FileHelper;
 use PHPUnit\Framework\TestCase;
@@ -47,27 +48,22 @@ final class BootstrapTest extends TestCase
         $rootDir = __DIR__ . '/../fixtures/drupal';
         $tmpDir = sys_get_temp_dir() . '/' . time() . 'phpstan';
         $containerFactory = new ContainerFactory($rootDir);
-        $container = $containerFactory->create(
+        $netteContainer = $containerFactory->create(
             $tmpDir,
             [__DIR__ . '/../fixtures/config/phpunit-drupal-phpstan.neon'],
             []
         );
-        $fileHelper = $container->getByType(FileHelper::class);
+        $fileHelper = $netteContainer->getByType(FileHelper::class);
         assert($fileHelper !== null);
 
-        $bootstrapFile = $container->parameters['bootstrap'];
-        $this->assertEquals(dirname(__DIR__, 2) . '/phpstan-bootstrap.php', $bootstrapFile);
-        // Mock the autoloader.
-        $GLOBALS['drupalVendorDir'] = dirname(__DIR__, 2) . '/vendor';
-        if ($bootstrapFile !== null) {
-            $bootstrapFile = $fileHelper->normalizePath($bootstrapFile);
-            if (!is_file($bootstrapFile)) {
-                $this->fail('Bootstrap file not found');
-            }
-            (static function (string $file): void {
-                require_once $file;
-            })($bootstrapFile);
-        }
-    }
+        $autoloadFiles = $netteContainer->parameters['autoload_files'];
+        self::assertContains(dirname(__DIR__, 2) . '/drupal-autoloader.php', $autoloadFiles);
 
+        $container = $netteContainer->getByType(Container::class);
+		foreach ($netteContainer->parameters['autoload_files'] as $parameterAutoloadFile) {
+			(static function (string $file) use ($container): void {
+				require_once $file;
+			})($fileHelper->normalizePath($parameterAutoloadFile));
+		}
+    }
 }
