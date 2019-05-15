@@ -128,7 +128,11 @@ class Bootstrap
         if (class_exists(\Drush\Drush::class)) {
             $reflect = new \ReflectionClass(\Drush\Drush::class);
             if ($reflect->getFileName() !== false) {
-                $drushDir = dirname($reflect->getFileName(), 2);
+                $levels = 2;
+                if (\Drush\Drush::getMajorVersion() < 9) {
+                    $levels = 3;
+                }
+                $drushDir = dirname($reflect->getFileName(), $levels);
                 /** @var \SplFileInfo $file */
                 foreach (Finder::findFiles('*.inc')->in($drushDir . '/includes') as $file) {
                     require_once $file->getPathname();
