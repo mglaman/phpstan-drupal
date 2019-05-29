@@ -12,7 +12,8 @@
         "php": "^7.1",
         "phpstan/phpstan": "^0.11",
         "symfony/yaml": "~3.4.5|^4.2",
-        "webflo/drupal-finder": "^1.1"
+        "webflo/drupal-finder": "^1.1",
+        "nette/di": "^3.0"
     },
     "require-dev": {
         "phpstan/phpstan-strict-rules": "^0.11",
