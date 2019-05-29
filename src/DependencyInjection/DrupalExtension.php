@@ -59,7 +59,7 @@ class DrupalExtension extends CompilerExtension
     public function loadConfiguration(): void
     {
         /** @var array */
-        $config = Helpers::merge($this->config, $this->defaultConfig);
+        $config = Nette\Schema\Helpers::merge($this->config, $this->defaultConfig);
 
         $finder = new DrupalFinder();
 
@@ -90,9 +90,6 @@ class DrupalExtension extends CompilerExtension
             if ($definition instanceof Nette\DI\Definitions\FactoryDefinition) {
                 $resultDefinition = $definition->getResultDefinition();
                 $factory = $resultDefinition->getFactory();
-                if ($factory === null) {
-                    continue;
-                }
                 if ($factory->entity === RequireParentConstructCallRule::class) {
                     $resultDefinition->setFactory(EnhancedRequireParentConstructCallRule::class);
                 }
