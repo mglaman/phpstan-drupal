@@ -23,10 +23,6 @@
         "drupal/core": "^8.6",
         "drush/drush": "^9.6"
     },
-    "conflict": {
-        "nette/di": ">=3.0",
-        "nette/utils": ">=3.0"
-    },
     "minimum-stability": "dev",
     "prefer-stable": true,
     "suggest": {
