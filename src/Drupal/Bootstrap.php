@@ -338,5 +338,4 @@ class Bootstrap
     {
         return strtr(ucwords(strtr($id, ['_' => ' ', '.' => '_ ', '\\' => '_ '])), [' ' => '']);
     }
-
 }
