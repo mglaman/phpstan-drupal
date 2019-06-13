@@ -34,15 +34,16 @@ commands:
         type: string
         default: 'drupal-composer/drupal-project:8.x-dev'
     steps:
-      - run: composer create-project << parameters.project >> /tmp/drupal --no-interaction --no-dev --prefer-dist --ignore-platform-reqs
+      - run: composer create-project << parameters.project >> /tmp/drupal --no-interaction --prefer-dist --ignore-platform-reqs
   local-require:
     steps:
       - run:
           name: Add as local
           command: |
             cd /tmp/drupal
-            composer config repositories.0 '{"type": "path", "url": "~/repo", "options": { "symlink": false }}'
-            composer require mglaman/phpstan-drupal dev-${CIRCLE_BRANCH}
+            composer config repositories.1 '{"type": "path", "url": "'${CIRCLE_WORKING_DIRECTORY}'", "options": { "symlink": false }}'
+            composer require mglaman/phpstan-drupal "*"
+            cat composer.json
             cp ~/repo/tests/fixtures/config/drupal-phpstan.neon /tmp/drupal/phpstan.neon
             ./vendor/bin/phpstan --version
 jobs:
