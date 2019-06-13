@@ -151,7 +151,6 @@ class Bootstrap
 
     protected function addCoreNamespaces(): void
     {
-        require $this->drupalRoot . '/core/lib/Drupal.php';
         foreach (['Core', 'Component'] as $parent_directory) {
             $path = $this->drupalRoot . '/core/lib/Drupal/' . $parent_directory;
             $parent_namespace = 'Drupal\\' . $parent_directory;
