@@ -1,4 +1,3 @@
-#69e3305
 version: 2.1
 defaults: &defaults
   docker:
