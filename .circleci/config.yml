@@ -20,6 +20,8 @@ commands:
           keys:
             - *composer-cache
       - run: composer global require "hirak/prestissimo:^0.3"
+  install-dependencies:
+    steps:
       - run: composer install -n --prefer-dist
       - save_cache:
           key: *composer-cache
@@ -31,15 +33,16 @@ commands:
         type: string
         default: 'drupal-composer/drupal-project:8.x-dev'
     steps:
-      - run: composer create-project << parameters.project >> /tmp/drupal --no-interaction --no-dev --prefer-dist --ignore-platform-reqs
+      - run: composer create-project << parameters.project >> /tmp/drupal --no-interaction --prefer-dist --ignore-platform-reqs
   local-require:
     steps:
       - run:
           name: Add as local
           command: |
             cd /tmp/drupal
-            composer config repositories.phpstanDrupal '{"type": "path", "url": "~/repo", "options": { "symlink": false }}'
-            composer require mglaman/phpstan-drupal *@dev
+            composer config repositories.1 '{"type": "path", "url": "'${CIRCLE_WORKING_DIRECTORY}'", "options": { "symlink": false }}'
+            composer require mglaman/phpstan-drupal "*"
+            cat composer.json
             cp ~/repo/tests/fixtures/config/drupal-phpstan.neon /tmp/drupal/phpstan.neon
             ./vendor/bin/phpstan --version
 jobs:
@@ -47,6 +50,7 @@ jobs:
     <<: *defaults
     steps:
       - start-project
+      - install-dependencies
       - run:
           name: CodeSniffer
           command: ./vendor/bin/phpcs src
