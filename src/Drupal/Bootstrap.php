@@ -145,7 +145,7 @@ class Bootstrap
     {
         /** @var \SplFileInfo $file */
         foreach (Finder::findFiles('*.inc')->in($this->drupalRoot . '/core/includes') as $file) {
-            require $file->getPathname();
+            require_once $file->getPathname();
         }
     }
 
@@ -231,7 +231,7 @@ class Bootstrap
     protected function loadAndCatchErrors(string $path): void
     {
         try {
-            require $path;
+            require_once $path;
         } catch (ContainerNotInitializedException $e) {
             $path = str_replace(dirname($this->drupalRoot) . '/', '', $path);
             // This can happen when drupal_get_path or drupal_get_filename are used outside of the scope of a function.
