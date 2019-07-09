@@ -2,6 +2,7 @@
     "name": "mglaman/phpstan-drupal",
     "description": "Drupal extension and rules for PHPStan",
     "license": "MIT",
+    "type": "phpstan-extension",
     "authors": [
         {
             "name": "Matt Glaman",
