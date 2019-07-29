@@ -19,21 +19,6 @@ class DeprecationRulesTest extends AnalyzerTestBase
 
     public function dataDeprecatedSamples(): \Generator
     {
-//        yield [
-//            __DIR__ . '/../fixtures/drupal/modules/phpstan_fixtures/src/UsesDeprecatedUrlFunction.php',
-//            2,
-//            [
-//                '\Drupal calls should be avoided in classes, use dependency injection instead',
-//                'Call to deprecated method url() of class Drupal.'
-//            ]
-//        ];
-//        yield [
-//            __DIR__ . '/../fixtures/drupal/core/lib/Drupal/Core/Entity/EntityManager.php',
-//            1,
-//            [
-//                'Class Drupal\Core\Entity\EntityManager implements deprecated interface Drupal\Core\Entity\EntityManagerInterface.'
-//            ]
-//        ];
         yield [
             __DIR__ . '/../fixtures/drupal/modules/phpstan_fixtures/src/UsesDeprecatedUrlFunction.php',
             2,
@@ -57,8 +42,8 @@ in Drupal 8.0.0, will be removed before Drupal 9.0.0.'
             __DIR__ . '/../fixtures/drupal/modules/phpstan_fixtures/src/DeprecatedGlobalConstants.php',
             2,
             [
-                'Call to deprecated constant DATETIME_STORAGE_TIMEZONE.',
-                'Call to deprecated constant DATETIME_DATE_STORAGE_FORMAT.',
+                'Call to deprecated constant DATETIME_STORAGE_TIMEZONE: Deprecated in Drupal 8.5.x and will be removed before Drupal 9.0.x. Use \Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface::STORAGE_TIMEZONE instead.',
+                'Call to deprecated constant DATETIME_DATE_STORAGE_FORMAT: Deprecated in Drupal 8.5.x and will be removed before Drupal 9.0.x. Use \Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface::DATE_STORAGE_FORMAT instead.',
             ]
         ];
     }
