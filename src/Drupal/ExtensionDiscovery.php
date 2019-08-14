@@ -334,7 +334,7 @@ class ExtensionDiscovery
         // this to not check for files in common special-purpose directories. For
         // example, node_modules and bower_components. Ignoring irrelevant
         // directories is a performance boost.
-        $ignore_directories = ['node_modules', 'bower_components'];
+        $ignore_directories = ['node_modules', 'bower_components', 'build'];
 
         // Filter the recursive scan to discover extensions only.
         // Important: Without a RecursiveFilterIterator, RecursiveDirectoryIterator
