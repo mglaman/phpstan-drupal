@@ -169,6 +169,8 @@ class Bootstrap
         $this->namespaces['Drupal\\FunctionalTests'] =  $core_tests_dir . '/FunctionalTests';
         $this->namespaces['Drupal\\FunctionalJavascriptTests'] = $core_tests_dir . '/FunctionalJavascriptTests';
         $this->namespaces['Drupal\\Tests\\TestSuites'] = $this->drupalRoot . '/core/tests/TestSuites';
+        $this->namespaces['Drupal\\BuildTests'] = $core_tests_dir . '/BuildTests';
+        $this->namespaces['Drupal\\TestTools'] = $core_tests_dir . '/TestTools';
     }
 
     protected function addModuleNamespaces(): void
