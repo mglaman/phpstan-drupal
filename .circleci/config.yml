@@ -20,6 +20,8 @@ commands:
           keys:
             - *composer-cache
       - run: composer global require "hirak/prestissimo:^0.3"
+  install-dependencies:
+    steps:
       - run: composer install -n --prefer-dist
       - save_cache:
           key: *composer-cache
@@ -31,15 +33,16 @@ commands:
         type: string
         default: 'drupal-composer/drupal-project:8.x-dev'
     steps:
-      - run: composer create-project << parameters.project >> /tmp/drupal --no-interaction --no-dev --prefer-dist --ignore-platform-reqs
+      - run: composer create-project << parameters.project >> /tmp/drupal --no-interaction --prefer-dist --ignore-platform-reqs
   local-require:
     steps:
       - run:
           name: Add as local
           command: |
             cd /tmp/drupal
-            composer config repositories.phpstanDrupal '{"type": "path", "url": "~/repo", "options": { "symlink": false }}'
-            composer require mglaman/phpstan-drupal *@dev
+            composer config repositories.1 '{"type": "path", "url": "'${CIRCLE_WORKING_DIRECTORY}'", "options": { "symlink": false }}'
+            composer require mglaman/phpstan-drupal "*"
+            cat composer.json
             cp ~/repo/tests/fixtures/config/drupal-phpstan.neon /tmp/drupal/phpstan.neon
             ./vendor/bin/phpstan --version
 jobs:
@@ -47,6 +50,7 @@ jobs:
     <<: *defaults
     steps:
       - start-project
+      - install-dependencies
       - run:
           name: CodeSniffer
           command: ./vendor/bin/phpcs src
@@ -89,6 +93,43 @@ jobs:
           command: |
             cd /tmp/drupal
             ./vendor/bin/phpstan analyze web/core/modules/dynamic_page_cache --debug
+  test_upgrade_status:
+    <<: *defaults
+    steps:
+      - start-project
+      - run:
+          name: Disable Xdebug PHP extension
+          command: sudo rm /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+      - create-drupal-project:
+          project: 'drupal/drupal:^8@alpha'
+      - local-require
+# @todo use this when `require` constraints relaxed.
+#      - run:
+#          name: Add upgrade_status
+#          command: |
+#            cd /tmp/drupal
+#            composer require drupal/upgrade_status:1.x-dev
+# @todo use composer, not this hack.
+      - run:
+          name: Add upgrade_status
+          command: |
+            cd /tmp/drupal
+            composer require phpstan/phpstan-deprecation-rules drupal/git_deploy
+            curl -L https://ftp.drupal.org/files/projects/upgrade_status-8.x-1.x-dev.tar.gz | tar -zx -C /tmp/drupal/modules
+      - run:
+          name: Start builtin
+          command: php -S 127.0.0.1:8080 -t /tmp/drupal
+          background: true
+      - run:
+          name: Wait for web server
+          command: dockerize -wait http://127.0.0.1:8080 -timeout 120s
+      - run:
+          name: Upgrade Status PHPUnit
+          command: |
+            cp ~/repo/tests/fixtures/config/circleci-phpunit.xml /tmp/drupal/core/phpunit.xml
+            cd /tmp/drupal
+            composer run-script drupal-phpunit-upgrade
+            ./vendor/bin/phpunit -c core modules/upgrade_status --debug --stop-on-failure
 workflows:
   version: 2
   tests:
@@ -96,3 +137,4 @@ workflows:
       - build
       - test_drupal
       - test_drupal_project
+      - test_upgrade_status

@@ -60,6 +60,22 @@ class DrupalExtension extends CompilerExtension
     {
         /** @var array */
         $config = Nette\Schema\Helpers::merge($this->config, $this->defaultConfig);
+
+        $finder = new DrupalFinder();
+
+        if ($config['drupal_root'] !== '' && realpath($config['drupal_root']) !== false && is_dir($config['drupal_root'])) {
+            $start_path = $config['drupal_root'];
+        } else {
+            $start_path = dirname($GLOBALS['autoloaderInWorkingDirectory']);
+        }
+
+        $finder->locateRoot($start_path);
+        $this->drupalRoot = $finder->getDrupalRoot();
+        $this->drupalVendorDir = $finder->getVendorDir();
+        if (! (bool) $this->drupalRoot || ! (bool) $this->drupalVendorDir) {
+            throw new \RuntimeException("Unable to detect Drupal at $start_path");
+        }
+
         $builder = $this->getContainerBuilder();
         $builder->parameters['autoload_files'][] = dirname(__DIR__, 2) . '/drupal-autoloader.php';
         $builder->parameters['drupal_root'] = $config['drupal_root'];

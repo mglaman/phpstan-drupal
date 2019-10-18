@@ -235,13 +235,12 @@ class Bootstrap
     {
         /** @var \SplFileInfo $file */
         foreach (Finder::findFiles('*.inc')->in($this->drupalRoot . '/core/includes') as $file) {
-            require $file->getPathname();
+            require_once $file->getPathname();
         }
     }
 
     protected function addCoreNamespaces(): void
     {
-        require $this->drupalRoot . '/core/lib/Drupal.php';
         foreach (['Core', 'Component'] as $parent_directory) {
             $path = $this->drupalRoot . '/core/lib/Drupal/' . $parent_directory;
             $parent_namespace = 'Drupal\\' . $parent_directory;
@@ -260,6 +259,8 @@ class Bootstrap
         $this->namespaces['Drupal\\FunctionalTests'] =  $core_tests_dir . '/FunctionalTests';
         $this->namespaces['Drupal\\FunctionalJavascriptTests'] = $core_tests_dir . '/FunctionalJavascriptTests';
         $this->namespaces['Drupal\\Tests\\TestSuites'] = $this->drupalRoot . '/core/tests/TestSuites';
+        $this->namespaces['Drupal\\BuildTests'] = $core_tests_dir . '/BuildTests';
+        $this->namespaces['Drupal\\TestTools'] = $core_tests_dir . '/TestTools';
     }
 
     protected function addModuleNamespaces(): void
@@ -322,7 +323,7 @@ class Bootstrap
     protected function loadAndCatchErrors(string $path): void
     {
         try {
-            require $path;
+            require_once $path;
         } catch (ContainerNotInitializedException $e) {
             $path = str_replace(dirname($this->drupalRoot) . '/', '', $path);
             // This can happen when drupal_get_path or drupal_get_filename are used outside of the scope of a function.

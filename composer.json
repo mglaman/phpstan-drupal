@@ -2,6 +2,7 @@
     "name": "mglaman/phpstan-drupal",
     "description": "Drupal extension and rules for PHPStan",
     "license": "MIT",
+    "type": "phpstan-extension",
     "authors": [
         {
             "name": "Matt Glaman",
@@ -12,7 +13,7 @@
         "php": "^7.1",
         "phpstan/phpstan": "^0.11.6",
         "symfony/yaml": "~3.4.5|^4.2",
-        "webflo/drupal-finder": "^1.1",
+        "webflo/drupal-finder": "^1.2",
         "nette/di": "^3.0"
     },
     "require-dev": {
@@ -38,6 +39,9 @@
         "classmap": ["tests/src"]
     },
     "extra": {
+        "branch-alias": {
+            "dev-master": "0.12-dev"
+        },
         "installer-paths": {
             "tests/fixtures/drupal/core": ["type:drupal-core"],
             "tests/fixtures/drupal/libraries/{$name}": ["type:drupal-library"],
@@ -45,8 +49,10 @@
             "tests/fixtures/drupal/profiles/contrib/{$name}": ["type:drupal-profile"],
             "tests/fixtures/drupal/themes/contrib/{$name}": ["type:drupal-theme"]
         },
-        "branch-alias": {
-            "dev-master": "0.12-dev"
+        "phpstan": {
+            "includes": [
+                "extension.neon"
+            ]
         }
     }
 }

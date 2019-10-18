@@ -8,7 +8,9 @@ This extension was built for the [Centarro Toolbox](https://www.centarro.io/prod
 
 ## Usage
 
-Add `phpstan.neon` to your Drupal project.
+When you are using [`phpstan/extension-installer`](https://github.com/phpstan/extension-installer), `phpstan.neon` will be automatically included.
+
+Otherwise add `phpstan.neon` to your Drupal project.
 
 Make sure it has
 
