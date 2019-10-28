@@ -31,7 +31,7 @@ commands:
     parameters:
       project:
         type: string
-        default: 'drupal-composer/drupal-project:8.x-dev'
+        default: 'drupal/recommended-project:^8.8@alpha'
     steps:
       - run: composer create-project << parameters.project >> /tmp/drupal --no-interaction --prefer-dist --ignore-platform-reqs
   local-require:
@@ -65,7 +65,7 @@ jobs:
     steps:
       - start-project
       - create-drupal-project:
-          project: 'drupal/drupal:^8@alpha'
+          project: 'drupal/legacy-project:^8@alpha'
       - local-require
       - run:
           name: Run against a file
@@ -101,7 +101,7 @@ jobs:
           name: Disable Xdebug PHP extension
           command: sudo rm /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
       - create-drupal-project:
-          project: 'drupal/drupal:^8@alpha'
+          project: 'drupal/legacy-project:^8@alpha'
       - local-require
 # @todo use this when `require` constraints relaxed.
 #      - run:
@@ -128,7 +128,6 @@ jobs:
           command: |
             cp ~/repo/tests/fixtures/config/circleci-phpunit.xml /tmp/drupal/core/phpunit.xml
             cd /tmp/drupal
-            composer run-script drupal-phpunit-upgrade
             ./vendor/bin/phpunit -c core modules/upgrade_status --debug --stop-on-failure
 workflows:
   version: 2
