@@ -128,7 +128,6 @@ jobs:
           command: |
             cp ~/repo/tests/fixtures/config/circleci-phpunit.xml /tmp/drupal/core/phpunit.xml
             cd /tmp/drupal
-            composer run-script drupal-phpunit-upgrade
             ./vendor/bin/phpunit -c core modules/upgrade_status --debug --stop-on-failure
 workflows:
   version: 2
