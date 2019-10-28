@@ -183,7 +183,7 @@ class Bootstrap
             // @see drupal_phpunit_get_extension_namespaces
             $module_test_dir = $module_dir . '/tests/src';
             if (is_dir($module_test_dir)) {
-                $suite_names = ['Unit', 'Kernel', 'Functional', 'FunctionalJavascript'];
+                $suite_names = ['Unit', 'Kernel', 'Functional', 'FunctionalJavascript', 'Build'];
                 foreach ($suite_names as $suite_name) {
                     $suite_dir = $module_test_dir . '/' . $suite_name;
                     if (is_dir($suite_dir)) {
