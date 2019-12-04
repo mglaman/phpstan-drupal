@@ -8,5 +8,4 @@ drupal:
 	drupal_root: %currentWorkingDirectory%
 includes:
 	- ../../../extension.neon
-	- ../../../vendor/phpstan/phpstan/conf/config.level2.neon
 	- ../../../vendor/phpstan/phpstan-deprecation-rules/rules.neon
