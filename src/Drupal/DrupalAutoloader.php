@@ -5,8 +5,9 @@ namespace PHPStan\Drupal;
 use Drupal\Core\DependencyInjection\ContainerNotInitializedException;
 use DrupalFinder\DrupalFinder;
 use Nette\Utils\Finder;
+use PHPStan\DependencyInjection\Container;
 
-class Bootstrap
+class DrupalAutoloader
 {
     /**
      * @var array
@@ -60,15 +61,29 @@ class Bootstrap
      */
     private $namespaces = [];
 
-    public function register(): void
+    public function register(Container $container): void
     {
-        $drupalRoot = realpath($GLOBALS['drupalRoot']);
-        if ($drupalRoot === false) {
-            throw new \RuntimeException('Cannot determine the Drupal root from ' . $drupalRoot);
+        $startPath = null;
+        if ($container->hasParameter('drupal_root')) {
+            $drupalRoot = $container->getParameter('drupal_root');
+            if (realpath($drupalRoot) !== false && is_dir($drupalRoot)) {
+                $startPath = $drupalRoot;
+            }
         }
+        if ($startPath === null) {
+            $startPath = dirname($GLOBALS['autoloaderInWorkingDirectory']);
+        }
+        $finder = new DrupalFinder();
+        $finder->locateRoot($startPath);
+
+        $drupalRoot = $finder->getDrupalRoot();
+        $drupalVendorRoot = $finder->getVendorDir();
+        if (! (bool) $drupalRoot || ! (bool) $drupalVendorRoot) {
+            throw new \RuntimeException("Unable to detect Drupal at $startPath");
+        }
+
         $this->drupalRoot = $drupalRoot;
 
-        $drupalVendorRoot = realpath($GLOBALS['drupalVendorDir']);
         $this->autoloader = include $drupalVendorRoot . '/autoload.php';
 
         $this->extensionDiscovery = new ExtensionDiscovery($this->drupalRoot);

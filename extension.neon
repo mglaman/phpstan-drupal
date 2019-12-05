@@ -1,4 +1,6 @@
 parameters:
+	autoload_files:
+		- drupal-autoloader.php
 	excludes_analyse:
 		- *.api.php
 		- */tests/fixtures/*.php
@@ -9,9 +11,7 @@ parameters:
 		- install
 		- profile
 		- engine
-extensions:
-	drupal: PHPStan\DependencyInjection\DrupalExtension
-drupal:
+	drupalServiceMap: {}
 	entityTypeStorageMapping:
 		node: Drupal\node\NodeStorage
 		taxonomy_term: Drupal\taxonomy\TermStorage
@@ -31,7 +31,7 @@ services:
 	-
 		class: PHPStan\Type\EntityTypeManagerGetStorageDynamicReturnTypeExtension
 		arguments:
-			entityTypeStorageMapping: %drupal.entityTypeStorageMapping%
+			entityTypeStorageMapping: %entityTypeStorageMapping%
 		tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
 	-
 		class: PHPStan\Type\ServiceDynamicReturnTypeExtension

@@ -11,6 +11,13 @@ use PHPStan\Rules\Classes\EnhancedRequireParentConstructCallRule;
 use PHPStan\Rules\Classes\RequireParentConstructCallRule;
 use Symfony\Component\Yaml\Yaml;
 
+/**
+ * @deprecated
+ *
+ * This extension is currently unused due to changes in phpstan:^0.12.
+ *
+ * It was used to dynamically provide information about Drupal services for its rules. Workarounds need to be found.
+ */
 class DrupalExtension extends CompilerExtension
 {
     /**
@@ -21,40 +28,6 @@ class DrupalExtension extends CompilerExtension
         'themes' => [],
         'drupal_root' => '',
     ];
-
-    /**
-     * @var string
-     */
-    private $drupalRoot;
-
-    /**
-     * @var string
-     */
-    private $drupalVendorDir;
-
-    /**
-     * List of available modules.
-     *
-     * @var \PHPStan\Drupal\Extension[]
-     */
-    protected $moduleData = [];
-
-    /**
-     * List of available themes.
-     *
-     * @var \PHPStan\Drupal\Extension[]
-     */
-    protected $themeData = [];
-
-    /**
-     * @var array
-     */
-    private $modules = [];
-
-    /**
-     * @var array
-     */
-    private $themes = [];
 
     public function loadConfiguration(): void
     {
@@ -70,18 +43,15 @@ class DrupalExtension extends CompilerExtension
         }
 
         $finder->locateRoot($start_path);
-        $this->drupalRoot = $finder->getDrupalRoot();
-        $this->drupalVendorDir = $finder->getVendorDir();
-        if (! (bool) $this->drupalRoot || ! (bool) $this->drupalVendorDir) {
+        $drupalRoot = $finder->getDrupalRoot();
+        $drupalVendorDir = $finder->getVendorDir();
+        if (! (bool) $drupalRoot || ! (bool) $drupalVendorDir) {
             throw new \RuntimeException("Unable to detect Drupal at $start_path");
         }
 
         $builder = $this->getContainerBuilder();
         $builder->parameters['bootstrap'] = dirname(__DIR__, 2) . '/phpstan-bootstrap.php';
-        $builder->parameters['drupalRoot'] = $this->drupalRoot;
-
-        $this->modules = $config['modules'] ?? [];
-        $this->themes = $config['themes'] ?? [];
+        $builder->parameters['drupalRoot'] = $drupalRoot;
 
         $builder->parameters['drupal']['entityTypeStorageMapping'] = $config['entityTypeStorageMapping'] ?? [];
 
@@ -97,7 +67,7 @@ class DrupalExtension extends CompilerExtension
         }
 
         // Build the service definitions...
-        $extensionDiscovery = new ExtensionDiscovery($this->drupalRoot);
+        $extensionDiscovery = new ExtensionDiscovery($drupalRoot);
         $extensionDiscovery->setProfileDirectories([]);
         $profiles = $extensionDiscovery->scan('profile');
         $profile_directories = array_map(static function (\PHPStan\Drupal\Extension $profile) : string {
@@ -107,14 +77,14 @@ class DrupalExtension extends CompilerExtension
 
 
         $serviceYamls = [
-            'core' => $this->drupalRoot . '/core/core.services.yml',
+            'core' => $drupalRoot . '/core/core.services.yml',
         ];
         $serviceClassProviders = [
             'core' => 'Drupal\Core\CoreServiceProvider',
         ];
         $extensions = array_merge($extensionDiscovery->scan('module'), $profiles);
         foreach ($extensions as $extension) {
-            $module_dir = $this->drupalRoot . '/' . $extension->getPath();
+            $module_dir = $drupalRoot . '/' . $extension->getPath();
             $moduleName = $extension->getName();
             $servicesFileName = $module_dir . '/' . $moduleName . '.services.yml';
             if (file_exists($servicesFileName)) {
@@ -172,20 +142,5 @@ class DrupalExtension extends CompilerExtension
     protected function camelize(string $id): string
     {
         return strtr(ucwords(strtr($id, ['_' => ' ', '.' => '_ ', '\\' => '_ '])), [' ' => '']);
-    }
-
-    public function afterCompile(Nette\PhpGenerator\ClassType $class)
-    {
-        // @todo find a non-hack way to pass the Drupal roots to the bootstrap file.
-        $class->getMethod('initialize')->addBody('$GLOBALS["drupalRoot"] = ?;', [$this->drupalRoot]);
-        $class->getMethod('initialize')->addBody('$GLOBALS["drupalVendorDir"] = ?;', [$this->drupalVendorDir]);
-
-        // DRUPAL_TEST_IN_CHILD_SITE is only defined in the \Drupal\Core\DrupalKernel::bootEnvironment method when
-        // Drupal is bootstrapped. Since we don't actually invoke the bootstrapping of Drupal, define the constant here
-        // as `false`. And we have to conditionally define it due to our own PHPUnit tests
-        $class->getMethod('initialize')->addBody('
-if (!defined("DRUPAL_TEST_IN_CHILD_SITE")) {
-  define("DRUPAL_TEST_IN_CHILD_SITE", ?);
-}', [false]);
     }
 }

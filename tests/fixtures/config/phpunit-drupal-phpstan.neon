@@ -4,7 +4,6 @@ parameters:
 	# Ignore functions for the PHPUnit bootstrap process.
 	ignoreErrors:
 		- '#Function drupal_phpunit_[a-zA-Z0-9\\_]+ not found#'
-drupal:
 	drupal_root: %currentWorkingDirectory%
 includes:
 	- ../../../extension.neon
