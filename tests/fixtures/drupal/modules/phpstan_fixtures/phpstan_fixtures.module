@@ -1,5 +1,7 @@
 <?php
 
 function phpstan_fixtures_included() {
-
+    if (true) {
+        // foo.
+    }
 }
