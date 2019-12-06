@@ -40,8 +40,9 @@ commands:
           name: Add as local
           command: |
             cd /tmp/drupal
+            composer require --dev drupal/core-dev:^8.8
             composer config repositories.1 '{"type": "path", "url": "'${CIRCLE_WORKING_DIRECTORY}'", "options": { "symlink": false }}'
-            composer require mglaman/phpstan-drupal "*"
+            composer require --dev mglaman/phpstan-drupal "*"
             cat composer.json
             cp ~/repo/tests/fixtures/config/drupal-phpstan.neon /tmp/drupal/phpstan.neon
             ./vendor/bin/phpstan --version
@@ -65,7 +66,7 @@ jobs:
     steps:
       - start-project
       - create-drupal-project:
-          project: 'drupal/legacy-project:^8@alpha'
+          project: 'drupal/legacy-project:^8.8'
       - local-require
       - run:
           name: Run against a file

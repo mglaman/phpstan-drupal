@@ -1,1 +1,7 @@
-{}
+{
+    "name": "drupal mock",
+    "description": "for testing",
+    "extra": [
+        "This is mocked so the vendor root is properly detected"
+      ]
+}
