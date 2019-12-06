@@ -25,7 +25,7 @@ class DeprecationRulesTest extends AnalyzerTestBase
             [
                 '\Drupal calls should be avoided in classes, use dependency injection instead',
                 'Call to deprecated method url() of class Drupal:
-as of Drupal 8.0.x, will be removed before Drupal 9.0.0.
+in drupal:8.0.0 and is removed from drupal:9.0.0.
 Instead create a \Drupal\Core\Url object directly, for example using
 Url::fromRoute().'
             ]
@@ -35,7 +35,7 @@ Url::fromRoute().'
             1,
             [
                 'Class Drupal\Core\Entity\EntityManager implements deprecated interface Drupal\Core\Entity\EntityManagerInterface:
-in Drupal 8.0.0, will be removed before Drupal 9.0.0.'
+in drupal:8.0.0 and is removed from drupal:9.0.0.'
             ]
         ];
     }
