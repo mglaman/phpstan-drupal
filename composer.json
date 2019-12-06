@@ -25,6 +25,10 @@
         "drupal/core-recommended": "^8.8@alpha",
         "drush/drush": "^9.6"
     },
+    "conflict": {
+        "phpstan/phpstan": ">=0.12",
+        "phpstan/phpstan-deprecation-rules": ">=0.12"
+    },
     "minimum-stability": "dev",
     "prefer-stable": true,
     "suggest": {
