@@ -125,9 +125,11 @@ class DrupalExtension extends CompilerExtension
             $name = "{$camelized}ServiceProvider";
             $class = "Drupal\\{$moduleName}\\{$name}";
 
-            if (class_exists($class)) {
-                $serviceClassProviders[$moduleName] = $class;
-            }
+            $serviceClassProviders[$moduleName] = $class;
+            $serviceId = "service_provider.$moduleName.service_provider";
+            $builder->parameters['drupalServiceMap'][$serviceId] = [
+                'class' => $class,
+            ];
         }
 
         foreach ($serviceYamls as $extension => $serviceYaml) {
