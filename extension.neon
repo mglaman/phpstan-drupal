@@ -21,6 +21,7 @@ rules:
 	- PHPStan\Rules\Drupal\Coder\DiscouragedFunctionsRule
 	- PHPStan\Rules\Drupal\GlobalDrupalDependencyInjectionRule
 	- PHPStan\Rules\Drupal\PluginManager\PluginManagerSetsCacheBackendRule
+	- PHPStan\Rules\Deprecations\AccessDeprecatedConstant
 services:
 	drupal.serviceMapFactory:
 		class: PHPStan\Drupal\ServiceMapFactory
