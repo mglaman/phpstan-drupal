@@ -104,13 +104,7 @@ jobs:
       - create-drupal-project:
           project: 'drupal/legacy-project:^8@alpha'
       - local-require
-# @todo use this when `require` constraints relaxed.
-#      - run:
-#          name: Add upgrade_status
-#          command: |
-#            cd /tmp/drupal
-#            composer require drupal/upgrade_status:1.x-dev
-# @todo use composer, not this hack.
+      # Composer constraints prevent requiring via compser, but this helps test drupalci's phpstan build step as well.
       - run:
           name: Add upgrade_status
           command: |
