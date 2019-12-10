@@ -97,11 +97,6 @@ class AccessDeprecatedConstant implements \PHPStan\Rules\Rule
             'USER_REGISTER_ADMINISTRATORS_ONLY' => 'Deprecated in drupal:8.3.0 and is removed from drupal:9.0.0. Use \Drupal\user\UserInterface::REGISTER_ADMINISTRATORS_ONLY instead.',
             'USER_REGISTER_VISITORS' => 'Deprecated in drupal:8.3.0 and is removed from drupal:9.0.0. Use \Drupal\user\UserInterface::REGISTER_VISITORS instead.',
             'USER_REGISTER_VISITORS_ADMINISTRATIVE_APPROVAL' => 'Deprecated in drupal:8.3.0 and is removed from drupal:9.0.0. Use \Drupal\user\UserInterface::REGISTER_VISITORS_ADMINISTRATIVE_APPROVAL instead.',
-            // 'BlockInterface::BLOCK_LABEL_VISIBLE' => 'Deprecated in drupal:8.3.0 and is removed from drupal:9.0.0. Use \Drupal\Core\Block\BlockPluginInterface::BLOCK_LABEL_VISIBLE.',
-            // 'BlockInterface::BLOCK_REGION_NONE' => 'Deprecated in drupal:8.?.? and is removed from drupal:9.0.0.',
-            // 'WorkspaceInterface::DEFAULT_WORKSPACE' => 'Deprecated in drupal:8.8.0 and is removed from drupal:9.0.0. Use \Drupal\workspaces\WorkspaceManager::hasActiveWorkspace() instead.',
-            // 'PluralTranslatableMarkup::DELIMITER' => 'Deprecated in drupal:8.7.0 and is removed from drupal:9.0.0. Use Drupal\Component\Gettext\PoItem::DELIMITER instead.',
-            // 'FieldMigration::PLUGIN_METHOD' => 'Deprecated in drupal:8.7.0 and is removed from drupal:9.0.0. Use the migrate_drupal.field_discovery service instead. See https://www.drupal.org/node/3006076.',
         ];
         $constantName = $this->broker->resolveConstantName($node->name, $scope);
         if (isset($deprecatedConstants[$constantName])) {
