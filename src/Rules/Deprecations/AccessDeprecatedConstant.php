@@ -52,5 +52,4 @@ class AccessDeprecatedConstant implements \PHPStan\Rules\Rule
         }
         return [];
     }
-
 }
