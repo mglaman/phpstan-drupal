@@ -13,10 +13,15 @@ use PHPStan\ShouldNotHappenException;
 class EntityTypeManagerGetStorageDynamicReturnTypeExtension implements DynamicMethodReturnTypeExtension
 {
     /**
-     * @var array
+     * @var string[]
      */
     private $entityTypeStorageMapping;
 
+    /**
+     * EntityTypeManagerGetStorageDynamicReturnTypeExtension constructor.
+     *
+     * @param string[] $entityTypeStorageMapping
+     */
     public function __construct(array $entityTypeStorageMapping = [])
     {
         $this->entityTypeStorageMapping = $entityTypeStorageMapping;

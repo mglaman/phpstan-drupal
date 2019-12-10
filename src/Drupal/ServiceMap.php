@@ -7,11 +7,12 @@ class ServiceMap
     /** @var \PHPStan\Drupal\DrupalServiceDefinition[] */
     private $services;
 
-    /**
-     * ServiceMap constructor.
-     * @param array $drupalServices
-     */
-    public function __construct(array $drupalServices)
+    public function getService(string $id): ?DrupalServiceDefinition
+    {
+        return $this->services[$id] ?? null;
+    }
+
+    public function setDrupalServices(array $drupalServices): void
     {
         $this->services = [];
 
@@ -31,10 +32,5 @@ class ServiceMap
                 $serviceDefinition['alias'] ?? null
             );
         }
-    }
-
-    public function getService(string $id): ?DrupalServiceDefinition
-    {
-        return $this->services[$id] ?? null;
     }
 }

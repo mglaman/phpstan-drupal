@@ -10,19 +10,18 @@ final class ServiceMapFactoryTest extends TestCase
     /**
      * @dataProvider getServiceProvider
      *
-     * @covers \PHPStan\Drupal\ServiceMapFactory::__construct
-     * @covers \PHPStan\Drupal\ServiceMapFactory::create
      * @covers \PHPStan\Drupal\DrupalServiceDefinition::__construct
      * @covers \PHPStan\Drupal\DrupalServiceDefinition::getClass
      * @covers \PHPStan\Drupal\DrupalServiceDefinition::isPublic
      * @covers \PHPStan\Drupal\DrupalServiceDefinition::getAlias
      * @covers \PHPStan\Drupal\DrupalServiceDefinition::getId
-     * @covers \PHPStan\Drupal\ServiceMap::__construct
+     * @covers \PHPStan\Drupal\ServiceMap::setDrupalServices
      * @covers \PHPStan\Drupal\ServiceMap::getService
      */
     public function testFactory(string $id, callable $validator)
     {
-        $factory = new ServiceMapFactory([
+        $service = new ServiceMap();
+        $service->setDrupalServices([
             'entity_type.manager' => [
                 'class' => 'Drupal\Core\Entity\EntityTypeManager'
             ],
@@ -37,7 +36,7 @@ final class ServiceMapFactoryTest extends TestCase
                 'alias' => 'config.storage.staging',
             ]
         ]);
-        $validator($factory->create()->getService($id));
+        $validator($service->getService($id));
     }
 
     public function getServiceProvider(): \Iterator

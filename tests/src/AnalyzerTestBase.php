@@ -37,7 +37,7 @@ abstract class AnalyzerTestBase extends TestCase {
         }
 
         $analyser = $container->getByType(Analyser::class);
-        assert($analyser !== null);
+        assert($analyser instanceof Analyser);
 
         $file = $fileHelper->normalizePath($path);
         $errors = $analyser->analyse(

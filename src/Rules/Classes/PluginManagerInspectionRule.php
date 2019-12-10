@@ -98,7 +98,7 @@ class PluginManagerInspectionRule implements Rule
     {
         $errors = [];
 
-        $fqn = (string)$class->namespacedName;
+        $fqn = $class->namespacedName;
         $reflection = new \ReflectionClass($fqn);
         $constructor = $reflection->getConstructor();
 

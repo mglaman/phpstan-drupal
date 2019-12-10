@@ -1,7 +1,7 @@
 <?php
 
 function phpstan_fixtures_included() {
-    if (true) {
-        // foo.
+    $zero = 0;
+    if ($zero) {
     }
 }

@@ -6,6 +6,7 @@ use PhpParser\Node;
 use PHPStan\Analyser\Scope;
 use PHPStan\Broker\Broker;
 use PHPStan\Reflection\DeprecatableReflection;
+use PHPStan\Reflection\FunctionReflection;
 
 class AccessDeprecatedConstant implements \PHPStan\Rules\Rule
 {
@@ -33,7 +34,7 @@ class AccessDeprecatedConstant implements \PHPStan\Rules\Rule
             return [];
         }
         $function = $scope->getFunction();
-        if ($function instanceof DeprecatableReflection && $function->isDeprecated()) {
+        if ($function instanceof FunctionReflection && $function->isDeprecated()->yes()) {
             return [];
         }
 

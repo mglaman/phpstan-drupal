@@ -12,7 +12,6 @@ parameters:
 		- profile
 		- engine
 	drupal:
-		serviceMap: {}
 		entityTypeStorageMapping:
 			node: Drupal\node\NodeStorage
 			taxonomy_term: Drupal\taxonomy\TermStorage
@@ -20,7 +19,6 @@ parameters:
 parametersSchema:
 	drupal: structure([
 		drupal_root: string()
-		serviceMap: listOf(string())
 		entityTypeStorageMapping: arrayOf(string())
 	])
 rules:
@@ -30,11 +28,9 @@ rules:
 	- PHPStan\Rules\Drupal\PluginManager\PluginManagerSetsCacheBackendRule
 	- PHPStan\Rules\Deprecations\AccessDeprecatedConstant
 services:
-	drupal.serviceMapFactory:
-		class: PHPStan\Drupal\ServiceMapFactory
-		factory: PHPStan\Drupal\ServiceMapFactory(%drupal.serviceMap%)
 	-
-		factory: @drupal.serviceMapFactory::create()
+		class: PHPStan\Drupal\ServiceMap
+
 	-
 		class: PHPStan\Type\EntityTypeManagerGetStorageDynamicReturnTypeExtension
 		arguments:
