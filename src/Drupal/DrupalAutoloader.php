@@ -64,13 +64,15 @@ class DrupalAutoloader
     public function register(Container $container): void
     {
         $startPath = null;
-        if ($container->hasParameter('drupal_root')) {
-            $drupalRoot = $container->getParameter('drupal_root');
-            if (realpath($drupalRoot) !== false && is_dir($drupalRoot)) {
-                $startPath = $drupalRoot;
-            }
-        }
-        if ($startPath === null) {
+        $drupalParams = $container->hasParameter('drupal') ? $container->getParameter('drupal') : [
+          'drupal_root' => null,
+          'serviceMap' => [],
+          'entityTypeStorageMapping' => [],
+        ];
+        $drupalRoot = $drupalParams['drupal_root'];
+        if (realpath($drupalRoot) !== false && is_dir($drupalRoot)) {
+            $startPath = $drupalRoot;
+        } else {
             $startPath = dirname($GLOBALS['autoloaderInWorkingDirectory']);
         }
         $finder = new DrupalFinder();

@@ -83,18 +83,20 @@ includes:
 
 By default, the PHPStan Drupal extension will try to determine your Drupal project's root directory based on the working
 directory that PHPStan is checking. If this is not working properly, you can explicitly define the Drupal project's root
-directory using the `drupal_root` parameter.
+directory using the `drupal.root` parameter.
 
 ```
-drupal:
-    drupal_root: /path/to/drupal
+parameters:
+    drupal:
+        drupal_root: /path/to/drupal
 ```
 
 You can also use container parameters. For instance you can always set it to the current working directory.
 
 ```
-drupal:
-    drupal_root: %currentWorkingDirectory%
+parameters:
+    drupal:
+        drupal_root: %currentWorkingDirectory%
 ```
 
 ### Entity storage mappings.
@@ -104,19 +106,21 @@ passed entity type ID and tries to return a known storage class, besides the def
 default mapping can be found in `extension.neon`. For example:
 
 ```
-drupal:
-	entityTypeStorageMapping:
-		node: Drupal\node\NodeStorage
-		taxonomy_term: Drupal\taxonomy\TermStorage
-		user: Drupal\user\UserStorage
+parameters:
+    drupal:
+        entityTypeStorageMapping:
+            node: Drupal\node\NodeStorage
+            taxonomy_term: Drupal\taxonomy\TermStorage
+            user: Drupal\user\UserStorage
 ```
 
 To add support for custom entities, you may add the same definition in your project's `phpstan.neon`. See the following
 example for adding a mapping for Search API:
 
 ```
-drupal:
-	entityTypeStorageMapping:
-		search_api_index: Drupal\search_api\Entity\SearchApiConfigEntityStorage
-		search_api_server: Drupal\search_api\Entity\SearchApiConfigEntityStorage
+parameters:
+    drupal:
+        entityTypeStorageMapping:
+            search_api_index: Drupal\search_api\Entity\SearchApiConfigEntityStorage
+            search_api_server: Drupal\search_api\Entity\SearchApiConfigEntityStorage
 ```

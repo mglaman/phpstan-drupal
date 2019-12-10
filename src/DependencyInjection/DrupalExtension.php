@@ -97,7 +97,7 @@ class DrupalExtension extends CompilerExtension
 
             $serviceClassProviders[$moduleName] = $class;
             $serviceId = "service_provider.$moduleName.service_provider";
-            $builder->parameters['drupalServiceMap'][$serviceId] = [
+            $builder->parameters['drupal']['serviceMap'][$serviceId] = [
                 'class' => $class,
             ];
         }
@@ -134,7 +134,7 @@ class DrupalExtension extends CompilerExtension
                 unset($serviceDefinition['calls']);
                 unset($serviceDefinition['configurator']);
                 unset($serviceDefinition['factory']);
-                $builder->parameters['drupalServiceMap'][$serviceId] = $serviceDefinition;
+                $builder->parameters['drupal']['serviceMap'][$serviceId] = $serviceDefinition;
             }
         }
     }

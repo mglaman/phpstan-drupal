@@ -11,11 +11,18 @@ parameters:
 		- install
 		- profile
 		- engine
-	drupalServiceMap: {}
-	entityTypeStorageMapping:
-		node: Drupal\node\NodeStorage
-		taxonomy_term: Drupal\taxonomy\TermStorage
-		user: Drupal\user\UserStorage
+	drupal:
+		serviceMap: {}
+		entityTypeStorageMapping:
+			node: Drupal\node\NodeStorage
+			taxonomy_term: Drupal\taxonomy\TermStorage
+			user: Drupal\user\UserStorage
+parametersSchema:
+	drupal: structure([
+		drupal_root: string()
+		serviceMap: listOf(string())
+		entityTypeStorageMapping: arrayOf(string())
+	])
 rules:
 	- PHPStan\Rules\Classes\PluginManagerInspectionRule
 	- PHPStan\Rules\Drupal\Coder\DiscouragedFunctionsRule
@@ -25,13 +32,13 @@ rules:
 services:
 	drupal.serviceMapFactory:
 		class: PHPStan\Drupal\ServiceMapFactory
-		factory: PHPStan\Drupal\ServiceMapFactory(%drupalServiceMap%)
+		factory: PHPStan\Drupal\ServiceMapFactory(%drupal.serviceMap%)
 	-
 		factory: @drupal.serviceMapFactory::create()
 	-
 		class: PHPStan\Type\EntityTypeManagerGetStorageDynamicReturnTypeExtension
 		arguments:
-			entityTypeStorageMapping: %entityTypeStorageMapping%
+			entityTypeStorageMapping: %drupal.entityTypeStorageMapping%
 		tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
 	-
 		class: PHPStan\Type\ServiceDynamicReturnTypeExtension

@@ -103,7 +103,8 @@ class EntityFieldReflection implements PropertyReflection
         return true;
     }
 
-    public function getDeprecatedDescription(): ?string {
+    public function getDeprecatedDescription(): ?string
+    {
         return null;
     }
 
