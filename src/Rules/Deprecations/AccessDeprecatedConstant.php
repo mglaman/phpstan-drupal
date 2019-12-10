@@ -48,7 +48,7 @@ class AccessDeprecatedConstant implements \PHPStan\Rules\Rule
             'DRUPAL_AUTHENTICATED_RID' => 'Deprecated in drupal:8.0.0 and is removed from drupal:9.0.0. Use Drupal\Core\Session\AccountInterface::AUTHENTICATED_ROLE or \Drupal\user\RoleInterface::AUTHENTICATED_ID instead.',
             'REQUEST_TIME' => 'Deprecated in drupal:8.3.0 and is removed from drupal:9.0.0. Use \Drupal::time()->getRequestTime();',
             'CONFIG_ACTIVE_DIRECTORY' => 'Deprecated in drupal:8.0.0 and is removed from drupal:9.0.0. Drupal core no longer creates an active directory.',
-            'CONFIG_SYNC_DIRECTORY' => 'Deprecated in drupal:8.8.0 and is removed from drupal:9.0.0. Use \Drupal\Core\Site\Settings::get('config_sync_directory') instead.',
+            'CONFIG_SYNC_DIRECTORY' => 'Deprecated in drupal:8.8.0 and is removed from drupal:9.0.0. Use \Drupal\Core\Site\Settings::get(\'config_sync_directory\') instead.',
             'CONFIG_STAGING_DIRECTORY' => 'Deprecated in drupal:8.0.0 and is removed from drupal:9.0.0. The staging directory was renamed to sync.',
             'LOCALE_PLURAL_DELIMITER' => 'Deprecated in drupal:8.0.0 and is removed from drupal:9.0.0. Use Drupal\Component\Gettext\PoItem::DELIMITER instead.',
             'FILE_CHMOD_DIRECTORY' => 'Deprecated in drupal:8.0.0 and is removed from drupal:9.0.0. Use \Drupal\Core\File\FileSystem::CHMOD_DIRECTORY.',
