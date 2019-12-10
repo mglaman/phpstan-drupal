@@ -197,7 +197,6 @@ class DrupalAutoloader
         assert($service_map instanceof ServiceMap);
         // @todo this is not updating the reference in the container.
         $service_map->setDrupalServices($this->serviceMap);
-
     }
 
     protected function loadLegacyIncludes(): void
