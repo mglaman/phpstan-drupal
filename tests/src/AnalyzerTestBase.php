@@ -14,11 +14,12 @@ abstract class AnalyzerTestBase extends TestCase {
         $rootDir = __DIR__ . '/../fixtures/drupal';
         $tmpDir = sys_get_temp_dir() . '/' . time() . 'phpstan';
         $containerFactory = new ContainerFactory($rootDir);
-        $container = $containerFactory->create(
-            $tmpDir,
-            [__DIR__ . '/../fixtures/config/phpunit-drupal-phpstan.neon'],
-            []
-        );
+
+        $additionalConfigFiles = [
+            \sprintf('%s/config.level%s.neon', $containerFactory->getConfigDirectory(), 2),
+            __DIR__ . '/../fixtures/config/phpunit-drupal-phpstan.neon',
+        ];
+        $container = $containerFactory->create($tmpDir, $additionalConfigFiles, []);
         $fileHelper = $container->getByType(FileHelper::class);
         assert($fileHelper !== null);
 

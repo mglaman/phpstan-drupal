@@ -4,6 +4,7 @@ parameters:
 	# Ignore functions for the PHPUnit bootstrap process.
 	ignoreErrors:
 		- '#Function drupal_phpunit_[a-zA-Z0-9\\_]+ not found#'
+		- '#Unsafe usage of new static().#'
 	drupal:
 		drupal_root: %currentWorkingDirectory%
 includes:

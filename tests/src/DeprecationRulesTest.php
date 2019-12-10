@@ -32,10 +32,11 @@ Url::fromRoute().'
         ];
         yield [
             __DIR__ . '/../fixtures/drupal/core/lib/Drupal/Core/Entity/EntityManager.php',
-            1,
+            2,
             [
                 'Class Drupal\Core\Entity\EntityManager implements deprecated interface Drupal\Core\Entity\EntityManagerInterface:
-in drupal:8.0.0 and is removed from drupal:9.0.0.'
+in drupal:8.0.0 and is removed from drupal:9.0.0.',
+                'Method Drupal\Core\Entity\EntityManager::clearDisplayModeInfo() should return $this(Drupal\Core\Entity\EntityManager) but return statement is missing.'
             ]
         ];
         yield [
@@ -44,6 +45,14 @@ in drupal:8.0.0 and is removed from drupal:9.0.0.'
             [
                 'Call to deprecated constant DATETIME_STORAGE_TIMEZONE: Deprecated in drupal:8.5.0 and is removed from drupal:9.0.0. Use \Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface::STORAGE_TIMEZONE instead.',
                 'Call to deprecated constant DATETIME_DATE_STORAGE_FORMAT: Deprecated in drupal:8.5.0 and is removed from drupal:9.0.0. Use \Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface::DATE_STORAGE_FORMAT instead.',
+            ]
+        ];
+        yield [
+            __DIR__ . '/../fixtures/drupal/modules/phpstan_fixtures/src/UsesDeprecatedServiceMethod.php',
+            2,
+            [
+                '\Drupal calls should be avoided in classes, use dependency injection instead',
+                'Call to deprecated method getDefinitions() of class',
             ]
         ];
     }
