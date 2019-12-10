@@ -40,8 +40,8 @@ class AccessDeprecatedConstant implements \PHPStan\Rules\Rule
         // nikic/php-parser does not have any comments above the comment.
         // possibly due to PHP's internal reflection capabilities?
         $deprecatedConstants = [
-            'DATETIME_STORAGE_TIMEZONE' => 'Deprecated in drupal:8.5.0 is removed from drupal:9.0.0. Use \Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface::STORAGE_TIMEZONE instead.',
-            'DATETIME_DATETIME_STORAGE_FORMAT' => 'Deprecated in drupal:8.5.0 is removed from drupal:9.0.0. Use \Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface::DATETIME_STORAGE_FORMAT instead.',
+            'DATETIME_STORAGE_TIMEZONE' => 'Deprecated in drupal:8.5.0 and is removed from drupal:9.0.0. Use \Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface::STORAGE_TIMEZONE instead.',
+            'DATETIME_DATETIME_STORAGE_FORMAT' => 'Deprecated in drupal:8.5.0 and is removed from drupal:9.0.0. Use \Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface::DATETIME_STORAGE_FORMAT instead.',
             'DATETIME_DATE_STORAGE_FORMAT' => 'Deprecated in drupal:8.5.0 and is removed from drupal:9.0.0. Use \Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface::DATE_STORAGE_FORMAT instead.',
         ];
         $constantName = $this->broker->resolveConstantName($node->name, $scope);
