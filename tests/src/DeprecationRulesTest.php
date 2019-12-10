@@ -42,8 +42,8 @@ in drupal:8.0.0 and is removed from drupal:9.0.0.'
             __DIR__ . '/../fixtures/drupal/modules/phpstan_fixtures/src/DeprecatedGlobalConstants.php',
             2,
             [
-                'Call to deprecated constant DATETIME_STORAGE_TIMEZONE: Deprecated in Drupal 8.5.x and will be removed before Drupal 9.0.x. Use \Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface::STORAGE_TIMEZONE instead.',
-                'Call to deprecated constant DATETIME_DATE_STORAGE_FORMAT: Deprecated in Drupal 8.5.x and will be removed before Drupal 9.0.x. Use \Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface::DATE_STORAGE_FORMAT instead.',
+                'Call to deprecated constant DATETIME_STORAGE_TIMEZONE: Deprecated in drupal:8.5.0 and is removed from drupal:9.0.0. Use \Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface::STORAGE_TIMEZONE instead.',
+                'Call to deprecated constant DATETIME_DATE_STORAGE_FORMAT: Deprecated in drupal:8.5.0 and is removed from drupal:9.0.0. Use \Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface::DATE_STORAGE_FORMAT instead.',
             ]
         ];
     }
