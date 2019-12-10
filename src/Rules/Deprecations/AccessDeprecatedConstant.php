@@ -41,9 +41,9 @@ class AccessDeprecatedConstant implements \PHPStan\Rules\Rule
         // here goes a list of hardcoded core constants. List is available at
         // https://api.drupal.org/api/drupal/deprecated/8.8.x?order=object_type&sort=asc&page=5
         $deprecatedConstants = [
-            'DATETIME_STORAGE_TIMEZONE' => 'Deprecated in Drupal 8.5.x and will be removed before Drupal 9.0.x. Use \Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface::STORAGE_TIMEZONE instead.',
-            'DATETIME_DATETIME_STORAGE_FORMAT' => 'Deprecated in Drupal 8.5.x and will be removed before Drupal 9.0.x. Use \Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface::DATETIME_STORAGE_FORMAT instead.',
-            'DATETIME_DATE_STORAGE_FORMAT' => 'Deprecated in Drupal 8.5.x and will be removed before Drupal 9.0.x. Use \Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface::DATE_STORAGE_FORMAT instead.',
+            'DATETIME_STORAGE_TIMEZONE' => 'Deprecated in drupal:8.5.0 and is removed from drupal:9.0.0. Use \Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface::STORAGE_TIMEZONE instead.',
+            'DATETIME_DATETIME_STORAGE_FORMAT' => 'Deprecated in drupal:8.5.0 and is removed from drupal:9.0.0. Use \Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface::DATETIME_STORAGE_FORMAT instead.',
+            'DATETIME_DATE_STORAGE_FORMAT' => 'Deprecated in drupal:8.5.0 and is removed from drupal:9.0.0. Use \Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface::DATE_STORAGE_FORMAT instead.',
             'DRUPAL_ANONYMOUS_RID' => 'Deprecated in drupal:8.0.0 and is removed from drupal:9.0.0. Use Drupal\Core\Session\AccountInterface::ANONYMOUS_ROLE or \Drupal\user\RoleInterface::ANONYMOUS_ID instead.',
             'DRUPAL_AUTHENTICATED_RID' => 'Deprecated in drupal:8.0.0 and is removed from drupal:9.0.0. Use Drupal\Core\Session\AccountInterface::AUTHENTICATED_ROLE or \Drupal\user\RoleInterface::AUTHENTICATED_ID instead.',
             'REQUEST_TIME' => 'Deprecated in drupal:8.3.0 and is removed from drupal:9.0.0. Use \Drupal::time()->getRequestTime();',
