@@ -63,8 +63,8 @@ class DrupalAutoloader
     public function register(Container $container): void
     {
         $startPath = null;
-        $drupalParams = $container->hasParameter('drupal') ? $container->getParameter('drupal') : [
-          'drupal_root' => null,
+        $drupalParams = [
+          'drupal_root' => $container->getParameter('drupal'),
           'serviceMap' => [],
           'entityTypeStorageMapping' => [],
         ];
