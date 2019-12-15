@@ -83,7 +83,7 @@ includes:
 
 By default, the PHPStan Drupal extension will try to determine your Drupal project's root directory based on the working
 directory that PHPStan is checking. If this is not working properly, you can explicitly define the Drupal project's root
-directory using the `drupal.root` parameter.
+directory using the `drupal.drupal_root` parameter.
 
 ```
 parameters:
