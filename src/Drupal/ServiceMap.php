@@ -2,6 +2,8 @@
 
 namespace PHPStan\Drupal;
 
+use PHPStan\ShouldNotHappenException;
+
 class ServiceMap
 {
     /** @var \PHPStan\Drupal\DrupalServiceDefinition[] */
@@ -9,6 +11,9 @@ class ServiceMap
 
     public function getService(string $id): ?DrupalServiceDefinition
     {
+        if (count($this->services) === 0) {
+            throw new ShouldNotHappenException('No Drupal service map was registered.');
+        }
         return $this->services[$id] ?? null;
     }
 
