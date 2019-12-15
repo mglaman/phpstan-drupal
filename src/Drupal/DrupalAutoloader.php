@@ -191,8 +191,14 @@ class DrupalAutoloader
 
         $service_map = $container->getByType(ServiceMap::class);
         assert($service_map instanceof ServiceMap);
-        // @todo this is not updating the reference in the container.
+        // @todo this is a hack that needs investigation.
+        // We cannot manipulate the service container and add parameters, so we take the existing
+        // service and modify it's properties so that its reference is updated within the container.
+        //
+        // During debug this works, but other times it fails.
         $service_map->setDrupalServices($this->serviceMap);
+        // So, to work around whatever is happening we force it into globals.
+        $GLOBALS['drupalServiceMap'] = $service_map->getServices();
     }
 
     protected function loadLegacyIncludes(): void

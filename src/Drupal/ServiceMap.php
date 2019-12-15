@@ -11,10 +11,23 @@ class ServiceMap
 
     public function getService(string $id): ?DrupalServiceDefinition
     {
+        // @see notes in DrupalAutoloader.
+        // This is all a work around due to inability to set container parameters.
         if (count($this->services) === 0) {
-            throw new ShouldNotHappenException('No Drupal service map was registered.');
+            $this->services = $GLOBALS['drupalServiceMap'];
+            if (count($this->services) === 0) {
+                throw new ShouldNotHappenException('No Drupal service map was registered.');
+            }
         }
         return $this->services[$id] ?? null;
+    }
+
+    /**
+     * @return \PHPStan\Drupal\DrupalServiceDefinition[]
+     */
+    public function getServices(): array
+    {
+        return $this->services;
     }
 
     public function setDrupalServices(array $drupalServices): void
