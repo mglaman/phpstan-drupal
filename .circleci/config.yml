@@ -110,7 +110,7 @@ jobs:
           command: |
             cd /tmp/drupal
             composer require phpstan/phpstan-deprecation-rules drupal/git_deploy
-            git clone --branch 8.x-1.x https://git.drupalcode.org/project/upgrade_status.git /tmp/drupal/modules
+            git clone --branch 8.x-1.x https://git.drupalcode.org/project/upgrade_status.git /tmp/drupal/modules/upgrade_status
       - run:
           name: Start builtin
           command: php -S 127.0.0.1:8080 -t /tmp/drupal
