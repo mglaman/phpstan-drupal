@@ -32,10 +32,11 @@ Url::fromRoute().'
         ];
         yield [
             __DIR__ . '/../fixtures/drupal/core/lib/Drupal/Core/Entity/EntityManager.php',
-            1,
+            2,
             [
                 'Class Drupal\Core\Entity\EntityManager implements deprecated interface Drupal\Core\Entity\EntityManagerInterface:
-in drupal:8.0.0 and is removed from drupal:9.0.0.'
+in drupal:8.0.0 and is removed from drupal:9.0.0.',
+                'Method Drupal\Core\Entity\EntityManager::clearDisplayModeInfo() should return $this(Drupal\Core\Entity\EntityManager) but return statement is missing.'
             ]
         ];
         yield [

@@ -15,10 +15,10 @@ use PHPStan\Type\Type;
 class FieldItemListPropertyReflection implements PropertyReflection
 {
 
-  /** @var ClassReflection */
+    /** @var ClassReflection */
     private $declaringClass;
 
-  /** @var string */
+    /** @var string */
     private $propertyName;
 
     public function __construct(ClassReflection $declaringClass, string $propertyName)
@@ -35,7 +35,7 @@ class FieldItemListPropertyReflection implements PropertyReflection
         return in_array($propertyName, $names, true);
     }
 
-    public function getType(): Type
+    public function getReadableType(): Type
     {
         if ($this->propertyName === 'entity') {
             return new ObjectType('Drupal\Core\Entity\EntityInterface');
@@ -49,6 +49,27 @@ class FieldItemListPropertyReflection implements PropertyReflection
 
         // Fallback.
         return new NullType();
+    }
+
+    public function getWritableType(): Type
+    {
+        if ($this->propertyName === 'entity') {
+            return new ObjectType('Drupal\Core\Entity\EntityInterface');
+        }
+        if ($this->propertyName === 'target_id') {
+            return new StringType();
+        }
+        if ($this->propertyName === 'value') {
+            return new StringType();
+        }
+
+        // Fallback.
+        return new NullType();
+    }
+
+    public function canChangeTypeAfterAssignment(): bool
+    {
+        return true;
     }
 
     public function getDeclaringClass(): ClassReflection
@@ -79,5 +100,25 @@ class FieldItemListPropertyReflection implements PropertyReflection
     public function isWritable(): bool
     {
         return true;
+    }
+
+    public function getDocComment(): ?string
+    {
+        return null;
+    }
+
+    public function isDeprecated(): \PHPStan\TrinaryLogic
+    {
+        return \PHPStan\TrinaryLogic::createNo();
+    }
+
+    public function getDeprecatedDescription(): ?string
+    {
+        return null;
+    }
+
+    public function isInternal(): \PHPStan\TrinaryLogic
+    {
+        return \PHPStan\TrinaryLogic::createNo();
     }
 }

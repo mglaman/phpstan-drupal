@@ -2,16 +2,35 @@
 
 namespace PHPStan\Drupal;
 
+use PHPStan\ShouldNotHappenException;
+
 class ServiceMap
 {
     /** @var \PHPStan\Drupal\DrupalServiceDefinition[] */
     private $services;
 
+    public function getService(string $id): ?DrupalServiceDefinition
+    {
+        // @see notes in DrupalAutoloader.
+        // This is all a work around due to inability to set container parameters.
+        if (count($this->services) === 0) {
+            $this->services = $GLOBALS['drupalServiceMap'];
+            if (count($this->services) === 0) {
+                throw new ShouldNotHappenException('No Drupal service map was registered.');
+            }
+        }
+        return $this->services[$id] ?? null;
+    }
+
     /**
-     * ServiceMap constructor.
-     * @param array $drupalServices
+     * @return \PHPStan\Drupal\DrupalServiceDefinition[]
      */
-    public function __construct(array $drupalServices)
+    public function getServices(): array
+    {
+        return $this->services;
+    }
+
+    public function setDrupalServices(array $drupalServices): void
     {
         $this->services = [];
 
@@ -31,10 +50,5 @@ class ServiceMap
                 $serviceDefinition['alias'] ?? null
             );
         }
-    }
-
-    public function getService(string $id): ?DrupalServiceDefinition
-    {
-        return $this->services[$id] ?? null;
     }
 }

@@ -28,4 +28,21 @@ final class DrupalIntegrationTest extends AnalyzerTestBase {
         $this->assertCount(0, $errors);
     }
 
+    public function testExtensionReportsError() {
+        $errors = $this->runAnalyze(__DIR__ . '/../fixtures/drupal/modules/phpstan_fixtures/phpstan_fixtures.module');
+        $this->assertCount(1, $errors);
+        $this->assertEquals('Function phpstan_fixtures_MissingReturnRule() should return string but return statement is missing.', $errors[0]->getMessage());
+    }
+
+    public function testServiceMapping() {
+        $errorMessages = [
+            '\Drupal calls should be avoided in classes, use dependency injection instead',
+            'Call to an undefined method Drupal\Core\Entity\EntityManager::thisMethodDoesNotExist().',
+        ];
+        $errors = $this->runAnalyze(__DIR__ . '/../fixtures/drupal/modules/phpstan_fixtures/src/TestServicesMappingExtension.php');
+        $this->assertCount(2, $errors);
+        foreach ($errors as $key => $error) {
+            $this->assertEquals($errorMessages[$key], $error->getMessage());
+        }
+    }
 }

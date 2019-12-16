@@ -5,16 +5,11 @@ namespace PHPStan\Drupal;
 use Drupal\Core\DependencyInjection\ContainerNotInitializedException;
 use DrupalFinder\DrupalFinder;
 use Nette\Utils\Finder;
+use PHPStan\DependencyInjection\Container;
+use Symfony\Component\Yaml\Yaml;
 
-class Bootstrap
+class DrupalAutoloader
 {
-    /**
-     * @var array
-     */
-    protected $defaultConfig = [
-        'modules' => [],
-        'themes' => [],
-    ];
 
     /**
      * @var \Composer\Autoload\ClassLoader
@@ -41,14 +36,19 @@ class Bootstrap
     protected $themeData = [];
 
     /**
-     * @var array
+     * @var array<array<string, string>>
      */
-    private $modules = [];
+    private $serviceMap = [];
 
     /**
-     * @var array
+     * @var array<string, string>
      */
-    private $themes = [];
+    private $serviceYamls = [];
+
+    /**
+     * @var array<string, string>
+     */
+    private $serviceClassProviders = [];
 
     /**
      * @var ?\PHPStan\Drupal\ExtensionDiscovery
@@ -60,16 +60,32 @@ class Bootstrap
      */
     private $namespaces = [];
 
-    public function register(): void
+    public function register(Container $container): void
     {
-        $drupalRoot = realpath($GLOBALS['drupalRoot']);
-        if ($drupalRoot === false) {
-            throw new \RuntimeException('Cannot determine the Drupal root from ' . $drupalRoot);
+        $startPath = null;
+        $drupalParams = $container->getParameter('drupal');
+        $drupalRoot = $drupalParams['drupal_root'] ?? null;
+        if ($drupalRoot !== null && realpath($drupalRoot) !== false && is_dir($drupalRoot)) {
+            $startPath = $drupalRoot;
+        } else {
+            $startPath = dirname($GLOBALS['autoloaderInWorkingDirectory']);
         }
+        $finder = new DrupalFinder();
+        $finder->locateRoot($startPath);
+
+        $drupalRoot = $finder->getDrupalRoot();
+        $drupalVendorRoot = $finder->getVendorDir();
+        if (! (bool) $drupalRoot || ! (bool) $drupalVendorRoot) {
+            throw new \RuntimeException("Unable to detect Drupal at $startPath");
+        }
+
         $this->drupalRoot = $drupalRoot;
 
-        $drupalVendorRoot = realpath($GLOBALS['drupalVendorDir']);
         $this->autoloader = include $drupalVendorRoot . '/autoload.php';
+
+        $this->serviceYamls['core'] = $drupalRoot . '/core/core.services.yml';
+        $this->serviceClassProviders['core'] = '\Drupal\Core\CoreServiceProvider';
+        $this->serviceMap['service_provider.core.service_provider'] = ['class' => $this->serviceClassProviders['core']];
 
         $this->extensionDiscovery = new ExtensionDiscovery($this->drupalRoot);
         $this->extensionDiscovery->setProfileDirectories([]);
@@ -139,6 +155,50 @@ class Bootstrap
                 }
             }
         }
+
+        foreach ($this->serviceYamls as $extension => $serviceYaml) {
+            $yaml = Yaml::parseFile($serviceYaml);
+            // Weed out service files which only provide parameters.
+            if (!isset($yaml['services']) || !is_array($yaml['services'])) {
+                continue;
+            }
+            foreach ($yaml['services'] as $serviceId => $serviceDefinition) {
+                // Prevent \Nette\DI\ContainerBuilder::completeStatement from array_walk_recursive into the arguments
+                // and thinking these are real services for PHPStan's container.
+                if (isset($serviceDefinition['arguments']) && is_array($serviceDefinition['arguments'])) {
+                    array_walk($serviceDefinition['arguments'], function (&$argument) : void {
+                        if (is_array($argument)) {
+                            // @todo fix for @http_kernel.controller.argument_metadata_factory
+                            $argument = '';
+                        } else {
+                            $argument = str_replace('@', '', $argument);
+                        }
+                    });
+                }
+                // @todo sanitize "calls" and "configurator" and "factory"
+                /**
+                jsonapi.params.enhancer:
+                class: Drupal\jsonapi\Routing\JsonApiParamEnhancer
+                calls:
+                - [setContainer, ['@service_container']]
+                tags:
+                - { name: route_enhancer }
+                 */
+                unset($serviceDefinition['tags'], $serviceDefinition['calls'], $serviceDefinition['configurator'], $serviceDefinition['factory']);
+                $this->serviceMap[$serviceId] = $serviceDefinition;
+            }
+        }
+
+        $service_map = $container->getByType(ServiceMap::class);
+        assert($service_map instanceof ServiceMap);
+        // @todo this is a hack that needs investigation.
+        // We cannot manipulate the service container and add parameters, so we take the existing
+        // service and modify it's properties so that its reference is updated within the container.
+        //
+        // During debug this works, but other times it fails.
+        $service_map->setDrupalServices($this->serviceMap);
+        // So, to work around whatever is happening we force it into globals.
+        $GLOBALS['drupalServiceMap'] = $service_map->getServices();
     }
 
     protected function loadLegacyIncludes(): void
@@ -199,6 +259,18 @@ class Bootstrap
                     }
                 }
             }
+
+            $servicesFileName = $module_dir . '/' . $module_name . '.services.yml';
+            if (file_exists($servicesFileName)) {
+                $this->serviceYamls[$module_name] = $servicesFileName;
+            }
+            $camelized = $this->camelize($module_name);
+            $name = "{$camelized}ServiceProvider";
+            $class = "Drupal\\{$module_name}\\{$name}";
+
+            $this->serviceClassProviders[$module_name] = $class;
+            $serviceId = "service_provider.$module_name.service_provider";
+            $this->serviceMap[$serviceId] = ['class' => $class];
         }
     }
     protected function addThemeNamespaces(): void
@@ -243,5 +315,10 @@ class Bootstrap
             // Something prevented the extension file from loading.
             @trigger_error("$path failed loading due to {$e->getMessage()}", E_USER_WARNING);
         }
+    }
+
+    protected function camelize(string $id): string
+    {
+        return strtr(ucwords(strtr($id, ['_' => ' ', '.' => '_ ', '\\' => '_ '])), [' ' => '']);
     }
 }

@@ -14,39 +14,31 @@ abstract class AnalyzerTestBase extends TestCase {
         $rootDir = __DIR__ . '/../fixtures/drupal';
         $tmpDir = sys_get_temp_dir() . '/' . time() . 'phpstan';
         $containerFactory = new ContainerFactory($rootDir);
-        $container = $containerFactory->create(
-            $tmpDir,
-            [__DIR__ . '/../fixtures/config/phpunit-drupal-phpstan.neon'],
-            []
-        );
+
+        $additionalConfigFiles = [
+            \sprintf('%s/config.level%s.neon', $containerFactory->getConfigDirectory(), 2),
+            __DIR__ . '/../fixtures/config/phpunit-drupal-phpstan.neon',
+        ];
+        $container = $containerFactory->create($tmpDir, $additionalConfigFiles, []);
         $fileHelper = $container->getByType(FileHelper::class);
         assert($fileHelper !== null);
 
-        $bootstrapFile = $container->parameters['bootstrap'];
-        $this->assertEquals(dirname(__DIR__, 2) . '/phpstan-bootstrap.php', $bootstrapFile);
-        // Mock the autoloader.
-        $GLOBALS['drupalVendorDir'] = dirname(__DIR__, 2) . '/vendor';
-        if ($bootstrapFile !== null) {
-            $bootstrapFile = $fileHelper->normalizePath($bootstrapFile);
-            if (!is_file($bootstrapFile)) {
-                $this->fail('Bootstrap file not found');
-            }
-            try {
-                (static function (string $file): void {
+        $autoloadFiles = $container->getParameter('autoload_files');
+        $this->assertEquals([dirname(__DIR__, 2) . '/drupal-autoloader.php'], $autoloadFiles);
+        if ($autoloadFiles !== null) {
+            foreach ($autoloadFiles as $autoloadFile) {
+                $autoloadFile = $fileHelper->normalizePath($autoloadFile);
+                if (!is_file($autoloadFile)) {
+                    $this->fail('Autoload file not found');
+                }
+                (static function (string $file) use ($container): void {
                     require_once $file;
-                })($bootstrapFile);
-            } catch (ContainerNotInitializedException $e) {
-                $trace = $e->getTrace();
-                $offending_file = $trace[1];
-                $this->fail(sprintf('%s called the Drupal container from unscoped code.', $offending_file['file']));
-            }
-            catch (\Throwable $e) {
-                $this->fail('Could not load the bootstrap file: ' . $e->getMessage());
+                })($autoloadFile);
             }
         }
 
         $analyser = $container->getByType(Analyser::class);
-        assert($analyser !== null);
+        assert($analyser instanceof Analyser);
 
         $file = $fileHelper->normalizePath($path);
         $errors = $analyser->analyse(

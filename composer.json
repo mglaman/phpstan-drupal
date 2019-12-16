@@ -11,23 +11,19 @@
     ],
     "require": {
         "php": "^7.1",
-        "phpstan/phpstan": "~0.11.0",
+        "nette/finder": "^2.5",
+        "phpstan/phpstan": "^0.12.0",
         "symfony/yaml": "~3.4.5|^4.2",
-        "webflo/drupal-finder": "^1.2",
-        "nette/di": "^3.0"
+        "webflo/drupal-finder": "^1.2"
     },
     "require-dev": {
-        "phpstan/phpstan-strict-rules": "~0.11.0",
+        "phpstan/phpstan-strict-rules": "^0.12.0",
         "squizlabs/php_codesniffer": "^3.3",
         "phpunit/phpunit": "^7.5",
-        "phpstan/phpstan-deprecation-rules": "~0.11.0",
+        "phpstan/phpstan-deprecation-rules": "~0.12.0",
         "composer/installers": "^1.6",
         "drupal/core-recommended": "^8.8@alpha",
         "drush/drush": "^9.6"
-    },
-    "conflict": {
-        "phpstan/phpstan": ">=0.12",
-        "phpstan/phpstan-deprecation-rules": ">=0.12"
     },
     "minimum-stability": "dev",
     "prefer-stable": true,

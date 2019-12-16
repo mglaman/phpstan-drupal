@@ -1,4 +1,6 @@
 parameters:
+	autoload_files:
+		- drupal-autoloader.php
 	excludes_analyse:
 		- *.api.php
 		- */tests/fixtures/*.php
@@ -9,13 +11,17 @@ parameters:
 		- install
 		- profile
 		- engine
-extensions:
-	drupal: PHPStan\DependencyInjection\DrupalExtension
-drupal:
-	entityTypeStorageMapping:
-		node: Drupal\node\NodeStorage
-		taxonomy_term: Drupal\taxonomy\TermStorage
-		user: Drupal\user\UserStorage
+	drupal:
+		drupal_root: null
+		entityTypeStorageMapping:
+			node: Drupal\node\NodeStorage
+			taxonomy_term: Drupal\taxonomy\TermStorage
+			user: Drupal\user\UserStorage
+parametersSchema:
+	drupal: structure([
+		drupal_root: schema(string(), nullable())
+		entityTypeStorageMapping: arrayOf(string())
+	])
 rules:
 	- PHPStan\Rules\Classes\PluginManagerInspectionRule
 	- PHPStan\Rules\Drupal\Coder\DiscouragedFunctionsRule
@@ -23,11 +29,9 @@ rules:
 	- PHPStan\Rules\Drupal\PluginManager\PluginManagerSetsCacheBackendRule
 	- PHPStan\Rules\Deprecations\AccessDeprecatedConstant
 services:
-	drupal.serviceMapFactory:
-		class: PHPStan\Drupal\ServiceMapFactory
-		factory: PHPStan\Drupal\ServiceMapFactory(%drupalServiceMap%)
 	-
-		factory: @drupal.serviceMapFactory::create()
+		class: PHPStan\Drupal\ServiceMap
+
 	-
 		class: PHPStan\Type\EntityTypeManagerGetStorageDynamicReturnTypeExtension
 		arguments:

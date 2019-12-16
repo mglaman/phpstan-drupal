@@ -55,18 +55,18 @@ final class BootstrapTest extends TestCase
         $fileHelper = $container->getByType(FileHelper::class);
         assert($fileHelper !== null);
 
-        $bootstrapFile = $container->parameters['bootstrap'];
-        $this->assertEquals(dirname(__DIR__, 2) . '/phpstan-bootstrap.php', $bootstrapFile);
-        // Mock the autoloader.
-        $GLOBALS['drupalVendorDir'] = dirname(__DIR__, 2) . '/vendor';
-        if ($bootstrapFile !== null) {
-            $bootstrapFile = $fileHelper->normalizePath($bootstrapFile);
-            if (!is_file($bootstrapFile)) {
-                $this->fail('Bootstrap file not found');
+        $autoloadFiles = $container->getParameter('autoload_files');
+        $this->assertEquals([dirname(__DIR__, 2) . '/drupal-autoloader.php'], $autoloadFiles);
+        if ($autoloadFiles !== null) {
+            foreach ($autoloadFiles as $autoloadFile) {
+                $autoloadFile = $fileHelper->normalizePath($autoloadFile);
+                if (!is_file($autoloadFile)) {
+                    $this->fail('Autoload file not found');
+                }
+                (static function (string $file) use ($container): void {
+                    require_once $file;
+                })($autoloadFile);
             }
-            (static function (string $file): void {
-                require_once $file;
-            })($bootstrapFile);
         }
     }
 

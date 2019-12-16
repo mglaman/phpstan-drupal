@@ -1,5 +1,13 @@
 <?php
 
-function phpstan_fixtures_included() {
+// Catches at level 4.
+function phpstan_fixtures_IfConstantConditionRule() {
+    $zero = 0;
+    if ($zero) {
+    }
+}
+
+// Catches at level 0.
+function phpstan_fixtures_MissingReturnRule(): string {
 
 }
