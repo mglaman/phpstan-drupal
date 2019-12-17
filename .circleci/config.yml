@@ -131,4 +131,4 @@ workflows:
       - build
       - test_drupal
       - test_drupal_project
-      - test_upgrade_status
+      # - test_upgrade_status
