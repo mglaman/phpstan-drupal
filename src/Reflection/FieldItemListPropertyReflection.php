@@ -57,7 +57,7 @@ class FieldItemListPropertyReflection implements PropertyReflection
             return new ObjectType('Drupal\Core\Entity\EntityInterface');
         }
         if ($this->propertyName === 'target_id') {
-            return new StringType();
+            return new UnionType([new StringType(), new IntegerType()]);
         }
         if ($this->propertyName === 'value') {
             return new StringType();
