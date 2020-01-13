@@ -3,7 +3,5 @@ parameters:
 	level: 0
 	ignoreErrors:
 		- '#\Drupal calls should be avoided in classes, use dependency injection instead#'
-	drupal:
-		drupal_root: %currentWorkingDirectory%
 includes:
 	- vendor/mglaman/phpstan-drupal/extension.neon

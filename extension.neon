@@ -12,14 +12,14 @@ parameters:
 		- profile
 		- engine
 	drupal:
-		drupal_root: null
+		drupal_root: '%currentWorkingDirectory%'
 		entityTypeStorageMapping:
 			node: Drupal\node\NodeStorage
 			taxonomy_term: Drupal\taxonomy\TermStorage
 			user: Drupal\user\UserStorage
 parametersSchema:
 	drupal: structure([
-		drupal_root: schema(string(), nullable())
+		drupal_root: string()
 		entityTypeStorageMapping: arrayOf(string())
 	])
 rules:

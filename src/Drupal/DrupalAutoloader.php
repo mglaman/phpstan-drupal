@@ -62,21 +62,15 @@ class DrupalAutoloader
 
     public function register(Container $container): void
     {
-        $startPath = null;
         $drupalParams = $container->getParameter('drupal');
-        $drupalRoot = $drupalParams['drupal_root'] ?? null;
-        if ($drupalRoot !== null && realpath($drupalRoot) !== false && is_dir($drupalRoot)) {
-            $startPath = $drupalRoot;
-        } else {
-            $startPath = dirname($GLOBALS['autoloaderInWorkingDirectory']);
-        }
+        $drupalRoot = $drupalParams['drupal_root'];
         $finder = new DrupalFinder();
-        $finder->locateRoot($startPath);
+        $finder->locateRoot($drupalRoot);
 
         $drupalRoot = $finder->getDrupalRoot();
         $drupalVendorRoot = $finder->getVendorDir();
         if (! (bool) $drupalRoot || ! (bool) $drupalVendorRoot) {
-            throw new \RuntimeException("Unable to detect Drupal at $startPath");
+            throw new \RuntimeException("Unable to detect Drupal at $drupalRoot");
         }
 
         $this->drupalRoot = $drupalRoot;
