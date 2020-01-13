@@ -2,10 +2,12 @@
 
 namespace PHPStan\Reflection;
 
+use PHPStan\Type\IntegerType;
 use PHPStan\Type\NullType;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\StringType;
 use PHPStan\Type\Type;
+use PHPStan\Type\UnionType;
 
 /**
  * Allows field access via magic methods
