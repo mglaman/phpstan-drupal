@@ -16,7 +16,7 @@ abstract class AnalyzerTestBase extends TestCase {
         $containerFactory = new ContainerFactory($rootDir);
 
         $additionalConfigFiles = [
-            \sprintf('%s/config.level%s.neon', $containerFactory->getConfigDirectory(), 2),
+            \sprintf('%s/config.level%s.neon', $containerFactory->getConfigDirectory(), 4),
             __DIR__ . '/../fixtures/config/phpunit-drupal-phpstan.neon',
         ];
         $container = $containerFactory->create($tmpDir, $additionalConfigFiles, []);

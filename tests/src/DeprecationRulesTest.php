@@ -11,7 +11,7 @@ class DeprecationRulesTest extends AnalyzerTestBase
     public function testDeprecationRules(string $path, int $count, array $errorMessages)
     {
         $errors = $this->runAnalyze($path);
-        $this->assertCount($count, $errors);
+        $this->assertCount($count, $errors, var_export($errors, true));
         foreach ($errors as $key => $error) {
             $this->assertEquals($errorMessages[$key], $error->getMessage());
         }
@@ -32,10 +32,11 @@ Url::fromRoute().'
         ];
         yield [
             __DIR__ . '/../fixtures/drupal/core/lib/Drupal/Core/Entity/EntityManager.php',
-            2,
+            3,
             [
                 'Class Drupal\Core\Entity\EntityManager implements deprecated interface Drupal\Core\Entity\EntityManagerInterface:
 in drupal:8.0.0 and is removed from drupal:9.0.0.',
+                'Method Drupal\\Core\\Entity\\EntityManager::setFieldMap() should return $this(Drupal\\Core\\Entity\\EntityManager) but returns Drupal\\Core\\Entity\\EntityFieldManager.',
                 'Method Drupal\Core\Entity\EntityManager::clearDisplayModeInfo() should return $this(Drupal\Core\Entity\EntityManager) but return statement is missing.'
             ]
         ];

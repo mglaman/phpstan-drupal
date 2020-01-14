@@ -20,8 +20,8 @@ final class ServiceProviderAutoloadingTest extends AnalyzerTestBase
     {
         yield [
             __DIR__ . '/../fixtures/drupal/modules/service_provider_test/src/ServiceProviderTestServiceProvider.php',
-            0,
-            []
+            1,
+            ['If condition is always true.']
         ];
     }
 }
