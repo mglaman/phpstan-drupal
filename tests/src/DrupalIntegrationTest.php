@@ -30,8 +30,11 @@ final class DrupalIntegrationTest extends AnalyzerTestBase {
 
     public function testExtensionReportsError() {
         $errors = $this->runAnalyze(__DIR__ . '/../fixtures/drupal/modules/phpstan_fixtures/phpstan_fixtures.module');
-        $this->assertCount(1, $errors);
-        $this->assertEquals('Function phpstan_fixtures_MissingReturnRule() should return string but return statement is missing.', $errors[0]->getMessage());
+        $this->assertCount(2, $errors, var_export($errors, true));
+        $error = array_shift($errors);
+        $this->assertEquals('If condition is always false.', $error->getMessage());
+        $error = array_shift($errors);
+        $this->assertEquals('Function phpstan_fixtures_MissingReturnRule() should return string but return statement is missing.', $error->getMessage());
     }
 
     public function testServiceMapping() {
