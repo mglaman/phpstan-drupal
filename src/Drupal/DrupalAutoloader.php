@@ -234,24 +234,12 @@ class DrupalAutoloader
             $module_dir = $this->drupalRoot . '/' . $module->getPath();
             $this->namespaces["Drupal\\$module_name"] = $module_dir . '/src';
 
-            // @see drupal_phpunit_get_extension_namespaces
+            // Extensions can have a \Drupal\Tests\extension namespace for test cases, traits, and other classes such
+            // as those that extend \Drupal\TestSite\TestSetupInterface.
+            // @see drupal_phpunit_get_extension_namespaces()
             $module_test_dir = $module_dir . '/tests/src';
             if (is_dir($module_test_dir)) {
-                $suite_names = ['Unit', 'Kernel', 'Functional', 'FunctionalJavascript', 'Build'];
-                foreach ($suite_names as $suite_name) {
-                    $suite_dir = $module_test_dir . '/' . $suite_name;
-                    if (is_dir($suite_dir)) {
-                        // Register the PSR-4 directory for PHPUnit-based suites.
-                        $this->namespaces["Drupal\\Tests\\$module_name\\$suite_name"] = $suite_dir;
-                    }
-
-                    // Extensions can have a \Drupal\extension\Traits namespace for
-                    // cross-suite trait code.
-                    $trait_dir = $module_test_dir . '/Traits';
-                    if (is_dir($trait_dir)) {
-                        $this->namespaces["Drupal\\Tests\\$module_name\\Traits"] = $trait_dir;
-                    }
-                }
+                $this->namespaces["Drupal\\Tests\\$module_name"] = $module_test_dir;
             }
 
             $servicesFileName = $module_dir . '/' . $module_name . '.services.yml';
