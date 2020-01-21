@@ -37,6 +37,18 @@ final class DrupalIntegrationTest extends AnalyzerTestBase {
         $this->assertEquals('Function phpstan_fixtures_MissingReturnRule() should return string but return statement is missing.', $error->getMessage());
     }
 
+    public function testExtensionTestSuiteAutoloading() {
+        $paths = [
+            __DIR__ . '/../fixtures/drupal/modules/module_with_tests/tests/src/Unit/ModuleWithTestsTest.php',
+            __DIR__ . '/../fixtures/drupal/modules/module_with_tests/tests/src/Traits/ModuleWithTestsTrait.php',
+            __DIR__ . '/../fixtures/drupal/modules/module_with_tests/tests/src/TestSite/ModuleWithTestsTestSite.php',
+        ];
+        foreach ($paths as $path) {
+            $errors = $this->runAnalyze($path);
+            $this->assertCount(0, $errors, print_r($errors, true));
+        }
+    }
+
     public function testServiceMapping() {
         $errorMessages = [
             '\Drupal calls should be avoided in classes, use dependency injection instead',
