@@ -60,4 +60,10 @@ final class DrupalIntegrationTest extends AnalyzerTestBase {
             $this->assertEquals($errorMessages[$key], $error->getMessage());
         }
     }
+
+    public function testAppRootPseudoService() {
+        $errorMessages = [];
+        $errors = $this->runAnalyze(__DIR__ . '/../fixtures/drupal/modules/phpstan_fixtures/src/AppRootParameter.php');
+        $this->assertCount(0, $errors, var_export($errors, TRUE));
+    }
 }

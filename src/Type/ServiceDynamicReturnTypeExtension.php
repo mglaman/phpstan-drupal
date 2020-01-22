@@ -11,6 +11,7 @@ use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\ParametersAcceptorSelector;
 use PHPStan\ShouldNotHappenException;
 use PHPStan\Type\Constant\ConstantBooleanType;
+use Psr\Container\ContainerInterface;
 
 class ServiceDynamicReturnTypeExtension implements DynamicMethodReturnTypeExtension
 {
@@ -26,7 +27,7 @@ class ServiceDynamicReturnTypeExtension implements DynamicMethodReturnTypeExtens
 
     public function getClass(): string
     {
-        return 'Symfony\Component\DependencyInjection\ContainerInterface';
+        return ContainerInterface::class;
     }
 
     public function isMethodSupported(MethodReflection $methodReflection): bool
