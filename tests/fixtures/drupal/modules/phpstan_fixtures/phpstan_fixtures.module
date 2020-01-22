@@ -11,3 +11,8 @@ function phpstan_fixtures_IfConstantConditionRule() {
 function phpstan_fixtures_MissingReturnRule(): string {
 
 }
+
+function phpstan_fixtures_get_app_root(): string {
+    $app_root = \Drupal::getContainer()->get('app.root');
+    return $app_root . '/core/includes/install.inc';
+}
