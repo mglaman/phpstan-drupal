@@ -66,4 +66,9 @@ final class DrupalIntegrationTest extends AnalyzerTestBase {
         $errors = $this->runAnalyze(__DIR__ . '/../fixtures/drupal/modules/phpstan_fixtures/src/AppRootParameter.php');
         $this->assertCount(0, $errors, var_export($errors, TRUE));
     }
+
+    public function testThemeSettingsFile() {
+        $errors = $this->runAnalyze(__DIR__ . '/../fixtures/drupal/core/modules/system/tests/themes/test_theme_settings/theme-settings.php');
+        $this->assertCount(0, $errors, var_export($errors, TRUE));
+    }
 }

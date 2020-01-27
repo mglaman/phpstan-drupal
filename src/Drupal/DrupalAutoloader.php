@@ -133,6 +133,11 @@ class DrupalAutoloader
         }
         foreach ($this->themeData as $extension) {
             $this->loadExtension($extension);
+            $theme_dir = $this->drupalRoot . '/' . $extension->getPath();
+            $theme_settings_file = $theme_dir . '/theme-settings.php';
+            if (file_exists($theme_settings_file)) {
+                $this->loadAndCatchErrors($theme_settings_file);
+            }
         }
 
         if (class_exists(\Drush\Drush::class)) {
