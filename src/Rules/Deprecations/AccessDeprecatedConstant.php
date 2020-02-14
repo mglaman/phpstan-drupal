@@ -47,7 +47,6 @@ class AccessDeprecatedConstant implements \PHPStan\Rules\Rule
             'DATETIME_DATE_STORAGE_FORMAT' => 'Deprecated in drupal:8.5.0 and is removed from drupal:9.0.0. Use \Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface::DATE_STORAGE_FORMAT instead.',
             'DRUPAL_ANONYMOUS_RID' => 'Deprecated in drupal:8.0.0 and is removed from drupal:9.0.0. Use Drupal\Core\Session\AccountInterface::ANONYMOUS_ROLE or \Drupal\user\RoleInterface::ANONYMOUS_ID instead.',
             'DRUPAL_AUTHENTICATED_RID' => 'Deprecated in drupal:8.0.0 and is removed from drupal:9.0.0. Use Drupal\Core\Session\AccountInterface::AUTHENTICATED_ROLE or \Drupal\user\RoleInterface::AUTHENTICATED_ID instead.',
-            'REQUEST_TIME' => 'Deprecated in drupal:8.3.0 and is removed from drupal:9.0.0. Use \Drupal::time()->getRequestTime();',
             'CONFIG_ACTIVE_DIRECTORY' => 'Deprecated in drupal:8.0.0 and is removed from drupal:9.0.0. Drupal core no longer creates an active directory.',
             'CONFIG_SYNC_DIRECTORY' => 'Deprecated in drupal:8.8.0 and is removed from drupal:9.0.0. Use \Drupal\Core\Site\Settings::get(\'config_sync_directory\') instead.',
             'CONFIG_STAGING_DIRECTORY' => 'Deprecated in drupal:8.0.0 and is removed from drupal:9.0.0. The staging directory was renamed to sync.',
