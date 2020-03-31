@@ -9,7 +9,8 @@ final class DrushIntegrationTest extends AnalyzerTestBase
      */
     public function testPaths($path) {
         $errors = $this->runAnalyze($path);
-        $this->assertCount(0, $errors, print_r($errors, true));
+        $this->assertCount(0, $errors->getErrors(), var_export($errors, TRUE));
+        $this->assertCount(0, $errors->getInternalErrors(), var_export($errors, TRUE));
     }
 
     public function dataPaths(): \Generator

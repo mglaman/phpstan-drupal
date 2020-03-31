@@ -10,8 +10,9 @@ final class EntityTestClass extends AnalyzerTestBase
     public function testEntityFields(string $path, int $count, array $errorMessages): void
     {
         $errors = $this->runAnalyze($path);
-        $this->assertCount($count, $errors, print_r($errors, true));
-        foreach ($errors as $key => $error) {
+        $this->assertCount($count, $errors->getErrors(), var_export($errors, TRUE));
+        $this->assertCount(0, $errors->getInternalErrors(), var_export($errors, TRUE));
+        foreach ($errors->getErrors() as $key => $error) {
             $this->assertEquals($errorMessages[$key], $error->getMessage());
         }
     }
@@ -19,7 +20,9 @@ final class EntityTestClass extends AnalyzerTestBase
     public function testEntityReferenceTargetIdPropertyReflection(): void
     {
         $errors = $this->runAnalyze(__DIR__ . '/../fixtures/drupal/modules/phpstan_fixtures/src/Entity/ReflectionEntityTest.php');
-        $this->assertCount(2, $errors, print_r($errors, true));
+        $this->assertCount(2, $errors->getErrors(), var_export($errors, TRUE));
+        $this->assertCount(0, $errors->getInternalErrors(), var_export($errors, TRUE));
+        $errors = $errors->getErrors();
         $error = array_shift($errors);
         $this->assertEquals(
             'Method Drupal\phpstan_fixtures\Entity\ReflectionEntityTest::getOwnerId() should return int but returns string.',

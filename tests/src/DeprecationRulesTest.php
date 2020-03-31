@@ -11,8 +11,8 @@ class DeprecationRulesTest extends AnalyzerTestBase
     public function testDeprecationRules(string $path, int $count, array $errorMessages)
     {
         $errors = $this->runAnalyze($path);
-        $this->assertCount($count, $errors, var_export($errors, true));
-        foreach ($errors as $key => $error) {
+        $this->assertCount($count, $errors->getErrors(), var_export($errors, true));
+        foreach ($errors->getErrors() as $key => $error) {
             $this->assertEquals($errorMessages[$key], $error->getMessage());
         }
     }
@@ -23,11 +23,11 @@ class DeprecationRulesTest extends AnalyzerTestBase
             __DIR__ . '/../fixtures/drupal/modules/phpstan_fixtures/src/UsesDeprecatedUrlFunction.php',
             2,
             [
-                '\Drupal calls should be avoided in classes, use dependency injection instead',
                 'Call to deprecated method url() of class Drupal:
 in drupal:8.0.0 and is removed from drupal:9.0.0.
 Instead create a \Drupal\Core\Url object directly, for example using
-Url::fromRoute().'
+Url::fromRoute().',
+                '\Drupal calls should be avoided in classes, use dependency injection instead',
             ]
         ];
         yield [

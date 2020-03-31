@@ -4,6 +4,7 @@ namespace PHPStan\Drupal;
 
 use Drupal\Core\DependencyInjection\ContainerNotInitializedException;
 use PHPStan\Analyser\Analyser;
+use PHPStan\Analyser\AnalyserResult;
 use PHPStan\DependencyInjection\ContainerFactory;
 use PHPStan\File\FileHelper;
 use PHPUnit\Framework\TestCase;
@@ -43,12 +44,13 @@ abstract class AnalyzerTestBase extends TestCase {
         $file = $fileHelper->normalizePath($path);
         $errors = $analyser->analyse(
             [$file],
+            null,
+            null,
             false,
-            null,
-            null,
-            true
+            null
         );
-        foreach ($errors as $error) {
+        assert($errors instanceof AnalyserResult);
+        foreach ($errors->getErrors() as $error) {
             $this->assertSame($fileHelper->normalizePath($file), $error->getFile());
         }
         return $errors;
