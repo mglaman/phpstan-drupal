@@ -1,10 +1,6 @@
 parameters:
 	reportUnmatchedIgnoredErrors: false
 	level: 2
-	# Ignore functions for the PHPUnit bootstrap process.
-	ignoreErrors:
-		- '#Function drupal_phpunit_[a-zA-Z0-9\\_]+ not found#'
-		- '#Unsafe usage of new static().#'
 includes:
 	- ../../../extension.neon
 	- ../../../vendor/phpstan/phpstan-deprecation-rules/rules.neon

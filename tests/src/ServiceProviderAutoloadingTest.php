@@ -9,8 +9,9 @@ final class ServiceProviderAutoloadingTest extends AnalyzerTestBase
      */
     public function testLoadingServiceProvider(string $path, int $count, array $errorMessages) {
         $errors = $this->runAnalyze($path);
-        $this->assertCount($count, $errors, print_r($errors, true));
-        foreach ($errors as $key => $error) {
+        $this->assertCount($count, $errors->getErrors(), print_r($errors, true));
+        $this->assertCount(0, $errors->getInternalErrors(), print_r($errors, true));
+        foreach ($errors->getErrors() as $key => $error) {
             $this->assertEquals($errorMessages[$key], $error->getMessage());
         }
     }

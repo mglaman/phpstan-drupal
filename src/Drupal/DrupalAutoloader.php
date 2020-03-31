@@ -100,6 +100,7 @@ class DrupalAutoloader
         $this->addThemeNamespaces();
         $this->registerPs4Namespaces($this->namespaces);
         $this->loadLegacyIncludes();
+        require_once $this->drupalRoot . '/core/tests/bootstrap.php';
 
         foreach ($this->moduleData as $extension) {
             $this->loadExtension($extension);
