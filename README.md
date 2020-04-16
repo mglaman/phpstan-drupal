@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.com/mglaman/phpstan-drupal.svg?branch=master)](https://travis-ci.com/mglaman/phpstan-drupal) [![CircleCI](https://circleci.com/gh/mglaman/phpstan-drupal.svg?style=svg)](https://circleci.com/gh/mglaman/phpstan-drupal)
 
-Extension for [PHPStan](https://github.com/phpstan/phpstan) to allow analysis of Drupal code.
+Extension for [PHPStan](https://phpstan.org/) to allow analysis of Drupal code.
 
 This extension was built for the [Centarro Toolbox](https://www.centarro.io/products/centarro-toolbox) Quality Monitor.
 
