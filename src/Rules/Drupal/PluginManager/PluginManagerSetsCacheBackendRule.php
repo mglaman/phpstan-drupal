@@ -49,7 +49,6 @@ class PluginManagerSetsCacheBackendRule extends AbstractPluginManagerRule
         }
 
         $hasCacheBackendSet = false;
-        $hasCacheTags = false;
         $misnamedCacheTagWarnings = [];
 
         foreach ($node->stmts ?? [] as $statement) {
@@ -72,7 +71,6 @@ class PluginManagerSetsCacheBackendRule extends AbstractPluginManagerRule
                     /** @var \PhpParser\Node\Expr\Array_ $cacheTags */
                     $cacheTags = $setCacheBackendArgs[2]->value;
                     if (count($cacheTags->items) > 0) {
-                        $hasCacheTags = true;
                         /** @var \PhpParser\Node\Expr\ArrayItem $item */
                         foreach ($cacheTags->items as $item) {
                             if (($item->value instanceof Node\Scalar\String_) &&
@@ -90,9 +88,6 @@ class PluginManagerSetsCacheBackendRule extends AbstractPluginManagerRule
         $errors = [];
         if (!$hasCacheBackendSet) {
             $errors[] = 'Missing cache backend declaration for performance.';
-        }
-        if (!$hasCacheTags) {
-            $errors[] = 'Plugin manager has cache backend specified but does not declare cache tags.';
         }
         foreach ($misnamedCacheTagWarnings as $cacheTagWarning) {
             $errors[] = sprintf('%s cache tag might be unclear and does not contain the cache key in it.', $cacheTagWarning);
