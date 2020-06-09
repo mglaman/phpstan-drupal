@@ -1,5 +1,5 @@
 parameters:
-	autoload_files:
+	bootstrapFiles:
 		- drupal-autoloader.php
 	excludes_analyse:
 		- *.api.php
