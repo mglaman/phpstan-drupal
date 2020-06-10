@@ -55,7 +55,7 @@ final class BootstrapTest extends TestCase
         $fileHelper = $container->getByType(FileHelper::class);
         assert($fileHelper !== null);
 
-        $autoloadFiles = $container->getParameter('autoload_files');
+        $autoloadFiles = $container->getParameter('bootstrapFiles');
         $this->assertEquals([dirname(__DIR__, 2) . '/drupal-autoloader.php'], $autoloadFiles);
         if ($autoloadFiles !== null) {
             foreach ($autoloadFiles as $autoloadFile) {
