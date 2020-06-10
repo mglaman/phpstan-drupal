@@ -4,8 +4,6 @@
 
 Extension for [PHPStan](https://phpstan.org/) to allow analysis of Drupal code.
 
-This extension was built for the [Centarro Toolbox](https://www.centarro.io/products/centarro-toolbox) Quality Monitor.
-
 ## Usage
 
 When you are using [`phpstan/extension-installer`](https://github.com/phpstan/extension-installer), `phpstan.neon` will be automatically included.
