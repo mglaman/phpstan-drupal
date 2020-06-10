@@ -1,9 +1,9 @@
 parameters:
-	autoload_files:
+	bootstrapFiles:
 		- drupal-autoloader.php
 	excludes_analyse:
-		- *.api.php
-		- */tests/fixtures/*.php
+		- '*.api.php'
+		- '*/tests/fixtures/*.php'
 	fileExtensions:
 		- module
 		- theme

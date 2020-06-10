@@ -71,7 +71,7 @@ Use \\Drupal\\Core\\Entity\\EntityTypeManagerInterface::getDefinitions()
 instead.'
         ];
         $errors = $this->runAnalyze(__DIR__ . '/../fixtures/drupal/modules/phpstan_fixtures/src/TestServicesMappingExtension.php');
-        $this->assertCount(3, $errors->getErrors(), var_export($errors->getErrors(), true));
+        $this->assertCount(3, $errors->getErrors());
         $this->assertCount(0, $errors->getInternalErrors());
         foreach ($errors->getErrors() as $key => $error) {
             $this->assertEquals($errorMessages[$key], $error->getMessage());

@@ -77,7 +77,7 @@ jobs:
           name: Run against a module
           command: |
             cd /tmp/drupal
-            ./vendor/bin/phpstan analyze core/modules/dynamic_page_cache --debug
+            ./vendor/bin/phpstan analyze --memory-limit=256M core/modules/dynamic_page_cache --debug
   test_drupal_project:
     <<: *defaults
     steps:
@@ -93,7 +93,7 @@ jobs:
           name: Run against a module
           command: |
             cd /tmp/drupal
-            ./vendor/bin/phpstan analyze web/core/modules/dynamic_page_cache --debug
+            ./vendor/bin/phpstan analyze --memory-limit=256M web/core/modules/dynamic_page_cache --debug
   test_upgrade_status:
     <<: *defaults
     steps:
