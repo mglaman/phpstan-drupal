@@ -23,7 +23,6 @@ parametersSchema:
 		entityTypeStorageMapping: arrayOf(string())
 	])
 rules:
-	- PHPStan\Rules\Drupal\LoadIncludes
 	- PHPStan\Rules\Classes\PluginManagerInspectionRule
 	- PHPStan\Rules\Drupal\Coder\DiscouragedFunctionsRule
 	- PHPStan\Rules\Drupal\GlobalDrupalDependencyInjectionRule
@@ -44,3 +43,8 @@ services:
 	-
 		class: PHPStan\Reflection\EntityFieldsViaMagicReflectionExtension
 		tags: [phpstan.broker.propertiesClassReflectionExtension]
+	-
+		class: PHPStan\Rules\Drupal\LoadIncludes
+		tags: [phpstan.rules.rule]
+		arguments:
+			- %drupal.drupal_root%

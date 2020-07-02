@@ -14,6 +14,22 @@ use PHPStan\ShouldNotHappenException;
 
 class LoadIncludes implements Rule
 {
+
+    /**
+     * The project root.
+     *
+     * @var string
+     */
+    protected $projectRoot;
+
+    /**
+     * LoadIncludes constructor.
+     */
+    public function __construct($project_root)
+    {
+        $this->projectRoot = $project_root;
+    }
+
     public function getNodeType(): string
     {
         return Node\Expr\MethodCall::class;
@@ -46,7 +62,7 @@ class LoadIncludes implements Rule
             }
             // Try to invoke it similarily as the module handler itself.
             $finder = new DrupalFinder();
-            $finder->locateRoot(dirname($GLOBALS['autoloaderInWorkingDirectory']));
+            $finder->locateRoot($this->projectRoot);
             $drupal_root = $finder->getDrupalRoot();
             $extensionDiscovery = new ExtensionDiscovery($drupal_root);
             $modules = $extensionDiscovery->scan('module');

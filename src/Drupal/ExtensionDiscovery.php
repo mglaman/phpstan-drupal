@@ -118,6 +118,15 @@ class ExtensionDiscovery
      */
     public function scan($type)
     {
+        static $scanresult;
+        if (!$scanresult) {
+            $scanresult = [];
+        }
+
+        if (isset($scanresult[$type])) {
+            return $scanresult[$type];
+        }
+
         $searchdirs = [];
         // Search the core directory.
         $searchdirs[static::ORIGIN_CORE] = 'core';
@@ -152,7 +161,8 @@ class ExtensionDiscovery
         $files = $this->sort($files, $origin_weights);
 
         // Process and return the list of extensions keyed by extension name.
-        return $this->process($files);
+        $scanresult[$type] = $this->process($files);
+        return $scanresult[$type];
     }
 
     /**
