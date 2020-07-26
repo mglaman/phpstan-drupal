@@ -43,3 +43,8 @@ services:
 	-
 		class: PHPStan\Reflection\EntityFieldsViaMagicReflectionExtension
 		tags: [phpstan.broker.propertiesClassReflectionExtension]
+	-
+		class: PHPStan\Rules\Drupal\LoadIncludes
+		tags: [phpstan.rules.rule]
+		arguments:
+			- %drupal.drupal_root%

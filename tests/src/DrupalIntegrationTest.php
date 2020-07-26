@@ -38,7 +38,7 @@ final class DrupalIntegrationTest extends AnalyzerTestBase {
 
     public function testExtensionReportsError() {
         $errors = $this->runAnalyze(__DIR__ . '/../fixtures/drupal/modules/phpstan_fixtures/phpstan_fixtures.module');
-        $this->assertCount(2, $errors->getErrors(), var_export($errors, true));
+        $this->assertCount(3, $errors->getErrors(), var_export($errors, true));
         $this->assertCount(0, $errors->getInternalErrors(), var_export($errors, true));
 
         $errors = $errors->getErrors();
@@ -46,6 +46,8 @@ final class DrupalIntegrationTest extends AnalyzerTestBase {
         $this->assertEquals('If condition is always false.', $error->getMessage());
         $error = array_shift($errors);
         $this->assertEquals('Function phpstan_fixtures_MissingReturnRule() should return string but return statement is missing.', $error->getMessage());
+        $error = array_shift($errors);
+        $this->assertStringContainsString('phpstan_fixtures/phpstan_fixtures.fetch.inc could not be loaded from Drupal\\Core\\Extension\\ModuleHandlerInterface::loadInclude', $error->getMessage());
     }
 
     public function testExtensionTestSuiteAutoloading() {
