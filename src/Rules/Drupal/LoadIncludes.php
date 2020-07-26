@@ -99,7 +99,5 @@ class LoadIncludes implements Rule
         } catch (\Throwable $e) {
             return [sprintf('A file could not be loaded from %s::loadInclude', $type->getClassName())];
         }
-
-        return [];
     }
 }
