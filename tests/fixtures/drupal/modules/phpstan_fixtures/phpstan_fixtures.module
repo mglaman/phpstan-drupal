@@ -16,3 +16,14 @@ function phpstan_fixtures_get_app_root(): string {
     $app_root = \Drupal::getContainer()->get('app.root');
     return $app_root . '/core/includes/install.inc';
 }
+
+function phpstan_fixtures_module_load_includes_test(): array {
+    $module_handler = \Drupal::moduleHandler();
+    $module_handler->loadInclude('locale', 'fetch.inc');
+    return _locale_translation_default_update_options();
+}
+
+function phpstan_fixtures_module_load_includes_negative_test(): void {
+    $module_handler = \Drupal::moduleHandler();
+    $module_handler->loadInclude('phpstan_fixtures', 'fetch.inc');
+}
