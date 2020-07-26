@@ -47,5 +47,15 @@ in drupal:8.0.0 and is removed from drupal:9.0.0.',
                 'Call to deprecated constant DATETIME_DATE_STORAGE_FORMAT: Deprecated in drupal:8.5.0 and is removed from drupal:9.0.0. Use \Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface::DATE_STORAGE_FORMAT instead.',
             ]
         ];
+        yield [
+            __DIR__ . '/../fixtures/drupal/core/modules/simpletest/src/TestDiscovery.php',
+            1,
+            [
+                'PHPDoc tag @param has invalid value ($class_loader
+The class loader. Normally Composer\'s ClassLoader, as included by the
+front controller, but may also be decorated; e.g.,
+\Symfony\Component\ClassLoader\ApcClassLoader.): Unexpected token "$class_loader", expected type at offset 105',
+            ]
+        ];
     }
 }
