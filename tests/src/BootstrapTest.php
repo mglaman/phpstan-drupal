@@ -56,7 +56,7 @@ final class BootstrapTest extends TestCase
         assert($fileHelper !== null);
 
         $autoloadFiles = $container->getParameter('bootstrapFiles');
-        $this->assertEquals([dirname(__DIR__, 2) . '/drupal-autoloader.php'], $autoloadFiles);
+        $this->assertContains(dirname(__DIR__, 2) . '/drupal-autoloader.php', $autoloadFiles);
         if ($autoloadFiles !== null) {
             foreach ($autoloadFiles as $autoloadFile) {
                 $autoloadFile = $fileHelper->normalizePath($autoloadFile);

@@ -106,7 +106,7 @@ class PluginManagerInspectionRule implements Rule
             throw new ShouldNotHappenException();
         }
 
-        if ($constructor->class !== $fqn) {
+        if ($constructor->class !== $fqn->toString()) {
             $errors[] = sprintf('%s must override __construct if using YAML plugins.', $fqn);
         } else {
             foreach ($class->stmts as $stmt) {
