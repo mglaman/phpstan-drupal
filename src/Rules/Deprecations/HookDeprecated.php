@@ -7,6 +7,7 @@ use PhpParser\Node\Identifier;
 use PHPStan\Analyser\Scope;
 use PHPStan\Broker\Broker;
 use PHPStan\Rules\Rule;
+use PHPStan\ShouldNotHappenException;
 
 class HookDeprecated implements Rule
 {
@@ -33,9 +34,21 @@ class HookDeprecated implements Rule
         if ($node->name->toString() !== 'alterDeprecated') {
             return [];
         }
-        $function = $scope->getFunction();
-        $class = $scope->getClassReflection();
-        $stop = null;
-        // TODO: Implement processNode() method.
+        $args = $node->args;
+        if (count($args) < 3) {
+            throw new ShouldNotHappenException('alterDeprecated was called with missing arguments.');
+        }
+        $arg_description = $args[0]->value;
+        assert($arg_description instanceof Node\Scalar\String_);
+        $arg_type = $args[1]->value;
+        assert($arg_type instanceof Node\Scalar\String_);
+
+        $deprecation_description = $arg_description->value;
+        $hook_type = $arg_type->value;
+        return [sprintf(
+            "Call to deprecated alter hook %s:\n%s",
+            $hook_type,
+            $deprecation_description
+        )];
     }
 }

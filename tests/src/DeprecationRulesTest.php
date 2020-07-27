@@ -49,12 +49,14 @@ in drupal:8.0.0 and is removed from drupal:9.0.0.',
         ];
         yield [
             __DIR__ . '/../fixtures/drupal/core/modules/simpletest/src/TestDiscovery.php',
-            1,
+            2,
             [
                 'PHPDoc tag @param has invalid value ($class_loader
 The class loader. Normally Composer\'s ClassLoader, as included by the
 front controller, but may also be decorated; e.g.,
 \Symfony\Component\ClassLoader\ApcClassLoader.): Unexpected token "$class_loader", expected type at offset 105',
+                'Call to deprecated alter hook simpletest:
+Convert your test to a PHPUnit-based one and implement test listeners. See: https://www.drupal.org/node/2939892'
             ]
         ];
     }
