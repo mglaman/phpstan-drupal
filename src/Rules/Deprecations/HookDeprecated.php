@@ -7,28 +7,13 @@ use PhpParser\Node;
 use PhpParser\Node\Identifier;
 use PHPStan\Analyser\Scope;
 use PHPStan\Broker\Broker;
+use PHPStan\Drupal\Extension;
 use PHPStan\Drupal\ExtensionDiscovery;
 use PHPStan\Rules\Rule;
 use PHPStan\ShouldNotHappenException;
 
 class HookDeprecated implements Rule
 {
-
-    /** @var Broker */
-    private $broker;
-
-    /**
-     * The project root.
-     *
-     * @var string
-     */
-    protected $projectRoot;
-
-    public function __construct(Broker $broker, string $projectRoot)
-    {
-        $this->broker = $broker;
-        $this->projectRoot = $projectRoot;
-    }
 
     public function getNodeType(): string
     {
@@ -42,6 +27,8 @@ class HookDeprecated implements Rule
         if (!$node->name instanceof Identifier) {
             return [];
         }
+
+        // @todo support invokeAllDeprecated, invokeDeprecated
         if ($node->name->toString() !== 'alterDeprecated') {
             return [];
         }
@@ -51,18 +38,15 @@ class HookDeprecated implements Rule
         }
         $arg_description = $args[0]->value;
         assert($arg_description instanceof Node\Scalar\String_);
+        // @todo this could be an array of hook types.
         $arg_type = $args[1]->value;
         assert($arg_type instanceof Node\Scalar\String_);
 
         $deprecation_description = $arg_description->value;
         $hook_type = $arg_type->value;
 
-        // Try to invoke it similarily as the module handler itself.
-        $finder = new DrupalFinder();
-        $finder->locateRoot($this->projectRoot);
-        $drupal_root = $finder->getDrupalRoot();
-        $extensionDiscovery = new ExtensionDiscovery($drupal_root);
-        $modules = $extensionDiscovery->scan('module');
+        /** @var Extension[] $modules */
+        $modules = $GLOBALS['drupalModuleData'];
 
         $errors = [];
         foreach ($modules as $module) {

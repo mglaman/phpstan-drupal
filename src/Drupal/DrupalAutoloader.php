@@ -199,6 +199,9 @@ class DrupalAutoloader
         $service_map->setDrupalServices($this->serviceMap);
         // So, to work around whatever is happening we force it into globals.
         $GLOBALS['drupalServiceMap'] = $service_map->getServices();
+        // @todo find a way to not inject this into globals.
+        $GLOBALS['drupalModuleData'] = $this->moduleData;
+        $GLOBALS['drupalThemeData'] = $this->themeData;
     }
 
     protected function loadLegacyIncludes(): void
