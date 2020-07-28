@@ -2,10 +2,12 @@
 
 namespace PHPStan\Rules\Deprecations;
 
+use DrupalFinder\DrupalFinder;
 use PhpParser\Node;
 use PhpParser\Node\Identifier;
 use PHPStan\Analyser\Scope;
 use PHPStan\Broker\Broker;
+use PHPStan\Drupal\ExtensionDiscovery;
 use PHPStan\Rules\Rule;
 use PHPStan\ShouldNotHappenException;
 
@@ -14,9 +16,18 @@ class HookDeprecated implements Rule
 
     /** @var Broker */
     private $broker;
-    public function __construct(Broker $broker)
+
+    /**
+     * The project root.
+     *
+     * @var string
+     */
+    protected $projectRoot;
+
+    public function __construct(Broker $broker, string $projectRoot)
     {
         $this->broker = $broker;
+        $this->projectRoot = $projectRoot;
     }
 
     public function getNodeType(): string
@@ -45,10 +56,27 @@ class HookDeprecated implements Rule
 
         $deprecation_description = $arg_description->value;
         $hook_type = $arg_type->value;
-        return [sprintf(
-            "Call to deprecated alter hook %s:\n%s",
-            $hook_type,
-            $deprecation_description
-        )];
+
+        // Try to invoke it similarily as the module handler itself.
+        $finder = new DrupalFinder();
+        $finder->locateRoot($this->projectRoot);
+        $drupal_root = $finder->getDrupalRoot();
+        $extensionDiscovery = new ExtensionDiscovery($drupal_root);
+        $modules = $extensionDiscovery->scan('module');
+
+        $errors = [];
+        foreach ($modules as $module) {
+            $hook = "{$module->getName()}_{$hook_type}_alter";
+            if (\function_exists($hook)) {
+                $errors = [sprintf(
+                    "Call to deprecated alter hook %s with %s():\n%s",
+                    $hook_type,
+                    $hook,
+                    $deprecation_description
+                )];
+            }
+        }
+        return $errors;
+
     }
 }

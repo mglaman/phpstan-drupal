@@ -28,7 +28,7 @@ rules:
 	- PHPStan\Rules\Drupal\GlobalDrupalDependencyInjectionRule
 	- PHPStan\Rules\Drupal\PluginManager\PluginManagerSetsCacheBackendRule
 	- PHPStan\Rules\Deprecations\AccessDeprecatedConstant
-	- PHPStan\Rules\Deprecations\HookDeprecated
+
 services:
 	-
 		class: PHPStan\Drupal\ServiceMap
@@ -44,6 +44,12 @@ services:
 	-
 		class: PHPStan\Reflection\EntityFieldsViaMagicReflectionExtension
 		tags: [phpstan.broker.propertiesClassReflectionExtension]
+
+	-
+		class: PHPStan\Rules\Deprecations\HookDeprecated
+		tags: [phpstan.rules.rule]
+		arguments:
+			projectRoot: %drupal.drupal_root%
 	-
 		class: PHPStan\Rules\Drupal\LoadIncludes
 		tags: [phpstan.rules.rule]
