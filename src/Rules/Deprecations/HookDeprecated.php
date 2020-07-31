@@ -61,6 +61,5 @@ class HookDeprecated implements Rule
             }
         }
         return $errors;
-
     }
 }
