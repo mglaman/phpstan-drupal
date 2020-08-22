@@ -23,7 +23,8 @@ class GlobalDrupalDependencyInjectionRule implements Rule
         if (!($node->class instanceof Node\Name\FullyQualified) || (string) $node->class !== 'Drupal') {
             return [];
         }
-        if (!$scope->isInClass() && !$scope->isInTrait()) {
+        // Do not raise if called inside of a trait.
+        if (!$scope->isInClass() || $scope->isInTrait()) {
             return [];
         }
         $scopeClassReflection = $scope->getClassReflection();
@@ -32,6 +33,8 @@ class GlobalDrupalDependencyInjectionRule implements Rule
         }
 
         $whitelist = [
+            // Ignore tests.
+            'PHPUnit\Framework\TestCase',
             // Typed data objects cannot use dependency injection.
             'Drupal\Core\TypedData\TypedDataInterface',
             // Render elements cannot use dependency injection.
