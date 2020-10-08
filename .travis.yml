@@ -3,6 +3,7 @@ php:
   - "7.1"
   - "7.2"
   - "7.3"
+  - "7.4"
 
 before_install:
   - composer global require "hirak/prestissimo:^0.3"
@@ -18,7 +19,7 @@ script:
   # Install package to a Drupal project. Use repository key 1 to not override Drupal's packagist endpoint.
   - cd $TRAVIS_BUILD_DIR/../drupal
   - composer config repositories.1 path $TRAVIS_BUILD_DIR
-  - composer require mglaman/phpstan-drupal *@dev
+  - COMPOSER_MEMORY_LIMIT=-1 composer require mglaman/phpstan-drupal *@dev
   - cp $TRAVIS_BUILD_DIR/tests/fixtures/config/drupal-phpstan.neon phpstan.neon
 
   # Test that a known non-failing file doesn't error out.
@@ -29,7 +30,7 @@ script:
   - ./vendor/bin/phpstan analyze web/core/modules/migrate_drupal --no-progress | grep -q "tests/fixtures" && false || true
 
   # Check "Cannot redeclare token_theme() due to blazy_test.module"
-  - composer require drupal/token drupal/blazy
+  - COMPOSER_MEMORY_LIMIT=-1 composer require drupal/token drupal/blazy
   - ./vendor/bin/phpstan analyze web/modules/contrib/blazy --no-progress || if (($? == 255)); then false; else true; fi
 
 cache:
