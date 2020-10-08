@@ -34,6 +34,7 @@ commands:
         default: 'drupal/recommended-project:^8.8@alpha'
     steps:
       - run: composer create-project << parameters.project >> /tmp/drupal --no-interaction --prefer-dist --ignore-platform-reqs
+      - run: composer require zaporylie/composer-drupal-optimizations:^1.1 --dev --working-dir=/tmp/drupal
   local-require:
     steps:
       - run:
@@ -60,7 +61,7 @@ jobs:
           command: ./vendor/bin/phpstan analyze src
       - run:
           name: PHPUnit
-          command: ./vendor/bin/phpunit --no-coverage
+          command: ./vendor/bin/phpunit
   test_drupal:
     <<: *defaults
     steps:
@@ -123,7 +124,7 @@ jobs:
           command: |
             cp ~/repo/tests/fixtures/config/circleci-phpunit.xml /tmp/drupal/core/phpunit.xml
             cd /tmp/drupal
-            ./vendor/bin/phpunit -c core modules/upgrade_status --debug --stop-on-failure --no-coverage
+            ./vendor/bin/phpunit -c core modules/upgrade_status --debug --stop-on-failure
 workflows:
   version: 2
   tests:

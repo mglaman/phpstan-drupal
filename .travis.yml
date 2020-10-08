@@ -10,6 +10,7 @@ before_install:
 install:
   - composer install --no-interaction
   - COMPOSER_MEMORY_LIMIT=-1 composer create-project drupal-composer/drupal-project:8.x-dev $TRAVIS_BUILD_DIR/../drupal --no-interaction --no-progress
+  - COMPOSER_MEMORY_LIMIT=-1 composer require zaporylie/composer-drupal-optimizations:^1.1 --dev --working-dir=$TRAVIS_BUILD_DIR/../drupal
 script:
   # Inspections
   - ./vendor/bin/phpcs src
