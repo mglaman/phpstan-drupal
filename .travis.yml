@@ -10,32 +10,28 @@ before_install:
 install:
   - composer install --no-interaction
   - COMPOSER_MEMORY_LIMIT=-1 composer create-project drupal-composer/drupal-project:8.x-dev $TRAVIS_BUILD_DIR/../drupal --no-interaction --no-progress
+script:
+  # Inspections
+  - ./vendor/bin/phpcs src
+  - ./vendor/bin/phpstan analyze src
+  - ./vendor/bin/phpunit
 
-jobs:
-  include:
-    - stage: inspections
-      script:
-      # Inspections
-      - ./vendor/bin/phpcs src
-      - ./vendor/bin/phpstan analyze src
-      - ./vendor/bin/phpunit
-    - stage: integration
-      script:
-      # Install package to a Drupal project. Use repository key 1 to not override Drupal's packagist endpoint.
-      - cd $TRAVIS_BUILD_DIR/../drupal
-      - composer config repositories.1 path $TRAVIS_BUILD_DIR
-      - composer require mglaman/phpstan-drupal *@dev
-      - cp $TRAVIS_BUILD_DIR/tests/fixtures/config/drupal-phpstan.neon phpstan.neon      
-      # Test that a known non-failing file doesn't error out.
-      - ./vendor/bin/phpstan analyze web/core/install.php --debug
-      - ./vendor/bin/phpstan analyze web/core/modules/dynamic_page_cache | grep -q "Class Drupal\Tests\BrowserTestBase not found and could not be autoloaded." && false || true
+  # Install package to a Drupal project. Use repository key 1 to not override Drupal's packagist endpoint.
+  - cd $TRAVIS_BUILD_DIR/../drupal
+  - composer config repositories.1 path $TRAVIS_BUILD_DIR
+  - COMPOSER_MEMORY_LIMIT=-1 composer require mglaman/phpstan-drupal *@dev
+  - cp $TRAVIS_BUILD_DIR/tests/fixtures/config/drupal-phpstan.neon phpstan.neon
 
-      # Verify test fixtures are ignored.
-      - ./vendor/bin/phpstan analyze web/core/modules/migrate_drupal --no-progress | grep -q "tests/fixtures" && false || true
+  # Test that a known non-failing file doesn't error out.
+  - ./vendor/bin/phpstan analyze web/core/install.php --debug
+  - ./vendor/bin/phpstan analyze web/core/modules/dynamic_page_cache | grep -q "Class Drupal\Tests\BrowserTestBase not found and could not be autoloaded." && false || true
 
-      # Check "Cannot redeclare token_theme() due to blazy_test.module"
-      - composer require drupal/token drupal/blazy
-      - ./vendor/bin/phpstan analyze web/modules/contrib/blazy --no-progress || if (($? == 255)); then false; else true; fi
+  # Verify test fixtures are ignored.
+  - ./vendor/bin/phpstan analyze web/core/modules/migrate_drupal --no-progress | grep -q "tests/fixtures" && false || true
+
+  # Check "Cannot redeclare token_theme() due to blazy_test.module"
+  - COMPOSER_MEMORY_LIMIT=-1 composer require drupal/token drupal/blazy
+  - ./vendor/bin/phpstan analyze web/modules/contrib/blazy --no-progress || if (($? == 255)); then false; else true; fi
 
 cache:
   directories:
