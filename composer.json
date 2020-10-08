@@ -39,7 +39,7 @@
         "classmap": ["tests/src"]
     },
     "conflict": {
-        "phpstan/phpstan": "^0.12.41"
+        "phpstan/phpstan": "^0.12.43"
     },
     "extra": {
         "branch-alias": {
