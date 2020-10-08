@@ -1,7 +1,7 @@
 version: 2.1
 defaults: &defaults
   docker:
-    - image: circleci/php:7.2-cli
+    - image: circleci/php:7.3-cli
       environment:
         BOX_VERSION: 3.6.0
   working_directory: ~/repo
@@ -60,7 +60,7 @@ jobs:
           command: ./vendor/bin/phpstan analyze src
       - run:
           name: PHPUnit
-          command: ./vendor/bin/phpunit
+          command: ./vendor/bin/phpunit --no-coverage
   test_drupal:
     <<: *defaults
     steps:
@@ -123,7 +123,7 @@ jobs:
           command: |
             cp ~/repo/tests/fixtures/config/circleci-phpunit.xml /tmp/drupal/core/phpunit.xml
             cd /tmp/drupal
-            ./vendor/bin/phpunit -c core modules/upgrade_status --debug --stop-on-failure
+            ./vendor/bin/phpunit -c core modules/upgrade_status --debug --stop-on-failure --no-coverage
 workflows:
   version: 2
   tests:
