@@ -2,6 +2,8 @@
 
 namespace PHPStan\Drupal;
 
+use PHPStan\Analyser\Error;
+
 final class DrupalIntegrationTest extends AnalyzerTestBase {
 
     public function testInstallPhp() {
@@ -52,16 +54,21 @@ final class DrupalIntegrationTest extends AnalyzerTestBase {
 
     public function testExtensionTestSuiteAutoloading()
     {
-        $this->markTestSkipped('Causing a ridiculous amount of memory usage.');
+//        $this->markTestSkipped('Causing a ridiculous amount of memory usage.');
         $paths = [
             __DIR__ . '/../fixtures/drupal/modules/module_with_tests/tests/src/Unit/ModuleWithTestsTest.php',
-            __DIR__ . '/../fixtures/drupal/modules/module_with_tests/tests/src/Traits/ModuleWithTestsTrait.php',
-            __DIR__ . '/../fixtures/drupal/modules/module_with_tests/tests/src/TestSite/ModuleWithTestsTestSite.php',
+//            __DIR__ . '/../fixtures/drupal/modules/module_with_tests/tests/src/Traits/ModuleWithTestsTrait.php',
+//            __DIR__ . '/../fixtures/drupal/modules/module_with_tests/tests/src/TestSite/ModuleWithTestsTestSite.php',
         ];
         foreach ($paths as $path) {
             $errors = $this->runAnalyze($path);
-            $this->assertCount(0, $errors->getErrors(), print_r($errors, true));
-            $this->assertCount(0, $errors->getInternalErrors(), print_r($errors, true));
+            // @todo the following assertions "prove" it can be autoloaded after Drupal autoloader executed.
+            $this->assertTrue(class_exists('Drupal\Tests\BrowserTestBase'));
+            $this->assertTrue(trait_exists('Drupal\Tests\PhpunitCompatibilityTrait'));
+            $this->assertCount(0, $errors->getErrors(), implode(PHP_EOL, array_map(static function (Error $error) {
+                return $error->getMessage();
+            }, $errors->getErrors())));
+            $this->assertCount(0, implode(PHP_EOL, $errors->getInternalErrors()));
         }
     }
 
