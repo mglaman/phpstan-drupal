@@ -38,9 +38,6 @@
     "autoload-dev": {
         "classmap": ["tests/src"]
     },
-    "conflict": {
-        "phpstan/phpstan": "^0.12.43"
-    },
     "extra": {
         "branch-alias": {
             "dev-master": "0.12-dev"
