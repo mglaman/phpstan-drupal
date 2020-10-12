@@ -133,3 +133,16 @@ workflows:
       - test_drupal
       - test_drupal_project
       # - test_upgrade_status
+  weekly:
+    triggers:
+      - schedule:
+          # Every thursday to run soon after patch and security updates on wednesdays.
+          cron: "0 0 * * 4"
+          filters:
+            branches:
+              only:
+                - master
+    jobs:
+      - build
+      - test_drupal
+      - test_drupal_project
