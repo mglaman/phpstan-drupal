@@ -1,12 +1,9 @@
 language: php
 php:
-  - "7.1"
   - "7.2"
   - "7.3"
   - "7.4"
 
-before_install:
-  - composer global require "hirak/prestissimo:^0.3"
 install:
   - composer install --no-interaction
   - COMPOSER_MEMORY_LIMIT=-1 composer create-project drupal-composer/drupal-project:8.x-dev $TRAVIS_BUILD_DIR/../drupal --no-interaction --no-progress
