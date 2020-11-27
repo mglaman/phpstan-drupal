@@ -6,7 +6,7 @@ php:
 
 install:
   - composer install --no-interaction
-  - COMPOSER_MEMORY_LIMIT=-1 composer create-project drupal-composer/drupal-project:8.x-dev $TRAVIS_BUILD_DIR/../drupal --no-interaction --no-progress
+  - COMPOSER_MEMORY_LIMIT=-1 composer create-project drupal/recommended-project $TRAVIS_BUILD_DIR/../drupal --no-interaction --no-progress
 script:
   # Inspections
   - ./vendor/bin/phpcs src
