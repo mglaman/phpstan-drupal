@@ -23,6 +23,7 @@
         "phpstan/phpstan-deprecation-rules": "~0.12.0",
         "composer/installers": "^1.6",
         "drupal/core-recommended": "^9.0",
+        "drupal/core-dev": "^9.0",
         "drush/drush": "^10.0"
     },
     "minimum-stability": "dev",

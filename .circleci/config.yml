@@ -33,7 +33,6 @@ commands:
         default: 'drupal/recommended-project'
     steps:
       - run: composer create-project << parameters.project >> /tmp/drupal --no-interaction --prefer-dist --ignore-platform-reqs
-      - run: composer require zaporylie/composer-drupal-optimizations:^1.1 --dev --working-dir=/tmp/drupal
   local-require:
     steps:
       - run:
