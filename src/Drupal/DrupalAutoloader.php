@@ -170,7 +170,7 @@ class DrupalAutoloader
                         if (is_array($argument)) {
                             // @todo fix for @http_kernel.controller.argument_metadata_factory
                             $argument = '';
-                        } else {
+                        } elseif (is_string($argument)) {
                             $argument = str_replace('@', '', $argument);
                         }
                     });
