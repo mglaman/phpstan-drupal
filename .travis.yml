@@ -8,6 +8,8 @@ before_install: []
 install:
   - composer install --no-interaction
   - COMPOSER_MEMORY_LIMIT=-1 composer create-project drupal-composer/drupal-project:8.x-dev $TRAVIS_BUILD_DIR/../drupal --no-interaction --no-progress
+before_script:
+  - if php --ri xdebug >/dev/null; then phpenv config-rm xdebug.ini; fi
 script:
   # Inspections
   - ./vendor/bin/phpcs src

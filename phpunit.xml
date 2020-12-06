@@ -6,7 +6,7 @@
          beStrictAboutCoversAnnotation="true"
          beStrictAboutOutputDuringTests="true"
          beStrictAboutTodoAnnotatedTests="true"
-         verbose="true">
+         verbose="false">
     <php>
         <ini name="error_reporting" value="32767"/>
         <ini name="memory_limit" value="-1"/>
