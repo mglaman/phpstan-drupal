@@ -7,28 +7,28 @@
          beStrictAboutOutputDuringTests="true"
          beStrictAboutTodoAnnotatedTests="true"
          verbose="false">
-  <coverage processUncoveredFiles="true">
-    <include>
-      <directory suffix=".php">src</directory>
-    </include>
-    <exclude>
-      <directory>./vendor</directory>
-      <directory>./tests</directory>
-    </exclude>
-    <report>
-      <clover outputFile="./clover.xml"/>
-      <text outputFile="php://stdout" showUncoveredFiles="true"/>
-    </report>
-  </coverage>
-  <php>
-    <ini name="error_reporting" value="32767"/>
-    <ini name="memory_limit" value="-1"/>
-  </php>
-  <testsuites>
-    <testsuite name="default">
-      <directory suffix="Test.php">tests</directory>
-      <exclude>tests/fixtures/</exclude>
-    </testsuite>
-  </testsuites>
-  <logging/>
+    <coverage processUncoveredFiles="true">
+        <include>
+            <directory suffix=".php">src</directory>
+        </include>
+        <exclude>
+            <directory>./vendor</directory>
+            <directory>./tests</directory>
+        </exclude>
+        <report>
+            <clover outputFile="./clover.xml"/>
+            <text outputFile="php://stdout" showUncoveredFiles="true"/>
+        </report>
+    </coverage>
+    <php>
+        <ini name="error_reporting" value="32767"/>
+        <ini name="memory_limit" value="-1"/>
+    </php>
+    <testsuites>
+        <testsuite name="default">
+            <directory suffix="Test.php">tests</directory>
+            <exclude>tests/fixtures/</exclude>
+        </testsuite>
+    </testsuites>
+    <logging/>
 </phpunit>
