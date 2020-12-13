@@ -8,7 +8,7 @@ jobs:
   tests:
     continue-on-error: ${{ matrix.experimental }}
     runs-on: "ubuntu-latest"
-    name: "PHP ${{ matrix.php-version }} Unit Tests"
+    name: "PHP ${{ matrix.php-version }} | Drupal ${{ matrix.drupal }}"
     strategy:
       matrix:
         experimental: [false]
@@ -61,3 +61,16 @@ jobs:
         run: |
           cd ~/drupal
           ./vendor/bin/phpstan analyze web/core/install.php --debug
+      - name: "Test BrowserTestBase is autoloaded"
+        run: |
+          cd ~/drupal
+          ./vendor/bin/phpstan analyze web/core/modules/dynamic_page_cache | grep -q "Class Drupal\Tests\BrowserTestBase not found and could not be autoloaded." && false || true
+      - name: "Verify test fixtures are ignored."
+        run: |
+          cd ~/drupal
+          ./vendor/bin/phpstan analyze web/core/modules/migrate_drupal --no-progress | grep -q "tests/fixtures" && false || true
+      - name: 'Check "Cannot redeclare token_theme() due to blazy_test.module"'
+        run: |
+          cd ~/drupal
+          COMPOSER_MEMORY_LIMIT=-1 composer require drupal/token drupal/blazy
+          ./vendor/bin/phpstan analyze web/modules/contrib/blazy --no-progress || if (($? == 255)); then false; else true; fi
