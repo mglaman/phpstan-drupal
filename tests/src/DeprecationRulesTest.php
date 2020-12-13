@@ -10,6 +10,9 @@ class DeprecationRulesTest extends AnalyzerTestBase
      */
     public function testDeprecationRules(string $path, int $count, array $errorMessages)
     {
+        if (version_compare('9.0.0', \Drupal::VERSION) !== 1) {
+            $this->markTestSkipped('Only tested on Drupal 8.x.x');
+        }
         $errors = $this->runAnalyze($path);
         $this->assertCount($count, $errors->getErrors(), var_export($errors, true));
         foreach ($errors->getErrors() as $key => $error) {
