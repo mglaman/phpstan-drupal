@@ -38,7 +38,7 @@ jobs:
         run: "composer update --no-progress --prefer-dist"
       - name: "Downgrade PHPUnit"
         run: "composer require phpunit/phpunit:^7.5"
-        if: ${{ matrix.drupal == "~8.8" || matrix.drupal == "~8.9" }}
+        if: ${{ matrix.drupal == '~8.8' || matrix.drupal == '~8.9' }}
       - name: "PHPCS"
         run: "php vendor/bin/phpcs src"
       - name: "PHPStan"
