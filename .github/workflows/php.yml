@@ -24,6 +24,7 @@ jobs:
         include:
           - php-version: "7.2"
             drupal: "~8.9"
+            experimental: false
           - php-version: "8.0"
             drupal: "~9.0"
             experimental: true
