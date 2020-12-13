@@ -18,7 +18,6 @@ jobs:
           - "7.3"
           - "7.4"
         drupal:
-          - "~8.8"
           - "~8.9"
           - "~9.0"
         include:
@@ -36,6 +35,7 @@ jobs:
           coverage: "none"
           php-version: "${{ matrix.php-version }}"
           tools: composer:v2
+          extensions: dom, curl, libxml, mbstring, zip, pdo, mysql, pdo_mysql, bcmath, soap, intl, gd, exif, iconv
       - name: "Install dependencies"
         run: "composer update --no-progress --prefer-dist"
       - name: "Downgrade PHPUnit"
