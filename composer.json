@@ -22,7 +22,7 @@
         "phpunit/phpunit": "^7.5 || ^8.0",
         "phpstan/phpstan-deprecation-rules": "~0.12.0",
         "composer/installers": "^1.6",
-        "drupal/core-recommended": "^8.8@alpha",
+        "drupal/core-recommended": "^8.8@alpha || ^9.0",
         "drush/drush": "^9.6"
     },
     "minimum-stability": "dev",

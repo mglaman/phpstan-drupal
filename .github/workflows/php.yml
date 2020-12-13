@@ -20,6 +20,7 @@ jobs:
         drupal:
           - "~8.8"
           - "~8.9"
+          - "~9.0"
         include:
           - php-version: "8.0"
             drupal: "~9.0"
@@ -35,6 +36,9 @@ jobs:
           tools: composer:v2
       - name: "Install dependencies"
         run: "composer update --no-progress --prefer-dist"
+      - name: "Downgrade PHPUnit"
+        run: "composer require phpunit/phpunit:^7.5"
+        if: ${{ matrix.drupal == "~8.8" || matrix.drupal == "~8.9" }}
       - name: "PHPCS"
         run: "php vendor/bin/phpcs src"
       - name: "PHPStan"
