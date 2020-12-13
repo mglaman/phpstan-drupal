@@ -37,7 +37,7 @@ jobs:
       - name: "Install dependencies"
         run: "composer update --no-progress --prefer-dist"
       - name: "Downgrade PHPUnit"
-        run: "composer require phpunit/phpunit:^7.5"
+        run: "composer require phpunit/phpunit:^7.5 --with-all-dependencies"
         if: ${{ matrix.drupal == '~8.8' || matrix.drupal == '~8.9' }}
       - name: "PHPCS"
         run: "php vendor/bin/phpcs src"
