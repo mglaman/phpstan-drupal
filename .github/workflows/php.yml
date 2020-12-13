@@ -20,12 +20,6 @@ jobs:
           - "~8.9"
           - "~9.0"
         include:
-          - php-version: "7.1"
-            drupal: "~8.8"
-          - php-version: "7.1"
-            drupal: "~8.9"
-          - php-version: "7.2"
-            drupal: "~8.8"
           - php-version: "7.2"
             drupal: "~8.9"
           - php-version: "8.0"
