@@ -17,8 +17,12 @@ jobs:
           - "7.2"
           - "7.3"
           - "7.4"
+        drupal:
+          - "~8.8"
+          - "~8.9"
         include:
           - php-version: "8.0"
+            drupal: "~9.0"
             experimental: true
     steps:
       - name: "Checkout"
@@ -37,3 +41,23 @@ jobs:
         run: "php vendor/bin/phpstan analyze src"
       - name: "PHPUnit"
         run: "php vendor/bin/phpunit"
+
+      - name: Setup Drupal
+        run: |
+          COMPOSER_MEMORY_LIMIT=-1 composer create-project drupal/recommended-project:${{ matrix.drupal }} ~/drupal --no-interaction
+          cd ~/drupal
+          composer config minimum-stability dev
+          composer config prefer-stable true
+          composer config preferred-install dist
+          composer config repositories.0 path $GITHUB_WORKSPACE
+          composer config repositories.1 composer https://packages.drupal.org/8
+          COMPOSER_MEMORY_LIMIT=-1 composer require drupal/core-dev-pinned:${{ matrix.drupal }} --no-suggest
+      - name: "require phpstan-drupal"
+        run: |
+          cd ~/drupal
+          COMPOSER_MEMORY_LIMIT=-1 composer require mglaman/phpstan-drupal *@dev
+          cp $GITHUB_WORKSPACE/tests/fixtures/config/drupal-phpstan.neon phpstan.neon
+      - name: "Test core/install.php"
+        run: |
+          cd ~/drupal
+          ./vendor/bin/phpstan analyze web/core/install.php --debug
