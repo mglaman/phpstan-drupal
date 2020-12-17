@@ -125,6 +125,8 @@ class DrupalAutoloader
                 'tokens',
                 'search_api',
                 'pathauto',
+                'translation',
+                'batch',
             ];
             foreach ($magic_hook_info_includes as $hook_info_include) {
                 if (file_exists($module_dir . "/$module_name.$hook_info_include.inc")) {
