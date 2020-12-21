@@ -102,6 +102,14 @@ class DrupalAutoloader
         $this->loadLegacyIncludes();
         require_once $this->drupalRoot . '/core/tests/bootstrap.php';
 
+        // class_alias is not supported by OptimizedDirectorySourceLocator or AutoloadSourceLocator,
+        // so we manually load this PHPUnit compatibility trait that exists in Drupal 8.
+        $phpunitCompatTraitFilepath = $this->drupalRoot . '/core/tests/Drupal/Tests/PhpunitCompatibilityTrait.php';
+        if (file_exists($phpunitCompatTraitFilepath)) {
+            require_once $phpunitCompatTraitFilepath;
+            $this->autoloader->addClassMap(['Drupal\\Tests\\PhpunitCompatibilityTrait' => $phpunitCompatTraitFilepath]);
+        }
+
         foreach ($this->moduleData as $extension) {
             $this->loadExtension($extension);
 
