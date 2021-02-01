@@ -34,7 +34,7 @@ class GlobalDrupalDependencyInjectionRule implements Rule
 
         $whitelist = [
             // Ignore tests.
-            'PHPUnit\Framework\TestCase',
+            'PHPUnit\Framework\Test',
             // Typed data objects cannot use dependency injection.
             'Drupal\Core\TypedData\TypedDataInterface',
             // Render elements cannot use dependency injection.
