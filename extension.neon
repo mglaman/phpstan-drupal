@@ -28,6 +28,7 @@ rules:
 	- PHPStan\Rules\Drupal\GlobalDrupalDependencyInjectionRule
 	- PHPStan\Rules\Drupal\PluginManager\PluginManagerSetsCacheBackendRule
 	- PHPStan\Rules\Deprecations\AccessDeprecatedConstant
+	- PHPStan\Rules\Deprecations\HookDeprecated
 services:
 	-
 		class: PHPStan\Drupal\ServiceMap
