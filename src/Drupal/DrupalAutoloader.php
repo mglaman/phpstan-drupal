@@ -175,7 +175,7 @@ class DrupalAutoloader
                 // and thinking these are real services for PHPStan's container.
                 if (isset($serviceDefinition['arguments']) && is_array($serviceDefinition['arguments'])) {
                     array_walk($serviceDefinition['arguments'], function (&$argument) : void {
-                        if (is_array($argument)) {
+                        if (is_array($argument) || !is_string($argument)) {
                             // @todo fix for @http_kernel.controller.argument_metadata_factory
                             $argument = '';
                         } else {
