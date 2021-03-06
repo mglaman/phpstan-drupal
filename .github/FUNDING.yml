@@ -2,9 +2,9 @@
 
 github: mglaman
 patreon: # Replace with a single Patreon username
-open_collective: # Replace with a single Open Collective username
+open_collective: phpstan-drupal
 tidelift: "packagist/mglaman/phpstan-drupal"
-ko_fi: mglaman
+ko_fi: #
 community_bridge: # Replace with a single Community Bridge project-name e.g., cloud-foundry
 liberapay: #
 issuehunt: # Replace with a single IssueHunt username
