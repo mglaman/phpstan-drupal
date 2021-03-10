@@ -16,18 +16,18 @@ jobs:
       matrix:
         experimental: [false]
         php-version:
-          - "7.3"
+#          - "7.3"
           - "7.4"
         drupal:
-          - "~8.9"
-          - "~9.0"
-        include:
-          - php-version: "7.2"
-            drupal: "~8.9"
-            experimental: false
-          - php-version: "8.0"
-            drupal: "~9.0"
-            experimental: true
+          - "^8.9"
+          - "^9.0"
+#        include:
+#          - php-version: "7.2"
+#            drupal: "~8.9"
+#            experimental: false
+#          - php-version: "8.0"
+#            drupal: "~9.0"
+#            experimental: true
     steps:
       - name: "Checkout"
         uses: "actions/checkout@v2"
@@ -41,7 +41,7 @@ jobs:
       - name: "Install dependencies"
         run: "composer update --no-progress --prefer-dist"
       - name: "Downgrade dev dependencies"
-        run: "composer require phpunit/phpunit:^7.5 drupal/core-recommended:${{ matrix.drupal }} --with-all-dependencies"
+        run: "composer require phpunit/phpunit:^7.5 drush/drush:~9 drupal/core-recommended:${{ matrix.drupal }} --with-all-dependencies"
         if: ${{ matrix.drupal == '~8.9' }}
       - name: "PHPCS"
         run: "php vendor/bin/phpcs src"
@@ -50,6 +50,38 @@ jobs:
       - name: "PHPUnit"
         run: "php vendor/bin/phpunit --debug"
 
+  build_integration:
+    continue-on-error: ${{ matrix.experimental }}
+    runs-on: "ubuntu-latest"
+    name: "PHP ${{ matrix.php-version }} | Drupal ${{ matrix.drupal }}"
+    strategy:
+      matrix:
+        experimental: [false]
+        php-version:
+#          - "7.3"
+          - "7.4"
+        drupal:
+          - "^8.9"
+          - "^9.0"
+#        include:
+#          - php-version: "7.2"
+#            drupal: "~8.9"
+#            experimental: false
+#          - php-version: "8.0"
+#            drupal: "~9.0"
+#            experimental: true
+    steps:
+      - name: "Checkout"
+        uses: "actions/checkout@v2"
+      - name: "Install PHP"
+        uses: "shivammathur/setup-php@v2"
+        with:
+          coverage: "none"
+          php-version: "${{ matrix.php-version }}"
+          tools: composer:v2
+          extensions: dom, curl, libxml, mbstring, zip, pdo, mysql, pdo_mysql, bcmath, gd, exif, iconv
+      - name: "Install dependencies"
+        run: "composer update --no-dev --no-progress --prefer-dist"
       - name: Setup Drupal
         run: |
           COMPOSER_MEMORY_LIMIT=-1 composer create-project drupal/recommended-project:${{ matrix.drupal }} ~/drupal --no-interaction
