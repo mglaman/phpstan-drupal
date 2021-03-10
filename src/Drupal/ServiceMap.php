@@ -7,7 +7,7 @@ use PHPStan\ShouldNotHappenException;
 class ServiceMap
 {
     /** @var \PHPStan\Drupal\DrupalServiceDefinition[] */
-    private $services;
+    private $services = [];
 
     public function getService(string $id): ?DrupalServiceDefinition
     {
