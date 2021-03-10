@@ -102,7 +102,7 @@ jobs:
       - name: "Test core/tests/Drupal/Tests/UnitTestCase.php"
         run: |
           cd ~/drupal
-          ./vendor/bin/phpstan analyze web/core/tests/Drupal/Tests/UnitTestCase.php --debug
+          ./vendor/bin/phpstan analyze web/core/tests/Drupal/Tests/SkippedDeprecationTest.php --debug
       - name: "Test BrowserTestBase is autoloaded"
         run: |
           cd ~/drupal
