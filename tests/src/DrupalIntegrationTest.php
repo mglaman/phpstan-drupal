@@ -6,10 +6,11 @@ use PHPStan\Analyser\Error;
 
 final class DrupalIntegrationTest extends AnalyzerTestBase {
 
-    public function testInstallPhp() {
+    public function testInstallPhp(): void
+    {
         $errors = $this->runAnalyze(__DIR__ . '/../fixtures/drupal/core/install.php');
-        $this->assertCount(0, $errors->getErrors());
-        $this->assertCount(0, $errors->getInternalErrors());
+        self::assertCount(0, $errors->getErrors());
+        self::assertCount(0, $errors->getInternalErrors());
     }
 
     public function testTestSuiteAutoloading() {
@@ -42,35 +43,36 @@ final class DrupalIntegrationTest extends AnalyzerTestBase {
         $is_d9 = version_compare('9.0.0', \Drupal::VERSION) !== 1;
         $errors = $this->runAnalyze(__DIR__ . '/../fixtures/drupal/modules/phpstan_fixtures/phpstan_fixtures.module');
         // @todo this only broke on D9.
-        $this->assertCount($is_d9 ? 4 : 3, $errors->getErrors(), var_export($errors, true));
-        $this->assertCount(0, $errors->getInternalErrors(), var_export($errors, true));
+        self::assertCount($is_d9 ? 4 : 3, $errors->getErrors(), var_export($errors, true));
+        self::assertCount(0, $errors->getInternalErrors(), var_export($errors, true));
 
         $errors = $errors->getErrors();
         $error = array_shift($errors);
-        $this->assertEquals('If condition is always false.', $error->getMessage());
+        self::assertEquals('If condition is always false.', $error->getMessage());
         $error = array_shift($errors);
-        $this->assertEquals('Function phpstan_fixtures_MissingReturnRule() should return string but return statement is missing.', $error->getMessage());
+        self::assertEquals('Function phpstan_fixtures_MissingReturnRule() should return string but return statement is missing.', $error->getMessage());
         if ($is_d9) {
             $error = array_shift($errors);
-            $this->assertEquals('Binary operation "." between SplString and \'/core/includes…\' results in an error.', $error->getMessage());
+            self::assertEquals('Binary operation "." between SplString and \'/core/includes…\' results in an error.', $error->getMessage());
         }
         $error = array_shift($errors);
-        $this->assertStringContainsString('phpstan_fixtures/phpstan_fixtures.fetch.inc could not be loaded from Drupal\\Core\\Extension\\ModuleHandlerInterface::loadInclude', $error->getMessage());
+
+        self::assertNotFalse(strpos($error->getMessage(), 'phpstan_fixtures/phpstan_fixtures.fetch.inc could not be loaded from Drupal\\Core\\Extension\\ModuleHandlerInterface::loadInclude'));
     }
 
-    public function testExtensionTestSuiteAutoloading()
+    public function testExtensionTestSuiteAutoloading(): void
     {
         $paths = [
             __DIR__ . '/../fixtures/drupal/modules/module_with_tests/tests/src/Unit/ModuleWithTestsTest.php',
-//            __DIR__ . '/../fixtures/drupal/modules/module_with_tests/tests/src/Traits/ModuleWithTestsTrait.php',
-//            __DIR__ . '/../fixtures/drupal/modules/module_with_tests/tests/src/TestSite/ModuleWithTestsTestSite.php',
+            __DIR__ . '/../fixtures/drupal/modules/module_with_tests/tests/src/Traits/ModuleWithTestsTrait.php',
+            __DIR__ . '/../fixtures/drupal/modules/module_with_tests/tests/src/TestSite/ModuleWithTestsTestSite.php',
         ];
         foreach ($paths as $path) {
             $errors = $this->runAnalyze($path);
-            $this->assertCount(0, $errors->getErrors(), implode(PHP_EOL, array_map(static function (Error $error) {
+            self::assertCount(0, $errors->getErrors(), implode(PHP_EOL, array_map(static function (Error $error) {
                 return $error->getMessage();
             }, $errors->getErrors())));
-            $this->assertCount(0, $errors->getInternalErrors(), implode(PHP_EOL, $errors->getInternalErrors()));
+            self::assertCount(0, $errors->getInternalErrors(), implode(PHP_EOL, $errors->getInternalErrors()));
         }
     }
 
