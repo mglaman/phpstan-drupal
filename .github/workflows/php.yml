@@ -11,7 +11,7 @@ jobs:
   tests:
     continue-on-error: ${{ matrix.experimental }}
     runs-on: "ubuntu-latest"
-    name: "PHP ${{ matrix.php-version }} | Drupal ${{ matrix.drupal }}"
+    name: "Tests | PHP ${{ matrix.php-version }} | Drupal ${{ matrix.drupal }}"
     strategy:
       matrix:
         experimental: [false]
@@ -43,6 +43,9 @@ jobs:
       - name: "Downgrade dev dependencies"
         run: "composer require phpunit/phpunit:6.5.14 drush/drush:~9 drupal/core-recommended:${{ matrix.drupal }} drupal/core-dev:${{ matrix.drupal }} --with-all-dependencies"
         if: ${{ matrix.drupal == '^8.9' }}
+      - name: "Add phpspec/prophecy-phpunit"
+        run: "composer require --dev phpspec/prophecy-phpunit:^2"
+        if: ${{ matrix.drupal == '^9.0' }}
       - name: "PHPCS"
         run: "php vendor/bin/phpcs src"
       - name: "PHPStan"
@@ -53,7 +56,7 @@ jobs:
   build_integration:
     continue-on-error: ${{ matrix.experimental }}
     runs-on: "ubuntu-latest"
-    name: "PHP ${{ matrix.php-version }} | Drupal ${{ matrix.drupal }}"
+    name: "Build Integration | PHP ${{ matrix.php-version }} | Drupal ${{ matrix.drupal }}"
     strategy:
       matrix:
         experimental: [false]
@@ -90,6 +93,11 @@ jobs:
           composer config repositories.0 path $GITHUB_WORKSPACE
           composer config repositories.1 composer https://packages.drupal.org/8
           COMPOSER_MEMORY_LIMIT=-1 composer require drupal/core-dev:${{ matrix.drupal }} --with-all-dependencies
+      - name: "Add phpspec/prophecy-phpunit"
+        run: |
+          cd ~/drupal
+          COMPOSER_MEMORY_LIMIT=-1 composer require --dev phpspec/prophecy-phpunit:^2
+        if: ${{ matrix.drupal == '^9.0' }}
       - name: "require phpstan-drupal"
         run: |
           cd ~/drupal
