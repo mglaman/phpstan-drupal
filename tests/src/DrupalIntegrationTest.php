@@ -76,8 +76,11 @@ final class DrupalIntegrationTest extends AnalyzerTestBase {
         }
     }
 
-    public function testServiceMapping()
+    public function testServiceMapping8()
     {
+        if (version_compare('9.0.0', \Drupal::VERSION) !== 1) {
+            $this->markTestSkipped('Only tested on Drupal 8.x.x');
+        }
         $errorMessages = [
             '\Drupal calls should be avoided in classes, use dependency injection instead',
             'Call to an undefined method Drupal\Core\Entity\EntityManager::thisMethodDoesNotExist().',
@@ -88,6 +91,23 @@ instead.'
         ];
         $errors = $this->runAnalyze(__DIR__ . '/../fixtures/drupal/modules/phpstan_fixtures/src/TestServicesMappingExtension.php');
         $this->assertCount(3, $errors->getErrors());
+        $this->assertCount(0, $errors->getInternalErrors());
+        foreach ($errors->getErrors() as $key => $error) {
+            $this->assertEquals($errorMessages[$key], $error->getMessage());
+        }
+    }
+
+    public function testServiceMapping9()
+    {
+        if (version_compare('9.0.0', \Drupal::VERSION) === 1) {
+            $this->markTestSkipped('Only tested on Drupal 9.x.x');
+        }
+        // @todo: the actual error should be the fact `entity.manager` does not exist.
+        $errorMessages = [
+            '\Drupal calls should be avoided in classes, use dependency injection instead',
+        ];
+        $errors = $this->runAnalyze(__DIR__ . '/../fixtures/drupal/modules/phpstan_fixtures/src/TestServicesMappingExtension.php');
+        $this->assertCount(1, $errors->getErrors());
         $this->assertCount(0, $errors->getInternalErrors());
         foreach ($errors->getErrors() as $key => $error) {
             $this->assertEquals($errorMessages[$key], $error->getMessage());
