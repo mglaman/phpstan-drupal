@@ -32,6 +32,9 @@
         "phpstan/phpstan-deprecation-rules": "For catching deprecations, especially in Drupal core."
     },
     "autoload": {
+        "files": [
+            "drupal-phpunit-hack.php"
+        ],
         "psr-4": {
             "PHPStan\\": "src/"
         }
