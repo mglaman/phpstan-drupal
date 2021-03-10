@@ -3,3 +3,7 @@ composer.lock
 /vendor/
 /clover.xml
 .circleci/config_local.yml
+
+# Fix PHPUnit compatibility mutated class.
+/src/TestCase.php
+.phpunit.result.cache
