@@ -54,6 +54,9 @@ jobs:
       - start-project
       - install-dependencies
       - run:
+          name: phpspec/prophecy-phpunit fix
+          command: composer require --dev phpspec/prophecy-phpunit:^2
+      - run:
           name: CodeSniffer
           command: ./vendor/bin/phpcs src
       - run:
