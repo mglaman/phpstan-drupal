@@ -14,7 +14,7 @@ class TestDrushCommands extends DrushCommands {
     public function example() {
         if (drush_is_osx()) {
             $this->io()->writeln('macOS');
-        } elseif (drush_is_cygwin() || drush_is_mingw()) {
+        } elseif (drush_is_windows()) {
             $this->io()->writeln('Windows');
         } else {
             $this->io()->writeln('Linux ¯\_(ツ)_/¯');

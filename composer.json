@@ -10,7 +10,7 @@
         }
     ],
     "require": {
-        "php": "^7.1",
+        "php": "^7.1 || ^8.0",
         "nette/finder": "^2.5",
         "phpstan/phpstan": "^0.12.64",
         "symfony/yaml": "~3.4.5|^4.2",
@@ -19,11 +19,12 @@
     "require-dev": {
         "phpstan/phpstan-strict-rules": "^0.12.0",
         "squizlabs/php_codesniffer": "^3.3",
-        "phpunit/phpunit": "^7.5",
+        "phpunit/phpunit": "^6.5 || ^7.5 || ^8.0 || ^9",
         "phpstan/phpstan-deprecation-rules": "~0.12.0",
-        "composer/installers": "^1.6",
-        "drupal/core-recommended": "^8.8@alpha",
-        "drush/drush": "^9.6"
+        "composer/installers": "^1.9",
+        "drupal/core-recommended": "^8.8@alpha || ^9.0",
+        "drupal/core-dev-pinned": "^8.8@alpha || ^9.0",
+        "drush/drush": "^9.6 | ^10.0"
     },
     "minimum-stability": "dev",
     "prefer-stable": true,
@@ -31,6 +32,9 @@
         "phpstan/phpstan-deprecation-rules": "For catching deprecations, especially in Drupal core."
     },
     "autoload": {
+        "files": [
+            "drupal-phpunit-hack.php"
+        ],
         "psr-4": {
             "PHPStan\\": "src/"
         }

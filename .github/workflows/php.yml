@@ -1,0 +1,122 @@
+name: Tests
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+  schedule:
+    - cron: 0 0 * * *
+
+jobs:
+  tests:
+    continue-on-error: ${{ matrix.experimental }}
+    runs-on: "ubuntu-latest"
+    name: "PHP ${{ matrix.php-version }} | Drupal ${{ matrix.drupal }}"
+    strategy:
+      matrix:
+        experimental: [false]
+        php-version:
+          - "7.3"
+          - "7.4"
+        drupal:
+          - "^8.9"
+          - "^9.0"
+        include:
+          - php-version: "7.2"
+            drupal: "~8.9"
+            experimental: false
+# @todo D9 is compat, but drupal/core-dev-pinned is not?
+# core-dev-pinned sets phar-io/manifest to 1.0.3, where ^2.0 is
+#          - php-version: "8.0"
+#            drupal: "^9.0"
+#            experimental: true
+    steps:
+      - name: "Checkout"
+        uses: "actions/checkout@v2"
+      - name: "Install PHP"
+        uses: "shivammathur/setup-php@v2"
+        with:
+          coverage: "none"
+          php-version: "${{ matrix.php-version }}"
+          tools: composer:v2
+          extensions: dom, curl, libxml, mbstring, zip, pdo, mysql, pdo_mysql, bcmath, gd, exif, iconv
+      - name: "Install dependencies"
+        run: "composer update --no-progress --prefer-dist"
+      - name: "Downgrade dev dependencies"
+        run: "composer require phpunit/phpunit:6.5.14 drush/drush:~9 drupal/core-recommended:${{ matrix.drupal }} drupal/core-dev-pinned:${{ matrix.drupal }} --with-all-dependencies"
+        if: ${{ matrix.drupal == '^8.9' }}
+      - name: "PHPCS"
+        run: "php vendor/bin/phpcs src"
+      - name: "PHPStan"
+        run: "php vendor/bin/phpstan analyze src"
+      - name: "PHPUnit"
+        run: "php vendor/bin/phpunit --debug"
+
+  build_integration:
+    continue-on-error: ${{ matrix.experimental }}
+    runs-on: "ubuntu-latest"
+    name: "PHP ${{ matrix.php-version }} | Drupal ${{ matrix.drupal }}"
+    strategy:
+      matrix:
+        experimental: [false]
+        php-version:
+          - "7.3"
+          - "7.4"
+        drupal:
+          - "^8.9"
+          - "^9.0"
+        include:
+          - php-version: "7.2"
+            drupal: "~8.9"
+            experimental: false
+# @todo D9 is compat, but drupal/core-dev-pinned is not?
+# core-dev-pinned sets phar-io/manifest to 1.0.3, where ^2.0 is
+#          - php-version: "8.0"
+#            drupal: "^9.0"
+#            experimental: true
+    steps:
+      - name: "Checkout"
+        uses: "actions/checkout@v2"
+      - name: "Install PHP"
+        uses: "shivammathur/setup-php@v2"
+        with:
+          coverage: "none"
+          php-version: "${{ matrix.php-version }}"
+          tools: composer:v2
+          extensions: dom, curl, libxml, mbstring, zip, pdo, mysql, pdo_mysql, bcmath, gd, exif, iconv
+      - name: Setup Drupal
+        run: |
+          COMPOSER_MEMORY_LIMIT=-1 composer create-project drupal/recommended-project:${{ matrix.drupal }} ~/drupal --no-interaction
+          cd ~/drupal
+          composer config minimum-stability dev
+          composer config prefer-stable true
+          composer config preferred-install dist
+          composer config repositories.0 path $GITHUB_WORKSPACE
+          composer config repositories.1 composer https://packages.drupal.org/8
+          COMPOSER_MEMORY_LIMIT=-1 composer require drupal/core-dev-pinned:${{ matrix.drupal }} --with-all-dependencies
+      - name: "require phpstan-drupal"
+        run: |
+          cd ~/drupal
+          COMPOSER_MEMORY_LIMIT=-1 composer require mglaman/phpstan-drupal *@dev
+          cp $GITHUB_WORKSPACE/tests/fixtures/config/drupal-phpstan.neon phpstan.neon
+      - name: "Test core/install.php"
+        run: |
+          cd ~/drupal
+          ./vendor/bin/phpstan analyze web/core/install.php --debug
+      - name: "Test core/tests/Drupal/Tests/UnitTestCase.php"
+        run: |
+          cd ~/drupal
+          ./vendor/bin/phpstan analyze web/core/tests/Drupal/Tests/SkippedDeprecationTest.php --debug
+      - name: "Test BrowserTestBase is autoloaded"
+        run: |
+          cd ~/drupal
+          ./vendor/bin/phpstan analyze web/core/modules/dynamic_page_cache | grep -q "Class Drupal\Tests\BrowserTestBase not found and could not be autoloaded." && false || true
+      - name: "Verify test fixtures are ignored."
+        run: |
+          cd ~/drupal
+          ./vendor/bin/phpstan analyze web/core/modules/migrate_drupal --no-progress | grep -q "tests/fixtures" && false || true
+      - name: 'Check "Cannot redeclare token_theme() due to blazy_test.module"'
+        run: |
+          cd ~/drupal
+          COMPOSER_MEMORY_LIMIT=-1 composer require drupal/token drupal/blazy
+          ./vendor/bin/phpstan analyze web/modules/contrib/blazy --no-progress || if (($? == 255)); then false; else true; fi
