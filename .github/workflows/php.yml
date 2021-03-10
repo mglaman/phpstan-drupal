@@ -25,9 +25,11 @@ jobs:
           - php-version: "7.2"
             drupal: "~8.9"
             experimental: false
-          - php-version: "8.0"
-            drupal: "^9.0"
-            experimental: true
+# @todo D9 is compat, but drupal/core-dev-pinned is not?
+# core-dev-pinned sets phar-io/manifest to 1.0.3, where ^2.0 is
+#          - php-version: "8.0"
+#            drupal: "^9.0"
+#            experimental: true
     steps:
       - name: "Checkout"
         uses: "actions/checkout@v2"
@@ -67,9 +69,11 @@ jobs:
           - php-version: "7.2"
             drupal: "~8.9"
             experimental: false
-          - php-version: "8.0"
-            drupal: "^9.0"
-            experimental: true
+# @todo D9 is compat, but drupal/core-dev-pinned is not?
+# core-dev-pinned sets phar-io/manifest to 1.0.3, where ^2.0 is
+#          - php-version: "8.0"
+#            drupal: "^9.0"
+#            experimental: true
     steps:
       - name: "Checkout"
         uses: "actions/checkout@v2"
