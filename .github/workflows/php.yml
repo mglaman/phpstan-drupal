@@ -16,7 +16,7 @@ jobs:
       matrix:
         experimental: [false]
         php-version:
-#          - "7.3"
+          - "7.3"
           - "7.4"
         drupal:
           - "^8.9"
@@ -58,7 +58,7 @@ jobs:
       matrix:
         experimental: [false]
         php-version:
-#          - "7.3"
+          - "7.3"
           - "7.4"
         drupal:
           - "^8.9"
