@@ -41,8 +41,8 @@ jobs:
       - name: "Install dependencies"
         run: "composer update --no-progress --prefer-dist"
       - name: "Downgrade dev dependencies"
-        run: "composer require phpunit/phpunit:^7.5 drush/drush:~9 drupal/core-recommended:${{ matrix.drupal }} --with-all-dependencies"
-        if: ${{ matrix.drupal == '~8.9' }}
+        run: "composer require phpunit/phpunit:^7.5 drush/drush:~9 drupal/core-recommended:${{ matrix.drupal }} drupal/core-dev-pinned:${{ matrix.drupal }} --with-all-dependencies"
+        if: ${{ matrix.drupal == '^8.9' }}
       - name: "PHPCS"
         run: "php vendor/bin/phpcs src"
       - name: "PHPStan"
@@ -80,8 +80,6 @@ jobs:
           php-version: "${{ matrix.php-version }}"
           tools: composer:v2
           extensions: dom, curl, libxml, mbstring, zip, pdo, mysql, pdo_mysql, bcmath, gd, exif, iconv
-      - name: "Install dependencies"
-        run: "composer update --no-dev --no-progress --prefer-dist"
       - name: Setup Drupal
         run: |
           COMPOSER_MEMORY_LIMIT=-1 composer create-project drupal/recommended-project:${{ matrix.drupal }} ~/drupal --no-interaction
