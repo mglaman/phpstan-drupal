@@ -7,14 +7,14 @@ use PHPStan\ShouldNotHappenException;
 class ServiceMap
 {
     /** @var \PHPStan\Drupal\DrupalServiceDefinition[] */
-    private $services;
+    private $services = [];
 
     public function getService(string $id): ?DrupalServiceDefinition
     {
         // @see notes in DrupalAutoloader.
         // This is all a work around due to inability to set container parameters.
         if (count($this->services) === 0) {
-            $this->services = $GLOBALS['drupalServiceMap'];
+            $this->services = $GLOBALS['drupalServiceMap'] ?? [];
             if (count($this->services) === 0) {
                 throw new ShouldNotHappenException('No Drupal service map was registered.');
             }
