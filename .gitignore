@@ -5,5 +5,5 @@ composer.lock
 .circleci/config_local.yml
 
 # Fix PHPUnit compatibility mutated class.
-/src/TestCase.php
+/tests/fixtures/TestCase.php
 .phpunit.result.cache

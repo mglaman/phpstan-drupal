@@ -25,7 +25,7 @@ $alteredCode = file_get_contents($alteredFile);
 $alteredCode = preg_replace('/^    ((?:protected|public)(?: static)? function \w+\(\)): void/m', '    $1', $alteredCode);
 $alteredCode = str_replace("__DIR__ . '/../Util/", "'$phpunit_dir/src/Util/", $alteredCode);
 // Only write when necessary.
-$filename = __DIR__ . '/src/TestCase.php';
+$filename = __DIR__ . '/tests/fixtures/TestCase.php';
 
 if (!file_exists($filename) || md5_file($filename) !== md5($alteredCode)) {
     file_put_contents($filename, $alteredCode);
