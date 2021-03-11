@@ -115,6 +115,12 @@ jobs:
           COMPOSER_MEMORY_LIMIT=-1 composer require drupal/token drupal/blazy
           ./vendor/bin/phpstan analyze web/modules/contrib/blazy --no-progress || if (($? == 255)); then false; else true; fi
           COMPOSER_MEMORY_LIMIT=-1 composer remove drupal/token drupal/blazy
+      - name: 'CDN 3.x PHP8'
+        run: |
+          cd ~/drupal
+          COMPOSER_MEMORY_LIMIT=-1 composer require drupal/cdn:3.x-dev
+          ./vendor/bin/phpstan analyze web/modules/contrib/cdn --no-progress || if (($? == 255)); then false; else true; fi
+          COMPOSER_MEMORY_LIMIT=-1 composer remove drupal/cdn:3.x-dev
       - name: 'Check "Cannot redeclare video_embed_media_media_bundle_insert()"'
         run: |
           cd ~/drupal
