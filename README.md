@@ -1,6 +1,6 @@
 # phpstan-drupal
 
-[![Build Status](https://travis-ci.com/mglaman/phpstan-drupal.svg?branch=master)](https://travis-ci.com/mglaman/phpstan-drupal) [![CircleCI](https://circleci.com/gh/mglaman/phpstan-drupal.svg?style=svg)](https://circleci.com/gh/mglaman/phpstan-drupal)
+[![Tests](https://github.com/mglaman/phpstan-drupal/actions/workflows/php.yml/badge.svg)](https://github.com/mglaman/phpstan-drupal/actions/workflows/php.yml) [![CircleCI](https://circleci.com/gh/mglaman/phpstan-drupal.svg?style=svg)](https://circleci.com/gh/mglaman/phpstan-drupal)
 
 Extension for [PHPStan](https://phpstan.org/) to allow analysis of Drupal code.
 
