@@ -47,7 +47,7 @@ class GlobalDrupalDependencyInjectionRule implements Rule
         ];
         $classReflection = $scopeClassReflection->getNativeReflection();
         foreach ($whitelist as $item) {
-            if ($classReflection->implementsInterface($item)) {
+            if (interface_exists($item) && $classReflection->implementsInterface($item)) {
                 return [];
             }
         }
