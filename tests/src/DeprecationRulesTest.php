@@ -28,8 +28,8 @@ class DeprecationRulesTest extends AnalyzerTestBase
             [
                 'Call to deprecated method url() of class Drupal:
 in drupal:8.0.0 and is removed from drupal:9.0.0.
-Instead create a \Drupal\Core\Url object directly, for example using
-Url::fromRoute().',
+  Instead create a \Drupal\Core\Url object directly, for example using
+  Url::fromRoute().',
                 '\Drupal calls should be avoided in classes, use dependency injection instead',
             ]
         ];
