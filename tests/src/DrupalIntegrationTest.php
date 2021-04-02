@@ -86,8 +86,8 @@ final class DrupalIntegrationTest extends AnalyzerTestBase {
             'Call to an undefined method Drupal\Core\Entity\EntityManager::thisMethodDoesNotExist().',
             'Call to deprecated method getDefinitions() of class Drupal\\Core\\Entity\\EntityManager:
 in drupal:8.0.0 and is removed from drupal:9.0.0.
-Use \\Drupal\\Core\\Entity\\EntityTypeManagerInterface::getDefinitions()
-instead.'
+  Use \\Drupal\\Core\\Entity\\EntityTypeManagerInterface::getDefinitions()
+  instead.'
         ];
         $errors = $this->runAnalyze(__DIR__ . '/../fixtures/drupal/modules/phpstan_fixtures/src/TestServicesMappingExtension.php');
         $this->assertCount(3, $errors->getErrors());
