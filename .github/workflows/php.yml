@@ -37,7 +37,7 @@ jobs:
           coverage: "none"
           php-version: "${{ matrix.php-version }}"
           tools: composer:v2
-          extensions: dom, curl, libxml, mbstring, zip, pdo, mysql, pdo_mysql, bcmath, gd, exif, iconv
+          extensions: dom, curl, libxml, mbstring, zip, pdo, mysql, pdo_mysql, gd
       - name: "Install dependencies"
         run: "composer update --no-progress --prefer-dist"
       - name: "Downgrade dev dependencies"
@@ -84,7 +84,7 @@ jobs:
           tools: composer:v2
           extensions: dom, curl, libxml, mbstring, zip, pdo, mysql, pdo_mysql, bcmath, gd, exif, iconv
       - name: Setup Drupal
-        uses: bluehorndigital/setup-drupal@v1.0.0
+        uses: bluehorndigital/setup-drupal@v1.0.1
         with:
           version: ${{ matrix.drupal }}
           path: ~/drupal
