@@ -1,0 +1,10 @@
+<?php declare(strict_types=1);
+
+function test_locale_translation_inc_included() {
+    module_load_include('bulk.inc', 'locale');
+    locale_translate_get_interface_translation_files();
+    module_load_include('compare.inc', 'locale');
+    locale_translation_build_projects();
+    module_load_include('translation.inc', 'locale');
+    locale_translation_build_sources();
+}

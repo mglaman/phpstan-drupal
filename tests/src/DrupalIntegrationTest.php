@@ -119,4 +119,10 @@ in drupal:8.0.0 and is removed from drupal:9.0.0.
         $this->assertCount(0, $errors->getErrors(), var_export($errors, TRUE));
         $this->assertCount(0, $errors->getInternalErrors(), var_export($errors, TRUE));
     }
+
+    public function testModuleLoadInclude() {
+        $errors = $this->runAnalyze(__DIR__ . '/../fixtures/drupal/modules/module_load_include_fixture/module_load_include_fixture.module');
+        $this->assertCount(0, $errors->getErrors(), var_export($errors, TRUE));
+        $this->assertCount(0, $errors->getInternalErrors(), var_export($errors, TRUE));
+    }
 }
