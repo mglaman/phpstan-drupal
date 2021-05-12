@@ -48,3 +48,8 @@ services:
 		tags: [phpstan.rules.rule]
 		arguments:
 			- %drupal.drupal_root%
+	-
+		class: PHPStan\Rules\Drupal\ModuleLoadInclude
+		tags: [phpstan.rules.rule]
+		arguments:
+			- %drupal.drupal_root%
