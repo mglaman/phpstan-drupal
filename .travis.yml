@@ -33,6 +33,10 @@ script:
   - COMPOSER_MEMORY_LIMIT=-1 composer require drupal/token drupal/blazy
   - ./vendor/bin/phpstan analyze web/modules/contrib/blazy --no-progress || if (($? == 255)); then false; else true; fi
 
+  # Check " Cannot redeclare video_embed_media_media_bundle_insert() due to slick_test.module"
+  - composer require drupal/video_embed_field drupal/slick
+  - ./vendor/bin/phpstan analyze web/modules/contrib/slick --no-progress || if (($? == 255)); then false; else true; fi
+
 cache:
   directories:
     - $HOME/.composer/cache
