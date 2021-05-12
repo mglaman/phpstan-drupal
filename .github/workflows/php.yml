@@ -114,3 +114,47 @@ jobs:
           cd ~/drupal
           COMPOSER_MEMORY_LIMIT=-1 composer require drupal/token drupal/blazy
           ./vendor/bin/phpstan analyze web/modules/contrib/blazy --no-progress || if (($? == 255)); then false; else true; fi
+  build_integration_no_phpunit:
+    continue-on-error: ${{ matrix.experimental }}
+    runs-on: "ubuntu-latest"
+    name: "Build Integration (No PHPUnit) | PHP ${{ matrix.php-version }} | Drupal ${{ matrix.drupal }}"
+    strategy:
+      matrix:
+        experimental: [false]
+        php-version:
+          - "7.4"
+        drupal:
+          - "^8.9"
+          - "^9.0"
+    steps:
+      - name: "Checkout"
+        uses: "actions/checkout@v2"
+      - name: "Install PHP"
+        uses: "shivammathur/setup-php@v2"
+        with:
+          coverage: "none"
+          php-version: "${{ matrix.php-version }}"
+          tools: composer:v2
+          extensions: dom, curl, libxml, mbstring, zip, pdo, mysql, pdo_mysql, bcmath, gd, exif, iconv
+      - name: Setup Drupal
+        uses: bluehorndigital/setup-drupal@v1.0.1
+        with:
+          version: ${{ matrix.drupal }}
+          path: ~/drupal
+      - name: "Remove PHPUnit"
+        run: |
+          cd ~/drupal
+          composer --dev remove phpspec/prophecy-phpunit drupal/core-dev
+      - name: "require phpstan-drupal"
+        run: |
+          cd ~/drupal
+          COMPOSER_MEMORY_LIMIT=-1 composer require mglaman/phpstan-drupal *@dev
+          cp $GITHUB_WORKSPACE/tests/fixtures/config/drupal-phpstan.neon phpstan.neon
+      - name: "Test core/install.php"
+        run: |
+          cd ~/drupal
+          ./vendor/bin/phpstan analyze web/core/install.php --debug
+      - name: "Test no crash"
+        run: |
+          cd ~/drupal
+          ./vendor/bin/phpstan analyze web/core/modules/dynamic_page_cache --debug || if (($? == 255)); then false; else true; fi
