@@ -32,7 +32,8 @@ class GlobalDrupalDependencyInjectionRule implements Rule
             throw new ShouldNotHappenException();
         }
 
-        $whitelist = [
+        $classReflection = $scopeClassReflection->getNativeReflection();
+        $allowed_list = [
             // Ignore tests.
             'PHPUnit\Framework\Test',
             // Typed data objects cannot use dependency injection.
@@ -45,9 +46,10 @@ class GlobalDrupalDependencyInjectionRule implements Rule
             // @see https://www.drupal.org/project/drupal/issues/2913224
             'Drupal\Core\Entity\EntityInterface',
         ];
-        $classReflection = $scopeClassReflection->getNativeReflection();
-        foreach ($whitelist as $item) {
-            if ($classReflection->implementsInterface($item)) {
+        $implemented_interfaces = $classReflection->getInterfaceNames();
+
+        foreach ($allowed_list as $item) {
+            if (in_array($item, $implemented_interfaces, true)) {
                 return [];
             }
         }
