@@ -42,8 +42,7 @@ final class DrupalIntegrationTest extends AnalyzerTestBase {
     public function testExtensionReportsError() {
         $is_d9 = version_compare('9.0.0', \Drupal::VERSION) !== 1;
         $errors = $this->runAnalyze(__DIR__ . '/../fixtures/drupal/modules/phpstan_fixtures/phpstan_fixtures.module');
-        // @todo this only broke on D9.
-        self::assertCount($is_d9 ? 4 : 3, $errors->getErrors(), var_export($errors, true));
+        self::assertCount(3, $errors->getErrors(), var_export($errors, true));
         self::assertCount(0, $errors->getInternalErrors(), var_export($errors, true));
 
         $errors = $errors->getErrors();
@@ -51,12 +50,7 @@ final class DrupalIntegrationTest extends AnalyzerTestBase {
         self::assertEquals('If condition is always false.', $error->getMessage());
         $error = array_shift($errors);
         self::assertEquals('Function phpstan_fixtures_MissingReturnRule() should return string but return statement is missing.', $error->getMessage());
-        if ($is_d9) {
-            $error = array_shift($errors);
-            self::assertEquals('Binary operation "." between SplString and \'/core/includes…\' results in an error.', $error->getMessage());
-        }
         $error = array_shift($errors);
-
         self::assertNotFalse(strpos($error->getMessage(), 'phpstan_fixtures/phpstan_fixtures.fetch.inc could not be loaded from Drupal\\Core\\Extension\\ModuleHandlerInterface::loadInclude'));
     }
 
