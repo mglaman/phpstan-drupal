@@ -114,6 +114,11 @@ jobs:
           cd ~/drupal
           COMPOSER_MEMORY_LIMIT=-1 composer require drupal/token drupal/blazy
           ./vendor/bin/phpstan analyze web/modules/contrib/blazy --no-progress || if (($? == 255)); then false; else true; fi
+      - name: 'CDN 3.x PHP8'
+        run: |
+          cd ~/drupal
+          COMPOSER_MEMORY_LIMIT=-1 composer require drupal/cdn:3.x-dev
+          ./vendor/bin/phpstan analyze web/modules/contrib/cdn --no-progress || if (($? == 255)); then false; else true; fi
   build_integration_no_phpunit:
     continue-on-error: ${{ matrix.experimental }}
     runs-on: "ubuntu-latest"
