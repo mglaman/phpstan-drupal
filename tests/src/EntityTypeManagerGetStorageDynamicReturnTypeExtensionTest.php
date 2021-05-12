@@ -13,9 +13,23 @@ use PHPStan\ShouldNotHappenException;
 use PHPStan\Type\EntityTypeManagerGetStorageDynamicReturnTypeExtension;
 use PHPStan\Type\ObjectType;
 use PHPUnit\Framework\TestCase;
+use Prophecy\Prophet;
 
 final class EntityTypeManagerGetStorageDynamicReturnTypeExtensionTest extends TestCase
 {
+    /**
+     * @var Prophet
+     *
+     * @internal
+     */
+    private $prophet;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        // @note we do not use phpspec/prophecy-phpunit due to conflicts with Drupal 8 PHPUnit.
+        $this->prophet = new Prophet;
+    }
 
     /**
      * @covers \PHPStan\Type\EntityTypeManagerGetStorageDynamicReturnTypeExtension::__construct
@@ -35,35 +49,40 @@ final class EntityTypeManagerGetStorageDynamicReturnTypeExtensionTest extends Te
      */
     public function testGetTypeFromMethodCall($entityType, $storageClass)
     {
+        // If we were passed a string, assume it is a class name to be mocked.
+        if (is_string($entityType)) {
+            $entityType = $this->prophet->prophesize($entityType)->reveal();
+        }
+
         $x = new EntityTypeManagerGetStorageDynamicReturnTypeExtension([
             'node' => 'Drupal\node\NodeStorage',
             'search_api_index' => 'Drupal\search_api\Entity\SearchApiConfigEntityStorage',
         ]);
 
-        $methodReflection = $this->prophesize(MethodReflection::class);
+        $methodReflection = $this->prophet->prophesize(MethodReflection::class);
         $methodReflection->getName()->willReturn('getStorage');
 
-        $defaultObjectType = $this->prophesize(ObjectType::class);
+        $defaultObjectType = $this->prophet->prophesize(ObjectType::class);
         $defaultObjectType->getClassName()->willReturn('Drupal\Core\Entity\EntityStorageInterface');
-        $variantsParametersAcceptor = $this->prophesize(ParametersAcceptor::class);
+        $variantsParametersAcceptor = $this->prophet->prophesize(ParametersAcceptor::class);
         $variantsParametersAcceptor->getReturnType()->willReturn($defaultObjectType->reveal());
         $methodReflection->getVariants()->willReturn([$variantsParametersAcceptor->reveal()]);
 
         if ($entityType === null) {
             $this->expectException(ShouldNotHappenException::class);
             $methodCall = new MethodCall(
-                $this->prophesize(Expr::class)->reveal(),
+                $this->prophet->prophesize(Expr::class)->reveal(),
                 'getStorage'
             );
         } else {
             $methodCall = new MethodCall(
-                $this->prophesize(Expr::class)->reveal(),
+                $this->prophet->prophesize(Expr::class)->reveal(),
                 'getStorage',
                 [new Arg($entityType)]
             );
         }
 
-        $scope = $this->prophesize(Scope::class);
+        $scope = $this->prophet->prophesize(Scope::class);
 
         $type = $x->getTypeFromMethodCall(
             $methodReflection->reveal(),
@@ -81,9 +100,9 @@ final class EntityTypeManagerGetStorageDynamicReturnTypeExtensionTest extends Te
         yield [new String_('user'), 'Drupal\Core\Entity\EntityStorageInterface'];
         yield [new String_('search_api_index'), 'Drupal\search_api\Entity\SearchApiConfigEntityStorage'];
         yield [null, null];
-        yield [$this->prophesize(MethodCall::class)->reveal(), 'Drupal\Core\Entity\EntityStorageInterface'];
-        yield [$this->prophesize(Expr\StaticCall::class)->reveal(), 'Drupal\Core\Entity\EntityStorageInterface'];
-        yield [$this->prophesize(Expr\BinaryOp\Concat::class)->reveal(), 'Drupal\Core\Entity\EntityStorageInterface'];
+        yield [MethodCall::class, 'Drupal\Core\Entity\EntityStorageInterface'];
+        yield [Expr\StaticCall::class, 'Drupal\Core\Entity\EntityStorageInterface'];
+        yield [Expr\BinaryOp\Concat::class, 'Drupal\Core\Entity\EntityStorageInterface'];
     }
 
     /**
@@ -94,11 +113,11 @@ final class EntityTypeManagerGetStorageDynamicReturnTypeExtensionTest extends Te
     {
         $x = new EntityTypeManagerGetStorageDynamicReturnTypeExtension([]);
 
-        $valid = $this->prophesize(MethodReflection::class);
+        $valid = $this->prophet->prophesize(MethodReflection::class);
         $valid->getName()->willReturn('getStorage');
         self::assertTrue($x->isMethodSupported($valid->reveal()));
 
-        $invalid = $this->prophesize(MethodReflection::class);
+        $invalid = $this->prophet->prophesize(MethodReflection::class);
         $invalid->getName()->willReturn('getAccessControlHandler');
         self::assertFalse($x->isMethodSupported($invalid->reveal()));
     }
