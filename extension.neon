@@ -1,7 +1,7 @@
 parameters:
 	bootstrapFiles:
 		- drupal-autoloader.php
-	excludes_analyse:
+	excludePaths:
 		- '*.api.php'
 		- '*/tests/fixtures/*.php'
 	fileExtensions:
