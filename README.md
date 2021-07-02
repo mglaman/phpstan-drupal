@@ -43,7 +43,7 @@ To exclude tests from analysis, add the following parameter
 
 ```
 parameters:
-	excludes_analyse:
+	excludePaths:
 		- *Test.php
 		- *TestBase.php
 ```
