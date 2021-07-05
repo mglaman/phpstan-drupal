@@ -26,7 +26,7 @@ class EntityFieldsViaMagicReflectionExtension implements PropertiesClassReflecti
             // Content entities have magical __get... so it is kind of true.
             return true;
         }
-        if ($reflection->implementsInterface('Drupal\Core\Field\FieldItemListInterface')) {
+        if ($reflection->implementsInterface('Drupal\Core\Field\FieldItemListInterface') || $reflection->implementsInterface('Drupal\Core\TypedData\ListInterface')) {
             return FieldItemListPropertyReflection::canHandleProperty($classReflection, $propertyName);
         }
 
@@ -39,7 +39,7 @@ class EntityFieldsViaMagicReflectionExtension implements PropertiesClassReflecti
         if ($reflection->implementsInterface('Drupal\Core\Entity\EntityInterface')) {
             return new EntityFieldReflection($classReflection, $propertyName);
         }
-        if ($reflection->implementsInterface('Drupal\Core\Field\FieldItemListInterface')) {
+        if ($reflection->implementsInterface('Drupal\Core\Field\FieldItemListInterface') || $reflection->implementsInterface('Drupal\Core\TypedData\ListInterface')) {
             return new FieldItemListPropertyReflection($classReflection, $propertyName);
         }
 

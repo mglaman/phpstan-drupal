@@ -15,9 +15,7 @@ class EntityFieldMagicalGetters {
 
         // 🤦‍♂
         $label1 = $testEntity->label();
-        // @todo Access to an undefined property Drupal\Core\TypedData\TypedDataInterface::$value.
         $label2 = $testEntity->get('name')->first()->value;
-        // @todo Access to an undefined property Drupal\Core\TypedData\TypedDataInterface::$value.
         $label3 = $testEntity->name->first()->value;
         // This doesn't fail because of EntityFieldsViaMagicReflectionExtension
         $label4 = $testEntity->name->value;
