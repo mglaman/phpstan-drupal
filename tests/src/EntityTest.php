@@ -2,7 +2,7 @@
 
 namespace PHPStan\Drupal;
 
-final class EntityTestClass extends AnalyzerTestBase
+final class EntityTest extends AnalyzerTestBase
 {
     /**
      * @dataProvider dataEntitySamples
