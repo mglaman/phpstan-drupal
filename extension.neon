@@ -57,3 +57,7 @@ services:
 	-
 		class: PHPStan\Rules\Deprecations\PluginAnnotationContextDefinitionsRule
 		tags: [phpstan.rules.rule]
+
+	-
+		class: PHPStan\Rules\Deprecations\ConfigEntityConfigExportRule
+		tags: [phpstan.rules.rule]
