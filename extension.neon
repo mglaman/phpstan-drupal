@@ -53,3 +53,7 @@ services:
 		tags: [phpstan.rules.rule]
 		arguments:
 			- %drupal.drupal_root%
+
+	-
+		class: PHPStan\Rules\Deprecations\PluginAnnotationContextDefinitionsRule
+		tags: [phpstan.rules.rule]
