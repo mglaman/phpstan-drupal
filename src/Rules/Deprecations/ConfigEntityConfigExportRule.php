@@ -6,6 +6,7 @@ use PhpParser\Node;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\ReflectionProvider;
+use PHPStan\ShouldNotHappenException;
 
 final class ConfigEntityConfigExportRule extends DeprecatedAnnotationsRuleBase
 {
@@ -23,8 +24,11 @@ final class ConfigEntityConfigExportRule extends DeprecatedAnnotationsRuleBase
         if ($annotation === null) {
             return [];
         }
-        $hasMatch = strpos($annotation->getPhpDocString(), 'config_export = {') === false;
-        if ($hasMatch) {
+        $hasMatch = preg_match('/config_export\s?=\s?{/', $annotation->getPhpDocString());
+        if ($hasMatch === false) {
+            throw new ShouldNotHappenException('Unexpected error when trying to run match on phpDoc string.');
+        }
+        if ($hasMatch === 0) {
             return [
                 'Configuration entity must define a `config_export` key. See https://www.drupal.org/node/2481909',
             ];
