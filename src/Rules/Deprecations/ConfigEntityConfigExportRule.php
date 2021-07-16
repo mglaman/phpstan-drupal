@@ -7,12 +7,12 @@ use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\ReflectionProvider;
 
-final class PluginAnnotationContextDefinitionsRule extends DeprecatedAnnotationsRuleBase
+final class ConfigEntityConfigExportRule extends DeprecatedAnnotationsRuleBase
 {
 
     protected function getExpectedInterface(): string
     {
-        return 'Drupal\Component\Plugin\ContextAwarePluginInterface';
+        return 'Drupal\Core\Config\Entity\ConfigEntityInterface';
     }
 
     protected function doProcessNode(ClassReflection $reflection, Node\Stmt\Class_ $node, Scope $scope): array
@@ -23,10 +23,10 @@ final class PluginAnnotationContextDefinitionsRule extends DeprecatedAnnotations
         if ($annotation === null) {
             return [];
         }
-        $hasMatch = strpos($annotation->getPhpDocString(), 'context = {') !== false;
+        $hasMatch = strpos($annotation->getPhpDocString(), 'config_export = {') === false;
         if ($hasMatch) {
             return [
-                'Providing context definitions via the "context" key is deprecated in Drupal 8.7.x and will be removed before Drupal 9.0.0. Use the "context_definitions" key instead.',
+                'Configuration entity must define a `config_export` key. See https://www.drupal.org/node/2481909',
             ];
         }
         return [];
