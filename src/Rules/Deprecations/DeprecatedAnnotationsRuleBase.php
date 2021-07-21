@@ -43,7 +43,13 @@ abstract class DeprecatedAnnotationsRuleBase implements Rule
         if ($node->name === null) {
             return [];
         }
-        if ($node->isAnonymous() || $node->isAbstract()) {
+        if ($node->isAbstract()) {
+            return [];
+        }
+        // PHPStan gives anonymous classes a name, so we cannot determine if
+        // a class is truly anonymous using the normal methods from php-parser.
+        // @see \PHPStan\Reflection\BetterReflection\BetterReflectionProvider::getAnonymousClassReflection
+        if ($node->hasAttribute('anonymousClass') && $node->getAttribute('anonymousClass') === true) {
             return [];
         }
         $className = $node->name->name;
