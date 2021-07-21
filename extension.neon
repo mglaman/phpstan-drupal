@@ -61,3 +61,7 @@ services:
 	-
 		class: PHPStan\Rules\Deprecations\ConfigEntityConfigExportRule
 		tags: [phpstan.rules.rule]
+
+	-
+		class: PHPStan\Rules\Drupal\Tests\BrowserTestBaseDefaultThemeRule
+		tags: [phpstan.rules.rule]
