@@ -43,6 +43,9 @@ abstract class DeprecatedAnnotationsRuleBase implements Rule
         if ($node->name === null) {
             return [];
         }
+//        if ($node->isAnonymous() || $node->isAbstract()) {
+//            return [];
+//        }
         $className = $node->name->name;
         $namespace = $scope->getNamespace();
         $reflection = $this->reflectionProvider->getClass($namespace . '\\' . $className);

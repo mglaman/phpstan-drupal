@@ -1,6 +1,8 @@
 <?php
 
 // Catches at level 4.
+use Drupal\Core\Block\BlockBase;
+
 function phpstan_fixtures_IfConstantConditionRule() {
     $zero = 0;
     if ($zero) {
@@ -26,4 +28,17 @@ function phpstan_fixtures_module_load_includes_test(): array {
 function phpstan_fixtures_module_load_includes_negative_test(): void {
     $module_handler = \Drupal::moduleHandler();
     $module_handler->loadInclude('phpstan_fixtures', 'fetch.inc');
+}
+
+function phpstan_fixtures_thing_with_anonymous_class(): void {
+    $foo = new class(
+        [],
+        'foo',
+        []
+    ) extends BlockBase {
+        public function build(): array
+        {
+            return [];
+        }
+    };
 }
