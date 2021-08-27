@@ -21,7 +21,7 @@ final class ConfigEntityConfigExportRule extends DeprecatedAnnotationsRuleBase
         $annotation = $reflection->getResolvedPhpDoc();
         // Plugins should always be annotated, but maybe this class is missing its
         // annotation since it swaps an existing one.
-        if ($annotation === null) {
+        if ($annotation === null || strpos('@ConfigEntityType(', $annotation->getPhpDocString()) === false) {
             return [];
         }
         $hasMatch = preg_match('/config_export\s?=\s?{/', $annotation->getPhpDocString());
