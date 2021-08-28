@@ -104,6 +104,11 @@ class DrupalAutoloader
         $this->registerTestNamespaces();
         $this->loadDrushIncludes();
 
+        // @todo find a way to not need this, but have stubs/drupal_phpunit.stub work.
+        if (interface_exists(\PHPUnit\Framework\Test::class)) {
+            require_once $this->drupalRoot . '/core/tests/bootstrap.php';
+        }
+
         foreach ($this->serviceYamls as $serviceYaml) {
             $yaml = Yaml::parseFile($serviceYaml);
             // Weed out service files which only provide parameters.
