@@ -3,8 +3,7 @@
 use PHPStan\DependencyInjection\Container;
 use PHPStan\Drupal\DrupalAutoloader;
 
-assert($container instanceof Container);
-if ($container === NULL && !($container instanceof Container)) {
+if (!isset($container) || !($container instanceof Container)) {
     throw new \PHPStan\ShouldNotHappenException('The autoloader did not receive the container.');
 }
 
@@ -12,5 +11,7 @@ if (!defined('DRUPAL_TEST_IN_CHILD_SITE')) {
     define('DRUPAL_TEST_IN_CHILD_SITE', false);
 }
 
-$drupalAutoloader = new DrupalAutoloader();
+$drupalParams = $container->getParameter('drupal');
+$drupalRoot = $drupalParams['drupal_root'];
+$drupalAutoloader = new DrupalAutoloader($drupalRoot);
 $drupalAutoloader->register($container);

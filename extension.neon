@@ -11,6 +11,8 @@ parameters:
 		- install
 		- profile
 		- engine
+	stubFiles:
+		- stubs/phpunit_bootstrap.stub
 	drupal:
 		drupal_root: '%currentWorkingDirectory%'
 		entityTypeStorageMapping:

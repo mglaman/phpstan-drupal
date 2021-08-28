@@ -45,6 +45,8 @@ class GlobalDrupalDependencyInjectionRule implements Rule
             // Entities don't use services for now
             // @see https://www.drupal.org/project/drupal/issues/2913224
             'Drupal\Core\Entity\EntityInterface',
+            // These are test site setup scripts for Nightwatch.js.
+            'Drupal\TestSite\TestSetupInterface',
         ];
         $implemented_interfaces = $classReflection->getInterfaceNames();
 

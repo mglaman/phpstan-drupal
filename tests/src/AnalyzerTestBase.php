@@ -7,6 +7,7 @@ use PHPStan\Analyser\Analyser;
 use PHPStan\Analyser\AnalyserResult;
 use PHPStan\DependencyInjection\ContainerFactory;
 use PHPStan\File\FileHelper;
+use PHPStan\PhpDoc\StubValidator;
 use PHPUnit\Framework\TestCase;
 
 abstract class AnalyzerTestBase extends TestCase {
@@ -25,12 +26,12 @@ abstract class AnalyzerTestBase extends TestCase {
         assert($fileHelper !== null);
 
         $autoloadFiles = $container->getParameter('bootstrapFiles');
-        $this->assertContains(dirname(__DIR__, 2) . '/drupal-autoloader.php', $autoloadFiles);
+        self::assertContains(dirname(__DIR__, 2) . '/drupal-autoloader.php', $autoloadFiles);
         if ($autoloadFiles !== null) {
             foreach ($autoloadFiles as $autoloadFile) {
                 $autoloadFile = $fileHelper->normalizePath($autoloadFile);
                 if (!is_file($autoloadFile)) {
-                    $this->fail('Autoload file not found');
+                    self::fail('Autoload file not found');
                 }
                 (static function (string $file) use ($container): void {
                     require_once $file;

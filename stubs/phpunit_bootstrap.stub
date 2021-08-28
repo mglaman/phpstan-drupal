@@ -1,0 +1,13 @@
+<?php
+
+/**
+ * @param ?string $root
+ * @return string[]
+ */
+function drupal_phpunit_contrib_extension_directory_roots(?string $root = NULL) {}
+
+/**
+ * @param string $scan_directory
+ * @return array<string, string>
+ */
+function drupal_phpunit_find_extension_directories(string $scan_directory) {}

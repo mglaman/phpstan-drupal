@@ -4,12 +4,16 @@ namespace PHPStan\Drupal;
 
 use Drupal\Core\DependencyInjection\ContainerNotInitializedException;
 use DrupalFinder\DrupalFinder;
-use Nette\Utils\Finder;
 use PHPStan\DependencyInjection\Container;
 use Symfony\Component\Yaml\Yaml;
 
 class DrupalAutoloader
 {
+
+    /**
+     * Taken from drupal_phpunit_get_extension_namespaces.
+     */
+    private const PHPUNIT_TEST_SUITES = ['Unit', 'Kernel', 'Functional', 'Build', 'FunctionalJavascript'];
 
     /**
      * @var \Composer\Autoload\ClassLoader
@@ -51,7 +55,7 @@ class DrupalAutoloader
     private $serviceClassProviders = [];
 
     /**
-     * @var ?\PHPStan\Drupal\ExtensionDiscovery
+     * @var \PHPStan\Drupal\ExtensionDiscovery
      */
     private $extensionDiscovery;
 
@@ -60,28 +64,29 @@ class DrupalAutoloader
      */
     private $namespaces = [];
 
-    public function register(Container $container): void
+    public function __construct(string $root)
     {
-        $drupalParams = $container->getParameter('drupal');
-        $drupalRoot = $drupalParams['drupal_root'];
+        if (!is_readable($root)) {
+            throw new \InvalidArgumentException("Unable to read $root");
+        }
         $finder = new DrupalFinder();
-        $finder->locateRoot($drupalRoot);
-
+        $finder->locateRoot($root);
         $drupalRoot = $finder->getDrupalRoot();
         $drupalVendorRoot = $finder->getVendorDir();
         if (! (bool) $drupalRoot || ! (bool) $drupalVendorRoot) {
-            throw new \RuntimeException("Unable to detect Drupal at $drupalRoot");
+            throw new \InvalidArgumentException("Unable to detect Drupal at $root");
         }
-
         $this->drupalRoot = $drupalRoot;
-
         $this->autoloader = include $drupalVendorRoot . '/autoload.php';
+        $this->extensionDiscovery = new ExtensionDiscovery($this->drupalRoot);
+    }
 
-        $this->serviceYamls['core'] = $drupalRoot . '/core/core.services.yml';
+    public function register(Container $container): void
+    {
+        $this->serviceYamls['core'] = $this->drupalRoot . '/core/core.services.yml';
         $this->serviceClassProviders['core'] = '\Drupal\Core\CoreServiceProvider';
         $this->serviceMap['service_provider.core.service_provider'] = ['class' => $this->serviceClassProviders['core']];
 
-        $this->extensionDiscovery = new ExtensionDiscovery($this->drupalRoot);
         $this->extensionDiscovery->setProfileDirectories([]);
         $profiles = $this->extensionDiscovery->scan('profile');
         $profile_directories = array_map(static function (Extension $profile) : string {
@@ -89,85 +94,17 @@ class DrupalAutoloader
         }, $profiles);
         $this->extensionDiscovery->setProfileDirectories($profile_directories);
 
-        $this->moduleData = array_merge($this->extensionDiscovery->scan('module'), $profiles);
-        usort($this->moduleData, static function (Extension $a, Extension $b) {
-            return strpos($a->getName(), '_test') !== false ? 10 : 0;
-        });
-        $this->themeData = $this->extensionDiscovery->scan('theme');
-        $this->addTestNamespaces();
-        $this->addModuleNamespaces();
-        $this->addThemeNamespaces();
-        $this->registerPs4Namespaces($this->namespaces);
         $this->loadLegacyIncludes();
 
-        // @todo stop requiring the bootstrap.php and just copy what is needed.
-        if (interface_exists(\PHPUnit\Framework\Test::class)) {
-            require_once $this->drupalRoot . '/core/tests/bootstrap.php';
+        $this->registerExtensions('module');
+        $this->registerExtensions('theme');
+        $this->registerExtensions('profile');
+        $this->registerExtensions('theme_engine');
 
-            // class_alias is not supported by OptimizedDirectorySourceLocator or AutoloadSourceLocator,
-            // so we manually load this PHPUnit compatibility trait that exists in Drupal 8.
-            $phpunitCompatTraitFilepath = $this->drupalRoot . '/core/tests/Drupal/Tests/PhpunitCompatibilityTrait.php';
-            if (file_exists($phpunitCompatTraitFilepath)) {
-                require_once $phpunitCompatTraitFilepath;
-                $this->autoloader->addClassMap(['Drupal\\Tests\\PhpunitCompatibilityTrait' => $phpunitCompatTraitFilepath]);
-            }
-        }
+        $this->registerTestNamespaces();
+        $this->loadDrushIncludes();
 
-        foreach ($this->moduleData as $extension) {
-            $this->loadExtension($extension);
-
-            $module_name = $extension->getName();
-            $module_dir = $this->drupalRoot . '/' . $extension->getPath();
-            // Add .install
-            if (file_exists($module_dir . '/' . $module_name . '.install')) {
-                $ignored_install_files = ['entity_test', 'entity_test_update', 'update_test_schema'];
-                if (!in_array($module_name, $ignored_install_files, true)) {
-                    $this->loadAndCatchErrors($module_dir . '/' . $module_name . '.install');
-                }
-            }
-            // Add .post_update.php
-            if (file_exists($module_dir . '/' . $module_name . '.post_update.php')) {
-                $this->loadAndCatchErrors($module_dir . '/' . $module_name . '.post_update.php');
-            }
-            // Add misc .inc that are magically allowed via hook_hook_info.
-            $magic_hook_info_includes = [
-                'views',
-                'views_execution',
-                'tokens',
-                'search_api',
-                'pathauto',
-            ];
-            foreach ($magic_hook_info_includes as $hook_info_include) {
-                if (file_exists($module_dir . "/$module_name.$hook_info_include.inc")) {
-                    $this->loadAndCatchErrors($module_dir . "/$module_name.$hook_info_include.inc");
-                }
-            }
-        }
-        foreach ($this->themeData as $extension) {
-            $this->loadExtension($extension);
-            $theme_dir = $this->drupalRoot . '/' . $extension->getPath();
-            $theme_settings_file = $theme_dir . '/theme-settings.php';
-            if (file_exists($theme_settings_file)) {
-                $this->loadAndCatchErrors($theme_settings_file);
-            }
-        }
-
-        if (class_exists(\Drush\Drush::class)) {
-            $reflect = new \ReflectionClass(\Drush\Drush::class);
-            if ($reflect->getFileName() !== false) {
-                $levels = 2;
-                if (\Drush\Drush::getMajorVersion() < 9) {
-                    $levels = 3;
-                }
-                $drushDir = dirname($reflect->getFileName(), $levels);
-                /** @var \SplFileInfo $file */
-                foreach (Finder::findFiles('*.inc')->in($drushDir . '/includes') as $file) {
-                    require_once $file->getPathname();
-                }
-            }
-        }
-
-        foreach ($this->serviceYamls as $extension => $serviceYaml) {
+        foreach ($this->serviceYamls as $serviceYaml) {
             $yaml = Yaml::parseFile($serviceYaml);
             // Weed out service files which only provide parameters.
             if (!isset($yaml['services']) || !is_array($yaml['services'])) {
@@ -177,7 +114,7 @@ class DrupalAutoloader
                 // Prevent \Nette\DI\ContainerBuilder::completeStatement from array_walk_recursive into the arguments
                 // and thinking these are real services for PHPStan's container.
                 if (isset($serviceDefinition['arguments']) && is_array($serviceDefinition['arguments'])) {
-                    array_walk($serviceDefinition['arguments'], function (&$argument) : void {
+                    array_walk($serviceDefinition['arguments'], static function (&$argument) : void {
                         if (is_array($argument) || !is_string($argument)) {
                             // @todo fix for @http_kernel.controller.argument_metadata_factory
                             $argument = '';
@@ -212,75 +149,6 @@ class DrupalAutoloader
         $GLOBALS['drupalServiceMap'] = $service_map->getServices();
     }
 
-    protected function loadLegacyIncludes(): void
-    {
-        /** @var \SplFileInfo $file */
-        foreach (Finder::findFiles('*.inc')->in($this->drupalRoot . '/core/includes') as $file) {
-            require_once $file->getPathname();
-        }
-    }
-
-    protected function addTestNamespaces(): void
-    {
-        // Add core test namespaces.
-        $core_tests_dir = $this->drupalRoot . '/core/tests/Drupal';
-        $this->namespaces['Drupal\\BuildTests'] = $core_tests_dir . '/BuildTests';
-        $this->namespaces['Drupal\\FunctionalJavascriptTests'] = $core_tests_dir . '/FunctionalJavascriptTests';
-        $this->namespaces['Drupal\\FunctionalTests'] =  $core_tests_dir . '/FunctionalTests';
-        $this->namespaces['Drupal\\KernelTests'] = $core_tests_dir . '/KernelTests';
-        $this->namespaces['Drupal\\Tests'] = $core_tests_dir . '/Tests';
-        $this->namespaces['Drupal\\TestSite'] = $core_tests_dir . '/TestSite';
-        $this->namespaces['Drupal\\TestTools'] = $core_tests_dir . '/TestTools';
-        $this->namespaces['Drupal\\Tests\\TestSuites'] = $this->drupalRoot . '/core/tests/TestSuites';
-    }
-
-    protected function addModuleNamespaces(): void
-    {
-        foreach ($this->moduleData as $module) {
-            $module_name = $module->getName();
-            $module_dir = $this->drupalRoot . '/' . $module->getPath();
-            $this->namespaces["Drupal\\$module_name"] = $module_dir . '/src';
-
-            // Extensions can have a \Drupal\Tests\extension namespace for test cases, traits, and other classes such
-            // as those that extend \Drupal\TestSite\TestSetupInterface.
-            // @see drupal_phpunit_get_extension_namespaces()
-            $module_test_dir = $module_dir . '/tests/src';
-            if (is_dir($module_test_dir)) {
-                $this->namespaces["Drupal\\Tests\\$module_name"] = $module_test_dir;
-            }
-
-            $servicesFileName = $module_dir . '/' . $module_name . '.services.yml';
-            if (file_exists($servicesFileName)) {
-                $this->serviceYamls[$module_name] = $servicesFileName;
-            }
-            $camelized = $this->camelize($module_name);
-            $name = "{$camelized}ServiceProvider";
-            $class = "Drupal\\{$module_name}\\{$name}";
-
-            $this->serviceClassProviders[$module_name] = $class;
-            $serviceId = "service_provider.$module_name.service_provider";
-            $this->serviceMap[$serviceId] = ['class' => $class];
-        }
-    }
-    protected function addThemeNamespaces(): void
-    {
-        foreach ($this->themeData as $theme_name => $theme) {
-            $theme_dir = $this->drupalRoot . '/' . $theme->getPath();
-            $this->namespaces["Drupal\\$theme_name"] = $theme_dir . '/src';
-        }
-    }
-
-    protected function registerPs4Namespaces(array $namespaces): void
-    {
-        foreach ($namespaces as $prefix => $paths) {
-            if (is_array($paths)) {
-                foreach ($paths as $key => $value) {
-                    $paths[$key] = $value;
-                }
-            }
-            $this->autoloader->addPsr4($prefix . '\\', $paths);
-        }
-    }
     protected function loadExtension(Extension $extension): void
     {
         try {
@@ -309,5 +177,166 @@ class DrupalAutoloader
     protected function camelize(string $id): string
     {
         return strtr(ucwords(strtr($id, ['_' => ' ', '.' => '_ ', '\\' => '_ '])), [' ' => '']);
+    }
+
+    private function loadLegacyIncludes(): void
+    {
+        $this->loadIncludesByDirectory('drupal/core', $this->drupalRoot . '/core/includes');
+    }
+
+    private function registerExtensions(string $type): void
+    {
+        if ($type !== 'module' && $type !== 'theme' && $type !== 'profile' && $type !== 'theme_engine') {
+            throw new \InvalidArgumentException("Must be 'module', 'theme', 'profile', or 'theme_engine' but got $type");
+        }
+        // Tracks implementations of hook_hook_info for loading of those files.
+        $hook_info_implementations = [];
+
+        $extensions = $this->extensionDiscovery->scan($type);
+        usort($extensions, static function (Extension $a, Extension $b) {
+            return strpos($a->getName(), '_test') !== false ? 1 : 0;
+        });
+        foreach ($extensions as $extension) {
+            $extension_name = $extension->getName();
+            $extension_path = $this->drupalRoot . '/' . $extension->getPath();
+            $this->autoloader->addPsr4("Drupal\\{$extension_name}\\", $extension_path . '/src');
+
+            // @see drupal_phpunit_get_extension_namespaces().
+            $test_dir = $extension_path . '/tests/src';
+            foreach (self::PHPUNIT_TEST_SUITES as $suite_name) {
+                $suite_dir = $test_dir . '/' . $suite_name;
+                if (is_dir($suite_dir)) {
+                    $this->autoloader->addPsr4("Drupal\\Tests\\$extension_name\\$suite_name\\", $suite_dir);
+                }
+            }
+            // Extensions can have a \Drupal\extension\Traits namespace for
+            // cross-suite trait code.
+            $trait_dir = $test_dir . '/Traits';
+            if (is_dir($trait_dir)) {
+                $this->autoloader->addPsr4('Drupal\\Tests\\' . $extension_name . '\\Traits\\', $trait_dir);
+            }
+
+            $this->loadExtension($extension);
+
+            // Load schema and post_update files.
+            if (file_exists($extension_path . '/' . $extension_name . '.install')) {
+                // These are ignored as they cause crashes.
+                $ignored_install_files = ['entity_test', 'entity_test_update', 'update_test_schema'];
+                if (!in_array($extension_name, $ignored_install_files, true)) {
+                    $this->loadAndCatchErrors($extension_path . '/' . $extension_name . '.install');
+                }
+            }
+            if (file_exists($extension_path . '/' . $extension_name . '.post_update.php')) {
+                $this->loadAndCatchErrors($extension_path . '/' . $extension_name . '.post_update.php');
+            }
+
+            if ($type === 'module' || $type === 'profile') {
+                // Mimics the buildHookInfo method in the module handler.
+                // @see \Drupal\Core\Extension\ModuleHandler::buildHookInfo
+                $hook_info_function = $extension_name . '_hook_info';
+                if (function_exists($hook_info_function) && is_callable($hook_info_function)) {
+                    $result = $hook_info_function();
+                    if (is_array($result)) {
+                        $groups = array_unique(array_values(array_map(static function (array $hook_info) {
+                            return $hook_info['group'];
+                        }, $result)));
+                        // We do not need the full array structure, we only care
+                        // about the group name for loading files.
+                        $hook_info_implementations[] = $groups;
+                    }
+                }
+
+                $servicesFileName = $extension_path . '/' . $extension_name . '.services.yml';
+                if (file_exists($servicesFileName)) {
+                    $this->serviceYamls[$extension_name] = $servicesFileName;
+                }
+                $camelized = $this->camelize($extension_name);
+                $name = "{$camelized}ServiceProvider";
+                $class = "Drupal\\{$extension_name}\\{$name}";
+                $this->serviceClassProviders[$extension_name] = $class;
+                $serviceId = "service_provider.$extension_name.service_provider";
+                $this->serviceMap[$serviceId] = ['class' => $class];
+            }
+            if ($type === 'theme') {
+                $theme_settings_file = $extension_path . '/theme-settings.php';
+                if (file_exists($theme_settings_file)) {
+                    $this->loadAndCatchErrors($theme_settings_file);
+                }
+            }
+        }
+
+        // Iterate over hook_hook_info implementations and load those files.
+        if (count($hook_info_implementations) > 0) {
+            $hook_info_implementations = array_merge(...$hook_info_implementations);
+            foreach ($hook_info_implementations as $hook_info_group) {
+                foreach ($extensions as $extension) {
+                    $include_file = $this->drupalRoot . '/' . $extension->getPath() . '/' . $extension->getName() . '.' . $hook_info_group . '.inc';
+                    if (file_exists($include_file)) {
+                        $this->loadAndCatchErrors($include_file);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * @see drupal_phpunit_populate_class_loader
+     */
+    private function registerTestNamespaces(): void
+    {
+        // Start with classes in known locations.
+        $dir = $this->drupalRoot . '/core/tests';
+        $this->autoloader->add('Drupal\\BuildTests', $dir);
+        $this->autoloader->add('Drupal\\Tests', $dir);
+        $this->autoloader->add('Drupal\\TestSite', $dir);
+        $this->autoloader->add('Drupal\\KernelTests', $dir);
+        $this->autoloader->add('Drupal\\FunctionalTests', $dir);
+        $this->autoloader->add('Drupal\\FunctionalJavascriptTests', $dir);
+        $this->autoloader->add('Drupal\\TestTools', $dir);
+        $this->autoloader->addPsr4('Drupal\\Tests\\TestSuites\\', $this->drupalRoot . '/core/tests/TestSuites');
+    }
+
+    private function loadDrushIncludes(): void
+    {
+        if (class_exists(\Drush\Drush::class)) {
+            $reflect = new \ReflectionClass(\Drush\Drush::class);
+            if ($reflect->getFileName() !== false) {
+                $levels = 2;
+                if (\Drush\Drush::getMajorVersion() < 9) {
+                    $levels = 3;
+                }
+                $drushDir = dirname($reflect->getFileName(), $levels);
+                $this->loadIncludesByDirectory('drush/drush', $drushDir);
+            }
+        }
+    }
+
+    private function loadIncludesByDirectory(string $package, string $absolute_path): void
+    {
+        $flags = \FilesystemIterator::UNIX_PATHS;
+        $flags |= \FilesystemIterator::SKIP_DOTS;
+        $flags |= \FilesystemIterator::FOLLOW_SYMLINKS;
+        $flags |= \FilesystemIterator::CURRENT_AS_SELF;
+        $directory_iterator = new \RecursiveDirectoryIterator($absolute_path, $flags);
+        $iterator = new \RecursiveIteratorIterator(
+            $directory_iterator,
+            \RecursiveIteratorIterator::LEAVES_ONLY,
+            // Suppress filesystem errors in case a directory cannot be accessed.
+            \RecursiveIteratorIterator::CATCH_GET_CHILD
+        );
+
+        foreach ($iterator as $fileinfo) {
+            // Check if this file was added as an autoloaded file in a
+            // composer.json file.
+            //
+            // @see \Composer\Autoload\AutoloadGenerator::getFileIdentifier().
+            $autoloadFileIdentifier = md5($package . ':includes/' . $fileinfo->getFilename());
+            if (isset($GLOBALS['__composer_autoload_files'][$autoloadFileIdentifier])) {
+                continue;
+            }
+            if ($fileinfo->getExtension() === 'inc') {
+                require_once $fileinfo->getPathname();
+            }
+        }
     }
 }

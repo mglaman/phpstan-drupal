@@ -22,15 +22,15 @@ final class DrupalIntegrationTest extends AnalyzerTestBase {
         ];
         foreach ($paths as $path) {
             $errors = $this->runAnalyze($path);
-            $this->assertCount(1, $errors->getErrors(), $path);
-            $this->assertEquals('Unsafe usage of new static().', $errors->getErrors()[0]->getMessage());
-            $this->assertCount(0, $errors->getInternalErrors(), print_r($errors->getInternalErrors(), true));
+            self::assertCount(1, $errors->getErrors(), $path);
+            self::assertEquals('Unsafe usage of new static().', $errors->getErrors()[0]->getMessage());
+            self::assertCount(0, $errors->getInternalErrors(), print_r($errors->getInternalErrors(), true));
         }
 
         // Abstract doesn't warn on static constructor.
         $errors = $this->runAnalyze(__DIR__ . '/../fixtures/drupal/core/tests/TestSuites/TestSuiteBase.php');
-        $this->assertCount(0, $errors->getErrors(), $path);
-        $this->assertCount(0, $errors->getInternalErrors(), print_r($errors->getInternalErrors(), true));
+        self::assertCount(0, $errors->getErrors(), print_r($errors->getErrors(), true));
+        self::assertCount(0, $errors->getInternalErrors(), print_r($errors->getInternalErrors(), true));
     }
 
     public function testDrupalTestInChildSiteContant() {
@@ -64,8 +64,10 @@ final class DrupalIntegrationTest extends AnalyzerTestBase {
         $paths = [
             __DIR__ . '/../fixtures/drupal/modules/module_with_tests/tests/src/Unit/ModuleWithTestsTest.php',
             __DIR__ . '/../fixtures/drupal/modules/module_with_tests/tests/src/Traits/ModuleWithTestsTrait.php',
-            __DIR__ . '/../fixtures/drupal/modules/module_with_tests/tests/src/TestSite/ModuleWithTestsTestSite.php',
             __DIR__ . '/../fixtures/drupal/modules/module_with_tests/tests/src/Kernel/DrupalStaticCallTest.php',
+            // @note: TestSite and Nightwatch aren't normally autoloaded, but could be scanned.
+            // In Drupal core, these are all located in the same namespace. There isn't a standard.
+            __DIR__ . '/../fixtures/drupal/modules/module_with_tests/tests/src/Nightwatch/ModuleWithTestsTestSite.php',
         ];
         foreach ($paths as $path) {
             $errors = $this->runAnalyze($path);

@@ -42,3 +42,44 @@ function phpstan_fixtures_thing_with_anonymous_class(): void {
         }
     };
 }
+
+/**
+ * Implements hook_hook_info().
+ *
+ * Stub for pathauto and search_api for testing.
+ */
+function phpstan_fixtures_hook_info() {
+    $hooks = [
+        'pathauto_pattern_alter',
+        'pathauto_alias_alter',
+        'pathauto_is_alias_reserved',
+    ];
+    $pathauto_hooks = array_fill_keys($hooks, ['group' => 'pathauto']);
+    $hooks = [
+        'search_api_backend_info_alter',
+        'search_api_server_features_alter',
+        'search_api_datasource_info_alter',
+        'search_api_processor_info_alter',
+        'search_api_data_type_info_alter',
+        'search_api_parse_mode_info_alter',
+        'search_api_tracker_info_alter',
+        'search_api_displays_alter',
+        'search_api_field_type_mapping_alter',
+        'search_api_views_handler_mapping_alter',
+        'search_api_views_field_handler_mapping_alter',
+        'search_api_index_items_alter',
+        'search_api_items_indexed',
+        'search_api_query_alter',
+        // Unfortunately, it's not possible to add hook infos for hooks with
+        // "wildcards".
+        // 'search_api_query_TAG_alter',
+        'search_api_results_alter',
+        // 'search_api_results_TAG_alter',
+        'search_api_index_reindex',
+    ];
+    $info = [
+        'group' => 'search_api',
+    ];
+    $search_api_hooks = array_fill_keys($hooks, $info);
+    return array_merge($pathauto_hooks, $search_api_hooks);
+}

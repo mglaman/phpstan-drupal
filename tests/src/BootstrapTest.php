@@ -24,8 +24,8 @@ final class BootstrapTest extends TestCase
             'drupal/modules/contained_not_initialized/contained_not_initialized.views.inc invoked the Drupal container outside of the scope of a function or class method. It was not loaded.',
             'drupal/modules/contained_not_initialized/contained_not_initialized.views_execution.inc invoked the Drupal container outside of the scope of a function or class method. It was not loaded.',
             'drupal/modules/contained_not_initialized/contained_not_initialized.tokens.inc invoked the Drupal container outside of the scope of a function or class method. It was not loaded.',
-            'drupal/modules/contained_not_initialized/contained_not_initialized.search_api.inc invoked the Drupal container outside of the scope of a function or class method. It was not loaded.',
             'drupal/modules/contained_not_initialized/contained_not_initialized.pathauto.inc invoked the Drupal container outside of the scope of a function or class method. It was not loaded.',
+            'drupal/modules/contained_not_initialized/contained_not_initialized.search_api.inc invoked the Drupal container outside of the scope of a function or class method. It was not loaded.',
         ];
         $this->assertEquals($expectedWarnings, $this->gatheredWarnings);
     }
