@@ -6,7 +6,7 @@ Extension for [PHPStan](https://phpstan.org/) to allow analysis of Drupal code.
 
 ## Sponsors
 
-<a href="https://www.undpaul.de/"><img src="https://www.undpaul.de/themes/custom/undpaul3/logo.svg" alt="undpaul" width="250" /></a> <a href="https://www.intracto.com/"><img src="https://digidak.be/wp-content/uploads/2020/03/logo-intracto-base-positief-grijs-blauw@4x-rgb.png" alt="Intracto" width="225" /></a>
+<a href="https://www.undpaul.de/"><img src="https://www.undpaul.de/themes/custom/undpaul3/logo.svg" alt="undpaul" width="250" /></a> <a href="https://www.intracto.com/"><img src="https://digidak.be/wp-content/uploads/2020/03/logo-intracto-base-positief-grijs-blauw@4x-rgb.png" alt="Intracto" width="225" /></a> <a href="https://osinet.fr//"><img src="https://d3c0fbruclr8uq.cloudfront.net/sites/default/files/logo-osinet.png" alt="OSInet" width="250" /></a>
 
 [Would you like to sponsor?](https://github.com/sponsors/mglaman)
 
