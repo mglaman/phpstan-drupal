@@ -65,3 +65,7 @@ services:
 	-
 		class: PHPStan\Rules\Drupal\Tests\BrowserTestBaseDefaultThemeRule
 		tags: [phpstan.rules.rule]
+
+	-
+		class: PHPStan\Rules\Deprecations\GetDeprecatedServiceRule
+		tags: [phpstan.rules.rule]

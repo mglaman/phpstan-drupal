@@ -8,15 +8,15 @@ class DeprecationRulesTest extends AnalyzerTestBase
     /**
      * @dataProvider dataDeprecatedSamples
      */
-    public function testDeprecationRules(string $path, int $count, array $errorMessages)
+    public function testDeprecationRules(string $path, int $count, array $errorMessages): void
     {
         if (version_compare('9.0.0', \Drupal::VERSION) !== 1) {
             $this->markTestSkipped('Only tested on Drupal 8.x.x');
         }
         $errors = $this->runAnalyze($path);
-        $this->assertCount($count, $errors->getErrors(), var_export($errors, true));
+        self::assertCount($count, $errors->getErrors(), var_export($errors, true));
         foreach ($errors->getErrors() as $key => $error) {
-            $this->assertEquals($errorMessages[$key], $error->getMessage());
+            self::assertEquals($errorMessages[$key], $error->getMessage());
         }
     }
 
@@ -48,6 +48,25 @@ in drupal:8.0.0 and is removed from drupal:9.0.0.',
             [
                 'Call to deprecated constant DATETIME_STORAGE_TIMEZONE: Deprecated in drupal:8.5.0 and is removed from drupal:9.0.0. Use \Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface::STORAGE_TIMEZONE instead.',
                 'Call to deprecated constant DATETIME_DATE_STORAGE_FORMAT: Deprecated in drupal:8.5.0 and is removed from drupal:9.0.0. Use \Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface::DATE_STORAGE_FORMAT instead.',
+            ]
+        ];
+        yield 'entity.manager ContainerInjectionInterface test' => [
+            __DIR__ . '/../fixtures/drupal/modules/phpstan_fixtures/src/Controller/EntityManagerInjectedController.php',
+            2,
+            [
+                'Parameter $entity_manager of method Drupal\\phpstan_fixtures\\Controller\\EntityManagerInjectedController::__construct() has typehint with deprecated interface Drupal\\Core\\Entity\\EntityManagerInterface:
+in drupal:8.0.0 and is removed from drupal:9.0.0.',
+                'The "entity.manager" service is deprecated. You should use the \'entity_type.manager\' service instead.'
+            ]
+        ];
+        yield 'entity.manager ContainerFactoryPluginInterface test' => [
+            __DIR__ . '/../fixtures/drupal/modules/phpstan_fixtures/src/Plugin/Block/EntityManagerInjectedBlock.php',
+            3,
+            [
+                'Parameter $entity_manager of method Drupal\\phpstan_fixtures\\Plugin\\Block\\EntityManagerInjectedBlock::__construct() has typehint with deprecated interface Drupal\\Core\\Entity\\EntityManagerInterface:
+in drupal:8.0.0 and is removed from drupal:9.0.0.',
+                'Unsafe usage of new static().',
+                'The "entity.manager" service is deprecated. You should use the \'entity_type.manager\' service instead.'
             ]
         ];
     }

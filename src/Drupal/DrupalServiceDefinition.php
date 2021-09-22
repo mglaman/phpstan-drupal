@@ -21,6 +21,21 @@ class DrupalServiceDefinition
     private $public;
 
     /**
+     * @var bool
+     */
+    private $deprecated = false;
+
+    /**
+     * @var string|null
+     */
+    private $deprecationTemplate;
+
+    /**
+     * @var string
+     */
+    private static $defaultDeprecationTemplate = 'The "%service_id%" service is deprecated. You should stop using it, as it will soon be removed.';
+
+    /**
      * @var string|null
      */
     private $alias;
@@ -31,6 +46,12 @@ class DrupalServiceDefinition
         $this->class = $class;
         $this->public = $public;
         $this->alias = $alias;
+    }
+
+    public function setDeprecated(bool $status = true, ?string $template = null): void
+    {
+        $this->deprecated = $status;
+        $this->deprecationTemplate = $template;
     }
 
     /**
@@ -63,5 +84,15 @@ class DrupalServiceDefinition
     public function getAlias(): ?string
     {
         return $this->alias;
+    }
+
+    public function isDeprecated(): bool
+    {
+        return $this->deprecated;
+    }
+
+    public function getDeprecatedDescription(): string
+    {
+        return str_replace('%service_id%', $this->id, $this->deprecationTemplate ?? self::$defaultDeprecationTemplate);
     }
 }
