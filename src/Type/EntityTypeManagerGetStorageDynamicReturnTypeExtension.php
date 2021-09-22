@@ -5,6 +5,7 @@ namespace PHPStan\Type;
 use PhpParser\Node\Expr\BinaryOp\Concat;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Scalar\String_;
+use PhpParser\Node\VariadicPlaceholder;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\ParametersAcceptorSelector;
@@ -48,7 +49,11 @@ class EntityTypeManagerGetStorageDynamicReturnTypeExtension implements DynamicMe
             throw new ShouldNotHappenException();
         }
 
-        $arg1 = $methodCall->args[0]->value;
+        $arg1 = $methodCall->args[0];
+        if ($arg1 instanceof VariadicPlaceholder) {
+            throw new ShouldNotHappenException();
+        }
+        $arg1 = $arg1->value;
 
         // @todo handle where the first param is EntityTypeInterface::id()
         if ($arg1 instanceof MethodCall) {

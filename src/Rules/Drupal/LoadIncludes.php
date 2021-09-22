@@ -73,14 +73,17 @@ class LoadIncludes implements Rule
             $extensionDiscovery = new ExtensionDiscovery($drupal_root);
             $modules = $extensionDiscovery->scan('module');
             $module_arg = $node->args[0];
+            assert($module_arg instanceof Node\Arg);
             assert($module_arg->value instanceof Node\Scalar\String_);
             $type_arg = $node->args[1];
+            assert($type_arg instanceof Node\Arg);
             assert($type_arg->value instanceof Node\Scalar\String_);
             $name_arg = $node->args[2] ?? null;
 
             if ($name_arg === null) {
                 $name_arg = $module_arg;
             }
+            assert($name_arg instanceof Node\Arg);
             assert($name_arg->value instanceof Node\Scalar\String_);
 
             $module_name = $module_arg->value->value;

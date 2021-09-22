@@ -61,6 +61,9 @@ class PluginManagerSetsCacheBackendRule extends AbstractPluginManagerRule
                 // setCacheBackend accepts a cache backend, the cache key, and optional (but suggested) cache tags.
                 $setCacheBackendArgs = $statement->args;
 
+                if ($setCacheBackendArgs[1] instanceof Node\VariadicPlaceholder) {
+                    throw new ShouldNotHappenException();
+                }
                 $cacheKey = $setCacheBackendArgs[1]->value;
                 if (!$cacheKey instanceof Node\Scalar\String_) {
                     continue;
@@ -68,6 +71,9 @@ class PluginManagerSetsCacheBackendRule extends AbstractPluginManagerRule
                 $hasCacheBackendSet = true;
 
                 if (isset($setCacheBackendArgs[2])) {
+                    if ($setCacheBackendArgs[2] instanceof Node\VariadicPlaceholder) {
+                        throw new ShouldNotHappenException();
+                    }
                     /** @var \PhpParser\Node\Expr\Array_ $cacheTags */
                     $cacheTags = $setCacheBackendArgs[2]->value;
                     if (count($cacheTags->items) > 0) {
