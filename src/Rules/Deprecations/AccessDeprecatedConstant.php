@@ -5,7 +5,6 @@ namespace PHPStan\Rules\Deprecations;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
 use PHPStan\Broker\Broker;
-use PHPStan\Reflection\DeprecatableReflection;
 use PHPStan\Reflection\FunctionReflection;
 
 class AccessDeprecatedConstant implements \PHPStan\Rules\Rule

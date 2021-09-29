@@ -39,24 +39,27 @@ final class DrupalIntegrationTest extends AnalyzerTestBase {
         $this->assertCount(0, $errors->getInternalErrors());
     }
 
-    public function testExtensionReportsError() {
+    public function testExtensionReportsError(): void
+    {
         $is_d9 = version_compare('9.0.0', \Drupal::VERSION) !== 1;
         $errors = $this->runAnalyze(__DIR__ . '/../fixtures/drupal/modules/phpstan_fixtures/phpstan_fixtures.module');
-        $assert_count = ($is_d9) ? 4 : 3;
-        $this->assertCount($assert_count, $errors->getErrors(), var_export($errors, true));
-        $this->assertCount(0, $errors->getInternalErrors(), var_export($errors, true));
+        $assert_count = ($is_d9) ? 5 : 3;
+        self::assertCount($assert_count, $errors->getErrors(), var_export($errors, true));
+        self::assertCount(0, $errors->getInternalErrors(), var_export($errors, true));
 
         $errors = $errors->getErrors();
         $error = array_shift($errors);
-        $this->assertEquals('If condition is always false.', $error->getMessage());
+        self::assertEquals('If condition is always false.', $error->getMessage());
         $error = array_shift($errors);
-        $this->assertEquals('Function phpstan_fixtures_MissingReturnRule() should return string but return statement is missing.', $error->getMessage());
+        self::assertEquals('Function phpstan_fixtures_MissingReturnRule() should return string but return statement is missing.', $error->getMessage());
         if ($is_d9) {
             $error = array_shift($errors);
-            $this->assertEquals('Binary operation "." between SplString and \'/core/includes…\' results in an error.', $error->getMessage());
+            self::assertEquals('The "app.root" service is deprecated in drupal:9.0.0 and is removed from drupal:10.0.0. Use the app.root parameter instead. See https://www.drupal.org/node/3080612', $error->getMessage());
+            $error = array_shift($errors);
+            self::assertEquals('Binary operation "." between SplString and \'/core/includes…\' results in an error.', $error->getMessage());
         }
         $error = array_shift($errors);
-        $this->assertNotFalse(strpos($error->getMessage(), 'phpstan_fixtures/phpstan_fixtures.fetch.inc could not be loaded from Drupal\\Core\\Extension\\ModuleHandlerInterface::loadInclude'));
+        self::assertNotFalse(strpos($error->getMessage(), 'phpstan_fixtures/phpstan_fixtures.fetch.inc could not be loaded from Drupal\\Core\\Extension\\ModuleHandlerInterface::loadInclude'));
     }
 
     public function testExtensionTestSuiteAutoloading(): void
@@ -79,9 +82,10 @@ final class DrupalIntegrationTest extends AnalyzerTestBase {
     public function testServiceMapping8()
     {
         if (version_compare('9.0.0', \Drupal::VERSION) !== 1) {
-            $this->markTestSkipped('Only tested on Drupal 8.x.x');
+            self::markTestSkipped('Only tested on Drupal 8.x.x');
         }
         $errorMessages = [
+            'The "entity.manager" service is deprecated. You should use the \'entity_type.manager\' service instead.',
             '\Drupal calls should be avoided in classes, use dependency injection instead',
             'Call to an undefined method Drupal\Core\Entity\EntityManager::thisMethodDoesNotExist().',
             'Call to deprecated method getDefinitions() of class Drupal\\Core\\Entity\\EntityManager:
@@ -90,7 +94,7 @@ in drupal:8.0.0 and is removed from drupal:9.0.0.
   instead.'
         ];
         $errors = $this->runAnalyze(__DIR__ . '/../fixtures/drupal/modules/phpstan_fixtures/src/TestServicesMappingExtension.php');
-        $this->assertCount(3, $errors->getErrors());
+        $this->assertCount(4, $errors->getErrors());
         $this->assertCount(0, $errors->getInternalErrors());
         foreach ($errors->getErrors() as $key => $error) {
             $this->assertEquals($errorMessages[$key], $error->getMessage());
@@ -115,9 +119,20 @@ in drupal:8.0.0 and is removed from drupal:9.0.0.
     }
 
     public function testAppRootPseudoService() {
+        $is_d9 = version_compare('9.0.0', \Drupal::VERSION) !== 1;
         $errors = $this->runAnalyze(__DIR__ . '/../fixtures/drupal/modules/phpstan_fixtures/src/AppRootParameter.php');
-        $this->assertCount(0, $errors->getErrors(), var_export($errors, TRUE));
-        $this->assertCount(0, $errors->getInternalErrors(), var_export($errors, TRUE));
+        if ($is_d9) {
+            $this->assertCount(1, $errors->getErrors(), var_export($errors, TRUE));
+            self::assertEquals(
+                'The "app.root" service is deprecated in drupal:9.0.0 and is removed from drupal:10.0.0. Use the app.root parameter instead. See https://www.drupal.org/node/3080612',
+                $errors->getErrors()[0]->getMessage()
+            );
+            $this->assertCount(0, $errors->getInternalErrors(), var_export($errors, TRUE));
+        }
+        else {
+            $this->assertCount(0, $errors->getErrors(), var_export($errors, TRUE));
+            $this->assertCount(0, $errors->getInternalErrors(), var_export($errors, TRUE));
+        }
     }
 
     public function testThemeSettingsFile() {

@@ -49,6 +49,10 @@ class ServiceMap
                 $serviceDefinition['public'] ?? true,
                 $serviceDefinition['alias'] ?? null
             );
+            $deprecated = $serviceDefinition['deprecated'] ?? null;
+            if ($deprecated) {
+                $this->services[$serviceId]->setDeprecated(true, $deprecated);
+            }
         }
     }
 }

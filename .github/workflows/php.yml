@@ -41,7 +41,7 @@ jobs:
       - name: "Install dependencies"
         run: "composer update --no-progress --prefer-dist"
       - name: "Downgrade dev dependencies"
-        run: "composer require phpunit/phpunit:6.5.14 drush/drush:~9 drupal/core-recommended:${{ matrix.drupal }} drupal/core-dev:${{ matrix.drupal }} --with-all-dependencies"
+        run: "composer require phpunit/phpunit:6.5.14 drush/drush:~9 drupal/core-recommended:${{ matrix.drupal }} drupal/core-dev:${{ matrix.drupal }} --with-all-dependencies --dev"
         if: ${{ matrix.drupal == '^8.9' }}
       - name: "Add phpspec/prophecy-phpunit"
         run: "composer require --dev phpspec/prophecy-phpunit:^2"
