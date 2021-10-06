@@ -91,30 +91,33 @@ final class DrupalIntegrationTest extends AnalyzerTestBase {
             'Call to deprecated method getDefinitions() of class Drupal\\Core\\Entity\\EntityManager:
 in drupal:8.0.0 and is removed from drupal:9.0.0.
   Use \\Drupal\\Core\\Entity\\EntityTypeManagerInterface::getDefinitions()
-  instead.'
+  instead.',
+            'The "path.alias_manager" service is deprecated. Use "path_alias.manager" instead. See https://drupal.org/node/3092086',
+            '\Drupal calls should be avoided in classes, use dependency injection instead',
         ];
         $errors = $this->runAnalyze(__DIR__ . '/../fixtures/drupal/modules/phpstan_fixtures/src/TestServicesMappingExtension.php');
-        $this->assertCount(4, $errors->getErrors());
-        $this->assertCount(0, $errors->getInternalErrors());
+        self::assertCount(count($errorMessages), $errors->getErrors());
+        self::assertCount(0, $errors->getInternalErrors());
         foreach ($errors->getErrors() as $key => $error) {
-            $this->assertEquals($errorMessages[$key], $error->getMessage());
+            self::assertEquals($errorMessages[$key], $error->getMessage());
         }
     }
 
     public function testServiceMapping9()
     {
         if (version_compare('9.0.0', \Drupal::VERSION) === 1) {
-            $this->markTestSkipped('Only tested on Drupal 9.x.x');
+            self::markTestSkipped('Only tested on Drupal 9.x.x');
         }
         // @todo: the actual error should be the fact `entity.manager` does not exist.
         $errorMessages = [
             '\Drupal calls should be avoided in classes, use dependency injection instead',
+            '\Drupal calls should be avoided in classes, use dependency injection instead',
         ];
         $errors = $this->runAnalyze(__DIR__ . '/../fixtures/drupal/modules/phpstan_fixtures/src/TestServicesMappingExtension.php');
-        $this->assertCount(1, $errors->getErrors());
-        $this->assertCount(0, $errors->getInternalErrors());
+        self::assertCount(count($errorMessages), $errors->getErrors());
+        self::assertCount(0, $errors->getInternalErrors());
         foreach ($errors->getErrors() as $key => $error) {
-            $this->assertEquals($errorMessages[$key], $error->getMessage());
+            self::assertEquals($errorMessages[$key], $error->getMessage());
         }
     }
 
