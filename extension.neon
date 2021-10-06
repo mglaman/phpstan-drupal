@@ -38,8 +38,11 @@ services:
 			entityTypeStorageMapping: %drupal.entityTypeStorageMapping%
 		tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
 	-
-		class: PHPStan\Type\ServiceDynamicReturnTypeExtension
+		class: PHPStan\Type\ContainerDynamicReturnTypeExtension
 		tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
+	-
+		class: PHPStan\Type\DrupalServiceDynamicReturnTypeExtension
+		tags: [phpstan.broker.dynamicStaticMethodReturnTypeExtension]
 	-
 		class: PHPStan\Reflection\EntityFieldsViaMagicReflectionExtension
 		tags: [phpstan.broker.propertiesClassReflectionExtension]
@@ -68,4 +71,7 @@ services:
 
 	-
 		class: PHPStan\Rules\Deprecations\GetDeprecatedServiceRule
+		tags: [phpstan.rules.rule]
+	-
+		class: PHPStan\Rules\Deprecations\StaticServiceDeprecatedServiceRule
 		tags: [phpstan.rules.rule]

@@ -14,7 +14,7 @@ use PHPStan\ShouldNotHappenException;
 use PHPStan\Type\Constant\ConstantBooleanType;
 use Psr\Container\ContainerInterface;
 
-class ServiceDynamicReturnTypeExtension implements DynamicMethodReturnTypeExtension
+class ContainerDynamicReturnTypeExtension implements DynamicMethodReturnTypeExtension
 {
     /**
      * @var ServiceMap
