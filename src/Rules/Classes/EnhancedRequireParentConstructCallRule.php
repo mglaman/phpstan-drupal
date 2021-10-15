@@ -1,9 +1,10 @@
 <?php
 
-namespace PHPStan\Rules\Classes;
+namespace mglaman\PHPStanDrupal\Rules\Classes;
 
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
+use PHPStan\Rules\Classes\RequireParentConstructCallRule;
 use PHPStan\ShouldNotHappenException;
 
 class EnhancedRequireParentConstructCallRule extends RequireParentConstructCallRule

@@ -1,12 +1,12 @@
 <?php declare(strict_types=1);
 
-namespace PHPStan\Drupal;
+namespace mglaman\PHPStanDrupal\Drupal;
 
 use PHPStan\ShouldNotHappenException;
 
 class ServiceMap
 {
-    /** @var \PHPStan\Drupal\DrupalServiceDefinition[] */
+    /** @var \mglaman\PHPStanDrupal\Drupal\DrupalServiceDefinition[] */
     private $services = [];
 
     public function getService(string $id): ?DrupalServiceDefinition
@@ -23,7 +23,7 @@ class ServiceMap
     }
 
     /**
-     * @return \PHPStan\Drupal\DrupalServiceDefinition[]
+     * @return \mglaman\PHPStanDrupal\Drupal\DrupalServiceDefinition[]
      */
     public function getServices(): array
     {

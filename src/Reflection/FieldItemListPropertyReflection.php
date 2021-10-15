@@ -1,7 +1,9 @@
 <?php
 
-namespace PHPStan\Reflection;
+namespace mglaman\PHPStanDrupal\Reflection;
 
+use PHPStan\Reflection\ClassReflection;
+use PHPStan\Reflection\PropertyReflection;
 use PHPStan\Type\NullType;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\StringType;

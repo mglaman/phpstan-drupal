@@ -1,17 +1,20 @@
 <?php declare(strict_types=1);
 
-namespace PHPStan\Type;
+namespace mglaman\PHPStanDrupal\Type;
 
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Scalar\String_;
 use PhpParser\Node\VariadicPlaceholder;
 use PHPStan\Analyser\Scope;
-use PHPStan\Drupal\DrupalServiceDefinition;
-use PHPStan\Drupal\ServiceMap;
+use mglaman\PHPStanDrupal\Drupal\DrupalServiceDefinition;
+use mglaman\PHPStanDrupal\Drupal\ServiceMap;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\ParametersAcceptorSelector;
 use PHPStan\ShouldNotHappenException;
 use PHPStan\Type\Constant\ConstantBooleanType;
+use PHPStan\Type\DynamicMethodReturnTypeExtension;
+use PHPStan\Type\ObjectType;
+use PHPStan\Type\StringType;
 use Psr\Container\ContainerInterface;
 
 class ContainerDynamicReturnTypeExtension implements DynamicMethodReturnTypeExtension
@@ -40,7 +43,7 @@ class ContainerDynamicReturnTypeExtension implements DynamicMethodReturnTypeExte
         MethodReflection $methodReflection,
         MethodCall $methodCall,
         Scope $scope
-    ): Type {
+    ): \PHPStan\Type\Type {
         $returnType = ParametersAcceptorSelector::selectSingle($methodReflection->getVariants())->getReturnType();
         if (!isset($methodCall->args[0])) {
             return $returnType;

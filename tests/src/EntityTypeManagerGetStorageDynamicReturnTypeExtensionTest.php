@@ -1,6 +1,6 @@
 <?php
 
-namespace PHPStan\Drupal;
+namespace mglaman\PHPStanDrupal\Drupal;
 
 use PhpParser\Node\Arg;
 use PhpParser\Node\Expr;

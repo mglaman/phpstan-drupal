@@ -1,11 +1,11 @@
 <?php declare(strict_types = 1);
 
-namespace PHPStan\Rules\Deprecations;
+namespace mglaman\PHPStanDrupal\Rules\Deprecations;
 
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
-use PHPStan\Drupal\DrupalServiceDefinition;
-use PHPStan\Drupal\ServiceMap;
+use mglaman\PHPStanDrupal\Drupal\DrupalServiceDefinition;
+use mglaman\PHPStanDrupal\Drupal\ServiceMap;
 use PHPStan\Rules\Rule;
 
 final class StaticServiceDeprecatedServiceRule implements Rule

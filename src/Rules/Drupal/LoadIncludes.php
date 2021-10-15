@@ -1,14 +1,12 @@
 <?php declare(strict_types=1);
 
-namespace PHPStan\Rules\Drupal;
+namespace mglaman\PHPStanDrupal\Rules\Drupal;
 
-use Drupal\Core\Extension\ModuleHandler;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use DrupalFinder\DrupalFinder;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
-use PHPStan\Drupal\ExtensionDiscovery;
-use PHPStan\Reflection\MethodReflection;
+use mglaman\PHPStanDrupal\Drupal\ExtensionDiscovery;
 use PHPStan\Rules\Rule;
 use PHPStan\ShouldNotHappenException;
 use PHPStan\Type\ObjectType;

@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace PHPStan\Drupal;
+namespace mglaman\PHPStanDrupal\Drupal;
 
 use Drupal\Core\DependencyInjection\ContainerNotInitializedException;
 use DrupalFinder\DrupalFinder;
@@ -51,11 +51,6 @@ class DrupalAutoloader
     private $serviceClassProviders = [];
 
     /**
-     * @var ?\PHPStan\Drupal\ExtensionDiscovery
-     */
-    private $extensionDiscovery;
-
-    /**
      * @var array
      */
     private $namespaces = [];
@@ -81,19 +76,19 @@ class DrupalAutoloader
         $this->serviceClassProviders['core'] = '\Drupal\Core\CoreServiceProvider';
         $this->serviceMap['service_provider.core.service_provider'] = ['class' => $this->serviceClassProviders['core']];
 
-        $this->extensionDiscovery = new ExtensionDiscovery($this->drupalRoot);
-        $this->extensionDiscovery->setProfileDirectories([]);
-        $profiles = $this->extensionDiscovery->scan('profile');
+        $extensionDiscovery = new ExtensionDiscovery($this->drupalRoot);
+        $extensionDiscovery->setProfileDirectories([]);
+        $profiles = $extensionDiscovery->scan('profile');
         $profile_directories = array_map(static function (Extension $profile) : string {
             return $profile->getPath();
         }, $profiles);
-        $this->extensionDiscovery->setProfileDirectories($profile_directories);
+        $extensionDiscovery->setProfileDirectories($profile_directories);
 
-        $this->moduleData = array_merge($this->extensionDiscovery->scan('module'), $profiles);
+        $this->moduleData = array_merge($extensionDiscovery->scan('module'), $profiles);
         usort($this->moduleData, static function (Extension $a, Extension $b) {
             return strpos($a->getName(), '_test') !== false ? 10 : 0;
         });
-        $this->themeData = $this->extensionDiscovery->scan('theme');
+        $this->themeData = $extensionDiscovery->scan('theme');
         $this->addTestNamespaces();
         $this->addModuleNamespaces();
         $this->addThemeNamespaces();

@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace PHPStan\Rules\Drupal;
+namespace mglaman\PHPStanDrupal\Rules\Drupal;
 
 use DrupalFinder\DrupalFinder;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
-use PHPStan\Drupal\ExtensionDiscovery;
+use mglaman\PHPStanDrupal\Drupal\ExtensionDiscovery;
 use PHPStan\Rules\Rule;
 
 /**

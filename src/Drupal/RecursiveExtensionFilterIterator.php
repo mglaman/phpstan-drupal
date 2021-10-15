@@ -1,6 +1,6 @@
 <?php
 
-namespace PHPStan\Drupal;
+namespace mglaman\PHPStanDrupal\Drupal;
 
 /**
  * Filters a RecursiveDirectoryIterator to discover extensions.

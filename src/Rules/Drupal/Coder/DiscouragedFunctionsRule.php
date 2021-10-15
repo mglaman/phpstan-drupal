@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace PHPStan\Rules\Drupal\Coder;
+namespace mglaman\PHPStanDrupal\Rules\Drupal\Coder;
 
 use PhpParser\Node;
 use PhpParser\Node\Expr\FuncCall;

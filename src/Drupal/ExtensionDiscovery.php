@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace PHPStan\Drupal;
+namespace mglaman\PHPStanDrupal\Drupal;
 
 class ExtensionDiscovery
 {
@@ -113,7 +113,7 @@ class ExtensionDiscovery
      *   The extension type to search for. One of 'profile', 'module', 'theme', or
      *   'theme_engine'.
      *
-     * @return \PHPStan\Drupal\Extension[]
+     * @return \mglaman\PHPStanDrupal\Drupal\Extension[]
      *   An associative array of Extension objects, keyed by extension name.
      */
     public function scan($type)
@@ -129,17 +129,17 @@ class ExtensionDiscovery
 
         $searchdirs = [];
         // Search the core directory.
-        $searchdirs[static::ORIGIN_CORE] = 'core';
+        $searchdirs[self::ORIGIN_CORE] = 'core';
 
         // Search the legacy sites/all directory.
-        $searchdirs[static::ORIGIN_SITES_ALL] = 'sites/all';
+        $searchdirs[self::ORIGIN_SITES_ALL] = 'sites/all';
 
         // Search for contributed and custom extensions in top-level directories.
         // The scan uses a whitelist to limit recursion to the expected extension
         // type specific directory names only.
-        $searchdirs[static::ORIGIN_ROOT] = '';
+        $searchdirs[self::ORIGIN_ROOT] = '';
 
-        $searchdirs[static::ORIGIN_SITE] = $this->sitePath;
+        $searchdirs[self::ORIGIN_SITE] = $this->sitePath;
 
         $files = [];
         foreach ($searchdirs as $dir) {
@@ -195,10 +195,10 @@ class ExtensionDiscovery
     /**
      * Filters out extensions not belonging to the scanned installation profiles.
      *
-     * @param \PHPStan\Drupal\Extension[] $all_files
+     * @param \mglaman\PHPStanDrupal\Drupal\Extension[] $all_files
      *   The list of all extensions.
      *
-     * @return \PHPStan\Drupal\Extension[]
+     * @return \mglaman\PHPStanDrupal\Drupal\Extension[]
      *   The filtered list of extensions.
      */
     protected function filterByProfileDirectories(array $all_files)
@@ -207,7 +207,7 @@ class ExtensionDiscovery
             return $all_files;
         }
 
-        $all_files = array_filter($all_files, function (\PHPStan\Drupal\Extension $file) : bool {
+        return array_filter($all_files, function (\mglaman\PHPStanDrupal\Drupal\Extension $file) : bool {
             if (strpos($file->subpath, 'profiles') !== 0) {
                 // This extension doesn't belong to a profile, ignore it.
                 return true;
@@ -222,19 +222,17 @@ class ExtensionDiscovery
 
             return false;
         });
-
-        return $all_files;
     }
 
     /**
      * Sorts the discovered extensions.
      *
-     * @param \PHPStan\Drupal\Extension[] $all_files
+     * @param \mglaman\PHPStanDrupal\Drupal\Extension[] $all_files
      *   The list of all extensions.
      * @param array $weights
      *   An array of weights, keyed by originating directory.
      *
-     * @return \PHPStan\Drupal\Extension[]
+     * @return \mglaman\PHPStanDrupal\Drupal\Extension[]
      *   The sorted list of extensions.
      */
     protected function sort(array $all_files, array $weights)
@@ -251,13 +249,13 @@ class ExtensionDiscovery
                 // If the extension belongs to a profile but no profile directories are
                 // defined, then we are scanning for installation profiles themselves.
                 // In this case, profiles are sorted by origin only.
-                $origins[$key] = static::ORIGIN_PROFILE;
+                $origins[$key] = self::ORIGIN_PROFILE;
                 $profiles[$key] = null;
             } else {
                 // Apply the weight of the originating profile directory.
                 foreach ($this->profileDirectories as $weight => $profile_path) {
                     if (strpos($file->getPath(), $profile_path) === 0) {
-                        $origins[$key] = static::ORIGIN_PROFILE;
+                        $origins[$key] = self::ORIGIN_PROFILE;
                         $profiles[$key] = $weight;
                         continue 2;
                     }
@@ -285,10 +283,10 @@ class ExtensionDiscovery
      * Extensions discovered in later search paths override earlier, unless they
      * are not compatible with the current version of Drupal core.
      *
-     * @param \PHPStan\Drupal\Extension[] $all_files
+     * @param \mglaman\PHPStanDrupal\Drupal\Extension[] $all_files
      *   The sorted list of all extensions that were found.
      *
-     * @return \PHPStan\Drupal\Extension[]
+     * @return \mglaman\PHPStanDrupal\Drupal\Extension[]
      *   The filtered list of extensions, keyed by extension name.
      */
     protected function process(array $all_files)
@@ -313,7 +311,7 @@ class ExtensionDiscovery
      *   are associative arrays of \Drupal\Core\Extension\Extension objects, keyed
      *   by absolute path name.
      *
-     * @see \PHPStan\Drupal\RecursiveExtensionFilterIterator
+     * @see \mglaman\PHPStanDrupal\Drupal\RecursiveExtensionFilterIterator
      */
     protected function scanDirectory($dir): array
     {
@@ -364,7 +362,7 @@ class ExtensionDiscovery
         foreach ($iterator as $key => $fileinfo) {
             // All extension names in Drupal have to be valid PHP function names due
             // to the module hook architecture.
-            if (preg_match(static::PHP_FUNCTION_PATTERN, $fileinfo->getBasename('.info.yml')) !== 1) {
+            if (preg_match(self::PHP_FUNCTION_PATTERN, $fileinfo->getBasename('.info.yml')) !== 1) {
                 continue;
             }
 

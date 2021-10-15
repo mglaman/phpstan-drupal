@@ -36,7 +36,7 @@
             "drupal-phpunit-hack.php"
         ],
         "psr-4": {
-            "PHPStan\\": "src/"
+            "mglaman\\PHPStanDrupal\\": "src/"
         }
     },
     "autoload-dev": {
@@ -44,7 +44,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "0.12-dev"
+            "dev-master": "1.0-dev"
         },
         "installer-paths": {
             "tests/fixtures/drupal/core": ["type:drupal-core"],
