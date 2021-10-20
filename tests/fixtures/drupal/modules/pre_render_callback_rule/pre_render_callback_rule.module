@@ -1,0 +1,44 @@
+<?php declare(strict_types=1);
+
+use Drupal\Core\Url;
+
+function sample_pre_render_callback(array $el): array {
+    return $el;
+}
+
+function pre_render_callback_rule_alter_some_stuff() {
+    $sample1 = [
+        '#type' => 'link',
+        '#url' => Url::fromRoute('<front>'),
+        '#title' => 'FooBar',
+        '#pre_render' => [null],
+    ];
+
+    $sample2 = [
+        '#pre_render' => '',
+    ];
+    $sample3 = [
+        '#pre_render' => null,
+    ];
+
+    $sample4 = [
+        '#pre_render' => [
+            'invalid_func',
+            'sample_pre_render_callback',
+            '\Drupal\pre_render_callback_rule\RenderArrayWithPreRenderCallback::preRenderCallback',
+            '\Drupal\pre_render_callback_rule\NotTrustedCallback::unsafeCallback',
+        ],
+    ];
+
+    $sample5 = [
+        '#type' => 'link',
+        '#url' => Url::fromRoute('<front>'),
+        '#title' => 'FooBar',
+        '#pre_render' => [
+            static function(array $element): array {
+                return $element;
+            }
+        ],
+    ];
+
+}
