@@ -6,14 +6,15 @@ use PhpParser\Node;
 use PHPStan\Analyser\Scope;
 use PHPStan\Broker\Broker;
 use PHPStan\Reflection\FunctionReflection;
+use PHPStan\Reflection\ReflectionProvider;
 
 class AccessDeprecatedConstant implements \PHPStan\Rules\Rule
 {
-    /** @var Broker */
-    private $broker;
-    public function __construct(Broker $broker)
+    /** @var ReflectionProvider */
+    private $reflectionProvider;
+    public function __construct(ReflectionProvider $reflectionProvider)
     {
-        $this->broker = $broker;
+        $this->reflectionProvider = $reflectionProvider;
     }
 
     public function getNodeType(): string
@@ -97,7 +98,7 @@ class AccessDeprecatedConstant implements \PHPStan\Rules\Rule
             'USER_REGISTER_VISITORS' => 'Deprecated in drupal:8.3.0 and is removed from drupal:9.0.0. Use \Drupal\user\UserInterface::REGISTER_VISITORS instead.',
             'USER_REGISTER_VISITORS_ADMINISTRATIVE_APPROVAL' => 'Deprecated in drupal:8.3.0 and is removed from drupal:9.0.0. Use \Drupal\user\UserInterface::REGISTER_VISITORS_ADMINISTRATIVE_APPROVAL instead.',
         ];
-        $constantName = $this->broker->resolveConstantName($node->name, $scope);
+        $constantName = $this->reflectionProvider->resolveConstantName($node->name, $scope);
         if (isset($deprecatedConstants[$constantName])) {
             return [
                 sprintf('Call to deprecated constant %s: %s', $constantName, $deprecatedConstants[$constantName])
