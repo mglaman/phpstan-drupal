@@ -2,6 +2,8 @@
 
 namespace mglaman\PHPStanDrupal\Tests;
 
+use mglaman\PHPStanDrupal\Drupal\DrupalServiceDefinition;
+use mglaman\PHPStanDrupal\Drupal\ServiceMap;
 use PHPUnit\Framework\TestCase;
 
 final class ServiceMapFactoryTest extends TestCase
@@ -10,15 +12,15 @@ final class ServiceMapFactoryTest extends TestCase
     /**
      * @dataProvider getServiceProvider
      *
-     * @covers \mglaman\PHPStanDrupal\DrupalServiceDefinition::__construct
-     * @covers \mglaman\PHPStanDrupal\DrupalServiceDefinition::getClass
-     * @covers \mglaman\PHPStanDrupal\DrupalServiceDefinition::isPublic
-     * @covers \mglaman\PHPStanDrupal\DrupalServiceDefinition::getAlias
-     * @covers \mglaman\PHPStanDrupal\DrupalServiceDefinition::getId
-     * @covers \mglaman\PHPStanDrupal\ServiceMap::setDrupalServices
-     * @covers \mglaman\PHPStanDrupal\ServiceMap::getService
+     * @covers \mglaman\PHPStanDrupal\Drupal\DrupalServiceDefinition::__construct
+     * @covers \mglaman\PHPStanDrupal\Drupal\DrupalServiceDefinition::getClass
+     * @covers \mglaman\PHPStanDrupal\Drupal\DrupalServiceDefinition::isPublic
+     * @covers \mglaman\PHPStanDrupal\Drupal\DrupalServiceDefinition::getAlias
+     * @covers \mglaman\PHPStanDrupal\Drupal\DrupalServiceDefinition::getId
+     * @covers \mglaman\PHPStanDrupal\Drupal\ServiceMap::setDrupalServices
+     * @covers \mglaman\PHPStanDrupal\Drupal\ServiceMap::getService
      */
-    public function testFactory(string $id, callable $validator)
+    public function testFactory(string $id, callable $validator): void
     {
         $service = new ServiceMap();
         $service->setDrupalServices([
@@ -49,8 +51,7 @@ final class ServiceMapFactoryTest extends TestCase
         ];
         yield [
             'entity_type.manager',
-            function (?DrupalServiceDefinition $service): void {
-                self::assertNotNull($service);
+            function (DrupalServiceDefinition $service): void {
                 self::assertEquals('entity_type.manager', $service->getId());
                 self::assertEquals('Drupal\Core\Entity\EntityTypeManager', $service->getClass());
                 self::assertTrue($service->isPublic());
@@ -66,8 +67,7 @@ final class ServiceMapFactoryTest extends TestCase
         ];
         yield [
             'config.storage.sync',
-            function (?DrupalServiceDefinition $service): void {
-                self::assertNotNull($service);
+            function (DrupalServiceDefinition $service): void {
                 self::assertEquals('config.storage.staging', $service->getAlias());
             }
         ];

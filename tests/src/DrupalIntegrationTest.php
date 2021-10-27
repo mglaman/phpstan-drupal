@@ -21,16 +21,17 @@ final class DrupalIntegrationTest extends AnalyzerTestBase {
             __DIR__ . '/../fixtures/drupal/core/tests/TestSuites/UnitTestSuite.php',
         ];
         foreach ($paths as $path) {
+            $suiteName = basename($path, '.php');
             $errors = $this->runAnalyze($path);
-            $this->assertCount(1, $errors->getErrors(), $path);
-            $this->assertEquals('Unsafe usage of new static().', $errors->getErrors()[0]->getMessage());
-            $this->assertCount(0, $errors->getInternalErrors(), print_r($errors->getInternalErrors(), true));
+            self::assertCount(1, $errors->getErrors(), $path);
+            self::assertEquals("Method Drupal\Tests\TestSuites\{$suiteName}::suite() should return static(Drupal\Tests\TestSuites\{$suiteName}) but return statement is missing.", $errors->getErrors()[0]->getMessage());
+            self::assertCount(0, $errors->getInternalErrors(), print_r($errors->getInternalErrors(), true));
         }
 
         // Abstract doesn't warn on static constructor.
         $errors = $this->runAnalyze(__DIR__ . '/../fixtures/drupal/core/tests/TestSuites/TestSuiteBase.php');
-        $this->assertCount(0, $errors->getErrors(), $path);
-        $this->assertCount(0, $errors->getInternalErrors(), print_r($errors->getInternalErrors(), true));
+        self::assertCount(0, $errors->getErrors());
+        self::assertCount(0, $errors->getInternalErrors(), print_r($errors->getInternalErrors(), true));
     }
 
     public function testDrupalTestInChildSiteContant() {
