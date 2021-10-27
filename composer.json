@@ -40,7 +40,9 @@
         }
     },
     "autoload-dev": {
-        "classmap": ["tests/src"]
+        "psr-4": {
+            "mglaman\\PHPStanDrupal\\Tests\\": "tests/src/"
+        }
     },
     "extra": {
         "branch-alias": {

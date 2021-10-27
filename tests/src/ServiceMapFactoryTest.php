@@ -1,6 +1,6 @@
 <?php
 
-namespace mglaman\PHPStanDrupal\Drupal;
+namespace mglaman\PHPStanDrupal\Tests;
 
 use PHPUnit\Framework\TestCase;
 
@@ -10,13 +10,13 @@ final class ServiceMapFactoryTest extends TestCase
     /**
      * @dataProvider getServiceProvider
      *
-     * @covers \PHPStan\Drupal\DrupalServiceDefinition::__construct
-     * @covers \PHPStan\Drupal\DrupalServiceDefinition::getClass
-     * @covers \PHPStan\Drupal\DrupalServiceDefinition::isPublic
-     * @covers \PHPStan\Drupal\DrupalServiceDefinition::getAlias
-     * @covers \PHPStan\Drupal\DrupalServiceDefinition::getId
-     * @covers \PHPStan\Drupal\ServiceMap::setDrupalServices
-     * @covers \PHPStan\Drupal\ServiceMap::getService
+     * @covers \mglaman\PHPStanDrupal\DrupalServiceDefinition::__construct
+     * @covers \mglaman\PHPStanDrupal\DrupalServiceDefinition::getClass
+     * @covers \mglaman\PHPStanDrupal\DrupalServiceDefinition::isPublic
+     * @covers \mglaman\PHPStanDrupal\DrupalServiceDefinition::getAlias
+     * @covers \mglaman\PHPStanDrupal\DrupalServiceDefinition::getId
+     * @covers \mglaman\PHPStanDrupal\ServiceMap::setDrupalServices
+     * @covers \mglaman\PHPStanDrupal\ServiceMap::getService
      */
     public function testFactory(string $id, callable $validator)
     {

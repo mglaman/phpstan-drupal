@@ -1,7 +1,8 @@
 <?php
 
-namespace mglaman\PHPStanDrupal\Drupal;
+namespace mglaman\PHPStanDrupal\Tests;
 
+use mglaman\PHPStanDrupal\Type\EntityTypeManagerGetStorageDynamicReturnTypeExtension;
 use PhpParser\Node\Arg;
 use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\MethodCall;
@@ -10,7 +11,6 @@ use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\ParametersAcceptor;
 use PHPStan\ShouldNotHappenException;
-use PHPStan\Type\EntityTypeManagerGetStorageDynamicReturnTypeExtension;
 use PHPStan\Type\ObjectType;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Prophet;
@@ -32,10 +32,10 @@ final class EntityTypeManagerGetStorageDynamicReturnTypeExtensionTest extends Te
     }
 
     /**
-     * @covers \PHPStan\Type\EntityTypeManagerGetStorageDynamicReturnTypeExtension::__construct
-     * @covers \PHPStan\Type\EntityTypeManagerGetStorageDynamicReturnTypeExtension::getClass
+     * @covers \mglaman\PHPStanDrupal\Type\EntityTypeManagerGetStorageDynamicReturnTypeExtension::__construct
+     * @covers \mglaman\PHPStanDrupal\Type\EntityTypeManagerGetStorageDynamicReturnTypeExtension::getClass
      */
-    public function testGetClass()
+    public function testGetClass(): void
     {
         $x = new EntityTypeManagerGetStorageDynamicReturnTypeExtension([]);
         self::assertEquals('Drupal\Core\Entity\EntityTypeManagerInterface', $x->getClass());
@@ -44,10 +44,10 @@ final class EntityTypeManagerGetStorageDynamicReturnTypeExtensionTest extends Te
     /**
      * @dataProvider getEntityStorageProvider
      *
-     * @covers \PHPStan\Type\EntityTypeManagerGetStorageDynamicReturnTypeExtension::__construct
-     * @covers \PHPStan\Type\EntityTypeManagerGetStorageDynamicReturnTypeExtension::getTypeFromMethodCall
+     * @covers \mglaman\PHPStanDrupal\Type\EntityTypeManagerGetStorageDynamicReturnTypeExtension::__construct
+     * @covers \mglaman\PHPStanDrupal\Type\EntityTypeManagerGetStorageDynamicReturnTypeExtension::getTypeFromMethodCall
      */
-    public function testGetTypeFromMethodCall($entityType, $storageClass)
+    public function testGetTypeFromMethodCall($entityType, $storageClass): void
     {
         // If we were passed a string, assume it is a class name to be mocked.
         if (is_string($entityType)) {
@@ -106,10 +106,10 @@ final class EntityTypeManagerGetStorageDynamicReturnTypeExtensionTest extends Te
     }
 
     /**
-     * @covers \PHPStan\Type\EntityTypeManagerGetStorageDynamicReturnTypeExtension::__construct
-     * @covers \PHPStan\Type\EntityTypeManagerGetStorageDynamicReturnTypeExtension::isMethodSupported
+     * @covers \mglaman\PHPStanDrupal\Type\EntityTypeManagerGetStorageDynamicReturnTypeExtension::__construct
+     * @covers \mglaman\PHPStanDrupal\Type\EntityTypeManagerGetStorageDynamicReturnTypeExtension::isMethodSupported
      */
-    public function testIsMethodSupported()
+    public function testIsMethodSupported(): void
     {
         $x = new EntityTypeManagerGetStorageDynamicReturnTypeExtension([]);
 

@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace PHPStan\Drupal\Rules;
+namespace mglaman\PHPStanDrupal\Tests\Rules;
 
-use PHPStan\Drupal\AnalyzerTestBase;
+use mglaman\PHPStanDrupal\Tests\AnalyzerTestBase;
 
 final class PluginAnnotationContextDefinitionsRuleTest extends AnalyzerTestBase {
 

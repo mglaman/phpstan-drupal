@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace mglaman\PHPStanDrupal\Drupal;
+namespace mglaman\PHPStanDrupal\Tests;
 
 use Drupal\Core\DependencyInjection\ContainerNotInitializedException;
 use PHPStan\Analyser\Analyser;
