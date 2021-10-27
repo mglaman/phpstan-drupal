@@ -58,7 +58,7 @@ class DrupalAutoloader
     public function register(Container $container): void
     {
         $drupalParams = $container->getParameter('drupal');
-        $drupalRoot = $drupalParams['drupal_root'];
+        $drupalRoot = realpath($drupalParams['drupal_root']);
         $finder = new DrupalFinder();
         $finder->locateRoot($drupalRoot);
 
@@ -284,7 +284,7 @@ class DrupalAutoloader
             require_once $path;
         } catch (ContainerNotInitializedException $e) {
             $path = str_replace(dirname($this->drupalRoot) . '/', '', $path);
-            // This can happen when drupal_get_path or drupal_get_filename are used outside of the scope of a function.
+            // This can happen when drupal_get_path or drupal_get_filename are used outside the scope of a function.
             @trigger_error("$path invoked the Drupal container outside of the scope of a function or class method. It was not loaded.", E_USER_WARNING);
         } catch (\Throwable $e) {
             $path = str_replace(dirname($this->drupalRoot) . '/', '', $path);

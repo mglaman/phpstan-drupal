@@ -5,6 +5,7 @@ namespace mglaman\PHPStanDrupal\Rules\Drupal\Tests;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
 use PHPStan\Rules\Rule;
+use PHPStan\Rules\RuleErrorBuilder;
 use PHPStan\Type\ObjectType;
 
 final class BrowserTestBaseDefaultThemeRule implements Rule
@@ -39,7 +40,8 @@ final class BrowserTestBaseDefaultThemeRule implements Rule
 
         if ($defaultTheme === null || $defaultTheme === '') {
             return [
-                'Drupal\Tests\BrowserTestBase::$defaultTheme is required. See https://www.drupal.org/node/3083055, which includes recommendations on which theme to use.',
+                RuleErrorBuilder::message('Drupal\Tests\BrowserTestBase::$defaultTheme is required. See https://www.drupal.org/node/3083055, which includes recommendations on which theme to use.')
+                    ->line($node->getLine())->build(),
             ];
         }
         return [];

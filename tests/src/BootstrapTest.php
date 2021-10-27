@@ -2,22 +2,20 @@
 
 namespace mglaman\PHPStanDrupal\Tests;
 
-use Drupal\Core\DependencyInjection\ContainerNotInitializedException;
-use PHPStan\DependencyInjection\ContainerFactory;
-use PHPStan\File\FileHelper;
-use PHPUnit\Framework\TestCase;
+use PHPStan\Testing\PHPStanTestCase;
 
-final class BootstrapTest extends TestCase
+final class BootstrapTest extends PHPStanTestCase
 {
     private $previousErrorHandler;
     private $gatheredWarnings = [];
 
-    public function testContainerNotInitializedExceptionCatch() {
+    public function testContainerNotInitializedExceptionCatch(): void
+    {
         $this->previousErrorHandler = set_error_handler([$this, 'handleError']);
-        $this->doDrupalBootstrap();
+        self::getContainer();
         restore_error_handler();
 
-        $this->assertNotEmpty($this->gatheredWarnings);
+        self::assertNotEmpty($this->gatheredWarnings);
         $expectedWarnings = [
             'drupal/modules/contained_not_initialized/contained_not_initialized.install invoked the Drupal container outside of the scope of a function or class method. It was not loaded.',
             'drupal/modules/contained_not_initialized/contained_not_initialized.post_update.php invoked the Drupal container outside of the scope of a function or class method. It was not loaded.',
@@ -27,47 +25,27 @@ final class BootstrapTest extends TestCase
             'drupal/modules/contained_not_initialized/contained_not_initialized.search_api.inc invoked the Drupal container outside of the scope of a function or class method. It was not loaded.',
             'drupal/modules/contained_not_initialized/contained_not_initialized.pathauto.inc invoked the Drupal container outside of the scope of a function or class method. It was not loaded.',
         ];
-        $this->assertEquals($expectedWarnings, $this->gatheredWarnings);
+        self::assertEquals($expectedWarnings, $this->gatheredWarnings);
     }
 
-    public function handleError($type, $msg, $file, $line, $context = array()): void
+    public function handleError(int $type, string $msg, string $file, int $line, array $context = []): bool
     {
         if (E_USER_WARNING !== $type) {
             $h = $this->previousErrorHandler;
             if (\is_callable($h)) {
-                $h($type, $msg, $file, $line, $context);
+                return $h($type, $msg, $file, $line, $context);
             }
-        } else {
-            $this->gatheredWarnings[] = $msg;
+            return true;
         }
+        $this->gatheredWarnings[] = $msg;
+        return false;
     }
 
-    private function doDrupalBootstrap()
+    public static function getAdditionalConfigFiles(): array
     {
-        $rootDir = __DIR__ . '/../fixtures/drupal';
-        $tmpDir = sys_get_temp_dir() . '/' . time() . 'phpstan';
-        $containerFactory = new ContainerFactory($rootDir);
-        $additionalConfigFiles = [
-            \sprintf('%s/config.level%s.neon', $containerFactory->getConfigDirectory(), 4),
+        return array_merge(parent::getAdditionalConfigFiles(), [
             __DIR__ . '/../fixtures/config/phpunit-drupal-phpstan.neon',
-        ];
-        $container = $containerFactory->create($tmpDir, $additionalConfigFiles, []);
-        $fileHelper = $container->getByType(FileHelper::class);
-        assert($fileHelper !== null);
-
-        $autoloadFiles = $container->getParameter('bootstrapFiles');
-        $this->assertContains(dirname(__DIR__, 2) . '/drupal-autoloader.php', $autoloadFiles);
-        if ($autoloadFiles !== null) {
-            foreach ($autoloadFiles as $autoloadFile) {
-                $autoloadFile = $fileHelper->normalizePath($autoloadFile);
-                if (!is_file($autoloadFile)) {
-                    $this->fail('Autoload file not found');
-                }
-                (static function (string $file) use ($container): void {
-                    require_once $file;
-                })($autoloadFile);
-            }
-        }
+        ]);
     }
 
 }

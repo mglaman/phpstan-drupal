@@ -2,34 +2,39 @@
 
 namespace mglaman\PHPStanDrupal\Tests\Rules;
 
-use mglaman\PHPStanDrupal\Tests\AnalyzerTestBase;
+use mglaman\PHPStanDrupal\Rules\Deprecations\ConfigEntityConfigExportRule;
+use mglaman\PHPStanDrupal\Tests\DrupalRuleTestCase;
 
-final class ConfigEntityConfigExportRuleTest extends AnalyzerTestBase {
+final class ConfigEntityConfigExportRuleTest extends DrupalRuleTestCase {
+
+    protected function getRule(): \PHPStan\Rules\Rule
+    {
+        return new ConfigEntityConfigExportRule(
+            $this->createReflectionProvider()
+        );
+    }
 
     /**
      * @dataProvider pluginData
      */
-    public function testConfigExportRuleCheck(string $path, int $count, array $errorMessages): void
+    public function testConfigExportRuleCheck(string $path, array $errorMessages): void
     {
-        $errors = $this->runAnalyze($path);
-        self::assertCount($count, $errors->getErrors(), var_export($errors, true));
-        foreach ($errors->getErrors() as $key => $error) {
-            self::assertEquals($errorMessages[$key], $error->getMessage());
-        }
+        $this->analyse([$path], $errorMessages);
     }
 
     public function pluginData(): \Generator
     {
         yield [
             __DIR__ . '/../../fixtures/drupal/modules/phpstan_fixtures/src/Entity/ConfigWithoutExport.php',
-            1,
             [
-                'Configuration entity must define a `config_export` key. See https://www.drupal.org/node/2481909',
+               [
+                   'Configuration entity must define a `config_export` key. See https://www.drupal.org/node/2481909',
+                   15
+               ],
             ]
         ];
         yield [
             __DIR__ . '/../../fixtures/drupal/modules/phpstan_fixtures/src/Entity/ConfigWithExport.php',
-            0,
             []
         ];
     }

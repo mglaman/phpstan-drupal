@@ -24,7 +24,7 @@ final class DrupalIntegrationTest extends AnalyzerTestBase {
             $suiteName = basename($path, '.php');
             $errors = $this->runAnalyze($path);
             self::assertCount(1, $errors->getErrors(), $path);
-            self::assertEquals("Method Drupal\Tests\TestSuites\{$suiteName}::suite() should return static(Drupal\Tests\TestSuites\{$suiteName}) but return statement is missing.", $errors->getErrors()[0]->getMessage());
+            self::assertEquals("Method Drupal\Tests\TestSuites\\$suiteName::suite() should return static(Drupal\Tests\TestSuites\\$suiteName) but return statement is missing.", $errors->getErrors()[0]->getMessage());
             self::assertCount(0, $errors->getInternalErrors(), print_r($errors->getInternalErrors(), true));
         }
 

@@ -2,42 +2,49 @@
 
 namespace mglaman\PHPStanDrupal\Tests\Rules;
 
-use mglaman\PHPStanDrupal\Tests\AnalyzerTestBase;
+use mglaman\PHPStanDrupal\Rules\Drupal\Tests\BrowserTestBaseDefaultThemeRule;
+use mglaman\PHPStanDrupal\Tests\DrupalRuleTestCase;
 
-final class BrowserTestBaseDefaultThemeRuleTest extends AnalyzerTestBase {
+/**
+ * @extends \mglaman\PHPStanDrupal\Tests\DrupalRuleTestCase<\mglaman\PHPStanDrupal\Rules\Drupal\Tests\BrowserTestBaseDefaultThemeRule>
+ */
+final class BrowserTestBaseDefaultThemeRuleTest extends DrupalRuleTestCase {
+
+    protected function getRule(): \PHPStan\Rules\Rule
+    {
+        return new BrowserTestBaseDefaultThemeRule();
+    }
 
     /**
      * @dataProvider fileData
      */
-    public function testRule(string $path, int $count, array $errorMessages): void
+    public function testRule(string $path, array $errorMessages): void
     {
-        $errors = $this->runAnalyze($path);
-        self::assertCount($count, $errors->getErrors(), var_export($errors, true));
-        foreach ($errors->getErrors() as $key => $error) {
-            self::assertEquals($errorMessages[$key], $error->getMessage());
-        }
+        $this->analyse(
+            [$path],
+            $errorMessages
+        );
     }
 
     public function fileData(): \Generator
     {
         yield [
             __DIR__ . '/../../fixtures/drupal/modules/module_with_tests/tests/src/Functional/MissingDefaultThemeTest.php',
-            1,
             [
-                'Drupal\Tests\BrowserTestBase::$defaultTheme is required. See https://www.drupal.org/node/3083055, which includes recommendations on which theme to use.',
+                [
+                    'Drupal\Tests\BrowserTestBase::$defaultTheme is required. See https://www.drupal.org/node/3083055, which includes recommendations on which theme to use.',
+                    12
+                ],
             ]
         ];
         yield [
             __DIR__ . '/../../fixtures/drupal/modules/module_with_tests/tests/src/Functional/DefaultThemeTest.php',
-            0,
             []
         ];
         yield [
             __DIR__ . '/../../fixtures/drupal/modules/module_with_tests/tests/src/Functional/ExtendsDefaultThemeTest.php',
-            0,
             []
         ];
     }
-
 
 }

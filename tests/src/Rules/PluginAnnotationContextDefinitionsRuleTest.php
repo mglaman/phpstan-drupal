@@ -2,46 +2,52 @@
 
 namespace mglaman\PHPStanDrupal\Tests\Rules;
 
-use mglaman\PHPStanDrupal\Tests\AnalyzerTestBase;
+use mglaman\PHPStanDrupal\Rules\Deprecations\PluginAnnotationContextDefinitionsRule;
+use mglaman\PHPStanDrupal\Tests\DrupalRuleTestCase;
 
-final class PluginAnnotationContextDefinitionsRuleTest extends AnalyzerTestBase {
+final class PluginAnnotationContextDefinitionsRuleTest extends DrupalRuleTestCase {
+
+    protected function getRule(): \PHPStan\Rules\Rule
+    {
+        return new PluginAnnotationContextDefinitionsRule(
+            $this->createReflectionProvider()
+        );
+    }
 
     /**
      * @dataProvider pluginData
      */
-    public function testContextAnnotationRuleCheck(string $path, int $count, array $errorMessages): void
+    public function testContextAnnotationRuleCheck(string $path, array $errorMessages): void
     {
-        $errors = $this->runAnalyze($path);
-        self::assertCount($count, $errors->getErrors(), var_export($errors, true));
-        foreach ($errors->getErrors() as $key => $error) {
-            self::assertEquals($errorMessages[$key], $error->getMessage());
-        }
+        $this->analyse([$path] , $errorMessages);
     }
 
     public function pluginData(): \Generator
     {
         yield [
             __DIR__ . '/../../fixtures/drupal/modules/phpstan_fixtures/src/Plugin/Condition/ConditionWithContext.php',
-            1,
             [
-                'Providing context definitions via the "context" key is deprecated in Drupal 8.7.x and will be removed before Drupal 9.0.0. Use the "context_definitions" key instead.',
+                [
+                    'Providing context definitions via the "context" key is deprecated in Drupal 8.7.x and will be removed before Drupal 9.0.0. Use the "context_definitions" key instead.',
+                    17
+                ],
             ]
         ];
         yield [
             __DIR__ . '/../../fixtures/drupal/modules/phpstan_fixtures/src/Plugin/Condition/ConditionWithContextDefinitions.php',
-            0,
             []
         ];
         yield [
             __DIR__ . '/../../fixtures/drupal/modules/phpstan_fixtures/src/Plugin/Action/ActionSample.php',
-            0,
             []
         ];
         yield [
             __DIR__ . '/../../fixtures/drupal/modules/phpstan_fixtures/src/Plugin/Block/BlockWithContext.php',
-            1,
             [
-                'Providing context definitions via the "context" key is deprecated in Drupal 8.7.x and will be removed before Drupal 9.0.0. Use the "context_definitions" key instead.',
+                [
+                    'Providing context definitions via the "context" key is deprecated in Drupal 8.7.x and will be removed before Drupal 9.0.0. Use the "context_definitions" key instead.',
+                    20
+                ],
             ]
         ];
     }

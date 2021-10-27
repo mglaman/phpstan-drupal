@@ -1,6 +1,6 @@
 parameters:
-	reportUnmatchedIgnoredErrors: false
-	level: 2
+	drupal:
+		drupal_root: tests/fixtures/drupal
 includes:
 	- ../../../extension.neon
 	- ../../../vendor/phpstan/phpstan-deprecation-rules/rules.neon
