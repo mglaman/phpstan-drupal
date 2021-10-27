@@ -49,7 +49,7 @@ jobs:
       - name: "PHPCS"
         run: "php vendor/bin/phpcs src"
       - name: "PHPStan"
-        run: "php vendor/bin/phpstan analyze src"
+        run: "php vendor/bin/phpstan analyze"
       - name: "PHPUnit"
         run: "php vendor/bin/phpunit --debug"
 

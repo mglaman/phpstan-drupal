@@ -19,10 +19,17 @@ if (!$autoloader instanceof \Composer\Autoload\ClassLoader) {
 
 // Inspired by Symfony's simple-phpunit remove typehints from TestCase.
 $alteredFile = $autoloader->findFile('PHPUnit\Framework\TestCase');
+if ($alteredFile === false) {
+    return;
+}
 $phpunit_dir = dirname($alteredFile, 3);
 // Mutate TestCase code to make it compatible with Drupal 8 and 9 tests.
 $alteredCode = file_get_contents($alteredFile);
+if ($alteredCode === false) {
+    throw new \PHPStan\ShouldNotHappenException("Found $alteredFile but could not get its contents to fix return types.");
+}
 $alteredCode = preg_replace('/^    ((?:protected|public)(?: static)? function \w+\(\)): void/m', '    $1', $alteredCode);
+assert($alteredCode !== null);
 $alteredCode = str_replace("__DIR__ . '/../Util/", "'$phpunit_dir/src/Util/", $alteredCode);
 // Only write when necessary.
 $filename = __DIR__ . '/tests/fixtures/TestCase.php';
