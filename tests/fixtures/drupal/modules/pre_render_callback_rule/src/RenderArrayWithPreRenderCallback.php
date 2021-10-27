@@ -12,7 +12,10 @@ final class RenderArrayWithPreRenderCallback implements TrustedCallbackInterface
             '#type' => 'link',
             '#url' => Url::fromRoute('<front>'),
             '#title' => 'FooBar',
-            '#pre_render' => [[self::class, 'preRenderCallback']]
+            '#pre_render' => [
+                [self::class, 'preRenderCallback'],
+                [$this, 'preRenderCallback'],
+            ]
         ];
     }
 
