@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
+use mglaman\PHPStanDrupal\Drupal\DrupalAutoloader;
 use PHPStan\DependencyInjection\Container;
-use PHPStan\Drupal\DrupalAutoloader;
 
 assert($container instanceof Container);
 if ($container === NULL && !($container instanceof Container)) {
