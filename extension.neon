@@ -23,55 +23,55 @@ parametersSchema:
 		entityTypeStorageMapping: arrayOf(string())
 	])
 rules:
-	- PHPStan\Rules\Classes\PluginManagerInspectionRule
-	- PHPStan\Rules\Drupal\Coder\DiscouragedFunctionsRule
-	- PHPStan\Rules\Drupal\GlobalDrupalDependencyInjectionRule
-	- PHPStan\Rules\Drupal\PluginManager\PluginManagerSetsCacheBackendRule
-	- PHPStan\Rules\Deprecations\AccessDeprecatedConstant
+	- mglaman\PHPStanDrupal\Rules\Classes\PluginManagerInspectionRule
+	- mglaman\PHPStanDrupal\Rules\Drupal\Coder\DiscouragedFunctionsRule
+	- mglaman\PHPStanDrupal\Rules\Drupal\GlobalDrupalDependencyInjectionRule
+	- mglaman\PHPStanDrupal\Rules\Drupal\PluginManager\PluginManagerSetsCacheBackendRule
+	- mglaman\PHPStanDrupal\Rules\Deprecations\AccessDeprecatedConstant
 services:
 	-
-		class: PHPStan\Drupal\ServiceMap
+		class: mglaman\PHPStanDrupal\Drupal\ServiceMap
 
 	-
-		class: PHPStan\Type\EntityTypeManagerGetStorageDynamicReturnTypeExtension
+		class: mglaman\PHPStanDrupal\Type\EntityTypeManagerGetStorageDynamicReturnTypeExtension
 		arguments:
 			entityTypeStorageMapping: %drupal.entityTypeStorageMapping%
 		tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
 	-
-		class: PHPStan\Type\ContainerDynamicReturnTypeExtension
+		class: mglaman\PHPStanDrupal\Type\ContainerDynamicReturnTypeExtension
 		tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
 	-
-		class: PHPStan\Type\DrupalServiceDynamicReturnTypeExtension
+		class: mglaman\PHPStanDrupal\Type\DrupalServiceDynamicReturnTypeExtension
 		tags: [phpstan.broker.dynamicStaticMethodReturnTypeExtension]
 	-
-		class: PHPStan\Reflection\EntityFieldsViaMagicReflectionExtension
+		class: mglaman\PHPStanDrupal\Reflection\EntityFieldsViaMagicReflectionExtension
 		tags: [phpstan.broker.propertiesClassReflectionExtension]
 	-
-		class: PHPStan\Rules\Drupal\LoadIncludes
+		class: mglaman\PHPStanDrupal\Rules\Drupal\LoadIncludes
 		tags: [phpstan.rules.rule]
 		arguments:
 			- %drupal.drupal_root%
 	-
-		class: PHPStan\Rules\Drupal\ModuleLoadInclude
+		class: mglaman\PHPStanDrupal\Rules\Drupal\ModuleLoadInclude
 		tags: [phpstan.rules.rule]
 		arguments:
 			- %drupal.drupal_root%
 
 	-
-		class: PHPStan\Rules\Deprecations\PluginAnnotationContextDefinitionsRule
+		class: mglaman\PHPStanDrupal\Rules\Deprecations\PluginAnnotationContextDefinitionsRule
 		tags: [phpstan.rules.rule]
 
 	-
-		class: PHPStan\Rules\Deprecations\ConfigEntityConfigExportRule
+		class: mglaman\PHPStanDrupal\Rules\Deprecations\ConfigEntityConfigExportRule
 		tags: [phpstan.rules.rule]
 
 	-
-		class: PHPStan\Rules\Drupal\Tests\BrowserTestBaseDefaultThemeRule
+		class: mglaman\PHPStanDrupal\Rules\Drupal\Tests\BrowserTestBaseDefaultThemeRule
 		tags: [phpstan.rules.rule]
 
 	-
-		class: PHPStan\Rules\Deprecations\GetDeprecatedServiceRule
+		class: mglaman\PHPStanDrupal\Rules\Deprecations\GetDeprecatedServiceRule
 		tags: [phpstan.rules.rule]
 	-
-		class: PHPStan\Rules\Deprecations\StaticServiceDeprecatedServiceRule
+		class: mglaman\PHPStanDrupal\Rules\Deprecations\StaticServiceDeprecatedServiceRule
 		tags: [phpstan.rules.rule]
