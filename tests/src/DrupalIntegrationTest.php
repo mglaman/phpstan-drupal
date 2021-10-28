@@ -54,8 +54,7 @@ final class DrupalIntegrationTest extends AnalyzerTestBase {
         $error = array_shift($errors);
         self::assertEquals('Function phpstan_fixtures_MissingReturnRule() should return string but return statement is missing.', $error->getMessage());
         if ($is_d9) {
-            $error = array_shift($errors);
-            self::assertEquals('The "app.root" service is deprecated in drupal:9.0.0 and is removed from drupal:10.0.0. Use the app.root parameter instead. See https://www.drupal.org/node/3080612', $error->getMessage());
+            array_shift($errors);
             $error = array_shift($errors);
             self::assertEquals('Binary operation "." between SplString and \'/core/includes…\' results in an error.', $error->getMessage());
         }
@@ -87,14 +86,12 @@ final class DrupalIntegrationTest extends AnalyzerTestBase {
         }
         $errorMessages = [
             'The "entity.manager" service is deprecated. You should use the \'entity_type.manager\' service instead.',
-            '\Drupal calls should be avoided in classes, use dependency injection instead',
             'Call to an undefined method Drupal\Core\Entity\EntityManager::thisMethodDoesNotExist().',
             'Call to deprecated method getDefinitions() of class Drupal\\Core\\Entity\\EntityManager:
 in drupal:8.0.0 and is removed from drupal:9.0.0.
   Use \\Drupal\\Core\\Entity\\EntityTypeManagerInterface::getDefinitions()
   instead.',
             'The "path.alias_manager" service is deprecated. Use "path_alias.manager" instead. See https://drupal.org/node/3092086',
-            '\Drupal calls should be avoided in classes, use dependency injection instead',
         ];
         $errors = $this->runAnalyze(__DIR__ . '/../fixtures/drupal/modules/phpstan_fixtures/src/TestServicesMappingExtension.php');
         self::assertCount(count($errorMessages), $errors->getErrors());
