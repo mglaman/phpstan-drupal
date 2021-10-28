@@ -2,27 +2,29 @@
 
 namespace mglaman\PHPStanDrupal\Tests;
 
-final class ServiceProviderAutoloadingTest extends AnalyzerTestBase
+use mglaman\PHPStanDrupal\Tests\Rules\DummyRule;
+
+final class ServiceProviderAutoloadingTest extends DrupalRuleTestCase
 {
+
+    protected function getRule(): \PHPStan\Rules\Rule
+    {
+        return new DummyRule();
+    }
+
     /**
-     * @dataProvider dataEntitySamples
+     * @dataProvider dataFixtures
      */
-    public function testLoadingServiceProvider(string $path, int $count, array $errorMessages) {
-        $errors = $this->runAnalyze($path);
-        $this->assertCount($count, $errors->getErrors(), print_r($errors, true));
-        $this->assertCount(0, $errors->getInternalErrors(), print_r($errors, true));
-        foreach ($errors->getErrors() as $key => $error) {
-            $this->assertEquals($errorMessages[$key], $error->getMessage());
-        }
+    public function testLoadingServiceProvider(string $path, array $errorMessages) {
+        $this->analyse([$path], $errorMessages);
     }
 
 
-    public function dataEntitySamples(): \Generator
+    public function dataFixtures(): \Generator
     {
         yield [
             __DIR__ . '/../fixtures/drupal/modules/service_provider_test/src/ServiceProviderTestServiceProvider.php',
-            1,
-            ['If condition is always true.']
+            []
         ];
     }
 }

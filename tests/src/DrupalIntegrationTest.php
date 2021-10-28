@@ -6,6 +6,7 @@ use PHPStan\Analyser\Error;
 
 final class DrupalIntegrationTest extends AnalyzerTestBase {
 
+    // @todo move to generic autoloading test.
     public function testInstallPhp(): void
     {
         $errors = $this->runAnalyze(__DIR__ . '/../fixtures/drupal/core/install.php');
@@ -13,6 +14,7 @@ final class DrupalIntegrationTest extends AnalyzerTestBase {
         $this->assertCount(0, $errors->getInternalErrors());
     }
 
+    // @todo move to generic autoloading test.
     public function testTestSuiteAutoloading() {
         $paths = [
             __DIR__ . '/../fixtures/drupal/core/tests/TestSuites/FunctionalJavascriptTestSuite.php',
@@ -34,12 +36,14 @@ final class DrupalIntegrationTest extends AnalyzerTestBase {
         self::assertCount(0, $errors->getInternalErrors(), print_r($errors->getInternalErrors(), true));
     }
 
+    // @todo move to generic autoloading test.
     public function testDrupalTestInChildSiteContant() {
         $errors = $this->runAnalyze(__DIR__ . '/../fixtures/drupal/modules/phpstan_fixtures/src/DrupalTestInChildSiteContant.php');
         $this->assertCount(0, $errors->getErrors());
         $this->assertCount(0, $errors->getInternalErrors());
     }
 
+    // @todo move to generic autoloading test.
     public function testExtensionReportsError(): void
     {
         $is_d9 = version_compare('9.0.0', \Drupal::VERSION) !== 1;
@@ -62,6 +66,7 @@ final class DrupalIntegrationTest extends AnalyzerTestBase {
         self::assertNotFalse(strpos($error->getMessage(), 'phpstan_fixtures/phpstan_fixtures.fetch.inc could not be loaded from Drupal\\Core\\Extension\\ModuleHandlerInterface::loadInclude'));
     }
 
+    // @todo move to generic autoloading test.
     public function testExtensionTestSuiteAutoloading(): void
     {
         $paths = [
@@ -79,46 +84,7 @@ final class DrupalIntegrationTest extends AnalyzerTestBase {
         }
     }
 
-    public function testServiceMapping8()
-    {
-        if (version_compare('9.0.0', \Drupal::VERSION) !== 1) {
-            self::markTestSkipped('Only tested on Drupal 8.x.x');
-        }
-        $errorMessages = [
-            'The "entity.manager" service is deprecated. You should use the \'entity_type.manager\' service instead.',
-            'Call to an undefined method Drupal\Core\Entity\EntityManager::thisMethodDoesNotExist().',
-            'Call to deprecated method getDefinitions() of class Drupal\\Core\\Entity\\EntityManager:
-in drupal:8.0.0 and is removed from drupal:9.0.0.
-  Use \\Drupal\\Core\\Entity\\EntityTypeManagerInterface::getDefinitions()
-  instead.',
-            'The "path.alias_manager" service is deprecated. Use "path_alias.manager" instead. See https://drupal.org/node/3092086',
-        ];
-        $errors = $this->runAnalyze(__DIR__ . '/../fixtures/drupal/modules/phpstan_fixtures/src/TestServicesMappingExtension.php');
-        self::assertCount(count($errorMessages), $errors->getErrors());
-        self::assertCount(0, $errors->getInternalErrors());
-        foreach ($errors->getErrors() as $key => $error) {
-            self::assertEquals($errorMessages[$key], $error->getMessage());
-        }
-    }
-
-    public function testServiceMapping9()
-    {
-        if (version_compare('9.0.0', \Drupal::VERSION) === 1) {
-            self::markTestSkipped('Only tested on Drupal 9.x.x');
-        }
-        // @todo: the actual error should be the fact `entity.manager` does not exist.
-        $errorMessages = [
-            '\Drupal calls should be avoided in classes, use dependency injection instead',
-            '\Drupal calls should be avoided in classes, use dependency injection instead',
-        ];
-        $errors = $this->runAnalyze(__DIR__ . '/../fixtures/drupal/modules/phpstan_fixtures/src/TestServicesMappingExtension.php');
-        self::assertCount(count($errorMessages), $errors->getErrors());
-        self::assertCount(0, $errors->getInternalErrors());
-        foreach ($errors->getErrors() as $key => $error) {
-            self::assertEquals($errorMessages[$key], $error->getMessage());
-        }
-    }
-
+    // @todo move to ???
     public function testAppRootPseudoService() {
         $is_d9 = version_compare('9.0.0', \Drupal::VERSION) !== 1;
         $errors = $this->runAnalyze(__DIR__ . '/../fixtures/drupal/modules/phpstan_fixtures/src/AppRootParameter.php');
@@ -136,12 +102,14 @@ in drupal:8.0.0 and is removed from drupal:9.0.0.
         }
     }
 
+    // @todo move to generic autoloading test.
     public function testThemeSettingsFile() {
         $errors = $this->runAnalyze(__DIR__ . '/../fixtures/drupal/core/modules/system/tests/themes/test_theme_settings/theme-settings.php');
         $this->assertCount(0, $errors->getErrors(), var_export($errors, TRUE));
         $this->assertCount(0, $errors->getInternalErrors(), var_export($errors, TRUE));
     }
 
+    // @todo needs to be a test for ModuleLoadInclude
     public function testModuleLoadInclude() {
         $errors = $this->runAnalyze(__DIR__ . '/../fixtures/drupal/modules/module_load_include_fixture/module_load_include_fixture.module');
         $this->assertCount(0, $errors->getErrors(), var_export($errors, TRUE));
