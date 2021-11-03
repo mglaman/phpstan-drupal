@@ -45,6 +45,7 @@ class FieldItemListPropertyReflection implements PropertyReflection
         if ($this->propertyName === 'target_id') {
             return new StringType();
         }
+        // @todo this is wrong, integer/bool/decimal/etc all use single value property.
         if ($this->propertyName === 'value') {
             return new StringType();
         }

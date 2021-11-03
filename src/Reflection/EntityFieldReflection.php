@@ -62,6 +62,7 @@ class EntityFieldReflection implements PropertyReflection
             return new ObjectType($objectType);
         }
 
+        // @todo Drupal allows $entity->field_myfield = 'string'; does this break that?
         if ($this->declaringClass->isSubclassOf('Drupal\Core\Entity\ContentEntityInterface')) {
             // Assume the property is a field.
             return new ObjectType('Drupal\Core\Field\FieldItemListInterface');
