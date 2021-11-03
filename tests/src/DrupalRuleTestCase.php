@@ -4,6 +4,9 @@ namespace mglaman\PHPStanDrupal\Tests;
 
 use PHPStan\Testing\RuleTestCase;
 
+/**
+ * @template TRule of \PHPStan\Rules\Rule
+ */
 abstract class DrupalRuleTestCase extends RuleTestCase {
 
     public static function getAdditionalConfigFiles(): array

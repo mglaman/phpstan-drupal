@@ -86,6 +86,7 @@ class LoadIncludes implements Rule
 
             $module_name = $module_arg->value->value;
             if (!isset($modules[$module_name])) {
+                // @todo return error that module is missing.
                 return [];
             }
             $type_prefix = $name_arg->value->value;

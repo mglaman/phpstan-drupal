@@ -44,10 +44,13 @@ final class EntityTypeManagerGetStorageDynamicReturnTypeExtensionTest extends Te
     /**
      * @dataProvider getEntityStorageProvider
      *
-     * @covers \mglaman\PHPStanDrupal\Type\EntityTypeManagerGetStorageDynamicReturnTypeExtension::__construct
-     * @covers \mglaman\PHPStanDrupal\Type\EntityTypeManagerGetStorageDynamicReturnTypeExtension::getTypeFromMethodCall
+     * @covers       \mglaman\PHPStanDrupal\Type\EntityTypeManagerGetStorageDynamicReturnTypeExtension::__construct
+     * @covers       \mglaman\PHPStanDrupal\Type\EntityTypeManagerGetStorageDynamicReturnTypeExtension::getTypeFromMethodCall
+     * @param mixed $entityType
+     * @param string $storageClass
+     * @throws ShouldNotHappenException
      */
-    public function testGetTypeFromMethodCall($entityType, $storageClass): void
+    public function testGetTypeFromMethodCall($entityType, string $storageClass): void
     {
         // If we were passed a string, assume it is a class name to be mocked.
         if (is_string($entityType)) {

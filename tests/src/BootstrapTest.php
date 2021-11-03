@@ -6,7 +6,14 @@ use PHPStan\Testing\PHPStanTestCase;
 
 final class BootstrapTest extends PHPStanTestCase
 {
+    /**
+     * @var callable|null
+     */
     private $previousErrorHandler;
+
+    /**
+     * @var array
+     */
     private $gatheredWarnings = [];
 
     public function testContainerNotInitializedExceptionCatch(): void
