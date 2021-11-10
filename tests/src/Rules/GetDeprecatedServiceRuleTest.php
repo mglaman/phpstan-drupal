@@ -34,7 +34,7 @@ final class GetDeprecatedServiceRuleTest extends DrupalRuleTestCase {
     public function testRuleDrupal9(string $path, array $errorMessages): void
     {
         // @phpstan-ignore-next-line
-        if (version_compare(\Drupal::VERSION, '9.0.0', 'gt') === 1) {
+        if (version_compare('9.0.0', \Drupal::VERSION) === 1) {
             self::markTestSkipped('Only tested on Drupal 9.x.x');
         }
         // @phpstan-ignore-next-line
@@ -48,7 +48,7 @@ final class GetDeprecatedServiceRuleTest extends DrupalRuleTestCase {
             [
                 [
                     'The "entity.manager" service is deprecated. You should use the \'entity_type.manager\' service instead.',
-                    15
+                    37
                 ],
             ]
         ];
@@ -57,7 +57,7 @@ final class GetDeprecatedServiceRuleTest extends DrupalRuleTestCase {
             [
                 [
                     'The "entity.manager" service is deprecated. You should use the \'entity_type.manager\' service instead.',
-                    15
+                    24
                 ],
             ]
         ];
