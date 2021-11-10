@@ -72,6 +72,7 @@ class ModuleLoadInclude implements Rule
 
             $module_name = $module_arg->value->value;
             if (!isset($modules[$module_name])) {
+                // @todo return error that the module does not exist.
                 return [];
             }
             $type_prefix = $name_arg->value->value;

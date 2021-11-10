@@ -5,8 +5,11 @@ parameters:
 	level: 8
 	checkGenericClassInNonGenericObjectType: false
 	checkMissingIterableValueType: false
+	reportUnmatchedIgnoredErrors: false
 	paths:
 		- src
 		- drupal-phpunit-hack.php
 		- drupal-autoloader.php
 		- tests/src
+	excludePaths:
+		-  tests/src/Type/data/entity-type-manager.php

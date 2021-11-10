@@ -33,7 +33,7 @@ final class BrowserTestBaseDefaultThemeRuleTest extends DrupalRuleTestCase {
             [
                 [
                     'Drupal\Tests\BrowserTestBase::$defaultTheme is required. See https://www.drupal.org/node/3083055, which includes recommendations on which theme to use.',
-                    12
+                    07
                 ],
             ]
         ];
