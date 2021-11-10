@@ -62,13 +62,7 @@ class DrupalServiceDynamicReturnTypeExtension implements DynamicStaticMethodRetu
         $serviceId = $arg1->value;
         $service = $this->serviceMap->getService($serviceId);
         if ($service instanceof DrupalServiceDefinition) {
-            // Work around Drupal misusing the SplString class for string
-            // pseudo-services such as 'app.root'.
-            // @see https://www.drupal.org/project/drupal/issues/3074585
-            if ($service->getClass() === 'SplString') {
-                return new StringType();
-            }
-            return new ObjectType($service->getClass() ?? $serviceId);
+            return $service->getType();
         }
         return $returnType;
     }

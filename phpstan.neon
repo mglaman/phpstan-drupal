@@ -12,4 +12,4 @@ parameters:
 		- drupal-autoloader.php
 		- tests/src
 	excludePaths:
-		-  tests/src/Type/data/entity-type-manager.php
+		-  tests/src/Type/data/*.php

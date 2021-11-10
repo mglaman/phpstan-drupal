@@ -2,6 +2,10 @@
 
 namespace mglaman\PHPStanDrupal\Drupal;
 
+use PHPStan\Type\ObjectType;
+use PHPStan\Type\StringType;
+use PHPStan\Type\Type;
+
 class DrupalServiceDefinition
 {
 
@@ -94,5 +98,17 @@ class DrupalServiceDefinition
     public function getDeprecatedDescription(): string
     {
         return str_replace('%service_id%', $this->id, $this->deprecationTemplate ?? self::$defaultDeprecationTemplate);
+    }
+
+    public function getType(): Type
+    {
+        // Work around Drupal misusing the SplString class for string
+        // pseudo-services such as 'app.root'.
+        // @see https://www.drupal.org/project/drupal/issues/3074585
+        if ($this->getClass() === 'SplString') {
+            return new StringType();
+        }
+
+        return new ObjectType($this->getClass() ?? $this->id);
     }
 }
