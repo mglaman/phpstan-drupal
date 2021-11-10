@@ -17,6 +17,9 @@ final class EntityFieldsViaMagicReflectionExtensionTest extends PHPStanTestCase 
 
     use AdditionalConfigFilesTrait;
 
+    /**
+     * @var EntityFieldsViaMagicReflectionExtension
+     */
     private $extension;
 
     protected function setUp(): void
@@ -39,11 +42,13 @@ final class EntityFieldsViaMagicReflectionExtensionTest extends PHPStanTestCase 
     public function dataHasProperty(): \Generator
     {
         yield 'content entity supported' => [
+            // @phpstan-ignore-next-line
             EntityTest::class,
             'foobar',
             true
         ];
         yield 'config entity not supported' => [
+            // @phpstan-ignore-next-line
             TestConfigType::class,
             'foobar',
             false
@@ -75,6 +80,7 @@ final class EntityFieldsViaMagicReflectionExtensionTest extends PHPStanTestCase 
 
     public function testGetPropertyEntity(): void
     {
+        // @phpstan-ignore-next-line
         $classReflection = $this->createReflectionProvider()->getClass(EntityTest::class);
         $propertyReflection = $this->extension->getProperty($classReflection, 'field_myfield');
         $readableType = $propertyReflection->getReadableType();

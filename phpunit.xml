@@ -6,15 +6,17 @@
          beStrictAboutCoversAnnotation="true"
          beStrictAboutOutputDuringTests="true"
          beStrictAboutTodoAnnotatedTests="true"
+         beStrictAboutChangesToGlobalState="true"
          verbose="false">
     <php>
         <ini name="error_reporting" value="32767"/>
         <ini name="memory_limit" value="-1"/>
+        <!-- Drupal requires Symfony PHPUnit Bridge, silence its warnings. -->
+        <env name="SYMFONY_DEPRECATIONS_HELPER" value="disabled"/>
     </php>
     <testsuites>
         <testsuite name="default">
-            <directory suffix="Test.php">tests</directory>
-            <exclude>tests/fixtures/</exclude>
+            <directory suffix="Test.php">tests/src</directory>
         </testsuite>
     </testsuites>
     <logging>

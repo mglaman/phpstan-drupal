@@ -76,6 +76,8 @@ class EntityTypeManagerGetStorageDynamicReturnTypeExtension implements DynamicMe
         if (isset($this->entityTypeStorageMapping[$entityTypeId])) {
             return new ObjectType($this->entityTypeStorageMapping[$entityTypeId]);
         }
+        // @todo get entity type class reflection and return proper storage for entity type
+        // example: config storage, sqlcontententitystorage, etc.
         return $returnType;
     }
 }

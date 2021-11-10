@@ -7,4 +7,5 @@ function test_locale_translation_inc_included() {
     locale_translation_build_projects();
     module_load_include('translation.inc', 'locale');
     locale_translation_build_sources();
+    module_load_include('translationzzzz.inc', 'locale');
 }
