@@ -2,12 +2,10 @@
 
 namespace mglaman\PHPStanDrupal\Drupal;
 
-use PHPStan\ShouldNotHappenException;
-
 class ServiceMap
 {
-    /** @var \mglaman\PHPStanDrupal\Drupal\DrupalServiceDefinition[] */
-    public static $services = [];
+    /** @var DrupalServiceDefinition[] */
+    private static $services = [];
 
     public function getService(string $id): ?DrupalServiceDefinition
     {
@@ -15,7 +13,7 @@ class ServiceMap
     }
 
     /**
-     * @return \mglaman\PHPStanDrupal\Drupal\DrupalServiceDefinition[]
+     * @return DrupalServiceDefinition[]
      */
     public function getServices(): array
     {
@@ -30,7 +28,15 @@ class ServiceMap
             // @todo support factories
             if (!isset($serviceDefinition['class'])) {
                 if (isset($serviceDefinition['alias'], $drupalServices[$serviceDefinition['alias']])) {
-                    $serviceDefinition['class'] = $drupalServices[$serviceDefinition['alias']]['class'];
+                    $aliasedService = $drupalServices[$serviceDefinition['alias']];
+
+                    if (isset($aliasedService['class'])) {
+                        $serviceDefinition['class'] = $drupalServices[$serviceDefinition['alias']]['class'];
+                    } elseif (class_exists($serviceDefinition['alias'])) {
+                        $serviceDefinition['class'] = $serviceDefinition['alias'];
+                    }
+                } elseif (class_exists($serviceId)) {
+                    $serviceDefinition['class'] = $serviceId;
                 } else {
                     continue;
                 }

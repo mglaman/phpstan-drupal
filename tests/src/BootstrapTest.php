@@ -40,7 +40,8 @@ final class BootstrapTest extends PHPStanTestCase
         if (E_USER_WARNING !== $type) {
             $h = $this->previousErrorHandler;
             if (\is_callable($h)) {
-                return $h($type, $msg, $file, $line, $context);
+                $val =  $h($type, $msg, $file, $line, $context);
+                return $val ?? true;
             }
             return true;
         }
