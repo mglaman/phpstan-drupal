@@ -38,7 +38,15 @@ class ServiceMap
             // @todo support factories
             if (!isset($serviceDefinition['class'])) {
                 if (isset($serviceDefinition['alias'], $drupalServices[$serviceDefinition['alias']])) {
-                    $serviceDefinition['class'] = $drupalServices[$serviceDefinition['alias']]['class'];
+                    $aliasedService = $drupalServices[$serviceDefinition['alias']];
+
+                    if (isset($aliasedService['class'])) {
+                        $serviceDefinition['class'] = $drupalServices[$serviceDefinition['alias']]['class'];
+                    } elseif (class_exists($serviceDefinition['alias'])) {
+                        $serviceDefinition['class'] = $serviceDefinition['alias'];
+                    }
+                } elseif (class_exists($serviceId)) {
+                    $serviceDefinition['class'] = $serviceId;
                 } else {
                     continue;
                 }
