@@ -18,6 +18,9 @@ class DrupalClassResolverDynamicReturnTypeExtensionTest extends TypeInferenceTes
 
     /**
      * @dataProvider dataFileAsserts
+     * @param string $assertType
+     * @param string $file
+     * @param mixed ...$args
      */
     public function testFileAsserts(
         string $assertType,
