@@ -15,7 +15,7 @@ final class DrupalAutoloadingTest extends DrupalRuleTestCase
     /**
      * @dataProvider dataFixtures
      */
-    public function testAnalyize(array $paths, array $errorMessages): void
+    public function testAnalyze(array $paths, array $errorMessages): void
     {
         $this->analyse($paths, $errorMessages);
     }

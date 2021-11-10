@@ -7,19 +7,11 @@ use PHPStan\ShouldNotHappenException;
 class ServiceMap
 {
     /** @var \mglaman\PHPStanDrupal\Drupal\DrupalServiceDefinition[] */
-    private $services = [];
+    public static $services = [];
 
     public function getService(string $id): ?DrupalServiceDefinition
     {
-        // @see notes in DrupalAutoloader.
-        // This is all a work around due to inability to set container parameters.
-        if (count($this->services) === 0) {
-            $this->services = $GLOBALS['drupalServiceMap'] ?? [];
-            if (count($this->services) === 0) {
-                throw new ShouldNotHappenException('No Drupal service map was registered.');
-            }
-        }
-        return $this->services[$id] ?? null;
+        return self::$services[$id] ?? null;
     }
 
     /**
@@ -27,12 +19,12 @@ class ServiceMap
      */
     public function getServices(): array
     {
-        return $this->services;
+        return self::$services;
     }
 
     public function setDrupalServices(array $drupalServices): void
     {
-        $this->services = [];
+        self::$services = [];
 
         foreach ($drupalServices as $serviceId => $serviceDefinition) {
             // @todo support factories
@@ -43,7 +35,7 @@ class ServiceMap
                     continue;
                 }
             }
-            $this->services[$serviceId] = new DrupalServiceDefinition(
+            self::$services[$serviceId] = new DrupalServiceDefinition(
                 (string) $serviceId,
                 $serviceDefinition['class'],
                 $serviceDefinition['public'] ?? true,
@@ -51,7 +43,7 @@ class ServiceMap
             );
             $deprecated = $serviceDefinition['deprecated'] ?? null;
             if ($deprecated) {
-                $this->services[$serviceId]->setDeprecated(true, $deprecated);
+                self::$services[$serviceId]->setDeprecated(true, $deprecated);
             }
         }
     }
