@@ -45,6 +45,10 @@ final class BrowserTestBaseDefaultThemeRuleTest extends DrupalRuleTestCase {
             __DIR__ . '/../../fixtures/drupal/modules/module_with_tests/tests/src/Functional/ExtendsDefaultThemeTest.php',
             []
         ];
+        yield [
+            __DIR__ . '/../../fixtures/drupal/core/modules/views/tests/src/Functional/ViewTestBase.php',
+            []
+        ];
     }
 
 }

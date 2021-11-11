@@ -35,6 +35,9 @@ final class BrowserTestBaseDefaultThemeRule implements Rule
 
         $reflection = $classType->getClassReflection();
         assert($reflection !== null);
+        if ($reflection->isAbstract()) {
+            return [];
+        }
         $defaultProperties = $reflection->getNativeReflection()->getDefaultProperties();
         $defaultTheme = $defaultProperties['defaultTheme'] ?? null;
 
