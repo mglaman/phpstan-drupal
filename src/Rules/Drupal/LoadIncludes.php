@@ -4,10 +4,11 @@ namespace mglaman\PHPStanDrupal\Rules\Drupal;
 
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use DrupalFinder\DrupalFinder;
+use mglaman\PHPStanDrupal\Drupal\ExtensionDiscovery;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
-use mglaman\PHPStanDrupal\Drupal\ExtensionDiscovery;
 use PHPStan\Rules\Rule;
+use PHPStan\Rules\RuleErrorBuilder;
 use PHPStan\ShouldNotHappenException;
 use PHPStan\Type\ObjectType;
 
@@ -53,17 +54,13 @@ class LoadIncludes implements Rule
         if (!is_string($var_name)) {
             throw new ShouldNotHappenException(sprintf('Expected string for variable in %s, please open an issue on GitHub https://github.com/mglaman/phpstan-drupal/issues', get_called_class()));
         }
-        $type = $scope->getVariableType($var_name);
-        assert($type instanceof ObjectType);
-        if (!class_exists($type->getClassName()) && !interface_exists($type->getClassName())) {
-            throw new ShouldNotHappenException(sprintf('Could not find class for %s from reflection.', get_called_class()));
+        $moduleHandlerInterfaceType = new ObjectType(ModuleHandlerInterface::class);
+        $variableType = $scope->getVariableType($var_name);
+        if (!$variableType->isSuperTypeOf($moduleHandlerInterfaceType)->yes()) {
+            return [];
         }
 
         try {
-            $reflected = new \ReflectionClass($type->getClassName());
-            if (!$reflected->implementsInterface(ModuleHandlerInterface::class)) {
-                return [];
-            }
             // Try to invoke it similarily as the module handler itself.
             $finder = new DrupalFinder();
             $finder->locateRoot($this->projectRoot);
@@ -97,9 +94,24 @@ class LoadIncludes implements Rule
                 require_once $file;
                 return [];
             }
-            return [sprintf('File %s could not be loaded from %s::loadInclude', $file, $type->getClassName())];
+            return [
+                RuleErrorBuilder::message(sprintf(
+                    'File %s could not be loaded from %s::loadInclude',
+                    $file,
+                    ModuleHandlerInterface::class
+                ))
+                    ->line($node->getLine())
+                    ->build()
+            ];
         } catch (\Throwable $e) {
-            return [sprintf('A file could not be loaded from %s::loadInclude', $type->getClassName())];
+            return [
+                RuleErrorBuilder::message(sprintf(
+                    'A file could not be loaded from %s::loadInclude',
+                    ModuleHandlerInterface::class
+                ))
+                    ->line($node->getLine())
+                    ->build()
+            ];
         }
     }
 }
