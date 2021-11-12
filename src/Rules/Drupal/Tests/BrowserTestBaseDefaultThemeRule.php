@@ -39,6 +39,21 @@ final class BrowserTestBaseDefaultThemeRule implements Rule
             return [];
         }
         $defaultProperties = $reflection->getNativeReflection()->getDefaultProperties();
+        $profile = $defaultProperties['profile'] ?? null;
+
+        $testingProfilesWithoutThemes = [
+            'testing',
+            'nightwatch_testing',
+            'testing_config_overrides',
+            'testing_missing_dependencies',
+            'testing_multilingual',
+            'testing_multilingual_with_english',
+            'testing_requirements',
+        ];
+        if ($profile !== null && !in_array($profile, $testingProfilesWithoutThemes, true)) {
+            return [];
+        }
+
         $defaultTheme = $defaultProperties['defaultTheme'] ?? null;
 
         if ($defaultTheme === null || $defaultTheme === '') {
