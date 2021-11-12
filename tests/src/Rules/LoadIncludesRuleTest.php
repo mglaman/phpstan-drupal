@@ -26,4 +26,13 @@ final class LoadIncludesRuleTest extends DrupalRuleTestCase
             ]);
     }
 
+    public function testFormStateLoadInclude(): void
+    {
+        $this->analyse([
+            __DIR__ . '/../../fixtures/drupal/core/tests/Drupal/Tests/Core/Form/FormStateTest.php'
+        ],
+            [
+            ]);
+    }
+
 }
