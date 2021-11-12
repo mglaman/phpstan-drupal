@@ -42,6 +42,10 @@ final class BrowserTestBaseDefaultThemeRuleTest extends DrupalRuleTestCase {
             []
         ];
         yield [
+            __DIR__ . '/../../fixtures/drupal/core/tests/Drupal/FunctionalTests/Installer/InstallerExistingConfigMultilingualTest.php',
+            []
+        ];
+        yield [
             __DIR__ . '/../../fixtures/drupal/modules/module_with_tests/tests/src/Functional/ExtendsDefaultThemeTest.php',
             []
         ];
