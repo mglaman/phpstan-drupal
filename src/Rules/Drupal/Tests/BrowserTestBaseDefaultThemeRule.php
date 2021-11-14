@@ -32,6 +32,10 @@ final class BrowserTestBaseDefaultThemeRule implements Rule
         if ($browserTestBaseAncestor === null) {
             return [];
         }
+        $browserTestBaseAncestor = $classType->getAncestorWithClassName('Drupal\\FunctionalTests\\Update\\UpdatePathTestBase');
+        if ($browserTestBaseAncestor !== null) {
+            return [];
+        }
 
         $reflection = $classType->getClassReflection();
         assert($reflection !== null);
