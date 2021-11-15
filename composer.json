@@ -46,7 +46,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "1.0-dev"
+            "dev-main": "1.0-dev"
         },
         "installer-paths": {
             "tests/fixtures/drupal/core": ["type:drupal-core"],
