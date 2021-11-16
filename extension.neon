@@ -17,10 +17,17 @@ parameters:
 			node: Drupal\node\NodeStorage
 			taxonomy_term: Drupal\taxonomy\TermStorage
 			user: Drupal\user\UserStorage
+			block: Drupal\Core\Config\Entity\ConfigEntityStorage
+		entityStorageMapping:
+			node: Drupal\node\Entity\Node
+			taxonomy_term: Drupal\taxonomy\Entity\Term
+			user: Drupal\user\Entity\User
+			block: Drupal\block\Entity\Block
 parametersSchema:
 	drupal: structure([
 		drupal_root: string()
 		entityTypeStorageMapping: arrayOf(string())
+		entityStorageMapping: arrayOf(string())
 	])
 rules:
 	- mglaman\PHPStanDrupal\Rules\Classes\PluginManagerInspectionRule
@@ -35,7 +42,13 @@ services:
 	-
 		class: mglaman\PHPStanDrupal\Type\EntityTypeManagerGetStorageDynamicReturnTypeExtension
 		arguments:
+			reflectionProvider: @reflectionProvider
 			entityTypeStorageMapping: %drupal.entityTypeStorageMapping%
+		tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
+	-
+		class: mglaman\PHPStanDrupal\Type\EntityStorage\EntityStorageDynamicReturnTypeExtension
+		arguments:
+			entityStorageMapping: %drupal.entityStorageMapping%
 		tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
 	-
 		class: mglaman\PHPStanDrupal\Type\ContainerDynamicReturnTypeExtension

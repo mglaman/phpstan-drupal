@@ -14,6 +14,7 @@ final class EntityDynamicReturnTypeTest extends TypeInferenceTestCase
     public function dataFileAsserts(): iterable
     {
         yield from $this->gatherAssertTypes(__DIR__ . '/data/entity.php');
+        yield from $this->gatherAssertTypes(__DIR__ . '/data/entity-storage.php');
     }
 
     /**

@@ -116,6 +116,7 @@ parameters:
             node: Drupal\node\NodeStorage
             taxonomy_term: Drupal\taxonomy\TermStorage
             user: Drupal\user\UserStorage
+            block: Drupal\Core\Config\Entity\ConfigEntityStorage
 ```
 
 To add support for custom entities, you may add the same definition in your project's `phpstan.neon`. See the following
@@ -128,3 +129,27 @@ parameters:
             search_api_index: Drupal\search_api\Entity\SearchApiConfigEntityStorage
             search_api_server: Drupal\search_api\Entity\SearchApiConfigEntityStorage
 ```
+
+Similarly, the `EntityStorageDynamicReturnTypeExtension` service helps to determine the type of the entity which is
+loaded, created etc.. when using an entity storage.
+For instance when using
+
+```php
+$node = \Drupal::entityTypeManager()->getStorage('node')->create(['type' => 'page', 'title' => 'foo']);
+```
+
+It helps with knowing the type of the `$node` variable is `Drupal\node\Entity\Node`.
+
+The default mapping can be found in `extension.neon`:
+
+```neon
+parameters:
+	drupal:
+		entityStorageMapping:
+			node: Drupal\node\Entity\Node
+			taxonomy_term: Drupal\taxonomy\Entity\Term
+			user: Drupal\user\Entity\User
+			block: Drupal\block\Entity\Block
+```
+
+To add support for custom entities, you may add the same definition in your project's `phpstan.neon` likewise.
