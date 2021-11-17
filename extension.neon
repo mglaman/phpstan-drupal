@@ -44,7 +44,7 @@ services:
 		class: mglaman\PHPStanDrupal\Type\DrupalClassResolverDynamicReturnTypeExtension
 		tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
 	-
-		class: mglaman\PHPStanDrupal\Type\EntityQueryDynamicReturnTypeExtension
+		class: mglaman\PHPStanDrupal\Type\EntityQuery\EntityQueryDynamicReturnTypeExtension
 		tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
 	-
 		class: mglaman\PHPStanDrupal\Type\DrupalClassResolverDynamicStaticReturnTypeExtension
