@@ -191,6 +191,11 @@ class DrupalAutoloader
 
         $service_map = $container->getByType(ServiceMap::class);
         $service_map->setDrupalServices($this->serviceMap);
+
+        // @todo the fact this isn't execute on a build integration shows we should probably just execute Drupal's.
+        if (!file_exists(__DIR__ . '/../../tests/fixtures/TestCase.php')) {
+            require_once __DIR__ . '/../../drupal-phpunit-hack.php';
+        }
     }
 
     protected function loadLegacyIncludes(): void
