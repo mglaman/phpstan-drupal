@@ -151,6 +151,7 @@ class DrupalAutoloader
 
         if (!interface_exists(\PHPUnit\Framework\Test::class)) {
             require __DIR__ . '/../../stubs/core-dev/TestCase.php';
+            require __DIR__ . '/../../stubs/core-dev/Version.php';
         }
 
         foreach ($this->serviceYamls as $extension => $serviceYaml) {
