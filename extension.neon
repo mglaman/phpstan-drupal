@@ -11,6 +11,9 @@ parameters:
 		- install
 		- profile
 		- engine
+	stubFiles:
+		# TODO: Use phpstan-phpunit instead when Drupal 8 support is dropped.
+		- stubs/PHPUnit/TestCase.stub
 	drupal:
 		drupal_root: '%currentWorkingDirectory%'
 		entityMapping:

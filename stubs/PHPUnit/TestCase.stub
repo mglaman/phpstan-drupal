@@ -1,0 +1,11 @@
+<?php
+
+namespace PHPUnit\Framework;
+
+/**
+ * phpstan-phpunit conflicts with Drupal 8's minimum PHPUnit.
+ */
+class TestCase
+{
+
+}
