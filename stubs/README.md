@@ -6,9 +6,11 @@ Learn more here: https://phpstan.org/user-guide/stub-files
 
 ## Actual stubs versus shims
 
-The PHPUnit directory does not contain actual PHPStan stubs, but rather a shim for Drupal sites without the 
-`drupal/core-dev` package installed. If you would like better analysis with PHPUnit, please install the phpstan-phpunit 
-extenion:
+The `core-dev` directory does not contain actual PHPStan stubs, but rather a shim for Drupal sites without the 
+`drupal/core-dev` package installed. 
+
+If you would like better analysis with PHPUnit, please install the phpstan-phpunit 
+extension:
 
 ```shell
 composer require --dev phpstan/phpstan-phpunit

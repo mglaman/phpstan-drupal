@@ -96,7 +96,8 @@ class DrupalAutoloader
         $this->loadLegacyIncludes();
 
         if (!interface_exists(\PHPUnit\Framework\Test::class)) {
-            require __DIR__ . '/../../stubs/PHPUnit/TestCase.php';
+            require __DIR__ . '/../../stubs/core-dev/TestCase.php';
+            require __DIR__ . '/../../stubs/core-dev/TraversableElement.php';
         }
         // @todo stop requiring the bootstrap.php and just copy what is needed.
         require $this->drupalRoot . '/core/tests/bootstrap.php';
