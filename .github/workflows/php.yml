@@ -121,11 +121,6 @@ jobs:
           COMPOSER_MEMORY_LIMIT=-1 composer require drupal/video_embed_field drupal/slick
           ./vendor/bin/phpstan analyze web/modules/contrib --no-progress || if (($? == 255)); then false; else true; fi
           COMPOSER_MEMORY_LIMIT=-1 composer remove drupal/video_embed_field drupal/slick
-      - uses: actions/upload-artifact@v2
-        if: ${{ failure() || success() }}
-        with:
-          name: altered_test_case_class
-          path: 'tests/fixtures/TestCase.php'
   build_integration_no_phpunit:
     continue-on-error: ${{ matrix.experimental }}
     runs-on: "ubuntu-latest"
@@ -170,8 +165,3 @@ jobs:
         run: |
           cd ~/drupal
           ./vendor/bin/phpstan analyze web/core/modules/dynamic_page_cache --debug
-      - uses: actions/upload-artifact@v2
-        if: ${{ failure() || success() }}
-        with:
-          name: altered_test_case_class
-          path: 'tests/fixtures/TestCase.php'
