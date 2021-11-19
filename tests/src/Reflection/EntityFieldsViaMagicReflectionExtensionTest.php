@@ -70,6 +70,11 @@ final class EntityFieldsViaMagicReflectionExtensionTest extends PHPStanTestCase 
             'target_id',
             true,
         ];
+        yield 'field item list_interface: value' => [
+            \Drupal\Core\Field\FieldItemListInterface::class,
+            'target_id',
+            true,
+        ];
         // @todo support more proeprties.
         yield 'field item list: format' => [
             \Drupal\Core\Field\FieldItemList::class,
