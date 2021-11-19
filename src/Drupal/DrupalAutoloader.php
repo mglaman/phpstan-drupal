@@ -89,7 +89,9 @@ class DrupalAutoloader
             return strpos($a->getName(), '_test') !== false ? 10 : 0;
         });
         $this->themeData = $extensionDiscovery->scan('theme');
-        $this->addTestNamespaces();
+        if (interface_exists(\PHPUnit\Framework\Test::class)) {
+            $this->addTestNamespaces();
+        }
         $this->addModuleNamespaces();
         $this->addThemeNamespaces();
         $this->registerPs4Namespaces($this->namespaces);
