@@ -95,10 +95,12 @@ class DrupalAutoloader
         $this->registerPs4Namespaces($this->namespaces);
         $this->loadLegacyIncludes();
 
-        // @todo stop requiring the bootstrap.php and just copy what is needed.
-        if (interface_exists(\PHPUnit\Framework\Test::class)) {
-            require $this->drupalRoot . '/core/tests/bootstrap.php';
+        if (!interface_exists(\PHPUnit\Framework\Test::class)) {
+            require __DIR__ . '/../../stubs/PHPUnit/TestCase.php';
         }
+        // @todo stop requiring the bootstrap.php and just copy what is needed.
+        require $this->drupalRoot . '/core/tests/bootstrap.php';
+
 
         foreach ($this->moduleData as $extension) {
             $this->loadExtension($extension);

@@ -35,9 +35,6 @@
         "files": [
             "drupal-phpunit-hack.php"
         ],
-        "classmap": [
-            "stubs/PHPUnit"
-        ],
         "psr-4": {
             "mglaman\\PHPStanDrupal\\": "src/"
         }
