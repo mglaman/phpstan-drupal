@@ -5,6 +5,7 @@ namespace mglaman\PHPStanDrupal\Reflection;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\PropertiesClassReflectionExtension;
 use PHPStan\Reflection\PropertyReflection;
+use PHPStan\TrinaryLogic;
 use PHPStan\Type\ObjectType;
 
 /**
@@ -33,7 +34,7 @@ class EntityFieldsViaMagicReflectionExtension implements PropertiesClassReflecti
             // Content entities have magical __get... so it is kind of true.
             return true;
         }
-        if (self::classObjectIsSuperOfFieldItemList($reflection)) {
+        if (self::classObjectIsSuperOfFieldItemList($reflection)->yes()) {
             return FieldItemListPropertyReflection::canHandleProperty($classReflection, $propertyName);
         }
 
@@ -46,21 +47,21 @@ class EntityFieldsViaMagicReflectionExtension implements PropertiesClassReflecti
         if ($reflection->implementsInterface('Drupal\Core\Entity\EntityInterface')) {
             return new EntityFieldReflection($classReflection, $propertyName);
         }
-        if (self::classObjectIsSuperOfFieldItemList($reflection)) {
+        if (self::classObjectIsSuperOfFieldItemList($reflection)->yes()) {
             return new FieldItemListPropertyReflection($classReflection, $propertyName);
         }
 
         throw new \LogicException($classReflection->getName() . "::$propertyName should be handled earlier.");
     }
 
-    protected static function classObjectIsSuperOfFieldItemList(\ReflectionClass $reflection)
+    protected static function classObjectIsSuperOfFieldItemList(\ReflectionClass $reflection) : TrinaryLogic
     {
         $classObject = new ObjectType($reflection->getName());
         $interfaceObject = self::getFieldItemListInterfaceObject();
         return $classObject->isSuperTypeOf($interfaceObject);
     }
 
-    protected static function getFieldItemListInterfaceObject()
+    protected static function getFieldItemListInterfaceObject() : ObjectType
     {
         return new ObjectType('Drupal\Core\Field\FieldItemListInterface');
     }
