@@ -77,6 +77,11 @@ services:
 		class: mglaman\PHPStanDrupal\Reflection\EntityFieldsViaMagicReflectionExtension
 		tags: [phpstan.broker.propertiesClassReflectionExtension]
 	-
+		class: mglaman\PHPStanDrupal\Rules\Classes\ClassExtendsInternalClassRule
+		tags: [phpstan.rules.rule]
+		arguments:
+			reflectionProvider: @reflectionProvider
+	-
 		class: mglaman\PHPStanDrupal\Rules\Drupal\LoadIncludes
 		tags: [phpstan.rules.rule]
 		arguments:
