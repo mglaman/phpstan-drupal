@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace mglaman\PHPStanDrupal\Tests\Type;
+namespace mglaman\PHPStanDrupal\Tests\Type\EntityQuery;
 
 use mglaman\PHPStanDrupal\Tests\AdditionalConfigFilesTrait;
 use PHPStan\Testing\TypeInferenceTestCase;
@@ -13,7 +13,7 @@ final class EntityQueryDynamicReturnTypeExtensionTest extends TypeInferenceTestC
 
     public function dataFileAsserts(): iterable
     {
-        yield from $this->gatherAssertTypes(__DIR__ . '/data/entity-query-execute.php');
+        yield from $this->gatherAssertTypes(__DIR__ . '/../data/entity-query-execute.php');
     }
 
     /**
