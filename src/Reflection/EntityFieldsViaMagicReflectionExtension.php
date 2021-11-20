@@ -58,7 +58,7 @@ class EntityFieldsViaMagicReflectionExtension implements PropertiesClassReflecti
     {
         $classObject = new ObjectType($reflection->getName());
         $interfaceObject = self::getFieldItemListInterfaceObject();
-        return $classObject->isSuperTypeOf($interfaceObject);
+        return $interfaceObject->isSuperTypeOf($classObject);
     }
 
     protected static function getFieldItemListInterfaceObject() : ObjectType
