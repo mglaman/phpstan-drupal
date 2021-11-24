@@ -31,7 +31,7 @@ parametersSchema:
 		entityMapping: arrayOf(
 			structure([
 				class: string()
-				storage: string()
+				storage: schema(string(), nullable())
 			])
 		)
 	])
