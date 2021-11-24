@@ -2,6 +2,11 @@
 
 namespace mglaman\PHPStanDrupal\Type;
 
+use Drupal\Core\Config\Entity\ConfigEntityStorageInterface;
+use Drupal\Core\Entity\ContentEntityStorageInterface;
+use mglaman\PHPStanDrupal\Type\EntityStorage\ConfigEntityStorageType;
+use mglaman\PHPStanDrupal\Type\EntityStorage\ContentEntityStorageType;
+use mglaman\PHPStanDrupal\Type\EntityStorage\EntityStorageType;
 use PhpParser\Node\Expr\BinaryOp\Concat;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Scalar\String_;
@@ -9,12 +14,18 @@ use PhpParser\Node\VariadicPlaceholder;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\ParametersAcceptorSelector;
+use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\ShouldNotHappenException;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
 use PHPStan\Type\ObjectType;
 
 class EntityTypeManagerGetStorageDynamicReturnTypeExtension implements DynamicMethodReturnTypeExtension
 {
+    /**
+     * @var ReflectionProvider
+     */
+    private $reflectionProvider;
+
     /**
      * @var string[]
      */
@@ -23,10 +34,12 @@ class EntityTypeManagerGetStorageDynamicReturnTypeExtension implements DynamicMe
     /**
      * EntityTypeManagerGetStorageDynamicReturnTypeExtension constructor.
      *
+     * @param ReflectionProvider $reflectionProvider
      * @param string[] $entityTypeStorageMapping
      */
-    public function __construct(array $entityTypeStorageMapping = [])
+    public function __construct(ReflectionProvider $reflectionProvider, array $entityTypeStorageMapping = [])
     {
+        $this->reflectionProvider = $reflectionProvider;
         $this->entityTypeStorageMapping = $entityTypeStorageMapping;
     }
 
@@ -74,10 +87,25 @@ class EntityTypeManagerGetStorageDynamicReturnTypeExtension implements DynamicMe
         $entityTypeId = $arg1->value;
 
         if (isset($this->entityTypeStorageMapping[$entityTypeId])) {
-            return new ObjectType($this->entityTypeStorageMapping[$entityTypeId]);
+            $storageClassName = $this->entityTypeStorageMapping[$entityTypeId];
+            $interfaces = \array_keys($this->reflectionProvider->getClass($storageClassName)->getInterfaces());
+
+            if (\in_array(ConfigEntityStorageInterface::class, $interfaces, true)) {
+                return new ConfigEntityStorageType($entityTypeId, $storageClassName);
+            }
+
+            if (\in_array(ContentEntityStorageInterface::class, $interfaces, true)) {
+                return new ContentEntityStorageType($entityTypeId, $storageClassName);
+            }
+
+            return new EntityStorageType($entityTypeId, $storageClassName);
         }
+
         // @todo get entity type class reflection and return proper storage for entity type
         // example: config storage, sqlcontententitystorage, etc.
+        if ($returnType instanceof ObjectType) {
+            return new EntityStorageType($entityTypeId, $returnType->getClassName());
+        }
         return $returnType;
     }
 }
