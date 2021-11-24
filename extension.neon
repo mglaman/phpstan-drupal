@@ -13,21 +13,28 @@ parameters:
 		- engine
 	drupal:
 		drupal_root: '%currentWorkingDirectory%'
-		entityTypeStorageMapping:
-			node: Drupal\node\NodeStorage
-			taxonomy_term: Drupal\taxonomy\TermStorage
-			user: Drupal\user\UserStorage
-			block: Drupal\Core\Config\Entity\ConfigEntityStorage
-		entityStorageMapping:
-			node: Drupal\node\Entity\Node
-			taxonomy_term: Drupal\taxonomy\Entity\Term
-			user: Drupal\user\Entity\User
-			block: Drupal\block\Entity\Block
+		entityMapping:
+			node:
+				class: Drupal\node\Entity\Node
+				storage: Drupal\node\NodeStorage
+			taxonomy_term:
+				class: Drupal\taxonomy\Entity\Term
+				storage: Drupal\taxonomy\TermStorage
+			user:
+				class: Drupal\user\Entity\User
+				storage: Drupal\user\UserStorage
+			block:
+				class: Drupal\block\Entity\Block
+				storage: Drupal\Core\Config\Entity\ConfigEntityStorage
 parametersSchema:
 	drupal: structure([
 		drupal_root: string()
-		entityTypeStorageMapping: arrayOf(string())
-		entityStorageMapping: arrayOf(string())
+		entityMapping: arrayOf(
+			structure([
+				class: string()
+				storage: string()
+			])
+		)
 	])
 rules:
 	- mglaman\PHPStanDrupal\Rules\Classes\PluginManagerInspectionRule
@@ -38,17 +45,16 @@ rules:
 services:
 	-
 		class: mglaman\PHPStanDrupal\Drupal\ServiceMap
+	-
+		class: mglaman\PHPStanDrupal\Drupal\EntityDataRepository
+		arguments:
+			entityMapping: %drupal.entityMapping%
 
 	-
 		class: mglaman\PHPStanDrupal\Type\EntityTypeManagerGetStorageDynamicReturnTypeExtension
-		arguments:
-			reflectionProvider: @reflectionProvider
-			entityTypeStorageMapping: %drupal.entityTypeStorageMapping%
 		tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
 	-
 		class: mglaman\PHPStanDrupal\Type\EntityStorage\EntityStorageDynamicReturnTypeExtension
-		arguments:
-			entityStorageMapping: %drupal.entityStorageMapping%
 		tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
 	-
 		class: mglaman\PHPStanDrupal\Type\ContainerDynamicReturnTypeExtension
