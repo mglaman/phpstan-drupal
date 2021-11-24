@@ -6,10 +6,6 @@ use PHPStan\Reflection\ReflectionProvider;
 
 final class EntityDataRepository
 {
-    /**
-     * @var ReflectionProvider
-     */
-    private $reflectionProvider;
 
     /**
      * @var array<string, array<string, string>>
@@ -20,9 +16,8 @@ final class EntityDataRepository
      */
     private $entityData;
 
-    public function __construct(ReflectionProvider $reflectionProvider, array $entityMapping)
+    public function __construct(array $entityMapping)
     {
-        $this->reflectionProvider = $reflectionProvider;
         $this->entityMapping = $entityMapping;
     }
 
@@ -31,8 +26,7 @@ final class EntityDataRepository
         if (!isset($this->entityData[$entityTypeId])) {
             $this->entityData[$entityTypeId] = new EntityData(
                 $entityTypeId,
-                $this->entityMapping[$entityTypeId] ?? [],
-                $this->reflectionProvider
+                $this->entityMapping[$entityTypeId] ?? []
             );
         }
         return $this->entityData[$entityTypeId];

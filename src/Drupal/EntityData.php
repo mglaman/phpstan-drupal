@@ -4,11 +4,10 @@ namespace mglaman\PHPStanDrupal\Drupal;
 
 use Drupal\Core\Config\Entity\ConfigEntityStorageInterface;
 use Drupal\Core\Entity\ContentEntityStorageInterface;
+use Drupal\Core\Entity\EntityStorageInterface;
 use mglaman\PHPStanDrupal\Type\EntityStorage\ConfigEntityStorageType;
 use mglaman\PHPStanDrupal\Type\EntityStorage\ContentEntityStorageType;
 use mglaman\PHPStanDrupal\Type\EntityStorage\EntityStorageType;
-use PHPStan\Reflection\ReflectionProvider;
-use PHPStan\Reflection\ReflectionProviderStaticAccessor;
 use PHPStan\Type\ObjectType;
 
 final class EntityData
@@ -29,19 +28,11 @@ final class EntityData
      */
     private $storageClassName;
 
-    /**
-     * @var ReflectionProvider
-     */
-    private $reflectionProvider;
-
-    public function __construct(string $entityTypeId, array $definition, ReflectionProvider $reflectionProvider)
+    public function __construct(string $entityTypeId, array $definition)
     {
         $this->entityTypeId = $entityTypeId;
         $this->className = $definition['class'] ?? null;
         $this->storageClassName = $definition['storage'] ?? null;
-        // \PHPStan\Reflection\ReflectionProviderStaticAccessor::getInstance is not covered by the backward
-        // compatibility promise of PHPStan, so we must add it to our value object.
-        $this->reflectionProvider = $reflectionProvider;
     }
 
     public function getClassType(): ?ObjectType
@@ -57,16 +48,15 @@ final class EntityData
             // $className = reflectedDecision.
             return null;
         }
-        if (!$this->reflectionProvider->hasClass($this->storageClassName)) {
+
+        $storageType = new ObjectType($this->storageClassName);
+        if ((new ObjectType(EntityStorageInterface::class))->isSuperTypeOf($storageType)->no()) {
             return null;
         }
-
-        // @todo drop reflectionProvider for ObjectType isSuperTypeOf
-        $reflection = $this->reflectionProvider->getClass($this->storageClassName);
-        if ($reflection->implementsInterface(ConfigEntityStorageInterface::class)) {
+        if ((new ObjectType(ConfigEntityStorageInterface::class))->isSuperTypeOf($storageType)->yes()) {
             return new ConfigEntityStorageType($this->entityTypeId, $this->storageClassName);
         }
-        if ($reflection->implementsInterface(ContentEntityStorageInterface::class)) {
+        if ((new ObjectType(ContentEntityStorageInterface::class))->isSuperTypeOf($storageType)->yes()) {
             return new ContentEntityStorageType($this->entityTypeId, $this->storageClassName);
         }
         return new EntityStorageType($this->entityTypeId, $this->storageClassName);

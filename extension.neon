@@ -48,7 +48,6 @@ services:
 	-
 		class: mglaman\PHPStanDrupal\Drupal\EntityDataRepository
 		arguments:
-			reflectionProvider: @reflectionProvider
 			entityMapping: %drupal.entityMapping%
 
 	-
