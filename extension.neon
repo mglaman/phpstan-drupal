@@ -29,7 +29,7 @@ parameters:
 parametersSchema:
 	drupal: structure([
 		drupal_root: string()
-		entityMapping: listOf(
+		entityMapping: arrayOf(
 			structure([
 				class: string()
 				storage: string()
@@ -48,6 +48,7 @@ services:
 	-
 		class: mglaman\PHPStanDrupal\Drupal\EntityDataRepository
 		arguments:
+			reflectionProvider: @reflectionProvider
 			entityData: %drupal.entityMapping%
 
 	-

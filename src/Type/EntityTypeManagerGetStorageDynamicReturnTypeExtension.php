@@ -22,10 +22,6 @@ use PHPStan\Type\ObjectType;
 
 class EntityTypeManagerGetStorageDynamicReturnTypeExtension implements DynamicMethodReturnTypeExtension
 {
-    /**
-     * @var ReflectionProvider
-     */
-    private $reflectionProvider;
 
     /**
      * @var EntityDataRepository
@@ -35,12 +31,10 @@ class EntityTypeManagerGetStorageDynamicReturnTypeExtension implements DynamicMe
     /**
      * EntityTypeManagerGetStorageDynamicReturnTypeExtension constructor.
      *
-     * @param ReflectionProvider $reflectionProvider
      * @param EntityDataRepository $entityDataRepository
      */
-    public function __construct(ReflectionProvider $reflectionProvider, EntityDataRepository $entityDataRepository)
+    public function __construct(EntityDataRepository $entityDataRepository)
     {
-        $this->reflectionProvider = $reflectionProvider;
         $this->entityDataRepository = $entityDataRepository;
     }
 
@@ -87,23 +81,11 @@ class EntityTypeManagerGetStorageDynamicReturnTypeExtension implements DynamicMe
 
         $entityTypeId = $arg1->value;
 
-        $storageClassName = $this->entityDataRepository->getStorageClassName($entityTypeId);
-        if ($storageClassName !== null) {
-            $interfaces = \array_keys($this->reflectionProvider->getClass($storageClassName)->getInterfaces());
-
-            if (\in_array(ConfigEntityStorageInterface::class, $interfaces, true)) {
-                return new ConfigEntityStorageType($entityTypeId, $storageClassName);
-            }
-
-            if (\in_array(ContentEntityStorageInterface::class, $interfaces, true)) {
-                return new ContentEntityStorageType($entityTypeId, $storageClassName);
-            }
-
-            return new EntityStorageType($entityTypeId, $storageClassName);
+        $storageType = $this->entityDataRepository->getStorageType($entityTypeId);
+        if ($storageType !== null) {
+            return $storageType;
         }
 
-        // @todo get entity type class reflection and return proper storage for entity type
-        // example: config storage, sqlcontententitystorage, etc.
         if ($returnType instanceof ObjectType) {
             return new EntityStorageType($entityTypeId, $returnType->getClassName());
         }

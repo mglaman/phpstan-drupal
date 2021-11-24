@@ -59,12 +59,10 @@ class EntityStorageDynamicReturnTypeExtension implements DynamicMethodReturnType
             return ParametersAcceptorSelector::selectSingle($methodReflection->getVariants())->getReturnType();
         }
 
-        $entityClassName = $this->entityDataRepository->getClassName($callerType->getEntityTypeId());
-        if (null === $entityClassName) {
+        $type = $this->entityDataRepository->getClassType($callerType->getEntityTypeId());
+        if ($type === null) {
             return ParametersAcceptorSelector::selectSingle($methodReflection->getVariants())->getReturnType();
         }
-
-        $type = new ObjectType($entityClassName);
         if (\in_array($methodReflection->getName(), ['load', 'loadUnchanged'], true)) {
             return TypeCombinator::addNull($type);
         }
