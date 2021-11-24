@@ -25,7 +25,6 @@ parameters:
 				storage: Drupal\user\UserStorage
 			block:
 				class: Drupal\block\Entity\Block
-				storage: Drupal\Core\Config\Entity\ConfigEntityStorage
 parametersSchema:
 	drupal: structure([
 		drupal_root: string()

@@ -2,7 +2,9 @@
 
 namespace mglaman\PHPStanDrupal\Drupal;
 
+use Drupal\Core\Config\Entity\ConfigEntityInterface;
 use Drupal\Core\Config\Entity\ConfigEntityStorageInterface;
+use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\ContentEntityStorageInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use mglaman\PHPStanDrupal\Type\EntityStorage\ConfigEntityStorageType;
@@ -43,10 +45,17 @@ final class EntityData
     public function getStorageType(): ?ObjectType
     {
         if ($this->storageClassName === null) {
-            // @todo get entity type class reflection and return proper storage for entity type
-            // example: config storage, sqlcontententitystorage, etc.
-            // $className = reflectedDecision.
-            return null;
+            $classType = $this->getClassType();
+            if ($classType === null) {
+                return null;
+            }
+            if ((new ObjectType(ConfigEntityInterface::class))->isSuperTypeOf($classType)->yes()) {
+                $this->storageClassName = 'Drupal\Core\Config\Entity\ConfigEntityStorage';
+            } elseif ((new ObjectType(ContentEntityInterface::class))->isSuperTypeOf($classType)->yes()) {
+                $this->storageClassName = 'Drupal\Core\Entity\Sql\SqlContentEntityStorage';
+            } else {
+                return null;
+            }
         }
 
         $storageType = new ObjectType($this->storageClassName);
