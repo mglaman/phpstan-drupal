@@ -3,6 +3,7 @@
 namespace mglaman\PHPStanDrupal\Type\EntityStorage;
 
 use Drupal\Core\Entity\EntityStorageInterface;
+use mglaman\PHPStanDrupal\Drupal\EntityDataRepository;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\MethodReflection;
@@ -18,19 +19,13 @@ class EntityStorageDynamicReturnTypeExtension implements DynamicMethodReturnType
 {
 
     /**
-     * @var string[]
+     * @var EntityDataRepository
      */
-    private $entityStorageMapping;
+    private $entityDataRepository;
 
-    /**
-     * EntityStorageDynamicReturnTypeExtension constructor.
-     *
-     * @param string[] $entityStorageMapping
-     */
-    public function __construct(
-        array $entityStorageMapping = []
-    ) {
-        $this->entityStorageMapping = $entityStorageMapping;
+    public function __construct(EntityDataRepository $entityDataRepository)
+    {
+        $this->entityDataRepository = $entityDataRepository;
     }
 
     public function getClass(): string
@@ -64,7 +59,7 @@ class EntityStorageDynamicReturnTypeExtension implements DynamicMethodReturnType
             return ParametersAcceptorSelector::selectSingle($methodReflection->getVariants())->getReturnType();
         }
 
-        $entityClassName = $this->entityStorageMapping[$callerType->getEntityTypeId()] ?? null;
+        $entityClassName = $this->entityDataRepository->getClassName($callerType->getEntityTypeId());
         if (null === $entityClassName) {
             return ParametersAcceptorSelector::selectSingle($methodReflection->getVariants())->getReturnType();
         }

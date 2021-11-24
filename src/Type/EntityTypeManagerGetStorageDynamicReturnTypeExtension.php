@@ -4,6 +4,7 @@ namespace mglaman\PHPStanDrupal\Type;
 
 use Drupal\Core\Config\Entity\ConfigEntityStorageInterface;
 use Drupal\Core\Entity\ContentEntityStorageInterface;
+use mglaman\PHPStanDrupal\Drupal\EntityDataRepository;
 use mglaman\PHPStanDrupal\Type\EntityStorage\ConfigEntityStorageType;
 use mglaman\PHPStanDrupal\Type\EntityStorage\ContentEntityStorageType;
 use mglaman\PHPStanDrupal\Type\EntityStorage\EntityStorageType;
@@ -27,20 +28,20 @@ class EntityTypeManagerGetStorageDynamicReturnTypeExtension implements DynamicMe
     private $reflectionProvider;
 
     /**
-     * @var string[]
+     * @var EntityDataRepository
      */
-    private $entityTypeStorageMapping;
+    private $entityDataRepository;
 
     /**
      * EntityTypeManagerGetStorageDynamicReturnTypeExtension constructor.
      *
      * @param ReflectionProvider $reflectionProvider
-     * @param string[] $entityTypeStorageMapping
+     * @param EntityDataRepository $entityDataRepository
      */
-    public function __construct(ReflectionProvider $reflectionProvider, array $entityTypeStorageMapping = [])
+    public function __construct(ReflectionProvider $reflectionProvider, EntityDataRepository $entityDataRepository)
     {
         $this->reflectionProvider = $reflectionProvider;
-        $this->entityTypeStorageMapping = $entityTypeStorageMapping;
+        $this->entityDataRepository = $entityDataRepository;
     }
 
     public function getClass(): string
@@ -86,8 +87,8 @@ class EntityTypeManagerGetStorageDynamicReturnTypeExtension implements DynamicMe
 
         $entityTypeId = $arg1->value;
 
-        if (isset($this->entityTypeStorageMapping[$entityTypeId])) {
-            $storageClassName = $this->entityTypeStorageMapping[$entityTypeId];
+        $storageClassName = $this->entityDataRepository->getStorageClassName($entityTypeId);
+        if ($storageClassName !== null) {
             $interfaces = \array_keys($this->reflectionProvider->getClass($storageClassName)->getInterfaces());
 
             if (\in_array(ConfigEntityStorageInterface::class, $interfaces, true)) {

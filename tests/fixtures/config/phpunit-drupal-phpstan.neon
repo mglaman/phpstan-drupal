@@ -1,15 +1,18 @@
 parameters:
 	drupal:
 		drupal_root: tests/fixtures/drupal
-		entityTypeStorageMapping:
-			content_entity_using_custom_storage: Drupal\phpstan_fixtures\CustomContentEntityStorage
-			config_entity_using_default_storage: Drupal\Core\Config\Entity\ConfigEntityStorage
-			config_entity_using_custom_storage: Drupal\phpstan_fixtures\CustomConfigEntityStorage
-		entityStorageMapping:
-			content_entity_using_default_storage: Drupal\phpstan_fixtures\Entity\ContentEntityUsingDefaultStorage
-			content_entity_using_custom_storage: Drupal\phpstan_fixtures\Entity\ContentEntityUsingCustomStorage
-			config_entity_using_default_storage: Drupal\phpstan_fixtures\Entity\ConfigEntityUsingDefaultStorage
-			config_entity_using_custom_storage: Drupal\phpstan_fixtures\Entity\ConfigEntityUsingCustomStorage
+		entityMapping:
+			content_entity_using_custom_storage:
+				class: Drupal\phpstan_fixtures\Entity\ContentEntityUsingCustomStorage
+				storage: Drupal\phpstan_fixtures\CustomContentEntityStorage
+			config_entity_using_default_storage:
+				class: Drupal\phpstan_fixtures\Entity\ConfigEntityUsingDefaultStorage
+				storage: Drupal\Core\Config\Entity\ConfigEntityStorage
+			config_entity_using_custom_storage:
+				class: Drupal\phpstan_fixtures\Entity\ConfigEntityUsingCustomStorage
+				storage: Drupal\phpstan_fixtures\CustomConfigEntityStorage
+			content_entity_using_default_storage:
+				class: Drupal\phpstan_fixtures\Entity\ContentEntityUsingDefaultStorage
 includes:
 	- ../../../extension.neon
 	- ../../../vendor/phpstan/phpstan-deprecation-rules/rules.neon
