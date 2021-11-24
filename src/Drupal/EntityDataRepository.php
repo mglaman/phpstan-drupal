@@ -2,13 +2,7 @@
 
 namespace mglaman\PHPStanDrupal\Drupal;
 
-use Drupal\Core\Config\Entity\ConfigEntityStorageInterface;
-use Drupal\Core\Entity\ContentEntityStorageInterface;
-use mglaman\PHPStanDrupal\Type\EntityStorage\ConfigEntityStorageType;
-use mglaman\PHPStanDrupal\Type\EntityStorage\ContentEntityStorageType;
-use mglaman\PHPStanDrupal\Type\EntityStorage\EntityStorageType;
 use PHPStan\Reflection\ReflectionProvider;
-use PHPStan\Type\ObjectType;
 
 final class EntityDataRepository
 {
@@ -20,50 +14,27 @@ final class EntityDataRepository
     /**
      * @var array<string, array<string, string>>
      */
+    private $entityMapping;
+    /**
+     * @var array<string, EntityData|null>
+     */
     private $entityData;
 
-    public function __construct(ReflectionProvider $reflectionProvider, array $entityData)
+    public function __construct(ReflectionProvider $reflectionProvider, array $entityMapping)
     {
         $this->reflectionProvider = $reflectionProvider;
-        $this->entityData = $entityData;
+        $this->entityMapping = $entityMapping;
     }
 
-    public function get(string $entityTypeId): ?array
+    public function get(string $entityTypeId): EntityData
     {
-        return $this->entityData[$entityTypeId] ?? null;
-    }
-
-    public function getClassType(string $entityTypeId): ?ObjectType
-    {
-        $data = $this->get($entityTypeId);
-        $className = $data['class'] ?? null;
-        if ($className === null) {
-            return null;
+        if (!isset($this->entityData[$entityTypeId])) {
+            $this->entityData[$entityTypeId] = new EntityData(
+                $entityTypeId,
+                $this->entityMapping[$entityTypeId] ?? [],
+                $this->reflectionProvider
+            );
         }
-        return new ObjectType($className);
-    }
-
-    public function getStorageType(string $entityTypeId): ?ObjectType
-    {
-        $data = $this->get($entityTypeId);
-        $className = $data['storage'] ?? null;
-        if ($className === null) {
-            // @todo get entity type class reflection and return proper storage for entity type
-            // example: config storage, sqlcontententitystorage, etc.
-            // $className = reflectedDecision.
-            return null;
-        }
-        if (!$this->reflectionProvider->hasClass($className)) {
-            return null;
-        }
-
-        $reflection = $this->reflectionProvider->getClass($className);
-        if ($reflection->implementsInterface(ConfigEntityStorageInterface::class)) {
-            return new ConfigEntityStorageType($entityTypeId, $className);
-        }
-        if ($reflection->implementsInterface(ContentEntityStorageInterface::class)) {
-            return new ContentEntityStorageType($entityTypeId, $className);
-        }
-        return new EntityStorageType($entityTypeId, $className);
+        return $this->entityData[$entityTypeId];
     }
 }

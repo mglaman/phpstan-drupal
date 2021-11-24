@@ -81,7 +81,7 @@ class EntityTypeManagerGetStorageDynamicReturnTypeExtension implements DynamicMe
 
         $entityTypeId = $arg1->value;
 
-        $storageType = $this->entityDataRepository->getStorageType($entityTypeId);
+        $storageType = $this->entityDataRepository->get($entityTypeId)->getStorageType();
         if ($storageType !== null) {
             return $storageType;
         }

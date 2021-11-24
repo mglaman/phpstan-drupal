@@ -49,7 +49,7 @@ services:
 		class: mglaman\PHPStanDrupal\Drupal\EntityDataRepository
 		arguments:
 			reflectionProvider: @reflectionProvider
-			entityData: %drupal.entityMapping%
+			entityMapping: %drupal.entityMapping%
 
 	-
 		class: mglaman\PHPStanDrupal\Type\EntityTypeManagerGetStorageDynamicReturnTypeExtension
