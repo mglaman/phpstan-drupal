@@ -36,7 +36,35 @@ final class ServiceMapFactoryTest extends TestCase
             ],
             'config.storage.sync' => [
                 'alias' => 'config.storage.staging',
-            ]
+            ],
+            'abstract_service' => [
+                'abstract' => true,
+                'class' => 'Drupal\service_map\MyService',
+            ],
+            'concrete_service' => [
+                'parent' => 'abstract_service',
+            ],
+            'concrete_service_with_a_parent_which_has_a_parent' => [
+                'parent' => 'concrete_service',
+            ],
+            'abstract_service_private' => [
+                'abstract' => true,
+                'class' => 'Drupal\service_map\MyService',
+                'public' => false,
+            ],
+            'concrete_service_overriding_definition_of_its_parent' => [
+                'parent' => 'abstract_service_private',
+                'class' => 'Drupal\service_map\Override',
+                'public' => true,
+            ],
+            'service_with_unknown_parent' => [
+                'parent' => 'unknown_parent',
+            ],
+            'service_with_unknown_parent_overriding_definition_of_its_parent' => [
+                'parent' => 'unknown_parent',
+                'class' => 'Drupal\service_map\Override',
+                'public' => false,
+            ],
         ]);
         $validator($service->getService($id));
     }
@@ -69,6 +97,58 @@ final class ServiceMapFactoryTest extends TestCase
             'config.storage.sync',
             function (DrupalServiceDefinition $service): void {
                 self::assertEquals('config.storage.staging', $service->getAlias());
+            }
+        ];
+        yield [
+            'concrete_service',
+            function (DrupalServiceDefinition $service): void {
+                self::assertEquals('concrete_service', $service->getId());
+                self::assertEquals('Drupal\service_map\MyService', $service->getClass());
+                self::assertTrue($service->isPublic());
+                self::assertNull($service->getAlias());
+            }
+        ];
+        yield [
+            'concrete_service_with_a_parent_which_has_a_parent',
+            function (DrupalServiceDefinition $service): void {
+                self::assertEquals('concrete_service_with_a_parent_which_has_a_parent', $service->getId());
+                self::assertEquals('Drupal\service_map\MyService', $service->getClass());
+                self::assertTrue($service->isPublic());
+                self::assertNull($service->getAlias());
+            }
+        ];
+        yield [
+            'abstract_service_private',
+            function (DrupalServiceDefinition $service): void {
+                self::assertEquals('abstract_service_private', $service->getId());
+                self::assertEquals('Drupal\service_map\MyService', $service->getClass());
+                self::assertFalse($service->isPublic());
+                self::assertNull($service->getAlias());
+            }
+        ];
+        yield [
+            'concrete_service_overriding_definition_of_its_parent',
+            function (DrupalServiceDefinition $service): void {
+                self::assertEquals('concrete_service_overriding_definition_of_its_parent', $service->getId());
+                self::assertEquals('Drupal\service_map\Override', $service->getClass());
+                self::assertTrue($service->isPublic());
+                self::assertNull($service->getAlias());
+            }
+        ];
+        yield [
+            'service_with_unknown_parent',
+            function (?DrupalServiceDefinition $service): void {
+                self::assertNull($service);
+            }
+        ];
+
+        yield [
+            'service_with_unknown_parent_overriding_definition_of_its_parent',
+            function (DrupalServiceDefinition $service): void {
+                self::assertEquals('service_with_unknown_parent_overriding_definition_of_its_parent', $service->getId());
+                self::assertEquals('Drupal\service_map\Override', $service->getClass());
+                self::assertFalse($service->isPublic());
+                self::assertNull($service->getAlias());
             }
         ];
     }
