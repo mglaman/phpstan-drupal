@@ -25,6 +25,10 @@ class ServiceMap
         self::$services = [];
 
         foreach ($drupalServices as $serviceId => $serviceDefinition) {
+            if (isset($serviceDefinition['parent'], $drupalServices[$serviceDefinition['parent']])) {
+                $serviceDefinition = $this->resolveParentDefinition($serviceDefinition['parent'], $serviceDefinition, $drupalServices);
+            }
+
             // @todo support factories
             if (!isset($serviceDefinition['class'])) {
                 if (isset($serviceDefinition['alias'], $drupalServices[$serviceDefinition['alias']])) {
@@ -52,5 +56,31 @@ class ServiceMap
                 self::$services[$serviceId]->setDeprecated(true, $deprecated);
             }
         }
+    }
+
+    private function resolveParentDefinition(string $parentId, array $serviceDefinition, array $drupalServices): array
+    {
+        $parentDefinition = $drupalServices[$parentId] ?? [];
+        if ([] === $parentDefinition) {
+            return $serviceDefinition;
+        }
+
+        if (isset($parentDefinition['parent'])) {
+            if (!isset($drupalServices[$parentDefinition['parent']])) {
+                return $serviceDefinition;
+            }
+
+            return $this->resolveParentDefinition($parentDefinition['parent'], $drupalServices[$parentDefinition['parent']], $drupalServices);
+        }
+
+        if (isset($parentDefinition['class']) && !isset($serviceDefinition['class'])) {
+            $serviceDefinition['class'] = $parentDefinition['class'];
+        }
+
+        if (isset($parentDefinition['public']) && !isset($serviceDefinition['public'])) {
+            $serviceDefinition['public'] = $parentDefinition['public'];
+        }
+
+        return $serviceDefinition;
     }
 }

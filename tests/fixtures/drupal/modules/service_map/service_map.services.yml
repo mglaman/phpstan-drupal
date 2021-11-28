@@ -6,3 +6,18 @@ services:
   Drupal\Core\Messenger\MessengerInterface: '@messenger'
   Drupal\Core\Logger\LoggerChannelFactory: '@logger.factory'
   Drupal\Core\Logger\LoggerChannelFactoryInterface: '@logger.factory'
+  service_map.abstract_service:
+    abstract: true
+    class: Drupal\service_map\MyService
+  service_map.concrete_service:
+    parent: service_map.abstract_service
+  service_map.concrete_service_with_a_parent_which_has_a_parent:
+    parent: service_map.concrete_service
+  service_map.abstract_service_private:
+    abstract: true
+    class: Drupal\service_map\MyService
+    public: false
+  service_map.concrete_service_overriding_definition_of_its_parent:
+    parent: service_map.abstract_service_private
+    class: Drupal\service_map\Override
+    public: true
