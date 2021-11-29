@@ -19,7 +19,6 @@ final class BrowserTestBaseDefaultThemeRule implements Rule
     public function processNode(Node $node, Scope $scope): array
     {
         if (!interface_exists(\PHPUnit\Framework\Test::class)) {
-            // PHPUnit is unavailable in the class loader.
             return [];
         }
         assert($node instanceof Node\Stmt\Class_);

@@ -156,7 +156,7 @@ jobs:
         run: |
           cd ~/drupal
           COMPOSER_MEMORY_LIMIT=-1 composer require mglaman/phpstan-drupal *@dev
-          cp $GITHUB_WORKSPACE/tests/fixtures/config/drupal-phpstan.neon phpstan.neon
+          cp $GITHUB_WORKSPACE/tests/fixtures/config/drupal-no-dev-phpstan.neon phpstan.neon
       - name: "Test core/install.php"
         run: |
           cd ~/drupal
@@ -164,4 +164,4 @@ jobs:
       - name: "Test no crash"
         run: |
           cd ~/drupal
-          ./vendor/bin/phpstan analyze web/core/modules/dynamic_page_cache --debug || if (($? == 255)); then false; else true; fi
+          ./vendor/bin/phpstan analyze web/core/modules/dynamic_page_cache --debug

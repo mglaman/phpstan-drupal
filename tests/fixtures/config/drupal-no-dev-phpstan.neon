@@ -1,0 +1,9 @@
+parameters:
+	reportUnmatchedIgnoredErrors: false
+	level: 0
+	ignoreErrors:
+		- '#\Drupal calls should be avoided in classes, use dependency injection instead#'
+	excludePaths:
+		-  */tests/src/*/*.php
+includes:
+	- vendor/mglaman/phpstan-drupal/extension.neon
