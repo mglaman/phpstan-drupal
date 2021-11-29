@@ -25,6 +25,9 @@ final class BrowserTestBaseDefaultThemeRule implements Rule
         if ($node->namespacedName === null) {
             return [];
         }
+        if (!class_exists('PHPUnit\Framework\TestCase')) {
+            return [];
+        }
 
         $classType = $scope->resolveTypeByName($node->namespacedName);
         assert($classType instanceof ObjectType);
