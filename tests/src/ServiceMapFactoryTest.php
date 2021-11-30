@@ -65,6 +65,21 @@ final class ServiceMapFactoryTest extends TestCase
                 'class' => 'Drupal\service_map\Override',
                 'public' => false,
             ],
+            'service_map.base' => [
+                'class' => 'Drupal\service_map\Base',
+                'public' => false,
+                'abstract' => true,
+            ],
+            'service_map.second_base' => [
+                'parent' => 'service_map.base',
+                'class' => 'Drupal\service_map\SecondBase',
+                'abstract' => true,
+            ],
+            'service_map.concrete_overriding_its_parent_which_has_a_parent' => [
+                'parent' => 'service_map.second_base',
+                'class' => 'Drupal\service_map\Concrete',
+                'public' => true,
+            ],
         ]);
         $validator($service->getService($id));
     }
@@ -141,13 +156,39 @@ final class ServiceMapFactoryTest extends TestCase
                 self::assertNull($service);
             }
         ];
-
         yield [
             'service_with_unknown_parent_overriding_definition_of_its_parent',
             function (DrupalServiceDefinition $service): void {
                 self::assertEquals('service_with_unknown_parent_overriding_definition_of_its_parent', $service->getId());
                 self::assertEquals('Drupal\service_map\Override', $service->getClass());
                 self::assertFalse($service->isPublic());
+                self::assertNull($service->getAlias());
+            }
+        ];
+        yield [
+            'service_map.base',
+            function (DrupalServiceDefinition $service): void {
+                self::assertEquals('service_map.base', $service->getId());
+                self::assertEquals('Drupal\service_map\Base', $service->getClass());
+                self::assertFalse($service->isPublic());
+                self::assertNull($service->getAlias());
+            }
+        ];
+        yield [
+            'service_map.second_base',
+            function (DrupalServiceDefinition $service): void {
+                self::assertEquals('service_map.second_base', $service->getId());
+                self::assertEquals('Drupal\service_map\SecondBase', $service->getClass());
+                self::assertFalse($service->isPublic());
+                self::assertNull($service->getAlias());
+            }
+        ];
+        yield [
+            'service_map.concrete_overriding_its_parent_which_has_a_parent',
+            function (DrupalServiceDefinition $service): void {
+                self::assertEquals('service_map.concrete_overriding_its_parent_which_has_a_parent', $service->getId());
+                self::assertEquals('Drupal\service_map\Concrete', $service->getClass());
+                self::assertTrue($service->isPublic());
                 self::assertNull($service->getAlias());
             }
         ];
