@@ -2,6 +2,8 @@
 
 namespace mglaman\PHPStanDrupal\Rules\Deprecations;
 
+use Drupal\Component\Plugin\ContextAwarePluginInterface;
+use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ClassReflection;
@@ -13,10 +15,10 @@ final class PluginAnnotationContextDefinitionsRule extends DeprecatedAnnotations
 
     protected function getExpectedInterface(): string
     {
-        return 'Drupal\Component\Plugin\ContextAwarePluginInterface';
+        return ContextAwarePluginInterface::class;
     }
 
-    protected function doProcessNode(ClassReflection $reflection, Node\Stmt\Class_ $node, Scope $scope): array
+    protected function doProcessNode(ClassReflection $reflection, Class_ $node, Scope $scope): array
     {
         $annotation = $reflection->getResolvedPhpDoc();
         // Plugins should always be annotated, but maybe this class is missing its

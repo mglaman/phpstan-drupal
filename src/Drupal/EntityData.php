@@ -2,6 +2,8 @@
 
 namespace mglaman\PHPStanDrupal\Drupal;
 
+use Drupal\Core\Config\Entity\ConfigEntityStorage;
+use Drupal\Core\Entity\Sql\SqlContentEntityStorage;
 use Drupal\Core\Config\Entity\ConfigEntityInterface;
 use Drupal\Core\Config\Entity\ConfigEntityStorageInterface;
 use Drupal\Core\Entity\ContentEntityInterface;
@@ -15,10 +17,7 @@ use PHPStan\Type\ObjectType;
 final class EntityData
 {
 
-    /**
-     * @var string
-     */
-    private $entityTypeId;
+    private string $entityTypeId;
 
     /**
      * @var string|null
@@ -50,9 +49,9 @@ final class EntityData
                 return null;
             }
             if ((new ObjectType(ConfigEntityInterface::class))->isSuperTypeOf($classType)->yes()) {
-                $this->storageClassName = 'Drupal\Core\Config\Entity\ConfigEntityStorage';
+                $this->storageClassName = ConfigEntityStorage::class;
             } elseif ((new ObjectType(ContentEntityInterface::class))->isSuperTypeOf($classType)->yes()) {
-                $this->storageClassName = 'Drupal\Core\Entity\Sql\SqlContentEntityStorage';
+                $this->storageClassName = SqlContentEntityStorage::class;
             } else {
                 return null;
             }

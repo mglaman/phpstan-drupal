@@ -2,6 +2,14 @@
 
 namespace mglaman\PHPStanDrupal\Rules\Drupal;
 
+use PhpParser\Node\Expr\StaticCall;
+use PhpParser\Node\Name\FullyQualified;
+use Drupal;
+use PHPUnit\Framework\Test;
+use Drupal\Core\TypedData\TypedDataInterface;
+use Drupal\Core\Render\Element\ElementInterface;
+use Drupal\Core\Render\Element\FormElementInterface;
+use Drupal\Core\Entity\EntityInterface;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\MethodReflection;
@@ -12,15 +20,15 @@ class GlobalDrupalDependencyInjectionRule implements Rule
 {
     public function getNodeType(): string
     {
-        return Node\Expr\StaticCall::class;
+        return StaticCall::class;
     }
 
     public function processNode(Node $node, Scope $scope): array
     {
-        assert($node instanceof Node\Expr\StaticCall);
+        assert($node instanceof StaticCall);
 
         // Only check static calls to \Drupal
-        if (!($node->class instanceof Node\Name\FullyQualified) || (string) $node->class !== 'Drupal') {
+        if (!($node->class instanceof FullyQualified) || (string) $node->class !== Drupal::class) {
             return [];
         }
         // Do not raise if called inside of a trait.
@@ -35,16 +43,16 @@ class GlobalDrupalDependencyInjectionRule implements Rule
         $classReflection = $scopeClassReflection->getNativeReflection();
         $allowed_list = [
             // Ignore tests.
-            'PHPUnit\Framework\Test',
+            Test::class,
             // Typed data objects cannot use dependency injection.
-            'Drupal\Core\TypedData\TypedDataInterface',
+            TypedDataInterface::class,
             // Render elements cannot use dependency injection.
-            'Drupal\Core\Render\Element\ElementInterface',
-            'Drupal\Core\Render\Element\FormElementInterface',
+            ElementInterface::class,
+            FormElementInterface::class,
             'Drupal\config_translation\FormElement\ElementInterface',
             // Entities don't use services for now
             // @see https://www.drupal.org/project/drupal/issues/2913224
-            'Drupal\Core\Entity\EntityInterface',
+            EntityInterface::class,
         ];
         $implemented_interfaces = $classReflection->getInterfaceNames();
 

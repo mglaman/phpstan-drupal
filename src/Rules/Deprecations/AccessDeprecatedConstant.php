@@ -2,16 +2,17 @@
 
 namespace mglaman\PHPStanDrupal\Rules\Deprecations;
 
+use PHPStan\Rules\Rule;
+use PhpParser\Node\Expr\ConstFetch;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
 use PHPStan\Broker\Broker;
 use PHPStan\Reflection\FunctionReflection;
 use PHPStan\Reflection\ReflectionProvider;
 
-class AccessDeprecatedConstant implements \PHPStan\Rules\Rule
+class AccessDeprecatedConstant implements Rule
 {
-    /** @var ReflectionProvider */
-    private $reflectionProvider;
+    private ReflectionProvider $reflectionProvider;
     public function __construct(ReflectionProvider $reflectionProvider)
     {
         $this->reflectionProvider = $reflectionProvider;
@@ -19,12 +20,12 @@ class AccessDeprecatedConstant implements \PHPStan\Rules\Rule
 
     public function getNodeType(): string
     {
-        return Node\Expr\ConstFetch::class;
+        return ConstFetch::class;
     }
 
     public function processNode(Node $node, Scope $scope): array
     {
-        assert($node instanceof Node\Expr\ConstFetch);
+        assert($node instanceof ConstFetch);
         $class = $scope->getClassReflection();
         if ($class !== null && $class->isDeprecated()) {
             return [];

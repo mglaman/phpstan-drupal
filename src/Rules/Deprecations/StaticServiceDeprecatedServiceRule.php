@@ -2,6 +2,12 @@
 
 namespace mglaman\PHPStanDrupal\Rules\Deprecations;
 
+use PhpParser\Node\Expr\StaticCall;
+use PhpParser\Node\Identifier;
+use PhpParser\Node\Name;
+use Drupal;
+use PhpParser\Node\Arg;
+use PhpParser\Node\Scalar\String_;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
 use mglaman\PHPStanDrupal\Drupal\DrupalServiceDefinition;
@@ -11,10 +17,7 @@ use PHPStan\Rules\Rule;
 final class StaticServiceDeprecatedServiceRule implements Rule
 {
 
-    /**
-     * @var ServiceMap
-     */
-    private $serviceMap;
+    private ServiceMap $serviceMap;
 
     public function __construct(ServiceMap $serviceMap)
     {
@@ -23,13 +26,13 @@ final class StaticServiceDeprecatedServiceRule implements Rule
 
     public function getNodeType(): string
     {
-        return Node\Expr\StaticCall::class;
+        return StaticCall::class;
     }
 
     public function processNode(Node $node, Scope $scope): array
     {
-        assert($node instanceof Node\Expr\StaticCall);
-        if (!$node->name instanceof Node\Identifier) {
+        assert($node instanceof StaticCall);
+        if (!$node->name instanceof Identifier) {
             return [];
         }
         $method_name = $node->name->toString();
@@ -38,7 +41,7 @@ final class StaticServiceDeprecatedServiceRule implements Rule
         }
 
         $class = $node->class;
-        if ($class instanceof Node\Name) {
+        if ($class instanceof Name) {
             $calledOnType = $scope->resolveTypeByName($class);
         } else {
             $calledOnType = $scope->getType($class);
@@ -49,16 +52,16 @@ final class StaticServiceDeprecatedServiceRule implements Rule
             return [];
         }
         $declaringClass = $methodReflection->getDeclaringClass();
-        if ($declaringClass->getName() !== 'Drupal') {
+        if ($declaringClass->getName() !== Drupal::class) {
             return [];
         }
 
         $serviceNameArg = $node->args[0];
-        assert($serviceNameArg instanceof Node\Arg);
+        assert($serviceNameArg instanceof Arg);
         $serviceName = $serviceNameArg->value;
         // @todo check if var, otherwise throw.
         // ACTUALLY what if it was a constant? can we use a resolver.
-        if (!$serviceName instanceof Node\Scalar\String_) {
+        if (!$serviceName instanceof String_) {
             return [];
         }
 

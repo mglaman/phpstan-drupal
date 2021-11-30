@@ -5,7 +5,7 @@ namespace mglaman\PHPStanDrupal\Drupal;
 class ServiceMap
 {
     /** @var DrupalServiceDefinition[] */
-    private static $services = [];
+    private static array $services = [];
 
     public function getService(string $id): ?DrupalServiceDefinition
     {

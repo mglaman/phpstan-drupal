@@ -2,6 +2,8 @@
 
 namespace mglaman\PHPStanDrupal\Reflection;
 
+use Drupal\Core\Entity\EntityInterface;
+use PHPStan\TrinaryLogic;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\PropertyReflection;
 use PHPStan\Type\NullType;
@@ -17,11 +19,9 @@ use PHPStan\Type\Type;
 class FieldItemListPropertyReflection implements PropertyReflection
 {
 
-    /** @var ClassReflection */
-    private $declaringClass;
+    private ClassReflection $declaringClass;
 
-    /** @var string */
-    private $propertyName;
+    private string $propertyName;
 
     public function __construct(ClassReflection $declaringClass, string $propertyName)
     {
@@ -40,7 +40,7 @@ class FieldItemListPropertyReflection implements PropertyReflection
     public function getReadableType(): Type
     {
         if ($this->propertyName === 'entity') {
-            return new ObjectType('Drupal\Core\Entity\EntityInterface');
+            return new ObjectType(EntityInterface::class);
         }
         if ($this->propertyName === 'target_id') {
             return new StringType();
@@ -57,7 +57,7 @@ class FieldItemListPropertyReflection implements PropertyReflection
     public function getWritableType(): Type
     {
         if ($this->propertyName === 'entity') {
-            return new ObjectType('Drupal\Core\Entity\EntityInterface');
+            return new ObjectType(EntityInterface::class);
         }
         if ($this->propertyName === 'target_id') {
             return new StringType();
@@ -110,9 +110,9 @@ class FieldItemListPropertyReflection implements PropertyReflection
         return null;
     }
 
-    public function isDeprecated(): \PHPStan\TrinaryLogic
+    public function isDeprecated(): TrinaryLogic
     {
-        return \PHPStan\TrinaryLogic::createNo();
+        return TrinaryLogic::createNo();
     }
 
     public function getDeprecatedDescription(): ?string
@@ -120,8 +120,8 @@ class FieldItemListPropertyReflection implements PropertyReflection
         return null;
     }
 
-    public function isInternal(): \PHPStan\TrinaryLogic
+    public function isInternal(): TrinaryLogic
     {
-        return \PHPStan\TrinaryLogic::createNo();
+        return TrinaryLogic::createNo();
     }
 }

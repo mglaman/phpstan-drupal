@@ -2,6 +2,7 @@
 
 namespace mglaman\PHPStanDrupal\Rules\Deprecations;
 
+use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ClassReflection;
@@ -11,10 +12,7 @@ use PHPStan\Rules\Rule;
 abstract class DeprecatedAnnotationsRuleBase implements Rule
 {
 
-    /**
-     * @var \PHPStan\Reflection\ReflectionProvider
-     */
-    protected $reflectionProvider;
+    protected ReflectionProvider $reflectionProvider;
 
     public function __construct(ReflectionProvider $reflectionProvider)
     {
@@ -23,20 +21,20 @@ abstract class DeprecatedAnnotationsRuleBase implements Rule
 
     public function getNodeType(): string
     {
-        return Node\Stmt\Class_::class;
+        return Class_::class;
     }
 
     abstract protected function getExpectedInterface(): string;
 
     abstract protected function doProcessNode(
         ClassReflection $reflection,
-        Node\Stmt\Class_ $node,
+        Class_ $node,
         Scope $scope
     ): array;
 
     public function processNode(Node $node, Scope $scope): array
     {
-        assert($node instanceof Node\Stmt\Class_);
+        assert($node instanceof Class_);
         if ($node->extends === null) {
             return [];
         }

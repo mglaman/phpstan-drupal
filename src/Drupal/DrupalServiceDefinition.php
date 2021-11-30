@@ -9,40 +9,19 @@ use PHPStan\Type\Type;
 class DrupalServiceDefinition
 {
 
-    /**
-     * @var string
-     */
-    private $id;
+    private string $id;
 
-    /**
-     * @var string|null
-     */
-    private $class;
+    private ?string $class;
 
-    /**
-     * @var bool
-     */
-    private $public;
+    private bool $public;
 
-    /**
-     * @var bool
-     */
-    private $deprecated = false;
+    private bool $deprecated = false;
 
-    /**
-     * @var string|null
-     */
-    private $deprecationTemplate;
+    private ?string $deprecationTemplate = null;
 
-    /**
-     * @var string
-     */
-    private static $defaultDeprecationTemplate = 'The "%service_id%" service is deprecated. You should stop using it, as it will soon be removed.';
+    private static string $defaultDeprecationTemplate = 'The "%service_id%" service is deprecated. You should stop using it, as it will soon be removed.';
 
-    /**
-     * @var string|null
-     */
-    private $alias;
+    private ?string $alias;
 
     public function __construct(string $id, ?string $class, bool $public = true, ?string $alias = null)
     {

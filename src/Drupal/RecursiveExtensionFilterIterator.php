@@ -2,6 +2,9 @@
 
 namespace mglaman\PHPStanDrupal\Drupal;
 
+use RecursiveFilterIterator;
+use Drupal;
+use RecursiveIterator;
 /**
  * Filters a RecursiveDirectoryIterator to discover extensions.
  *
@@ -9,7 +12,7 @@ namespace mglaman\PHPStanDrupal\Drupal;
  *
  * @method bool isDir()
  */
-class RecursiveExtensionFilterIterator extends \RecursiveFilterIterator
+class RecursiveExtensionFilterIterator extends RecursiveFilterIterator
 {
 
     /**
@@ -17,10 +20,8 @@ class RecursiveExtensionFilterIterator extends \RecursiveFilterIterator
      *
      * Only these directory names are considered when starting a filesystem
      * recursion in a search path.
-     *
-     * @var array
      */
-    protected $whitelist = [
+    protected array $whitelist = [
         'profiles',
         'modules',
         'themes',
@@ -32,10 +33,8 @@ class RecursiveExtensionFilterIterator extends \RecursiveFilterIterator
      * These directories are globally ignored in the recursive filesystem scan;
      * i.e., extensions (of all types) are not able to use any of these names,
      * because their directory names will be skipped.
-     *
-     * @var array
      */
-    protected $blacklist = [
+    protected array $blacklist = [
         // Object-oriented code subdirectories.
         'src',
         'lib',
@@ -53,19 +52,19 @@ class RecursiveExtensionFilterIterator extends \RecursiveFilterIterator
         // Test subdirectories.
         'fixtures',
         // @todo ./tests/Drupal should be ./tests/src/Drupal
-        'Drupal',
+        Drupal::class,
     ];
 
     /**
      * Construct a RecursiveExtensionFilterIterator.
      *
-     * @param \RecursiveIterator $iterator
+     * @param RecursiveIterator $iterator
      *   The iterator to filter.
      * @param array $blacklist
      *   (optional) Add to the blacklist of directories that should be filtered
      *   out during the iteration.
      */
-    public function __construct(\RecursiveIterator $iterator, array $blacklist = [])
+    public function __construct(RecursiveIterator $iterator, array $blacklist = [])
     {
         parent::__construct($iterator);
         $this->blacklist = array_merge($this->blacklist, $blacklist);
@@ -74,7 +73,7 @@ class RecursiveExtensionFilterIterator extends \RecursiveFilterIterator
     /**
      * {@inheritdoc}
      */
-    public function getChildren(): \RecursiveFilterIterator
+    public function getChildren(): RecursiveFilterIterator
     {
         $filter = parent::getChildren();
         if ($filter instanceof self) {

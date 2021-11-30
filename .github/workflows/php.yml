@@ -48,6 +48,8 @@ jobs:
         if: ${{ matrix.drupal == '^9.0' }}
       - name: "PHPCS"
         run: "php vendor/bin/phpcs src"
+      - name: "Rector"
+        run: "php vendor/bin/rector process"
       - name: "PHPStan"
         run: "php vendor/bin/phpstan analyze"
       - name: "PHPUnit"

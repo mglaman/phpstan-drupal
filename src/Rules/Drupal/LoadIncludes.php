@@ -2,6 +2,12 @@
 
 namespace mglaman\PHPStanDrupal\Rules\Drupal;
 
+use PhpParser\Node\Expr\MethodCall;
+use PhpParser\Node\Identifier;
+use PhpParser\Node\Expr\Variable;
+use PhpParser\Node\Arg;
+use PhpParser\Node\Scalar\String_;
+use Throwable;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use DrupalFinder\DrupalFinder;
 use mglaman\PHPStanDrupal\Drupal\ExtensionDiscovery;
@@ -17,10 +23,8 @@ class LoadIncludes implements Rule
 
     /**
      * The project root.
-     *
-     * @var string
      */
-    protected $projectRoot;
+    protected string $projectRoot;
 
     /**
      * LoadIncludes constructor.
@@ -33,13 +37,13 @@ class LoadIncludes implements Rule
 
     public function getNodeType(): string
     {
-        return Node\Expr\MethodCall::class;
+        return MethodCall::class;
     }
 
     public function processNode(Node $node, Scope $scope): array
     {
-        assert($node instanceof Node\Expr\MethodCall);
-        if (!$node->name instanceof Node\Identifier) {
+        assert($node instanceof MethodCall);
+        if (!$node->name instanceof Identifier) {
             return [];
         }
         $method_name = $node->name->toString();
@@ -47,12 +51,12 @@ class LoadIncludes implements Rule
             return [];
         }
         $variable = $node->var;
-        if (!$variable instanceof Node\Expr\Variable) {
+        if (!$variable instanceof Variable) {
             return [];
         }
         $var_name = $variable->name;
         if (!is_string($var_name)) {
-            throw new ShouldNotHappenException(sprintf('Expected string for variable in %s, please open an issue on GitHub https://github.com/mglaman/phpstan-drupal/issues', get_called_class()));
+            throw new ShouldNotHappenException(sprintf('Expected string for variable in %s, please open an issue on GitHub https://github.com/mglaman/phpstan-drupal/issues', static::class));
         }
         $moduleHandlerInterfaceType = new ObjectType(ModuleHandlerInterface::class);
         $variableType = $scope->getVariableType($var_name);
@@ -68,18 +72,18 @@ class LoadIncludes implements Rule
             $extensionDiscovery = new ExtensionDiscovery($drupal_root);
             $modules = $extensionDiscovery->scan('module');
             $module_arg = $node->args[0];
-            assert($module_arg instanceof Node\Arg);
-            assert($module_arg->value instanceof Node\Scalar\String_);
+            assert($module_arg instanceof Arg);
+            assert($module_arg->value instanceof String_);
             $type_arg = $node->args[1];
-            assert($type_arg instanceof Node\Arg);
-            assert($type_arg->value instanceof Node\Scalar\String_);
+            assert($type_arg instanceof Arg);
+            assert($type_arg->value instanceof String_);
             $name_arg = $node->args[2] ?? null;
 
             if ($name_arg === null) {
                 $name_arg = $module_arg;
             }
-            assert($name_arg instanceof Node\Arg);
-            assert($name_arg->value instanceof Node\Scalar\String_);
+            assert($name_arg instanceof Arg);
+            assert($name_arg->value instanceof String_);
 
             $module_name = $module_arg->value->value;
             if (!isset($modules[$module_name])) {
@@ -103,7 +107,7 @@ class LoadIncludes implements Rule
                     ->line($node->getLine())
                     ->build()
             ];
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             return [
                 RuleErrorBuilder::message(sprintf(
                     'A file could not be loaded from %s::loadInclude',

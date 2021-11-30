@@ -2,6 +2,7 @@
 
 namespace mglaman\PHPStanDrupal\Rules\Drupal\Coder;
 
+use PhpParser\Node\Name;
 use PhpParser\Node;
 use PhpParser\Node\Expr\FuncCall;
 use PHPStan\Analyser\Scope;
@@ -21,7 +22,7 @@ class DiscouragedFunctionsRule implements Rule
     {
         assert($node instanceof FuncCall);
 
-        if (!($node->name instanceof Node\Name)) {
+        if (!($node->name instanceof Name)) {
             return [];
         }
         $name = strtolower((string)$node->name);

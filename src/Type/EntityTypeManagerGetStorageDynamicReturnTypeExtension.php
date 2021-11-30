@@ -2,6 +2,8 @@
 
 namespace mglaman\PHPStanDrupal\Type;
 
+use Drupal\Core\Entity\EntityTypeManagerInterface;
+use PHPStan\Type\Type;
 use Drupal\Core\Config\Entity\ConfigEntityStorageInterface;
 use Drupal\Core\Entity\ContentEntityStorageInterface;
 use mglaman\PHPStanDrupal\Drupal\EntityDataRepository;
@@ -23,10 +25,7 @@ use PHPStan\Type\ObjectType;
 class EntityTypeManagerGetStorageDynamicReturnTypeExtension implements DynamicMethodReturnTypeExtension
 {
 
-    /**
-     * @var EntityDataRepository
-     */
-    private $entityDataRepository;
+    private EntityDataRepository $entityDataRepository;
 
     /**
      * EntityTypeManagerGetStorageDynamicReturnTypeExtension constructor.
@@ -40,7 +39,7 @@ class EntityTypeManagerGetStorageDynamicReturnTypeExtension implements DynamicMe
 
     public function getClass(): string
     {
-        return 'Drupal\Core\Entity\EntityTypeManagerInterface';
+        return EntityTypeManagerInterface::class;
     }
 
     public function isMethodSupported(MethodReflection $methodReflection): bool
@@ -52,7 +51,7 @@ class EntityTypeManagerGetStorageDynamicReturnTypeExtension implements DynamicMe
         MethodReflection $methodReflection,
         MethodCall $methodCall,
         Scope $scope
-    ): \PHPStan\Type\Type {
+    ): Type {
         $returnType = ParametersAcceptorSelector::selectSingle($methodReflection->getVariants())->getReturnType();
         if (!isset($methodCall->args[0])) {
             // Parameter is required.

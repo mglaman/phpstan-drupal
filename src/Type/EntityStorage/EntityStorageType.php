@@ -10,10 +10,7 @@ use PHPStan\Type\Type;
 
 class EntityStorageType extends ObjectType
 {
-    /**
-     * @var string
-     */
-    private $entityTypeId;
+    private string $entityTypeId;
 
     public function __construct(
         string $entityTypeId,

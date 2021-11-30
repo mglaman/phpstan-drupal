@@ -2,6 +2,11 @@
 
 namespace mglaman\PHPStanDrupal\Reflection;
 
+use Drupal\Core\Entity\ContentEntityInterface;
+use Drupal\Core\Entity\EntityInterface;
+use LogicException;
+use ReflectionClass;
+use Drupal\Core\Field\FieldItemListInterface;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\PropertiesClassReflectionExtension;
 use PHPStan\Reflection\PropertyReflection;
@@ -29,7 +34,7 @@ class EntityFieldsViaMagicReflectionExtension implements PropertiesClassReflecti
         // We need to find a way to parse the entity annotation so that at the minimum the `entity_keys` are
         // supported. The real fix is Drupal developers _really_ need to start writing @property definitions in the
         // class doc if they don't get `get` methods.
-        if ($reflection->implementsInterface('Drupal\Core\Entity\ContentEntityInterface')) {
+        if ($reflection->implementsInterface(ContentEntityInterface::class)) {
             // @todo revisit if it's a good idea to be true.
             // Content entities have magical __get... so it is kind of true.
             return true;
@@ -44,17 +49,17 @@ class EntityFieldsViaMagicReflectionExtension implements PropertiesClassReflecti
     public function getProperty(ClassReflection $classReflection, string $propertyName): PropertyReflection
     {
         $reflection = $classReflection->getNativeReflection();
-        if ($reflection->implementsInterface('Drupal\Core\Entity\EntityInterface')) {
+        if ($reflection->implementsInterface(EntityInterface::class)) {
             return new EntityFieldReflection($classReflection, $propertyName);
         }
         if (self::classObjectIsSuperOfFieldItemList($reflection)->yes()) {
             return new FieldItemListPropertyReflection($classReflection, $propertyName);
         }
 
-        throw new \LogicException($classReflection->getName() . "::$propertyName should be handled earlier.");
+        throw new LogicException($classReflection->getName() . "::$propertyName should be handled earlier.");
     }
 
-    protected static function classObjectIsSuperOfFieldItemList(\ReflectionClass $reflection) : TrinaryLogic
+    protected static function classObjectIsSuperOfFieldItemList(ReflectionClass $reflection) : TrinaryLogic
     {
         $classObject = new ObjectType($reflection->getName());
         $interfaceObject = self::getFieldItemListInterfaceObject();
@@ -63,6 +68,6 @@ class EntityFieldsViaMagicReflectionExtension implements PropertiesClassReflecti
 
     protected static function getFieldItemListInterfaceObject() : ObjectType
     {
-        return new ObjectType('Drupal\Core\Field\FieldItemListInterface');
+        return new ObjectType(FieldItemListInterface::class);
     }
 }

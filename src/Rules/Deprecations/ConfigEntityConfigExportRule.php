@@ -2,6 +2,8 @@
 
 namespace mglaman\PHPStanDrupal\Rules\Deprecations;
 
+use Drupal\Core\Config\Entity\ConfigEntityInterface;
+use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
 use PHPStan\PhpDoc\ResolvedPhpDocBlock;
@@ -14,10 +16,10 @@ final class ConfigEntityConfigExportRule extends DeprecatedAnnotationsRuleBase
 
     protected function getExpectedInterface(): string
     {
-        return 'Drupal\Core\Config\Entity\ConfigEntityInterface';
+        return ConfigEntityInterface::class;
     }
 
-    protected function doProcessNode(ClassReflection $reflection, Node\Stmt\Class_ $node, Scope $scope): array
+    protected function doProcessNode(ClassReflection $reflection, Class_ $node, Scope $scope): array
     {
         $phpDoc = $reflection->getResolvedPhpDoc();
         // Plugins should always be annotated, but maybe this class is missing its

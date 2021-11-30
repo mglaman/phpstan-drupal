@@ -2,6 +2,11 @@
 
 namespace mglaman\PHPStanDrupal\Reflection;
 
+use Drupal\Core\Entity\ContentEntityInterface;
+use Drupal\Core\Config\Entity\ConfigEntityInterface;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Field\FieldItemListInterface;
+use PHPStan\TrinaryLogic;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\PropertyReflection;
 use PHPStan\Type\MixedType;
@@ -16,11 +21,9 @@ use PHPStan\Type\Type;
 class EntityFieldReflection implements PropertyReflection
 {
 
-  /** @var ClassReflection */
-    private $declaringClass;
+  private ClassReflection $declaringClass;
 
-  /** @var string */
-    private $propertyName;
+  private string $propertyName;
 
     public function __construct(ClassReflection $declaringClass, string $propertyName)
     {
@@ -31,19 +34,19 @@ class EntityFieldReflection implements PropertyReflection
     public function getReadableType(): Type
     {
         if ($this->propertyName === 'original') {
-            if ($this->declaringClass->isSubclassOf('Drupal\Core\Entity\ContentEntityInterface')) {
-                $objectType = 'Drupal\Core\Entity\ContentEntityInterface';
-            } elseif ($this->declaringClass->isSubclassOf('Drupal\Core\Config\Entity\ConfigEntityInterface')) {
-                $objectType = 'Drupal\Core\Config\Entity\ConfigEntityInterface';
+            if ($this->declaringClass->isSubclassOf(ContentEntityInterface::class)) {
+                $objectType = ContentEntityInterface::class;
+            } elseif ($this->declaringClass->isSubclassOf(ConfigEntityInterface::class)) {
+                $objectType = ConfigEntityInterface::class;
             } else {
-                $objectType = 'Drupal\Core\Entity\EntityInterface';
+                $objectType = EntityInterface::class;
             }
             return new ObjectType($objectType);
         }
 
-        if ($this->declaringClass->isSubclassOf('Drupal\Core\Entity\ContentEntityInterface')) {
+        if ($this->declaringClass->isSubclassOf(ContentEntityInterface::class)) {
             // Assume the property is a field.
-            return new ObjectType('Drupal\Core\Field\FieldItemListInterface');
+            return new ObjectType(FieldItemListInterface::class);
         }
 
         return new MixedType();
@@ -52,20 +55,20 @@ class EntityFieldReflection implements PropertyReflection
     public function getWritableType(): Type
     {
         if ($this->propertyName === 'original') {
-            if ($this->declaringClass->isSubclassOf('Drupal\Core\Entity\ContentEntityInterface')) {
-                $objectType = 'Drupal\Core\Entity\ContentEntityInterface';
-            } elseif ($this->declaringClass->isSubclassOf('Drupal\Core\Config\Entity\ConfigEntityInterface')) {
-                $objectType = 'Drupal\Core\Config\Entity\ConfigEntityInterface';
+            if ($this->declaringClass->isSubclassOf(ContentEntityInterface::class)) {
+                $objectType = ContentEntityInterface::class;
+            } elseif ($this->declaringClass->isSubclassOf(ConfigEntityInterface::class)) {
+                $objectType = ConfigEntityInterface::class;
             } else {
-                $objectType = 'Drupal\Core\Entity\EntityInterface';
+                $objectType = EntityInterface::class;
             }
             return new ObjectType($objectType);
         }
 
         // @todo Drupal allows $entity->field_myfield = 'string'; does this break that?
-        if ($this->declaringClass->isSubclassOf('Drupal\Core\Entity\ContentEntityInterface')) {
+        if ($this->declaringClass->isSubclassOf(ContentEntityInterface::class)) {
             // Assume the property is a field.
-            return new ObjectType('Drupal\Core\Field\FieldItemListInterface');
+            return new ObjectType(FieldItemListInterface::class);
         }
 
         return new MixedType();
@@ -116,13 +119,13 @@ class EntityFieldReflection implements PropertyReflection
         return null;
     }
 
-    public function isDeprecated(): \PHPStan\TrinaryLogic
+    public function isDeprecated(): TrinaryLogic
     {
-        return \PHPStan\TrinaryLogic::createNo();
+        return TrinaryLogic::createNo();
     }
 
-    public function isInternal(): \PHPStan\TrinaryLogic
+    public function isInternal(): TrinaryLogic
     {
-        return \PHPStan\TrinaryLogic::createNo();
+        return TrinaryLogic::createNo();
     }
 }

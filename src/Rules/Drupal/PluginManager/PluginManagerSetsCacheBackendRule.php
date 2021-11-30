@@ -2,6 +2,13 @@
 
 namespace mglaman\PHPStanDrupal\Rules\Drupal\PluginManager;
 
+use PhpParser\Node\Stmt\Expression;
+use PhpParser\Node\Expr\MethodCall;
+use PhpParser\Node\Identifier;
+use PhpParser\Node\VariadicPlaceholder;
+use PhpParser\Node\Scalar\String_;
+use PhpParser\Node\Expr\Array_;
+use PhpParser\Node\Expr\ArrayItem;
 use PhpParser\Node;
 use PhpParser\Node\Stmt\ClassMethod;
 use PHPStan\Analyser\Scope;
@@ -16,16 +23,16 @@ class PluginManagerSetsCacheBackendRule extends AbstractPluginManagerRule
 
     /**
      * @param Node $node
-     * @param \PHPStan\Analyser\Scope $scope
+     * @param Scope $scope
      * @return string[]
-     * @throws \PHPStan\ShouldNotHappenException
+     * @throws ShouldNotHappenException
      */
     public function processNode(Node $node, Scope $scope): array
     {
-        assert($node instanceof Node\Stmt\ClassMethod);
+        assert($node instanceof ClassMethod);
 
         if (!$scope->isInClass()) {
-            throw new \PHPStan\ShouldNotHappenException();
+            throw new ShouldNotHappenException();
         }
 
         if ($scope->isInTrait()) {
@@ -52,34 +59,34 @@ class PluginManagerSetsCacheBackendRule extends AbstractPluginManagerRule
         $misnamedCacheTagWarnings = [];
 
         foreach ($node->stmts ?? [] as $statement) {
-            if ($statement instanceof Node\Stmt\Expression) {
+            if ($statement instanceof Expression) {
                 $statement = $statement->expr;
             }
-            if (($statement instanceof Node\Expr\MethodCall) &&
-                ($statement->name instanceof Node\Identifier) &&
+            if (($statement instanceof MethodCall) &&
+                ($statement->name instanceof Identifier) &&
                 $statement->name->name === 'setCacheBackend') {
                 // setCacheBackend accepts a cache backend, the cache key, and optional (but suggested) cache tags.
                 $setCacheBackendArgs = $statement->args;
 
-                if ($setCacheBackendArgs[1] instanceof Node\VariadicPlaceholder) {
+                if ($setCacheBackendArgs[1] instanceof VariadicPlaceholder) {
                     throw new ShouldNotHappenException();
                 }
                 $cacheKey = $setCacheBackendArgs[1]->value;
-                if (!$cacheKey instanceof Node\Scalar\String_) {
+                if (!$cacheKey instanceof String_) {
                     continue;
                 }
                 $hasCacheBackendSet = true;
 
                 if (isset($setCacheBackendArgs[2])) {
-                    if ($setCacheBackendArgs[2] instanceof Node\VariadicPlaceholder) {
+                    if ($setCacheBackendArgs[2] instanceof VariadicPlaceholder) {
                         throw new ShouldNotHappenException();
                     }
-                    /** @var \PhpParser\Node\Expr\Array_ $cacheTags */
+                    /** @var Array_ $cacheTags */
                     $cacheTags = $setCacheBackendArgs[2]->value;
                     if (count($cacheTags->items) > 0) {
-                        /** @var \PhpParser\Node\Expr\ArrayItem $item */
+                        /** @var ArrayItem $item */
                         foreach ($cacheTags->items as $item) {
-                            if (($item->value instanceof Node\Scalar\String_) &&
+                            if (($item->value instanceof String_) &&
                                 strpos($item->value->value, $cacheKey->value) === false) {
                                 $misnamedCacheTagWarnings[] = $item->value->value;
                             }

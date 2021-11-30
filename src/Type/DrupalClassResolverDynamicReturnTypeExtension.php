@@ -13,10 +13,7 @@ use PHPStan\Type\Type;
 
 class DrupalClassResolverDynamicReturnTypeExtension implements DynamicMethodReturnTypeExtension
 {
-    /**
-     * @var ServiceMap
-     */
-    private $serviceMap;
+    private ServiceMap $serviceMap;
 
     public function __construct(ServiceMap $serviceMap)
     {

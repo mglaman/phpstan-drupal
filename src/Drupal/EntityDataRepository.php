@@ -10,11 +10,11 @@ final class EntityDataRepository
     /**
      * @var array<string, array<string, string>>
      */
-    private $entityMapping;
+    private array $entityMapping;
     /**
      * @var array<string, EntityData|null>
      */
-    private $entityData;
+    private ?array $entityData = null;
 
     public function __construct(array $entityMapping)
     {

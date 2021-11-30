@@ -2,6 +2,11 @@
 
 namespace mglaman\PHPStanDrupal\Rules\Drupal;
 
+use PhpParser\Node\Expr\FuncCall;
+use PhpParser\Node\Name;
+use PhpParser\Node\Arg;
+use PhpParser\Node\Scalar\String_;
+use Throwable;
 use DrupalFinder\DrupalFinder;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
@@ -19,10 +24,8 @@ class ModuleLoadInclude implements Rule
 
     /**
      * The project root.
-     *
-     * @var string
      */
-    protected $projectRoot;
+    protected string $projectRoot;
 
     /**
      * ModuleLoadInclude constructor.
@@ -35,13 +38,13 @@ class ModuleLoadInclude implements Rule
 
     public function getNodeType(): string
     {
-        return Node\Expr\FuncCall::class;
+        return FuncCall::class;
     }
 
     public function processNode(Node $node, Scope $scope): array
     {
-        assert($node instanceof Node\Expr\FuncCall);
-        if (!$node->name instanceof \PhpParser\Node\Name) {
+        assert($node instanceof FuncCall);
+        if (!$node->name instanceof Name) {
             return [];
         }
         $name = (string) $node->name;
@@ -57,18 +60,18 @@ class ModuleLoadInclude implements Rule
             $extensionDiscovery = new ExtensionDiscovery($drupal_root);
             $modules = $extensionDiscovery->scan('module');
             $type_arg = $node->args[0];
-            assert($type_arg instanceof Node\Arg);
-            assert($type_arg->value instanceof Node\Scalar\String_);
+            assert($type_arg instanceof Arg);
+            assert($type_arg->value instanceof String_);
             $module_arg = $node->args[1];
-            assert($module_arg instanceof Node\Arg);
-            assert($module_arg->value instanceof Node\Scalar\String_);
+            assert($module_arg instanceof Arg);
+            assert($module_arg->value instanceof String_);
             $name_arg = $node->args[2] ?? null;
 
             if ($name_arg === null) {
                 $name_arg = $module_arg;
             }
-            assert($name_arg instanceof Node\Arg);
-            assert($name_arg->value instanceof Node\Scalar\String_);
+            assert($name_arg instanceof Arg);
+            assert($name_arg->value instanceof String_);
 
             $module_name = $module_arg->value->value;
             if (!isset($modules[$module_name])) {
@@ -84,7 +87,7 @@ class ModuleLoadInclude implements Rule
                 return [];
             }
             return [sprintf('File %s could not be loaded from module_load_include', $file)];
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             return ['A file could not be loaded from module_load_include'];
         }
     }

@@ -2,6 +2,15 @@
 
 namespace mglaman\PHPStanDrupal\Drupal;
 
+use Composer\Autoload\ClassLoader;
+use RuntimeException;
+use Drupal\Core\CoreServiceProvider;
+use Drush\Drush;
+use ReflectionClass;
+use SplFileInfo;
+use PHPUnit\Framework\Test;
+use Drupal\TestTools\PhpUnitCompatibility\PhpUnit8\ClassWriter;
+use Throwable;
 use Drupal\Core\DependencyInjection\ContainerNotInitializedException;
 use DrupalFinder\DrupalFinder;
 use Nette\Utils\Finder;
@@ -12,48 +21,42 @@ class DrupalAutoloader
 {
 
     /**
-     * @var \Composer\Autoload\ClassLoader
+     * @var ClassLoader
      */
     private $autoloader;
 
-    /**
-     * @var string
-     */
-    private $drupalRoot;
+    private ?string $drupalRoot = null;
 
     /**
      * List of available modules.
      *
      * @var Extension[]
      */
-    protected $moduleData = [];
+    protected array $moduleData = [];
 
     /**
      * List of available themes.
      *
      * @var Extension[]
      */
-    protected $themeData = [];
+    protected array $themeData = [];
 
     /**
      * @var array<array<string, string>>
      */
-    private $serviceMap = [];
+    private array $serviceMap = [];
 
     /**
      * @var array<string, string>
      */
-    private $serviceYamls = [];
+    private array $serviceYamls = [];
 
     /**
      * @var array<string, string>
      */
-    private $serviceClassProviders = [];
+    private array $serviceClassProviders = [];
 
-    /**
-     * @var array
-     */
-    private $namespaces = [];
+    private array $namespaces = [];
 
     public function register(Container $container): void
     {
@@ -65,7 +68,7 @@ class DrupalAutoloader
         $drupalRoot = $finder->getDrupalRoot();
         $drupalVendorRoot = $finder->getVendorDir();
         if (! (bool) $drupalRoot || ! (bool) $drupalVendorRoot) {
-            throw new \RuntimeException("Unable to detect Drupal at $drupalRoot");
+            throw new RuntimeException("Unable to detect Drupal at $drupalRoot");
         }
 
         $this->drupalRoot = $drupalRoot;
@@ -73,21 +76,17 @@ class DrupalAutoloader
         $this->autoloader = include $drupalVendorRoot . '/autoload.php';
 
         $this->serviceYamls['core'] = $drupalRoot . '/core/core.services.yml';
-        $this->serviceClassProviders['core'] = '\Drupal\Core\CoreServiceProvider';
+        $this->serviceClassProviders['core'] = CoreServiceProvider::class;
         $this->serviceMap['service_provider.core.service_provider'] = ['class' => $this->serviceClassProviders['core']];
 
         $extensionDiscovery = new ExtensionDiscovery($this->drupalRoot);
         $extensionDiscovery->setProfileDirectories([]);
         $profiles = $extensionDiscovery->scan('profile');
-        $profile_directories = array_map(static function (Extension $profile) : string {
-            return $profile->getPath();
-        }, $profiles);
+        $profile_directories = array_map(static fn(Extension $profile): string => $profile->getPath(), $profiles);
         $extensionDiscovery->setProfileDirectories($profile_directories);
 
         $this->moduleData = array_merge($extensionDiscovery->scan('module'), $profiles);
-        usort($this->moduleData, static function (Extension $a, Extension $b) {
-            return strpos($a->getName(), '_test') !== false ? 10 : 0;
-        });
+        usort($this->moduleData, static fn(Extension $a, Extension $b) => strpos($a->getName(), '_test') !== false ? 10 : 0);
         $this->themeData = $extensionDiscovery->scan('theme');
         $this->addCoreTestNamespaces();
         $this->addModuleNamespaces();
@@ -134,15 +133,15 @@ class DrupalAutoloader
             }
         }
 
-        if (class_exists(\Drush\Drush::class)) {
-            $reflect = new \ReflectionClass(\Drush\Drush::class);
+        if (class_exists(Drush::class)) {
+            $reflect = new ReflectionClass(Drush::class);
             if ($reflect->getFileName() !== false) {
                 $levels = 2;
-                if (\Drush\Drush::getMajorVersion() < 9) {
+                if (Drush::getMajorVersion() < 9) {
                     $levels = 3;
                 }
                 $drushDir = dirname($reflect->getFileName(), $levels);
-                /** @var \SplFileInfo $file */
+                /** @var SplFileInfo $file */
                 foreach (Finder::findFiles('*.inc')->in($drushDir . '/includes') as $file) {
                     require_once $file->getPathname();
                 }
@@ -192,15 +191,15 @@ class DrupalAutoloader
         $service_map = $container->getByType(ServiceMap::class);
         $service_map->setDrupalServices($this->serviceMap);
 
-        if (interface_exists(\PHPUnit\Framework\Test::class)
+        if (interface_exists(Test::class)
             && class_exists('Drupal\TestTools\PhpUnitCompatibility\PhpUnit8\ClassWriter')) {
-            \Drupal\TestTools\PhpUnitCompatibility\PhpUnit8\ClassWriter::mutateTestBase($this->autoloader);
+            ClassWriter::mutateTestBase($this->autoloader);
         }
     }
 
     protected function loadLegacyIncludes(): void
     {
-        /** @var \SplFileInfo $file */
+        /** @var SplFileInfo $file */
         foreach (Finder::findFiles('*.inc')->in($this->drupalRoot . '/core/includes') as $file) {
             require_once $file->getPathname();
         }
@@ -296,7 +295,7 @@ class DrupalAutoloader
     {
         try {
             $extension->load();
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             // Something prevented the extension file from loading.
             // This can happen when drupal_get_path or drupal_get_filename are used outside of the scope of a function.
         }
@@ -310,7 +309,7 @@ class DrupalAutoloader
             $path = str_replace(dirname($this->drupalRoot) . '/', '', $path);
             // This can happen when drupal_get_path or drupal_get_filename are used outside the scope of a function.
             @trigger_error("$path invoked the Drupal container outside of the scope of a function or class method. It was not loaded.", E_USER_WARNING);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $path = str_replace(dirname($this->drupalRoot) . '/', '', $path);
             // Something prevented the extension file from loading.
             @trigger_error("$path failed loading due to {$e->getMessage()}", E_USER_WARNING);

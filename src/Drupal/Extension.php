@@ -2,6 +2,7 @@
 
 namespace mglaman\PHPStanDrupal\Drupal;
 
+use SplFileInfo;
 /**
  * Defines an extension (file) object.
  *
@@ -12,51 +13,35 @@ class Extension
 
     /**
      * The type of the extension (e.g., 'module').
-     *
-     * @var string
      */
-    protected $type;
+    protected string $type;
 
     /**
      * The relative pathname of the extension (e.g.,
      * 'core/modules/node/node.info.yml').
-     *
-     * @var string
      */
-    protected $pathname;
+    protected string $pathname;
 
     /**
      * The filename of the main extension file (e.g., 'node.module').
-     *
-     * @var string|null
      */
-    protected $filename;
+    protected ?string $filename;
 
     /**
      * An SplFileInfo instance for the extension's info file.
      *
      * Note that SplFileInfo is a PHP resource and resources cannot be serialized.
-     *
-     * @var ?\SplFileInfo
      */
-    protected $splFileInfo;
+    protected ?SplFileInfo $splFileInfo = null;
 
     /**
      * The app root.
-     *
-     * @var string
      */
-    protected $root;
+    protected string $root;
 
-    /**
-     * @var string
-     */
-    public $subpath = '';
+    public string $subpath = '';
 
-    /**
-     * @var string
-     */
-    public $origin = '';
+    public string $origin = '';
 
     /**
      * Constructs a new Extension object.

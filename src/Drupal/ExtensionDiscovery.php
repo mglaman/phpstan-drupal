@@ -2,6 +2,9 @@
 
 namespace mglaman\PHPStanDrupal\Drupal;
 
+use FilesystemIterator;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
 class ExtensionDiscovery
 {
 
@@ -39,31 +42,23 @@ class ExtensionDiscovery
 
     /**
      * Previously discovered files keyed by origin directory and extension type.
-     *
-     * @var array
      */
-    protected static $files = [];
+    protected static array $files = [];
 
     /**
      * List of installation profile directories to additionally scan.
-     *
-     * @var array
      */
-    protected $profileDirectories;
+    protected array $profileDirectories;
 
     /**
      * The app root for the current operation.
-     *
-     * @var string
      */
-    protected $root;
+    protected string $root;
 
     /**
      * The site path.
-     *
-     * @var string
      */
-    protected $sitePath;
+    protected string $sitePath;
 
     /**
      * Constructs a new ExtensionDiscovery object.
@@ -113,7 +108,7 @@ class ExtensionDiscovery
      *   The extension type to search for. One of 'profile', 'module', 'theme', or
      *   'theme_engine'.
      *
-     * @return \mglaman\PHPStanDrupal\Drupal\Extension[]
+     * @return Extension[]
      *   An associative array of Extension objects, keyed by extension name.
      */
     public function scan($type)
@@ -195,10 +190,10 @@ class ExtensionDiscovery
     /**
      * Filters out extensions not belonging to the scanned installation profiles.
      *
-     * @param \mglaman\PHPStanDrupal\Drupal\Extension[] $all_files
+     * @param Extension[] $all_files
      *   The list of all extensions.
      *
-     * @return \mglaman\PHPStanDrupal\Drupal\Extension[]
+     * @return Extension[]
      *   The filtered list of extensions.
      */
     protected function filterByProfileDirectories(array $all_files)
@@ -207,14 +202,14 @@ class ExtensionDiscovery
             return $all_files;
         }
 
-        return array_filter($all_files, function (\mglaman\PHPStanDrupal\Drupal\Extension $file) : bool {
+        return array_filter($all_files, function (Extension $file) : bool {
             if (strpos($file->subpath, 'profiles') !== 0) {
                 // This extension doesn't belong to a profile, ignore it.
                 return true;
             }
 
             foreach ($this->profileDirectories as $weight => $profile_path) {
-                if (strpos($file->getPath(), $profile_path) === 0) {
+                if (strpos($file->getPath(), (string) $profile_path) === 0) {
                     // Parent profile found.
                     return true;
                 }
@@ -227,12 +222,12 @@ class ExtensionDiscovery
     /**
      * Sorts the discovered extensions.
      *
-     * @param \mglaman\PHPStanDrupal\Drupal\Extension[] $all_files
+     * @param Extension[] $all_files
      *   The list of all extensions.
      * @param array $weights
      *   An array of weights, keyed by originating directory.
      *
-     * @return \mglaman\PHPStanDrupal\Drupal\Extension[]
+     * @return Extension[]
      *   The sorted list of extensions.
      */
     protected function sort(array $all_files, array $weights)
@@ -254,7 +249,7 @@ class ExtensionDiscovery
             } else {
                 // Apply the weight of the originating profile directory.
                 foreach ($this->profileDirectories as $weight => $profile_path) {
-                    if (strpos($file->getPath(), $profile_path) === 0) {
+                    if (strpos($file->getPath(), (string) $profile_path) === 0) {
                         $origins[$key] = self::ORIGIN_PROFILE;
                         $profiles[$key] = $weight;
                         continue 2;
@@ -283,10 +278,10 @@ class ExtensionDiscovery
      * Extensions discovered in later search paths override earlier, unless they
      * are not compatible with the current version of Drupal core.
      *
-     * @param \mglaman\PHPStanDrupal\Drupal\Extension[] $all_files
+     * @param Extension[] $all_files
      *   The sorted list of all extensions that were found.
      *
-     * @return \mglaman\PHPStanDrupal\Drupal\Extension[]
+     * @return Extension[]
      *   The filtered list of extensions, keyed by extension name.
      */
     protected function process(array $all_files)
@@ -332,11 +327,11 @@ class ExtensionDiscovery
         // symlinks (to allow extensions to be linked from elsewhere), and return
         // the RecursiveDirectoryIterator instance to have access to getSubPath(),
         // since SplFileInfo does not support relative paths.
-        $flags = \FilesystemIterator::UNIX_PATHS;
-        $flags |= \FilesystemIterator::SKIP_DOTS;
-        $flags |= \FilesystemIterator::FOLLOW_SYMLINKS;
-        $flags |= \FilesystemIterator::CURRENT_AS_SELF;
-        $directory_iterator = new \RecursiveDirectoryIterator($absolute_dir, $flags);
+        $flags = FilesystemIterator::UNIX_PATHS;
+        $flags |= FilesystemIterator::SKIP_DOTS;
+        $flags |= FilesystemIterator::FOLLOW_SYMLINKS;
+        $flags |= FilesystemIterator::CURRENT_AS_SELF;
+        $directory_iterator = new RecursiveDirectoryIterator($absolute_dir, $flags);
 
         // Allow directories specified in settings.php to be ignored. You can use
         // this to not check for files in common special-purpose directories. For
@@ -352,11 +347,11 @@ class ExtensionDiscovery
 
         // The actual recursive filesystem scan is only invoked by instantiating the
         // RecursiveIteratorIterator.
-        $iterator = new \RecursiveIteratorIterator(
+        $iterator = new RecursiveIteratorIterator(
             $filter,
-            \RecursiveIteratorIterator::LEAVES_ONLY,
+            RecursiveIteratorIterator::LEAVES_ONLY,
             // Suppress filesystem errors in case a directory cannot be accessed.
-            \RecursiveIteratorIterator::CATCH_GET_CHILD
+            RecursiveIteratorIterator::CATCH_GET_CHILD
         );
 
         foreach ($iterator as $key => $fileinfo) {

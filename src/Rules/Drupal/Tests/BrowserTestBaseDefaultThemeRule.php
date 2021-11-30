@@ -2,6 +2,8 @@
 
 namespace mglaman\PHPStanDrupal\Rules\Drupal\Tests;
 
+use PhpParser\Node\Stmt\Class_;
+use PHPUnit\Framework\Test;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
 use PHPStan\Rules\Rule;
@@ -13,15 +15,15 @@ final class BrowserTestBaseDefaultThemeRule implements Rule
 
     public function getNodeType(): string
     {
-        return Node\Stmt\Class_::class;
+        return Class_::class;
     }
 
     public function processNode(Node $node, Scope $scope): array
     {
-        if (!interface_exists(\PHPUnit\Framework\Test::class)) {
+        if (!interface_exists(Test::class)) {
             return [];
         }
-        assert($node instanceof Node\Stmt\Class_);
+        assert($node instanceof Class_);
         if ($node->extends === null) {
             return [];
         }

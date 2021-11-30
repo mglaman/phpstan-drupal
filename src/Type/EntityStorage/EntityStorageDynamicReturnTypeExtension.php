@@ -2,6 +2,7 @@
 
 namespace mglaman\PHPStanDrupal\Type\EntityStorage;
 
+use PHPStan\Type\Type;
 use Drupal\Core\Entity\EntityStorageInterface;
 use mglaman\PHPStanDrupal\Drupal\EntityDataRepository;
 use PhpParser\Node\Expr\MethodCall;
@@ -18,10 +19,7 @@ use PHPStan\Type\TypeCombinator;
 class EntityStorageDynamicReturnTypeExtension implements DynamicMethodReturnTypeExtension
 {
 
-    /**
-     * @var EntityDataRepository
-     */
-    private $entityDataRepository;
+    private EntityDataRepository $entityDataRepository;
 
     public function __construct(EntityDataRepository $entityDataRepository)
     {
@@ -52,7 +50,7 @@ class EntityStorageDynamicReturnTypeExtension implements DynamicMethodReturnType
         MethodReflection $methodReflection,
         MethodCall $methodCall,
         Scope $scope
-    ): \PHPStan\Type\Type {
+    ): Type {
         $callerType = $scope->getType($methodCall->var);
 
         if (!$callerType instanceof EntityStorageType) {
