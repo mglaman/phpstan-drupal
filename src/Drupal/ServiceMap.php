@@ -70,7 +70,7 @@ class ServiceMap
                 return $serviceDefinition;
             }
 
-            return $this->resolveParentDefinition($parentDefinition['parent'], $drupalServices[$parentDefinition['parent']], $drupalServices);
+            $parentDefinition = $this->resolveParentDefinition($parentDefinition['parent'], $drupalServices[$parentDefinition['parent']], $drupalServices);
         }
 
         if (isset($parentDefinition['class']) && !isset($serviceDefinition['class'])) {
