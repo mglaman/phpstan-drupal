@@ -29,6 +29,14 @@ class FieldItemListPropertyReflection implements PropertyReflection
         $this->propertyName = $propertyName;
     }
 
+    public static function canHandleMethod(ClassReflection $classReflection, string $methodName): bool
+    {
+        $method_names = [
+            'referencedEntities',
+        ];
+        return in_array($methodName, $method_names, true);
+    }
+
     public static function canHandleProperty(ClassReflection $classReflection, string $propertyName): bool
     {
         // @todo use the class reflection and be more specific about handled properties.
