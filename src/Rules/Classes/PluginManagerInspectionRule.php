@@ -4,11 +4,23 @@ namespace mglaman\PHPStanDrupal\Rules\Classes;
 
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
+use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Rules\Rule;
 use PHPStan\ShouldNotHappenException;
+use PHPStan\Type\ObjectType;
 
+/**
+ * @implements \PHPStan\Rules\Rule<\PhpParser\Node\Stmt\Class_>
+ */
 class PluginManagerInspectionRule implements Rule
 {
+    /** @var ReflectionProvider */
+    private $reflectionProvider;
+    public function __construct(ReflectionProvider $reflectionProvider)
+    {
+        $this->reflectionProvider = $reflectionProvider;
+    }
+
     public function getNodeType(): string
     {
         return Node\Stmt\Class_::class;
@@ -16,15 +28,17 @@ class PluginManagerInspectionRule implements Rule
 
     public function processNode(Node $node, Scope $scope): array
     {
-        assert($node instanceof Node\Stmt\Class_);
-
+        if ($node->namespacedName === null) {
+            // anonymous class
+            return [];
+        }
         if ($node->extends === null) {
             return [];
         }
-
-        // If the class does not extend the default plugin manager, skip it.
-        // @todo inspect interfaces and see if it implements PluginManagerInterface.
-        if ($node->extends->toString() !== 'Drupal\Core\Plugin\DefaultPluginManager') {
+        $className = (string) $node->namespacedName;
+        $pluginManagerType = new ObjectType($className);
+        $pluginManagerInterfaceType = new ObjectType('\Drupal\Component\Plugin\PluginManagerInterface');
+        if (!$pluginManagerInterfaceType->isSuperTypeOf($pluginManagerType)->yes()) {
             return [];
         }
 
@@ -98,15 +112,11 @@ class PluginManagerInspectionRule implements Rule
     {
         $errors = [];
 
-        $fqn = $class->namespacedName;
-        $reflection = new \ReflectionClass($fqn);
+        $fqn = (string) $class->namespacedName;
+        $reflection = $this->reflectionProvider->getClass($fqn);
         $constructor = $reflection->getConstructor();
 
-        if ($constructor === null) {
-            throw new ShouldNotHappenException();
-        }
-
-        if ($constructor->class !== $fqn->toString()) {
+        if ($constructor->getDeclaringClass()->getName() !== $fqn) {
             $errors[] = sprintf('%s must override __construct if using YAML plugins.', $fqn);
         } else {
             foreach ($class->stmts as $stmt) {
