@@ -39,7 +39,6 @@ parametersSchema:
 		))
 	])
 rules:
-	- mglaman\PHPStanDrupal\Rules\Classes\PluginManagerInspectionRule
 	- mglaman\PHPStanDrupal\Rules\Drupal\Coder\DiscouragedFunctionsRule
 	- mglaman\PHPStanDrupal\Rules\Drupal\GlobalDrupalDependencyInjectionRule
 	- mglaman\PHPStanDrupal\Rules\Drupal\PluginManager\PluginManagerSetsCacheBackendRule
@@ -81,6 +80,11 @@ services:
 		tags: [phpstan.broker.propertiesClassReflectionExtension]
 	-
 		class: mglaman\PHPStanDrupal\Rules\Classes\ClassExtendsInternalClassRule
+		tags: [phpstan.rules.rule]
+		arguments:
+			reflectionProvider: @reflectionProvider
+	-
+		class: mglaman\PHPStanDrupal\Rules\Classes\PluginManagerInspectionRule
 		tags: [phpstan.rules.rule]
 		arguments:
 			reflectionProvider: @reflectionProvider
