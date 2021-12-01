@@ -1,0 +1,7 @@
+name: module_with_dependencies
+type: module
+core_version_requirement: ^8 || ^9
+dependencies:
+  - drupal:node
+  - foo:bar (>=2.0.x)
+  - service_map

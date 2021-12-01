@@ -1,0 +1,3 @@
+name: module_without_dependencies
+type: module
+core_version_requirement: ^8 || ^9

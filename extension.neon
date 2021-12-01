@@ -47,6 +47,8 @@ services:
 	-
 		class: mglaman\PHPStanDrupal\Drupal\ServiceMap
 	-
+		class: mglaman\PHPStanDrupal\Drupal\ExtensionMap
+	-
 		class: mglaman\PHPStanDrupal\Drupal\EntityDataRepository
 		arguments:
 			entityMapping: %drupal.entityMapping%
