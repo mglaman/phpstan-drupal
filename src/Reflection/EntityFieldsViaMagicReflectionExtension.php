@@ -37,7 +37,7 @@ class EntityFieldsViaMagicReflectionExtension implements PropertiesClassReflecti
             // Content entities have magical __get... so it is kind of true.
             return true;
         }
-        if (self::classObjectIsSuperOfFieldItemList($reflection)->yes()) {
+        if (self::classObjectIsSuperOfInterface($reflection, self::getFieldItemListInterfaceObject())->yes()) {
             return FieldItemListPropertyReflection::canHandleProperty($classReflection, $propertyName);
         }
 
@@ -50,17 +50,26 @@ class EntityFieldsViaMagicReflectionExtension implements PropertiesClassReflecti
         if ($reflection->implementsInterface('Drupal\Core\Entity\EntityInterface')) {
             return new EntityFieldReflection($classReflection, $propertyName);
         }
-        if (self::classObjectIsSuperOfFieldItemList($reflection)->yes()) {
+        if (self::classObjectIsSuperOfInterface($reflection, self::getFieldItemListInterfaceObject())->yes()) {
             return new FieldItemListPropertyReflection($classReflection, $propertyName);
         }
 
         throw new \LogicException($classReflection->getName() . "::$propertyName should be handled earlier.");
     }
 
-    public static function classObjectIsSuperOfFieldItemList(\ReflectionClass $reflection) : TrinaryLogic
+    public static function classObjectIsSuperOfInterface(\ReflectionClass $reflection, ObjectType $interfaceObject) : TrinaryLogic
     {
         $classObject = new ObjectType($reflection->getName());
         return self::getFieldItemListInterfaceObject()->isSuperTypeOf($classObject);
+        $ancestors = $classObject->getAncestorWithClassName($interfaceObject->getClassName());
+        $ancestors2 = $interfaceObject->getAncestorWithClassName($classObject->getClassName());
+        if ($interfaceObject->isSuperTypeOf($classObject)) {
+            return TrinaryLogic::createYes();
+        }
+        if ($interfaceObject->getAncestorWithClassName($classObject->getClassName())) {
+            return TrinaryLogic::createYes();
+        }
+        return TrinaryLogic::createNo();
     }
 
     protected static function getFieldItemListInterfaceObject() : ObjectType
