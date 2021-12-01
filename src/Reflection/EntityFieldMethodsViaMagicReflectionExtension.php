@@ -16,7 +16,7 @@ class EntityFieldMethodsViaMagicReflectionExtension implements MethodsClassRefle
     {
         $reflection = $classReflection->getNativeReflection();
         if (EntityFieldsViaMagicReflectionExtension::classObjectIsSuperOfFieldItemList($reflection)) {
-            return FieldItemListPropertyReflection::canHandleMethod($classReflection, $methodName);
+            return FieldItemListMethodReflection::canHandleMethod($classReflection, $methodName);
         }
         return false;
     }

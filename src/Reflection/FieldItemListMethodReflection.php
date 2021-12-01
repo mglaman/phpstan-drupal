@@ -27,6 +27,14 @@ class FieldItemListMethodReflection implements MethodReflection
         $this->name = $name;
     }
 
+    public static function canHandleMethod(ClassReflection $classReflection, string $methodName): bool
+    {
+        $method_names = [
+            'referencedEntities',
+        ];
+        return in_array($methodName, $method_names, true);
+    }
+
     public function getDeclaringClass(): ClassReflection
     {
         $reflectionProvider = ReflectionProviderStaticAccessor::getInstance();

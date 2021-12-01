@@ -57,7 +57,7 @@ class EntityFieldsViaMagicReflectionExtension implements PropertiesClassReflecti
         throw new \LogicException($classReflection->getName() . "::$propertyName should be handled earlier.");
     }
 
-    protected static function classObjectIsSuperOfFieldItemList(\ReflectionClass $reflection) : TrinaryLogic
+    public static function classObjectIsSuperOfFieldItemList(\ReflectionClass $reflection) : TrinaryLogic
     {
         $classObject = new ObjectType($reflection->getName());
         return self::getFieldItemListInterfaceObject()->isSuperTypeOf($classObject);
