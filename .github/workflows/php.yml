@@ -48,7 +48,7 @@ jobs:
         if: ${{ matrix.drupal == '^8.9' }}
       - name: "Add phpspec/prophecy-phpunit"
         run: "composer require --dev phpspec/prophecy-phpunit:^2"
-        if: ${{ matrix.drupal == '^9.0' }}
+        if: ${{ matrix.drupal != '^8.9' }}
       - name: "PHPCS"
         run: "php vendor/bin/phpcs src"
       - name: "PHPStan"
