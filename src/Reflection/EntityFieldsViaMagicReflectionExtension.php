@@ -20,7 +20,7 @@ class EntityFieldsViaMagicReflectionExtension implements PropertiesClassReflecti
 
     public function hasProperty(ClassReflection $classReflection, string $propertyName): bool
     {
-        if ($classReflection->hasNativeProperty($propertyName)) {
+        if ($classReflection->hasNativeProperty($propertyName) || array_key_exists($propertyName, $classReflection->getPropertyTags())) {
             // Let other parts of PHPStan handle this.
             return false;
         }
