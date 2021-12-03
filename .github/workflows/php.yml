@@ -23,10 +23,13 @@ jobs:
           - "^9.0"
         include:
           - php-version: "7.2"
-            drupal: "~8.9"
+            drupal: "^8.9"
             experimental: false
           - php-version: "8.0"
             drupal: "^9.0"
+            experimental: true
+          - php-version: "8.0"
+            drupal: "10.0.x-dev"
             experimental: true
     steps:
       - name: "Checkout"
@@ -38,14 +41,17 @@ jobs:
           php-version: "${{ matrix.php-version }}"
           tools: composer:v2
           extensions: dom, curl, libxml, mbstring, zip, pdo, mysql, pdo_mysql, gd
+      - name: "Downgrade dev dependencies"
+        run: "composer require phpunit/phpunit:6.5.14 drush/drush:~9 drupal/core-recommended:${{ matrix.drupal }} drupal/core-dev:${{ matrix.drupal }} --with-all-dependencies --dev --no-update"
+        if: ${{ matrix.drupal == '^8.9' }}
+      - name: "Upgrade to drupal/core:10.0.x"
+        run: "composer require drupal/core-recommended:${{ matrix.drupal }} drupal/core-dev:${{ matrix.drupal }} --with-all-dependencies --dev --no-update"
+        if: ${{ matrix.drupal == '10.0.x-dev' }}
+      - name: "Add phpspec/prophecy-phpunit"
+        run: "composer require phpspec/prophecy-phpunit:^2 --dev --no-update"
+        if: ${{ matrix.drupal != '^8.9' }}
       - name: "Install dependencies"
         run: "composer update --no-progress --prefer-dist"
-      - name: "Downgrade dev dependencies"
-        run: "composer require phpunit/phpunit:6.5.14 drush/drush:~9 drupal/core-recommended:${{ matrix.drupal }} drupal/core-dev:${{ matrix.drupal }} --with-all-dependencies --dev"
-        if: ${{ matrix.drupal == '^8.9' }}
-      - name: "Add phpspec/prophecy-phpunit"
-        run: "composer require --dev phpspec/prophecy-phpunit:^2"
-        if: ${{ matrix.drupal == '^9.0' }}
       - name: "PHPCS"
         run: "php vendor/bin/phpcs src"
       - name: "PHPStan"
@@ -68,10 +74,13 @@ jobs:
           - "^9.0"
         include:
           - php-version: "7.2"
-            drupal: "~8.9"
+            drupal: "^8.9"
             experimental: false
           - php-version: "8.0"
             drupal: "^9.0"
+            experimental: true
+          - php-version: "8.0"
+            drupal: "10.0.x-dev"
             experimental: true
     steps:
       - name: "Checkout"
@@ -84,7 +93,7 @@ jobs:
           tools: composer:v2
           extensions: dom, curl, libxml, mbstring, zip, pdo, mysql, pdo_mysql, bcmath, gd, exif, iconv
       - name: Setup Drupal
-        uses: bluehorndigital/setup-drupal@v1.0.1
+        uses: bluehorndigital/setup-drupal@v1.0.3
         with:
           version: ${{ matrix.drupal }}
           path: ~/drupal
@@ -110,12 +119,14 @@ jobs:
           cd ~/drupal
           ./vendor/bin/phpstan analyze web/core/modules/migrate_drupal --no-progress | grep -q "tests/fixtures" && false || true
       - name: 'Check "Cannot redeclare token_theme() due to blazy_test.module"'
+        if: ${{ matrix.drupal != '10.0.x-dev' }}
         run: |
           cd ~/drupal
           COMPOSER_MEMORY_LIMIT=-1 composer require drupal/token drupal/blazy
           ./vendor/bin/phpstan analyze web/modules/contrib/blazy --no-progress || if (($? == 255)); then false; else true; fi
           COMPOSER_MEMORY_LIMIT=-1 composer remove drupal/token drupal/blazy
       - name: 'Check "Cannot redeclare video_embed_media_media_bundle_insert()"'
+        if: ${{ matrix.drupal != '10.0.x-dev' }}
         run: |
           cd ~/drupal
           COMPOSER_MEMORY_LIMIT=-1 composer require drupal/video_embed_field drupal/slick
@@ -133,6 +144,10 @@ jobs:
         drupal:
           - "^8.9"
           - "^9.0"
+        include:
+          - php-version: "8.0"
+            drupal: "10.0.x-dev"
+            experimental: true
     steps:
       - name: "Checkout"
         uses: "actions/checkout@v2"
@@ -144,7 +159,7 @@ jobs:
           tools: composer:v2
           extensions: dom, curl, libxml, mbstring, zip, pdo, mysql, pdo_mysql, bcmath, gd, exif, iconv
       - name: Setup Drupal
-        uses: bluehorndigital/setup-drupal@v1.0.1
+        uses: bluehorndigital/setup-drupal@v1.0.3
         with:
           version: ${{ matrix.drupal }}
           path: ~/drupal
