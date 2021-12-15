@@ -196,6 +196,9 @@ class DrupalAutoloader
             && class_exists('Drupal\TestTools\PhpUnitCompatibility\PhpUnit8\ClassWriter')) {
             \Drupal\TestTools\PhpUnitCompatibility\PhpUnit8\ClassWriter::mutateTestBase($this->autoloader);
         }
+
+        $extension_map = $container->getByType(ExtensionMap::class);
+        $extension_map->setExtensions($this->moduleData, $this->themeData, $profiles);
     }
 
     protected function loadLegacyIncludes(): void

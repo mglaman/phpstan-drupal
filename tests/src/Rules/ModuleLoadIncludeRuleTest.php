@@ -9,8 +9,7 @@ final class ModuleLoadIncludeRuleTest extends DrupalRuleTestCase
 {
     protected function getRule(): \PHPStan\Rules\Rule
     {
-        $params = self::getContainer()->getParameter('drupal');
-        return new ModuleLoadInclude($params['drupal_root']);
+        return self::getContainer()->getByType(ModuleLoadInclude::class);
     }
 
     public function testRule(): void
@@ -20,7 +19,7 @@ final class ModuleLoadIncludeRuleTest extends DrupalRuleTestCase
         ],
         [
             [
-                'File tests/fixtures/drupal/core/modules/locale/locale.translationzzzz.inc could not be loaded from module_load_include',
+                'File core/modules/locale/locale.translationzzzz.inc could not be loaded from module_load_include.',
                 10
             ]
         ]);
