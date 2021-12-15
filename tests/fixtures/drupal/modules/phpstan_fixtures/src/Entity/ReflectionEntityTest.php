@@ -7,6 +7,9 @@ use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\user\UserInterface;
 
+/**
+ * @property \Drupal\Core\Field\EntityReferenceFieldItemListInterface $user_id
+ */
 final class ReflectionEntityTest extends ContentEntityBase {
 
     public static function baseFieldDefinitions(EntityTypeInterface $entity_type)

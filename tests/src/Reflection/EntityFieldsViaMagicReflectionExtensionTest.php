@@ -6,6 +6,7 @@ use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\entity_test\Entity\EntityTest;
 use Drupal\module_installer_config_test\Entity\TestConfigType;
+use Drupal\phpstan_fixtures\Entity\ReflectionEntityTest;
 use mglaman\PHPStanDrupal\Reflection\EntityFieldsViaMagicReflectionExtension;
 use mglaman\PHPStanDrupal\Tests\AdditionalConfigFilesTrait;
 use PHPStan\Testing\PHPStanTestCase;
@@ -51,6 +52,12 @@ final class EntityFieldsViaMagicReflectionExtensionTest extends PHPStanTestCase 
             // @phpstan-ignore-next-line
             TestConfigType::class,
             'foobar',
+            false
+        ];
+        yield 'annotated properties are skipped on content entities' => [
+            // @phpstan-ignore-next-line
+            ReflectionEntityTest::class,
+            'user_id',
             false
         ];
         // @todo really entity is only supported on EntityFieldItemList
