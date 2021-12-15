@@ -121,6 +121,11 @@ class Extension
         return dirname($this->pathname);
     }
 
+    public function getAbsolutePath(): string
+    {
+        return $this->root . DIRECTORY_SEPARATOR . $this->getPath();
+    }
+
     /**
      * Returns the relative path and filename of the extension's info file.
      *

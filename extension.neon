@@ -94,12 +94,12 @@ services:
 		class: mglaman\PHPStanDrupal\Rules\Drupal\LoadIncludes
 		tags: [phpstan.rules.rule]
 		arguments:
-			- %drupal.drupal_root%
+			extensionMap: @mglaman\PHPStanDrupal\Drupal\ExtensionMap
 	-
 		class: mglaman\PHPStanDrupal\Rules\Drupal\ModuleLoadInclude
 		tags: [phpstan.rules.rule]
 		arguments:
-			- %drupal.drupal_root%
+			extensionMap: @mglaman\PHPStanDrupal\Drupal\ExtensionMap
 
 	-
 		class: mglaman\PHPStanDrupal\Rules\Deprecations\PluginAnnotationContextDefinitionsRule

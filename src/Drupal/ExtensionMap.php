@@ -4,13 +4,13 @@ namespace mglaman\PHPStanDrupal\Drupal;
 
 final class ExtensionMap
 {
-    /** @var Extension[]  */
+    /** @var array<string, Extension>  */
     private static $modules = [];
 
-    /** @var Extension[]  */
+    /** @var array<string, Extension>  */
     private static $themes = [];
 
-    /** @var Extension[]  */
+    /** @var array<string, Extension>  */
     private static $profiles = [];
 
     /**
@@ -53,14 +53,31 @@ final class ExtensionMap
     }
 
     /**
-     * @param Extension[] $modules
-     * @param Extension[] $themes
-     * @param Extension[] $profiles
+     * @param array<int, Extension> $modules
+     * @param array<int, Extension> $themes
+     * @param array<int, Extension> $profiles
      */
     public function setExtensions(array $modules, array $themes, array $profiles): void
     {
-        self::$modules = $modules;
-        self::$themes = $themes;
-        self::$profiles = $profiles;
+        self::$modules = self::keyByExtensionName($modules);
+        self::$themes = self::keyByExtensionName($themes);
+        self::$profiles = self::keyByExtensionName($profiles);
+    }
+
+    /**
+     * @param array<int, Extension> $extensions
+     * @return array<string, Extension>
+     */
+    private static function keyByExtensionName(array $extensions): array
+    {
+        // PHP 7.4 returns array|false, PHP 8.0 only returns an array.
+        // Make PHPStan happy. When PHP 7.4 is dropped, reduce to a single
+        // return.
+        $combined = array_combine(array_map(static function (Extension $extension) {
+            return $extension->getName();
+        }, $extensions), $extensions);
+        // @phpstan-ignore-next-line
+        assert(is_array($combined));
+        return $combined;
     }
 }

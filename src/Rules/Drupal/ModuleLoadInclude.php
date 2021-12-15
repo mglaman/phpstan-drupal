@@ -2,11 +2,9 @@
 
 namespace mglaman\PHPStanDrupal\Rules\Drupal;
 
-use DrupalFinder\DrupalFinder;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
-use mglaman\PHPStanDrupal\Drupal\ExtensionDiscovery;
-use PHPStan\Rules\Rule;
+use PHPStan\Rules\RuleErrorBuilder;
 
 /**
  * Handles module_load_include dynamic file loading.
@@ -14,24 +12,8 @@ use PHPStan\Rules\Rule;
  * @note may become deprecated and removed in D10
  * @see https://www.drupal.org/project/drupal/issues/697946
  */
-class ModuleLoadInclude implements Rule
+class ModuleLoadInclude extends LoadIncludeBase
 {
-
-    /**
-     * The project root.
-     *
-     * @var string
-     */
-    protected $projectRoot;
-
-    /**
-     * ModuleLoadInclude constructor.
-     * @param string $project_root
-     */
-    public function __construct(string $project_root)
-    {
-        $this->projectRoot = $project_root;
-    }
 
     public function getNodeType(): string
     {
@@ -48,44 +30,45 @@ class ModuleLoadInclude implements Rule
         if ($name !== 'module_load_include') {
             return [];
         }
+        $args = $node->getArgs();
+        if (\count($args) < 2) {
+            return [];
+        }
 
         try {
-            // Try to invoke it similarily as the module handler itself.
-            $finder = new DrupalFinder();
-            $finder->locateRoot($this->projectRoot);
-            $drupal_root = $finder->getDrupalRoot();
-            $extensionDiscovery = new ExtensionDiscovery($drupal_root);
-            $modules = $extensionDiscovery->scan('module');
-            $type_arg = $node->args[0];
-            assert($type_arg instanceof Node\Arg);
-            assert($type_arg->value instanceof Node\Scalar\String_);
-            $module_arg = $node->args[1];
-            assert($module_arg instanceof Node\Arg);
-            assert($module_arg->value instanceof Node\Scalar\String_);
-            $name_arg = $node->args[2] ?? null;
-
-            if ($name_arg === null) {
-                $name_arg = $module_arg;
+            // Try to invoke it similarly as the module handler itself.
+            [$moduleName, $filename] = $this->parseLoadIncludeArgs($args[1], $args[0], $args[2] ?? null, $scope);
+            $module = $this->extensionMap->getModule($moduleName);
+            if ($module === null) {
+                return [
+                    RuleErrorBuilder::message(sprintf(
+                        'File %s could not be loaded from module_load_include because %s module is not found.',
+                        $filename,
+                        $moduleName
+                    ))
+                        ->line($node->getLine())
+                        ->build()
+                ];
             }
-            assert($name_arg instanceof Node\Arg);
-            assert($name_arg->value instanceof Node\Scalar\String_);
-
-            $module_name = $module_arg->value->value;
-            if (!isset($modules[$module_name])) {
-                // @todo return error that the module does not exist.
-                return [];
-            }
-            $type_prefix = $name_arg->value->value;
-            $type_filename = $type_arg->value->value;
-            $module = $modules[$module_name];
-            $file = $drupal_root . '/' . $module->getPath() . "/$type_prefix.$type_filename";
+            $file = $module->getAbsolutePath() . DIRECTORY_SEPARATOR . $filename;
             if (is_file($file)) {
                 require_once $file;
                 return [];
             }
-            return [sprintf('File %s could not be loaded from module_load_include', $file)];
+            return [
+                RuleErrorBuilder::message(sprintf(
+                    'File %s could not be loaded from module_load_include.',
+                    $module->getPath() . DIRECTORY_SEPARATOR . $filename
+                ))
+                    ->line($node->getLine())
+                    ->build()
+            ];
         } catch (\Throwable $e) {
-            return ['A file could not be loaded from module_load_include'];
+            return [
+                RuleErrorBuilder::message('A file could not be loaded from module_load_include')
+                    ->line($node->getLine())
+                    ->build()
+            ];
         }
     }
 }
