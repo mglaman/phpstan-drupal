@@ -19,16 +19,30 @@ class EntityFieldMethodsViaMagicReflectionExtension implements MethodsClassRefle
             // Let other parts of PHPStan handle this.
             return false;
         }
-        $interfaceObject = new ObjectType('Drupal\Core\Field\EntityReferenceFieldItemListInterface');
+        $interfaceObject = new ObjectType('Drupal\Core\Field\FieldItemListInterface');
         $objectType = new ObjectType($classReflection->getName());
-        if ($interfaceObject->isSuperTypeOf($objectType)->yes()) {
-            return FieldItemListMethodReflection::canHandleMethod($classReflection, $methodName);
+        if (!$interfaceObject->isSuperTypeOf($objectType)->yes()) {
+            return false;
         }
+
+        if ($methodName === 'referencedEntities') {
+            return true;
+        }
+
         return false;
     }
 
     public function getMethod(ClassReflection $classReflection, string $methodName): MethodReflection
     {
-        return new FieldItemListMethodReflection($methodName);
+        if ($methodName === 'referencedEntities') {
+            $entityReferenceFieldItemListInterfaceType = new ObjectType('Drupal\Core\Field\EntityReferenceFieldItemListInterface');
+            $classReflection = $entityReferenceFieldItemListInterfaceType->getClassReflection();
+            assert($classReflection !== null);
+        }
+
+        return new FieldItemListMethodReflection(
+            $classReflection,
+            $methodName
+        );
     }
 }

@@ -21,35 +21,21 @@ use PHPStan\Type\Type;
 class FieldItemListMethodReflection implements MethodReflection
 {
 
-    /**
-     * @var string
-     */
-    private $name;
+    /** @var ClassReflection */
+    private $declaringClass;
 
-    public function __construct(string $name)
-    {
-        $this->name = $name;
-    }
+    /** @var string */
+    private $methodName;
 
-    public static function canHandleMethod(ClassReflection $classReflection, string $methodName): bool
+    public function __construct(ClassReflection $declaringClass, string $methodName)
     {
-        $method_names = [
-            'referencedEntities',
-        ];
-        return in_array($methodName, $method_names, true);
+        $this->declaringClass = $declaringClass;
+        $this->methodName = $methodName;
     }
 
     public function getDeclaringClass(): ClassReflection
     {
-        if ($this->name !== 'referencedEntities') {
-            throw new ShouldNotHappenException('Only ::referencedEntities is currently handled by ' . __CLASS__);
-        }
-        $objectType = new ObjectType(EntityReferenceFieldItemListInterface::class);
-        $classReflection = $objectType->getClassReflection();
-        if ($classReflection === null) {
-            throw new ShouldNotHappenException('Could not get class reflection for ' . EntityReferenceFieldItemListInterface::class);
-        }
-        return $classReflection;
+        return $this->declaringClass;
     }
 
     public function isStatic(): bool
@@ -74,7 +60,7 @@ class FieldItemListMethodReflection implements MethodReflection
 
     public function getName(): string
     {
-        return $this->name;
+        return $this->methodName;
     }
 
     public function getPrototype(): ClassMemberReflection
