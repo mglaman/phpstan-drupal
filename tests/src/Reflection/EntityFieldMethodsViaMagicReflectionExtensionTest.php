@@ -2,20 +2,12 @@
 
 namespace mglaman\PHPStanDrupal\Tests\Reflection;
 
-use Drupal\Core\Entity\ContentEntityInterface;
-use Drupal\Core\Field\EntityReferenceFieldItemList;
-use Drupal\Core\Field\EntityReferenceFieldItemListInterface;
-use Drupal\Core\Field\FieldItemList;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\entity_test\Entity\EntityTest;
-use Drupal\module_installer_config_test\Entity\TestConfigType;
+use Drupal\node\Entity\Node;
 use mglaman\PHPStanDrupal\Reflection\EntityFieldMethodsViaMagicReflectionExtension;
-use mglaman\PHPStanDrupal\Reflection\EntityFieldsViaMagicReflectionExtension;
 use mglaman\PHPStanDrupal\Tests\AdditionalConfigFilesTrait;
 use PHPStan\Testing\PHPStanTestCase;
-use PHPStan\Type\NullType;
-use PHPStan\Type\ObjectType;
-use PHPStan\Type\StringType;
 
 final class EntityFieldMethodsViaMagicReflectionExtensionTest extends PHPStanTestCase {
 
@@ -55,6 +47,7 @@ final class EntityFieldMethodsViaMagicReflectionExtensionTest extends PHPStanTes
 
         // A content entity for sure does not have this method.
         yield 'Content entity: referencedEntities' => [
+            // @phpstan-ignore-next-line
             EntityTest::class,
             'referencedEntities',
             false,

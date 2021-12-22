@@ -20,10 +20,7 @@ class EntityFieldsViaMagicReflectionExtension implements PropertiesClassReflecti
 
     public function hasProperty(ClassReflection $classReflection, string $propertyName): bool
     {
-        // @todo Have this run after PHPStan\Reflection\Annotations\AnnotationsPropertiesClassReflectionExtension
-        // We should not have to check for the property tags if we could get this to run after PHPStan's
-        // existing annotation property reflection.
-        if ($classReflection->hasNativeProperty($propertyName) || array_key_exists($propertyName, $classReflection->getPropertyTags())) {
+        if ($classReflection->hasNativeProperty($propertyName)) {
             // Let other parts of PHPStan handle this.
             return false;
         }
@@ -60,16 +57,7 @@ class EntityFieldsViaMagicReflectionExtension implements PropertiesClassReflecti
     public static function classObjectIsSuperOfInterface(\ReflectionClass $reflection, ObjectType $interfaceObject) : TrinaryLogic
     {
         $classObject = new ObjectType($reflection->getName());
-        return self::getFieldItemListInterfaceObject()->isSuperTypeOf($classObject);
-        $ancestors = $classObject->getAncestorWithClassName($interfaceObject->getClassName());
-        $ancestors2 = $interfaceObject->getAncestorWithClassName($classObject->getClassName());
-        if ($interfaceObject->isSuperTypeOf($classObject)) {
-            return TrinaryLogic::createYes();
-        }
-        if ($interfaceObject->getAncestorWithClassName($classObject->getClassName())) {
-            return TrinaryLogic::createYes();
-        }
-        return TrinaryLogic::createNo();
+        return $interfaceObject->isSuperTypeOf($classObject);
     }
 
     protected static function getFieldItemListInterfaceObject() : ObjectType

@@ -8,6 +8,7 @@ use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\ClassMemberReflection;
 use PHPStan\Reflection\ReflectionProviderStaticAccessor;
 use PHPStan\Reflection\TrivialParametersAcceptor;
+use PHPStan\ShouldNotHappenException;
 use PHPStan\TrinaryLogic;
 use PHPStan\Type\NullType;
 use PHPStan\Type\ObjectType;
@@ -20,6 +21,9 @@ use PHPStan\Type\Type;
 class FieldItemListMethodReflection implements MethodReflection
 {
 
+    /**
+     * @var string
+     */
     private $name;
 
     public function __construct(string $name)
@@ -37,9 +41,15 @@ class FieldItemListMethodReflection implements MethodReflection
 
     public function getDeclaringClass(): ClassReflection
     {
-        $reflectionProvider = ReflectionProviderStaticAccessor::getInstance();
-
-        return $reflectionProvider->getClass(EntityReferenceFieldItemListInterface::class);
+        if ($this->name !== 'referencedEntities') {
+            throw new ShouldNotHappenException('Only ::referencedEntities is currently handled by ' . __CLASS__);
+        }
+        $objectType = new ObjectType(EntityReferenceFieldItemListInterface::class);
+        $classReflection = $objectType->getClassReflection();
+        if ($classReflection === null) {
+            throw new ShouldNotHappenException('Could not get class reflection for ' . EntityReferenceFieldItemListInterface::class);
+        }
+        return $classReflection;
     }
 
     public function isStatic(): bool

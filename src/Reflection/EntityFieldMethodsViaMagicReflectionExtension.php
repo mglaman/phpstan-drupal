@@ -15,13 +15,13 @@ class EntityFieldMethodsViaMagicReflectionExtension implements MethodsClassRefle
 
     public function hasMethod(ClassReflection $classReflection, string $methodName): bool
     {
-        if ($classReflection->hasNativeMethod($methodName)) {
+        if ($classReflection->hasNativeMethod($methodName) || array_key_exists($methodName, $classReflection->getMethodTags())) {
             // Let other parts of PHPStan handle this.
             return false;
         }
-        $reflection = $classReflection->getNativeReflection();
         $interfaceObject = new ObjectType('Drupal\Core\Field\EntityReferenceFieldItemListInterface');
-        if (EntityFieldsViaMagicReflectionExtension::classObjectIsSuperOfInterface($reflection, $interfaceObject)->yes()) {
+        $objectType = new ObjectType($classReflection->getName());
+        if ($interfaceObject->isSuperTypeOf($objectType)->yes()) {
             return FieldItemListMethodReflection::canHandleMethod($classReflection, $methodName);
         }
         return false;
