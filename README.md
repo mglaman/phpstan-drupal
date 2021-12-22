@@ -91,16 +91,16 @@ directory using the `drupal.drupal_root` parameter.
 
 ```
 parameters:
-    drupal:
-        drupal_root: /path/to/drupal
+	drupal:
+		drupal_root: /path/to/drupal
 ```
 
 You can also use container parameters. For instance you can always set it to the current working directory.
 
 ```
 parameters:
-    drupal:
-        drupal_root: %currentWorkingDirectory%
+	drupal:
+		drupal_root: %currentWorkingDirectory%
 ```
 
 ### Entity storage mappings.
@@ -111,12 +111,20 @@ default mapping can be found in `extension.neon`. For example:
 
 ```
 parameters:
-    drupal:
-        entityTypeStorageMapping:
-            node: Drupal\node\NodeStorage
-            taxonomy_term: Drupal\taxonomy\TermStorage
-            user: Drupal\user\UserStorage
-            block: Drupal\Core\Config\Entity\ConfigEntityStorage
+	drupal:
+		entityMapping:
+			block:
+				class: Drupal\block\Entity\Block
+				storage: Drupal\Core\Config\Entity\ConfigEntityStorage
+			node:
+				class: Drupal\node\Entity\Node
+				storage: Drupal\node\NodeStorage
+			taxonomy_term:
+				class: Drupal\taxonomy\Entity\Term
+				storage: Drupal\taxonomy\TermStorage
+			user:
+				class: Drupal\user\Entity\User
+				storage: Drupal\user\UserStorage
 ```
 
 To add support for custom entities, you may add the same definition in your project's `phpstan.neon`. See the following
@@ -124,10 +132,15 @@ example for adding a mapping for Search API:
 
 ```
 parameters:
-    drupal:
-        entityTypeStorageMapping:
-            search_api_index: Drupal\search_api\Entity\SearchApiConfigEntityStorage
-            search_api_server: Drupal\search_api\Entity\SearchApiConfigEntityStorage
+	drupal:
+		entityMapping:
+			block:
+				search_api_index:
+					class: Drupal\search_api\Entity\Index
+					storage: Drupal\search_api\Entity\SearchApiConfigEntityStorage
+				search_api_server:
+					class: Drupal\search_api\Entity\Server
+					storage: Drupal\search_api\Entity\SearchApiConfigEntityStorage			    
 ```
 
 Similarly, the `EntityStorageDynamicReturnTypeExtension` service helps to determine the type of the entity which is
@@ -145,11 +158,19 @@ The default mapping can be found in `extension.neon`:
 ```neon
 parameters:
 	drupal:
-		entityStorageMapping:
-			node: Drupal\node\Entity\Node
-			taxonomy_term: Drupal\taxonomy\Entity\Term
-			user: Drupal\user\Entity\User
-			block: Drupal\block\Entity\Block
+		entityMapping:
+			block:
+				class: Drupal\block\Entity\Block
+				storage: Drupal\Core\Config\Entity\ConfigEntityStorage
+			node:
+				class: Drupal\node\Entity\Node
+				storage: Drupal\node\NodeStorage
+			taxonomy_term:
+				class: Drupal\taxonomy\Entity\Term
+				storage: Drupal\taxonomy\TermStorage
+			user:
+				class: Drupal\user\Entity\User
+				storage: Drupal\user\UserStorage
 ```
 
 To add support for custom entities, you may add the same definition in your project's `phpstan.neon` likewise.
