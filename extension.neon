@@ -282,6 +282,9 @@ services:
 		class: mglaman\PHPStanDrupal\Reflection\EntityFieldsViaMagicReflectionExtension
 		tags: [phpstan.broker.propertiesClassReflectionExtension]
 	-
+		class: mglaman\PHPStanDrupal\Reflection\EntityFieldMethodsViaMagicReflectionExtension
+		tags: [phpstan.broker.methodsClassReflectionExtension]
+	-
 		class: mglaman\PHPStanDrupal\Rules\Classes\ClassExtendsInternalClassRule
 		tags: [phpstan.rules.rule]
 		arguments:
