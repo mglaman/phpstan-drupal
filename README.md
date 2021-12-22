@@ -112,7 +112,7 @@ default mapping can be found in `extension.neon`. For example:
 ```
 parameters:
 	drupal:
-		entityTypeStorageMapping:
+		entityMapping:
 			block:
 				class: Drupal\block\Entity\Block
 				storage: Drupal\Core\Config\Entity\ConfigEntityStorage
@@ -133,7 +133,7 @@ example for adding a mapping for Search API:
 ```
 parameters:
 	drupal:
-		entityTypeStorageMapping:
+		entityMapping:
 			block:
 				search_api_index:
 					class: Drupal\search_api\Entity\Index
@@ -158,7 +158,7 @@ The default mapping can be found in `extension.neon`:
 ```neon
 parameters:
 	drupal:
-		entityTypeStorageMapping:
+		entityMapping:
 			block:
 				class: Drupal\block\Entity\Block
 				storage: Drupal\Core\Config\Entity\ConfigEntityStorage
