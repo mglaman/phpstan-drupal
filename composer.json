@@ -28,7 +28,10 @@
     },
     "minimum-stability": "dev",
     "prefer-stable": true,
-    "suggest": {},
+    "suggest": {
+        "phpstan/phpstan-deprecation-rules": "For catching deprecations, especially in Drupal core.",
+        "jangregor/phpstan-prophecy": "Provides a prophecy/prophecy extension for phpstan/phpstan."
+    },
     "autoload": {
         "files": [
             "drupal-phpunit-hack.php"
