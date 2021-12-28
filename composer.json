@@ -28,9 +28,7 @@
     },
     "minimum-stability": "dev",
     "prefer-stable": true,
-    "suggest": {
-        "phpstan/phpstan-deprecation-rules": "For catching deprecations, especially in Drupal core."
-    },
+    "suggest": {},
     "autoload": {
         "files": [
             "drupal-phpunit-hack.php"
