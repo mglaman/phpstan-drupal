@@ -29,7 +29,8 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "suggest": {
-        "phpstan/phpstan-deprecation-rules": "For catching deprecations, especially in Drupal core."
+        "phpstan/phpstan-deprecation-rules": "For catching deprecations, especially in Drupal core.",
+        "jangregor/phpstan-prophecy": "Provides a prophecy/prophecy extension for phpstan/phpstan."
     },
     "autoload": {
         "files": [
