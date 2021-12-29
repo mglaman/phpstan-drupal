@@ -51,7 +51,8 @@ final class ClassExtendsInternalClassRuleTest extends DrupalRuleTestCase
             [
                 [
                     'Class Drupal\phpstan_fixtures\Internal\ExtendsDrupalCoreInternalClass extends @internal class Drupal\Core\InternalClass.',
-                    7
+                    7,
+                    'Read the Drupal core backwards compatibility and internal API policy: https://www.drupal.org/about/core/policies/core-change-policies/drupal-8-and-9-backwards-compatibility-and-internal-api#internal',
                 ],
             ],
         ];
@@ -60,7 +61,8 @@ final class ClassExtendsInternalClassRuleTest extends DrupalRuleTestCase
             [
                 [
                     'Class Drupal\phpstan_fixtures\Internal\ExtendsDrupalCorePHPStanDrupalTestsInternalClass extends @internal class Drupal\Core\PHPStanDrupalTests\InternalClass.',
-                    7
+                    7,
+                    'Read the Drupal core backwards compatibility and internal API policy: https://www.drupal.org/about/core/policies/core-change-policies/drupal-8-and-9-backwards-compatibility-and-internal-api#internal',
                 ],
             ],
         ];
@@ -118,6 +120,16 @@ final class ClassExtendsInternalClassRuleTest extends DrupalRuleTestCase
         yield 'does not extend an internal class: phpstan_fixtures extends an external class from module module_with_internal_classes.' => [
             __DIR__ . '/../../fixtures/drupal/modules/phpstan_fixtures/src/Internal/ExtendsPHPStanDrupalModuleWithInternalClassesExternalClass.php',
             [],
+        ];
+        yield 'tip for ContentEntityDeleteForm' => [
+            __DIR__ . '/../../fixtures/drupal/modules/phpstan_fixtures/src/Form/ExtendsContentEntityDeleteForm.php',
+            [
+                [
+                    'Class Drupal\phpstan_fixtures\Form\ExtendsContentEntityDeleteForm extends @internal class Drupal\Core\Entity\ContentEntityDeleteForm.',
+                    7,
+                    'Extend \Drupal\Core\Entity\ContentEntityConfirmFormBase. See https://www.drupal.org/node/2491057'
+                ]
+            ],
         ];
     }
 
