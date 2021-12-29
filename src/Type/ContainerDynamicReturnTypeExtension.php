@@ -13,8 +13,6 @@ use PHPStan\Reflection\ParametersAcceptorSelector;
 use PHPStan\ShouldNotHappenException;
 use PHPStan\Type\Constant\ConstantBooleanType;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
-use PHPStan\Type\ObjectType;
-use PHPStan\Type\StringType;
 use Psr\Container\ContainerInterface;
 
 class ContainerDynamicReturnTypeExtension implements DynamicMethodReturnTypeExtension
