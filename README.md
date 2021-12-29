@@ -174,3 +174,43 @@ parameters:
 ```
 
 To add support for custom entities, you may add the same definition in your project's `phpstan.neon` likewise.
+
+### Providing entity type mappings for a contrib module
+
+Contributed modules can provide their own mapping that can be automatically registered with a user's code base when 
+they use the `phpstan/extension-installer`.  The extension installer scans installed package's `composer.json` for a 
+value in `extra.phpstan`. This will automatically bundle the defined include that contains an entity mapping 
+configuration.
+
+For example, the Paragraphs module could have the following `entity_mapping.neon` file:
+
+```neon
+parameters:
+  entityMapping:
+    paragraph:
+      class: Drupal\paragraphs\Entity\Paragraph
+    paragraphs_type:
+      class: Drupal\paragraphs\Entity\ParagraphsType
+```
+
+Then in the `composer.json` for Paragraphs, the `entity_mapping.neon` would be provided as a PHPStan include
+
+```json
+{
+  "name": "drupal/paragraphs",
+  "description": "Enables the creation of Paragraphs entities.",
+  "type": "drupal-module",
+  "license": "GPL-2.0-or-later",
+  "require": {
+    "drupal/entity_reference_revisions": "~1.3"
+  },
+  "extra": {
+    "phpstan": {
+      "includes": [
+        "entity_mapping.neon"
+      ]
+    }
+  }
+}
+
+```
