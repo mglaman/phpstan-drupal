@@ -79,8 +79,10 @@ final class RenderCallbackRule implements Rule
                 // if it is just a function or a static class call (MyClass::staticFunc).
                 if ($this->reflectionProvider->hasFunction(new \PhpParser\Node\Name($type->getValue()), null)) {
                     $errors[] = RuleErrorBuilder::message(
-                        sprintf("%s callback %s at key '%s' is not trusted. See https://www.drupal.org/node/2966725.", $keyChecked, $type->describe(VerbosityLevel::value()), $pos)
-                    )->line($errorLine)->build();
+                        sprintf("%s callback %s at key '%s' is not trusted.", $keyChecked, $type->describe(VerbosityLevel::value()), $pos)
+                    )->line($errorLine)
+                        ->tip('Change record: https://www.drupal.org/node/2966725.')
+                        ->build();
                     continue;
                 }
                 // @see \PHPStan\Type\Constant\ConstantStringType::isCallable
@@ -91,7 +93,7 @@ final class RenderCallbackRule implements Rule
                 if (!$trustedCallbackType->isSuperTypeOf(new ObjectType($matches[1]))->yes()) {
                     $errors[] = RuleErrorBuilder::message(
                         sprintf("%s callback class '%s' at key '%s' does not implement Drupal\Core\Security\TrustedCallbackInterface.", $keyChecked, (new ObjectType($matches[1]))->describe(VerbosityLevel::value()), $pos)
-                    )->line($errorLine)->build();
+                    )->line($errorLine)->tip('Change record: https://www.drupal.org/node/2966725.')->build();
                 }
             } elseif ($type instanceof ConstantArrayType) {
                 if (!$type->isCallable()->yes()) {
@@ -108,7 +110,7 @@ final class RenderCallbackRule implements Rule
                 if (!$trustedCallbackType->isSuperTypeOf($typeAndMethodName->getType())->yes()) {
                     $errors[] = RuleErrorBuilder::message(
                         sprintf("%s callback class '%s' at key '%s' does not implement Drupal\Core\Security\TrustedCallbackInterface.", $keyChecked, $typeAndMethodName->getType()->describe(VerbosityLevel::value()), $pos)
-                    )->line($errorLine)->build();
+                    )->line($errorLine)->tip('Change record: https://www.drupal.org/node/2966725.')->build();
                 }
             } elseif ($type instanceof ClosureType) {
                 if ($scope->isInClass()) {
@@ -124,8 +126,7 @@ final class RenderCallbackRule implements Rule
                         )->line($errorLine)->build();
                     }
                 }
-            }
-            else {
+            } else {
                 $errors[] = RuleErrorBuilder::message(
                     sprintf("%s value '%s' at key '%s' is invalid.", $keyChecked, $type->describe(VerbosityLevel::value()), $pos)
                 )->line($errorLine)->build();
@@ -134,5 +135,4 @@ final class RenderCallbackRule implements Rule
 
         return $errors;
     }
-
 }
