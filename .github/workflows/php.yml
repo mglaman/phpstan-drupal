@@ -16,15 +16,11 @@ jobs:
       matrix:
         experimental: [false]
         php-version:
-          - "7.3"
           - "7.4"
         drupal:
           - "^8.9"
           - "^9.0"
         include:
-          - php-version: "7.2"
-            drupal: "^8.9"
-            experimental: false
           - php-version: "8.0"
             drupal: "^9.0"
             experimental: true
@@ -67,15 +63,11 @@ jobs:
       matrix:
         experimental: [false]
         php-version:
-          - "7.3"
           - "7.4"
         drupal:
           - "^8.9"
           - "^9.0"
         include:
-          - php-version: "7.2"
-            drupal: "^8.9"
-            experimental: false
           - php-version: "8.0"
             drupal: "^9.0"
             experimental: true

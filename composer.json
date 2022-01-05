@@ -10,7 +10,7 @@
         }
     ],
     "require": {
-        "php": "^7.1 || ^8.0",
+        "php": "^7.4 || ^8.0",
         "nette/finder": "^2.5",
         "phpstan/phpstan": "^1.0",
         "symfony/yaml": "~3.4.5|^4.2",
