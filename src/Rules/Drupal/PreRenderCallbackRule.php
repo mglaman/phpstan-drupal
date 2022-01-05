@@ -1,11 +1,12 @@
 <?php declare(strict_types=1);
 
-namespace PHPStan\Rules\Drupal;
+namespace mglaman\PHPStanDrupal\Rules\Drupal;
 
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
 use PHPStan\Broker\Broker;
 use PHPStan\Reflection\Php\PhpFunctionReflection;
+use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
 use PHPStan\Type\Constant\ConstantStringType;
@@ -14,12 +15,14 @@ use PHPStan\Type\VerbosityLevel;
 final class PreRenderCallbackRule implements Rule
 {
 
-    /** @var Broker */
-    private $broker;
+    /**
+     * @var \PHPStan\Reflection\ReflectionProvider
+     */
+    protected $reflectionProvider;
 
-    public function __construct(Broker $broker)
+    public function __construct(ReflectionProvider $reflectionProvider)
     {
-        $this->broker = $broker;
+        $this->reflectionProvider = $reflectionProvider;
     }
 
     public function getNodeType(): string
@@ -67,7 +70,7 @@ final class PreRenderCallbackRule implements Rule
                         sprintf("#pre_render callback %s at key '%s' is not callable.", $type->describe(VerbosityLevel::value()), $pos)
                     )->line($preRenderItemValue->getLine())->build();
                 }
-                elseif ($this->broker->hasFunction(new \PhpParser\Node\Name($type->getValue()), null)) {
+                elseif ($this->reflectionProvider->hasFunction(new \PhpParser\Node\Name($type->getValue()), null)) {
                     $errors[] = RuleErrorBuilder::message(
                         sprintf("#pre_render callback %s at key '%s' is not trusted. See https://www.drupal.org/node/2966725.", $type->describe(VerbosityLevel::value()), $pos)
                     )->line($preRenderItemValue->getLine())->build();
@@ -75,7 +78,7 @@ final class PreRenderCallbackRule implements Rule
                     // @see \PHPStan\Type\Constant\ConstantStringType::isCallable
                     preg_match('#^([a-zA-Z_\\x7f-\\xff\\\\][a-zA-Z0-9_\\x7f-\\xff\\\\]*)::([a-zA-Z_\\x7f-\\xff][a-zA-Z0-9_\\x7f-\\xff]*)\\z#', $type->getValue(), $matches);
                     if ($matches !== null) {
-                        $classRef = $this->broker->getClass($matches[1]);
+                        $classRef = $this->reflectionProvider->getClass($matches[1]);
                         if (!$classRef->implementsInterface('Drupal\Core\Security\TrustedCallbackInterface')) {
                             $errors[] = RuleErrorBuilder::message(
                                 sprintf("#pre_render callback class '%s' at key '%s' does not implement Drupal\Core\Security\TrustedCallbackInterface.", $matches[1], $pos)
