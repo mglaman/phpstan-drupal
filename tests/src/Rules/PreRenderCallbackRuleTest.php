@@ -45,16 +45,19 @@ final class PreRenderCallbackRuleTest extends DrupalRuleTestCase {
                     26
                 ],
                 [
-                    "#pre_render callback 'sample_pre_render…' at key '1' is not trusted. See https://www.drupal.org/node/2966725.",
-                    27
+                    "#pre_render callback 'sample_pre_render…' at key '1' is not trusted.",
+                    27,
+                    'Change record: https://www.drupal.org/node/2966725.',
                 ],
                 [
                     "#pre_render callback class 'Drupal\pre_render_callback_rule\NotTrustedCallback' at key '3' does not implement Drupal\Core\Security\TrustedCallbackInterface.",
-                    29
+                    29,
+                    'Change record: https://www.drupal.org/node/2966725.',
                 ],
                 [
                     "#pre_render callback class 'Drupal\pre_render_callback_rule\NotTrustedCallback' at key '4' does not implement Drupal\Core\Security\TrustedCallbackInterface.",
-                    30
+                    30,
+                    'Change record: https://www.drupal.org/node/2966725.',
                 ],
             ]
         ];
