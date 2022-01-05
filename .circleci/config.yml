@@ -1,7 +1,7 @@
 version: 2.1
 defaults: &defaults
   docker:
-    - image: circleci/php:7.3-cli
+    - image: circleci/php:7.4-cli
   working_directory: ~/repo
 aliases:
   - &composer-cache
