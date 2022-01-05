@@ -329,3 +329,7 @@ services:
 	-
 		class: mglaman\PHPStanDrupal\Rules\Deprecations\StaticServiceDeprecatedServiceRule
 		tags: [phpstan.rules.rule]
+
+	-
+		class: mglaman\PHPStanDrupal\Rules\Drupal\RenderCallbackRule
+		tags: [phpstan.rules.rule]
