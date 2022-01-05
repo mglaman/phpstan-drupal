@@ -15,6 +15,9 @@ final class RenderArrayWithPreRenderCallback implements TrustedCallbackInterface
             '#pre_render' => [
                 [self::class, 'preRenderCallback'],
                 [$this, 'preRenderCallback'],
+                static function(array $element): array {
+                    return $element;
+                }
             ]
         ];
     }

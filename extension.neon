@@ -331,5 +331,5 @@ services:
 		tags: [phpstan.rules.rule]
 
 	-
-		class: PHPStan\Rules\Drupal\PreRenderCallbackRule
+		class: mglaman\PHPStanDrupal\Rules\Drupal\RenderCallbackRule
 		tags: [phpstan.rules.rule]
