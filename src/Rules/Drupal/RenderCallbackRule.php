@@ -16,6 +16,7 @@ use PHPStan\Type\Constant\ConstantArrayTypeAndMethod;
 use PHPStan\Type\Constant\ConstantIntegerType;
 use PHPStan\Type\Constant\ConstantStringType;
 use PHPStan\Type\ObjectType;
+use PHPStan\Type\UnionType;
 use PHPStan\Type\VerbosityLevel;
 
 final class RenderCallbackRule implements Rule
@@ -59,7 +60,10 @@ final class RenderCallbackRule implements Rule
             return [];
         }
 
-        $trustedCallbackType = new ObjectType('Drupal\Core\Security\TrustedCallbackInterface');
+        $trustedCallbackType = new UnionType([
+            new ObjectType('Drupal\Core\Security\TrustedCallbackInterface'),
+            new ObjectType('Drupal\Core\Render\Element\RenderCallbackInterface'),
+        ]);
         $errors = [];
         foreach ($value->items as $pos => $item) {
             if (!$item instanceof Node\Expr\ArrayItem) {

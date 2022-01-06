@@ -66,6 +66,10 @@ final class PreRenderCallbackRuleTest extends DrupalRuleTestCase {
             []
         ];
         yield [
+            __DIR__ . '/../../fixtures/drupal/modules/pre_render_callback_rule/src/RenderCallbackInterfaceObject.php',
+            []
+        ];
+        yield [
             __DIR__ . '/../../fixtures/drupal/modules/pre_render_callback_rule/src/FormWithClosure.php',
             [
                 [
