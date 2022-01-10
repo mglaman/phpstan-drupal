@@ -11,7 +11,7 @@
     ],
     "require": {
         "php": "^7.4 || ^8.0",
-        "nette/finder": "^2.5",
+        "symfony/finder": "~3.4.5|^4.2",
         "phpstan/phpstan": "^1.0",
         "symfony/yaml": "~3.4.5|^4.2",
         "webflo/drupal-finder": "^1.2"
