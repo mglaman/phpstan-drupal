@@ -16,3 +16,5 @@ assertType('Drupal\Core\Entity\Sql\SqlContentEntityStorage', $etm->getStorage('c
 assertType('Drupal\phpstan_fixtures\CustomContentEntityStorage', $etm->getStorage('content_entity_using_custom_storage'));
 assertType('Drupal\Core\Config\Entity\ConfigEntityStorage', $etm->getStorage('config_entity_using_default_storage'));
 assertType('Drupal\phpstan_fixtures\CustomConfigEntityStorage', $etm->getStorage('config_entity_using_custom_storage'));
+const ENTITY_TYPE_ID_NODE = 'node';
+assertType('Drupal\node\NodeStorage', $etm->getStorage(ENTITY_TYPE_ID_NODE));
