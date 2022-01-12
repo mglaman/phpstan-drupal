@@ -12,6 +12,8 @@ use PHPStan\Type\ClosureType;
 use PHPStan\Type\Constant\ConstantArrayType;
 use PHPStan\Type\Constant\ConstantIntegerType;
 use PHPStan\Type\Constant\ConstantStringType;
+use PHPStan\Type\Generic\GenericClassStringType;
+use PHPStan\Type\IntersectionType;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\Type;
 use PHPStan\Type\UnionType;
@@ -120,10 +122,30 @@ final class RenderCallbackRule implements Rule
                         )->line($errorLine)->build();
                     }
                 }
-            } else {
+            } elseif ($type instanceof IntersectionType) {
+                // Try to provide a tip for this weird occurrence.
+                $tip = '';
+                if ($item->value instanceof Node\Expr\BinaryOp\Concat) {
+                    $leftStringType = $scope->getType($item->value->left)->toString();
+                    $rightStringType = $scope->getType($item->value->right)->toString();
+                    if ($leftStringType instanceof GenericClassStringType && $rightStringType instanceof ConstantStringType) {
+                        $methodName = str_replace(':', '', $rightStringType->getValue());
+                        $tip = "Refactor concatenation of `static::class` with method name to an array callback: [static::class, '$methodName']";
+                    }
+                }
+
+                if ($tip === '') {
+                    $tip = 'If this error is unexpected, open an issue with the error and sample code https://github.com/mglaman/phpstan-drupal/issues/new';
+                }
+
                 $errors[] = RuleErrorBuilder::message(
                     sprintf("%s value '%s' at key '%s' is invalid.", $keyChecked, $type->describe(VerbosityLevel::value()), $pos)
-                )->line($errorLine)->build();
+                )->line($errorLine)->tip($tip)->build();
+            }else {
+                $errors[] = RuleErrorBuilder::message(
+                    sprintf("%s value '%s' at key '%s' is invalid.", $keyChecked, $type->describe(VerbosityLevel::value()), $pos)
+                )->line($errorLine)->tip('Open an issue https://github.com/mglaman/phpstan-drupal/issues/new with this error.')
+                    ->build();
             }
         }
 
