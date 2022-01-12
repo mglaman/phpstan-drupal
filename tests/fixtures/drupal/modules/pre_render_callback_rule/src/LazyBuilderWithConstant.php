@@ -9,13 +9,21 @@ class LazyBuilderWithConstant implements TrustedCallbackInterface {
 
     public function staticCallback(): array {
         return [
-            '#lazy_builder' => [
-                [[self::class, 'lazyBuilder'], ['baz', true]],
-                [[static::class, 'lazyBuilder'], ['mars', false]],
-                [[$this, 'lazyBuilder'], ['mars', false]],
-                [self::class . '::lazyBuilder', ['baz', true]],
-                [static::class . '::lazyBuilder', ['mars', false]],
-            ]
+            'foo' => [
+                '#lazy_builder' => [[self::class, 'lazyBuilder'], ['baz', true]],
+            ],
+            'bar' => [
+                '#lazy_builder' => [[static::class, 'lazyBuilder'], ['mars', false]],
+            ],
+            'baz' => [
+                '#lazy_builder' => [[$this, 'lazyBuilder'], ['mars', false]],
+            ],
+            'abc' => [
+                '#lazy_builder' => [self::class . '::lazyBuilder', ['baz', true]],
+            ],
+            'def' => [
+                '#lazy_builder' => [static::class . '::lazyBuilder', ['mars', false]],
+            ],
         ];
     }
 

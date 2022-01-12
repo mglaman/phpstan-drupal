@@ -81,8 +81,8 @@ final class PreRenderCallbackRuleTest extends DrupalRuleTestCase {
             __DIR__ . '/../../fixtures/drupal/modules/pre_render_callback_rule/src/LazyBuilderWithConstant.php',
             [
                 [
-                    "#lazy_builder value 'non-empty-string' at key '4' is invalid.",
-                    17,
+                    "#lazy_builder value 'non-empty-string' at key '0' is invalid.",
+                    25,
                     "Refactor concatenation of `static::class` with method name to an array callback: [static::class, 'lazyBuilder']"
                 ]
             ]
@@ -95,6 +95,10 @@ final class PreRenderCallbackRuleTest extends DrupalRuleTestCase {
                     35
                 ]
             ]
+        ];
+        yield [
+            __DIR__ . '/../../fixtures/drupal/core/lib/Drupal/Core/Access/RouteProcessorCsrf.php',
+            []
         ];
     }
 
