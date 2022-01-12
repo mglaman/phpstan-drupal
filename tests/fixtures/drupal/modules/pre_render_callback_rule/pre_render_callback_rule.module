@@ -27,7 +27,8 @@ function pre_render_callback_rule_alter_some_stuff() {
             'sample_pre_render_callback',
             '\Drupal\pre_render_callback_rule\RenderArrayWithPreRenderCallback::preRenderCallback',
             '\Drupal\pre_render_callback_rule\NotTrustedCallback::unsafeCallback',
-            ['\Drupal\pre_render_callback_rule\NotTrustedCallback', 'unsafeCallback']
+            ['\Drupal\pre_render_callback_rule\NotTrustedCallback', 'unsafeCallback'],
+            'user.toolbar_link_builder:renderToolbarLinks'
         ],
     ];
 

@@ -2,20 +2,18 @@
 
 namespace mglaman\PHPStanDrupal\Rules\Drupal;
 
+use mglaman\PHPStanDrupal\Drupal\ServiceMap;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
-use PHPStan\Broker\Broker;
-use PHPStan\Reflection\Php\PhpFunctionReflection;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
-use PHPStan\TrinaryLogic;
 use PHPStan\Type\ClosureType;
 use PHPStan\Type\Constant\ConstantArrayType;
-use PHPStan\Type\Constant\ConstantArrayTypeAndMethod;
 use PHPStan\Type\Constant\ConstantIntegerType;
 use PHPStan\Type\Constant\ConstantStringType;
 use PHPStan\Type\ObjectType;
+use PHPStan\Type\Type;
 use PHPStan\Type\UnionType;
 use PHPStan\Type\VerbosityLevel;
 
@@ -24,9 +22,12 @@ final class RenderCallbackRule implements Rule
 
     protected ReflectionProvider $reflectionProvider;
 
-    public function __construct(ReflectionProvider $reflectionProvider)
+    protected ServiceMap $serviceMap;
+
+    public function __construct(ReflectionProvider $reflectionProvider, ServiceMap $serviceMap)
     {
         $this->reflectionProvider = $reflectionProvider;
+        $this->serviceMap = $serviceMap;
     }
 
     public function getNodeType(): string
@@ -70,7 +71,7 @@ final class RenderCallbackRule implements Rule
                 continue;
             }
             $errorLine = $item->value->getLine();
-            $type = $scope->getType($item->value);
+            $type = $this->getType($item->value, $scope);
 
             if ($type instanceof ConstantStringType) {
                 if (!$type->isCallable()->yes()) {
@@ -87,17 +88,6 @@ final class RenderCallbackRule implements Rule
                     )->line($errorLine)
                         ->tip('Change record: https://www.drupal.org/node/2966725.')
                         ->build();
-                    continue;
-                }
-                // @see \PHPStan\Type\Constant\ConstantStringType::isCallable
-                preg_match('#^([a-zA-Z_\\x7f-\\xff\\\\][a-zA-Z0-9_\\x7f-\\xff\\\\]*)::([a-zA-Z_\\x7f-\\xff][a-zA-Z0-9_\\x7f-\\xff]*)\\z#', $type->getValue(), $matches);
-                if ($matches === null) {
-                    throw new \PHPStan\ShouldNotHappenException('Unable to get class name from ConstantStringType value: ' . $type->describe(VerbosityLevel::value()));
-                }
-                if (!$trustedCallbackType->isSuperTypeOf(new ObjectType($matches[1]))->yes()) {
-                    $errors[] = RuleErrorBuilder::message(
-                        sprintf("%s callback class '%s' at key '%s' does not implement Drupal\Core\Security\TrustedCallbackInterface.", $keyChecked, (new ObjectType($matches[1]))->describe(VerbosityLevel::value()), $pos)
-                    )->line($errorLine)->tip('Change record: https://www.drupal.org/node/2966725.')->build();
                 }
             } elseif ($type instanceof ConstantArrayType) {
                 if (!$type->isCallable()->yes()) {
@@ -138,5 +128,43 @@ final class RenderCallbackRule implements Rule
         }
 
         return $errors;
+    }
+
+    private function getType(Node\Expr $node, Scope $scope):  Type
+    {
+        $type = $scope->getType($node);
+        if ($type instanceof ConstantStringType) {
+            if ($type->isClassString()) {
+                return $type;
+            }
+            // Covers  \Drupal\Core\Controller\ControllerResolver::createController.
+            if (substr_count($type->getValue(), ':') === 1) {
+                [$class_or_service, $method] = explode(':', $type->getValue(), 2);
+
+                $serviceDefinition = $this->serviceMap->getService($class_or_service);
+                if ($serviceDefinition === null || $serviceDefinition->getClass() === null) {
+                    return $type;
+                }
+                return new ConstantArrayType(
+                    [new ConstantIntegerType(0), new ConstantIntegerType(1)],
+                    [
+                        new ConstantStringType($serviceDefinition->getClass(), true),
+                        new ConstantStringType($method)
+                    ]
+                );
+            }
+            // @see \PHPStan\Type\Constant\ConstantStringType::isCallable
+            preg_match('#^([a-zA-Z_\\x7f-\\xff\\\\][a-zA-Z0-9_\\x7f-\\xff\\\\]*)::([a-zA-Z_\\x7f-\\xff][a-zA-Z0-9_\\x7f-\\xff]*)\\z#', $type->getValue(), $matches);
+            if ($matches !== null && count($matches) > 0) {
+                return new ConstantArrayType(
+                    [new ConstantIntegerType(0), new ConstantIntegerType(1)],
+                    [
+                        new ConstantStringType($matches[1], true),
+                        new ConstantStringType($matches[2])
+                    ]
+                );
+            }
+        }
+        return $type;
     }
 }
