@@ -61,7 +61,7 @@ jobs:
           command: ./vendor/bin/phpcs src
       - run:
           name: PHPStan Analyze
-          command: ./vendor/bin/phpstan analyze src
+          command: php -dmemory_limit=-1 vendor/bin/phpstan.phar
       - run:
           name: PHPUnit
           command: ./vendor/bin/phpunit
