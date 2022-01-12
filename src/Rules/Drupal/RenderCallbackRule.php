@@ -45,7 +45,8 @@ final class RenderCallbackRule implements Rule
             return [];
         }
         // @see https://www.drupal.org/node/2966725
-        $keysToCheck = ['#pre_render', '#post_render', '#lazy_builder', '#access_callback'];
+
+        $keysToCheck = ['#pre_render', '#post_render', '#access_callback', '#lazy_builder'];
         $keySearch = array_search($key->value, $keysToCheck, true);
         if ($keySearch === false) {
             return [];
@@ -71,6 +72,25 @@ final class RenderCallbackRule implements Rule
         foreach ($value->items as $pos => $item) {
             if (!$item instanceof Node\Expr\ArrayItem) {
                 continue;
+            }
+            // '#lazy_builder' has two items, callback and args. Others are direct callbacks.
+            // Lazy builder in Renderer: $elements['#lazy_builder'][0], $elements['#lazy_builder'][1]
+            if ($keyChecked === '#lazy_builder') {
+                if (!$item->value instanceof Node\Expr\Array_) {
+                    $errors[] = RuleErrorBuilder::message(
+                        sprintf("%s callback %s at key '%s' is not callable.", $keyChecked, $scope->getType($item->value)->describe(VerbosityLevel::value()), $pos)
+                    )->line($item->value->getLine())->build();
+                    continue;
+                }
+
+                if (count($item->value->items) !== 2) {
+                    $errors[] = RuleErrorBuilder::message(
+                        sprintf("%s callback %s at key '%s' is not valid. First value must be a callback and second value its arguments.", $keyChecked, $scope->getType($item->value)->describe(VerbosityLevel::value()), $pos)
+                    )->line($item->value->getLine())->build();
+                    continue;
+                }
+                // Replace $item with our nested callback.
+                $item = $item->value->items[0];
             }
             $errorLine = $item->value->getLine();
             $type = $this->getType($item->value, $scope);
@@ -141,11 +161,10 @@ final class RenderCallbackRule implements Rule
                 $errors[] = RuleErrorBuilder::message(
                     sprintf("%s value '%s' at key '%s' is invalid.", $keyChecked, $type->describe(VerbosityLevel::value()), $pos)
                 )->line($errorLine)->tip($tip)->build();
-            }else {
+            } else {
                 $errors[] = RuleErrorBuilder::message(
                     sprintf("%s value '%s' at key '%s' is invalid.", $keyChecked, $type->describe(VerbosityLevel::value()), $pos)
-                )->line($errorLine)->tip('Open an issue https://github.com/mglaman/phpstan-drupal/issues/new with this error.')
-                    ->build();
+                )->line($errorLine)->build();
             }
         }
 
