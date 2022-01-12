@@ -3,6 +3,7 @@
 namespace mglaman\PHPStanDrupal\Tests\Rules;
 
 
+use mglaman\PHPStanDrupal\Drupal\ServiceMap;
 use mglaman\PHPStanDrupal\Tests\DrupalRuleTestCase;
 use mglaman\PHPStanDrupal\Rules\Drupal\RenderCallbackRule;
 
@@ -11,7 +12,8 @@ final class PreRenderCallbackRuleTest extends DrupalRuleTestCase {
     protected function getRule(): \PHPStan\Rules\Rule
     {
         return new RenderCallbackRule(
-            $this->createReflectionProvider()
+            $this->createReflectionProvider(),
+            self::getContainer()->getByType(ServiceMap::class)
         );
     }
 
