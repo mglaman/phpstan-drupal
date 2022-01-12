@@ -60,6 +60,7 @@ final class RenderCallbackRule implements Rule
 
         $errors = [];
 
+        // @todo Move into its own rule.
         if ($keyChecked === '#lazy_builder') {
             if (!$value instanceof Node\Expr\Array_) {
                 return [
@@ -73,10 +74,13 @@ final class RenderCallbackRule implements Rule
             if ($value->items[0] === null) {
                 return [];
             }
+            // @todo take $value->items[1] and validate parameters against the callback.
             $errors[] = $this->doProcessNode($value->items[0]->value, $scope, $keyChecked, 0);
         } elseif ($keyChecked === '#access_callback') {
+            // @todo move into its own rule.
             $errors[] = $this->doProcessNode($value, $scope, $keyChecked, 0);
         } else {
+            // @todo keep here.
             if (!$value instanceof Node\Expr\Array_) {
                 return [
                     RuleErrorBuilder::message(sprintf('The "%s" render array value expects an array of callbacks.', $keyChecked))
@@ -114,7 +118,7 @@ final class RenderCallbackRule implements Rule
             }
             // We can determine if the callback is callable through the type system. However, we cannot determine
             // if it is just a function or a static class call (MyClass::staticFunc).
-            if ($this->reflectionProvider->hasFunction(new \PhpParser\Node\Name($type->getValue()), null)) {
+            if ($this->reflectionProvider->hasFunction(new Node\Name($type->getValue()), null)) {
                 return RuleErrorBuilder::message(
                     sprintf("%s callback %s at key '%s' is not trusted.", $keyChecked, $type->describe(VerbosityLevel::value()), $pos)
                 )->line($errorLine)
@@ -185,6 +189,7 @@ final class RenderCallbackRule implements Rule
         return null;
     }
 
+    // @todo move to a helper, as Drupal uses `service:method` references a lot.
     private function getType(Node\Expr $node, Scope $scope):  Type
     {
         $type = $scope->getType($node);
