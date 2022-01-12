@@ -83,7 +83,7 @@ final class RenderCallbackRule implements Rule
                     continue;
                 }
 
-                if (count($item->value->items) !== 2) {
+                if (count($item->value->items) !== 2 || $item->value->items[0] === null) {
                     $errors[] = RuleErrorBuilder::message(
                         sprintf("%s callback %s at key '%s' is not valid. First value must be a callback and second value its arguments.", $keyChecked, $scope->getType($item->value)->describe(VerbosityLevel::value()), $pos)
                     )->line($item->value->getLine())->build();
