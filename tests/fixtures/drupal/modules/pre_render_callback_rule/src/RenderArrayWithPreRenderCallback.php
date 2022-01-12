@@ -5,7 +5,7 @@ namespace Drupal\pre_render_callback_rule;
 use Drupal\Core\Security\TrustedCallbackInterface;
 use Drupal\Core\Url;
 
-final class RenderArrayWithPreRenderCallback implements TrustedCallbackInterface {
+class RenderArrayWithPreRenderCallback implements TrustedCallbackInterface {
 
     public function staticCallback(): array {
         return [
@@ -14,6 +14,9 @@ final class RenderArrayWithPreRenderCallback implements TrustedCallbackInterface
             '#title' => 'FooBar',
             '#pre_render' => [
                 [self::class, 'preRenderCallback'],
+                [static::class, 'preRenderCallback'],
+                self::class . '::preRenderCallback',
+                static::class . '::preRenderCallback',
                 [$this, 'preRenderCallback'],
                 static function(array $element): array {
                     return $element;

@@ -65,11 +65,27 @@ final class PreRenderCallbackRuleTest extends DrupalRuleTestCase {
         ];
         yield [
             __DIR__ . '/../../fixtures/drupal/modules/pre_render_callback_rule/src/RenderArrayWithPreRenderCallback.php',
-            []
+            [
+                [
+                    "#pre_render value 'non-empty-string' at key '3' is invalid.",
+                    19,
+                    "Refactor concatenation of `static::class` with method name to an array callback: [static::class, 'preRenderCallback']"
+                ]
+            ]
         ];
         yield [
             __DIR__ . '/../../fixtures/drupal/modules/pre_render_callback_rule/src/RenderCallbackInterfaceObject.php',
             []
+        ];
+        yield [
+            __DIR__ . '/../../fixtures/drupal/modules/pre_render_callback_rule/src/LazyBuilderWithConstant.php',
+            [
+                [
+                    "#lazy_builder value 'non-empty-string' at key '0' is invalid.",
+                    25,
+                    "Refactor concatenation of `static::class` with method name to an array callback: [static::class, 'lazyBuilder']"
+                ]
+            ]
         ];
         yield [
             __DIR__ . '/../../fixtures/drupal/modules/pre_render_callback_rule/src/FormWithClosure.php',
@@ -79,6 +95,10 @@ final class PreRenderCallbackRuleTest extends DrupalRuleTestCase {
                     35
                 ]
             ]
+        ];
+        yield [
+            __DIR__ . '/../../fixtures/drupal/core/lib/Drupal/Core/Access/RouteProcessorCsrf.php',
+            []
         ];
     }
 
