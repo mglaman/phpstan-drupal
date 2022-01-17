@@ -11,16 +11,16 @@
     ],
     "require": {
         "php": "^7.4 || ^8.0",
-        "symfony/finder": "~3.4.5|^4.2",
+        "symfony/finder": "~3.4.5 ||^4.2 || ^5.0 || ^6.0",
         "phpstan/phpstan": "^1.0",
-        "symfony/yaml": "~3.4.5|^4.2",
+        "symfony/yaml": "~3.4.5 || ^4.2|| ^5.0 || ^6.0",
         "webflo/drupal-finder": "^1.2"
     },
     "require-dev": {
         "composer/installers": "^1.9",
         "drupal/core-dev": "^8.8@alpha || ^9.0",
         "drupal/core-recommended": "^8.8@alpha || ^9.0",
-        "drush/drush": "^9.6 | ^10.0",
+        "drush/drush": "^9.6 || ^10.0",
         "phpstan/extension-installer": "^1.1",
         "phpstan/phpstan-deprecation-rules": "^1.0",
         "phpstan/phpstan-strict-rules": "^1.0",
