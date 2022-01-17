@@ -18,9 +18,9 @@
     },
     "require-dev": {
         "composer/installers": "^1.9",
-        "drupal/core-dev": "^8.8@alpha || ^9.0 || ^10.0@dev",
-        "drupal/core-recommended": "^8.8@alpha || ^9.0 || ^10.0@dev",
-        "drush/drush": "^9.6 || ^10.0 || ^11.0",
+        "drupal/core-dev": "^8.8@alpha || ^9.0",
+        "drupal/core-recommended": "^8.8@alpha || ^9.0",
+        "drush/drush": "^9.6 || ^10.0",
         "phpstan/extension-installer": "^1.1",
         "phpstan/phpstan-deprecation-rules": "^1.0",
         "phpstan/phpstan-strict-rules": "^1.0",
