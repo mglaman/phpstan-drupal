@@ -8,6 +8,7 @@ use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\ParametersAcceptorSelector;
+use PHPStan\ShouldNotHappenException;
 use PHPStan\Type\ArrayType;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
 use PHPStan\Type\IntegerType;
@@ -43,6 +44,7 @@ class EntityStorageDynamicReturnTypeExtension implements DynamicMethodReturnType
                 'loadMultiple',
                 'loadByProperties',
                 'loadUnchanged',
+                'getQuery',
             ],
             true
         );
@@ -73,6 +75,18 @@ class EntityStorageDynamicReturnTypeExtension implements DynamicMethodReturnType
             }
 
             return new ArrayType(new IntegerType(), $type);
+        }
+        if ($methodReflection->getName() === 'getQuery') {
+            $defaultReturnType = ParametersAcceptorSelector::selectSingle($methodReflection->getVariants())->getReturnType();
+            if (!$defaultReturnType instanceof ObjectType) {
+                throw new ShouldNotHappenException();
+            }
+            return new EntityQueryType(
+                $defaultReturnType->getClassName(),
+                $callerType,
+                $defaultReturnType->getSubtractedType(),
+                $defaultReturnType->getClassReflection()
+            );
         }
 
         return $type;

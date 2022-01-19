@@ -3,6 +3,9 @@
 namespace mglaman\PHPStanDrupal\Type\EntityQuery;
 
 use Drupal\Core\Entity\Query\QueryInterface;
+use mglaman\PHPStanDrupal\Type\EntityStorage\ConfigEntityStorageType;
+use mglaman\PHPStanDrupal\Type\EntityStorage\ContentEntityStorageType;
+use mglaman\PHPStanDrupal\Type\EntityStorage\EntityQueryType;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\MethodReflection;
@@ -24,10 +27,7 @@ class EntityQueryDynamicReturnTypeExtension implements DynamicMethodReturnTypeEx
 
     public function isMethodSupported(MethodReflection $methodReflection): bool
     {
-        return in_array($methodReflection->getName(), [
-            'count',
-            'execute',
-        ], true);
+        return true;
     }
 
     public function getTypeFromMethodCall(
@@ -38,6 +38,7 @@ class EntityQueryDynamicReturnTypeExtension implements DynamicMethodReturnTypeEx
         $defaultReturnType = ParametersAcceptorSelector::selectSingle($methodReflection->getVariants())->getReturnType();
         $varType = $scope->getType($methodCall->var);
         $methodName = $methodReflection->getName();
+
         if ($methodName === 'count') {
             if ($varType instanceof ObjectType) {
                 return new EntityQueryCountType(
@@ -53,14 +54,26 @@ class EntityQueryDynamicReturnTypeExtension implements DynamicMethodReturnTypeEx
             if ($varType instanceof EntityQueryCountType) {
                 return new IntegerType();
             }
-            if ($varType instanceof ObjectType) {
-                // @todo if this is a config storage, it'd string keys.
-                // revisit after https://github.com/mglaman/phpstan-drupal/pull/239
-                // then we can check what kind of storage we have.
-                return new ArrayType(new IntegerType(), new StringType());
+            if ($varType instanceof EntityQueryType) {
+                if ($varType->getEntityStorageType() instanceof ConfigEntityStorageType) {
+                    return new ArrayType(new StringType(), new StringType());
+                }
+                if ($varType->getEntityStorageType() instanceof ContentEntityStorageType) {
+                    return new ArrayType(new IntegerType(), new StringType());
+                }
             }
             return $defaultReturnType;
         }
+
+        // Fallback for all other methods on \Drupal\Core\Entity\Query\QueryInterface
+        // to ensure the default return type of `$this` is the correct type from the
+        // parent caller. The default return type is cached with the entity storage property.
+        // @todo This means we're doing something wrong. But this makes it work.
+        // The default return type of EntityQueryType can be cached with an invalid entity storage type.
+        if ($defaultReturnType->equals($varType)) {
+            return $varType;
+        }
+
         return $defaultReturnType;
     }
 }
