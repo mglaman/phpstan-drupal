@@ -100,6 +100,14 @@ final class PreRenderCallbackRuleTest extends DrupalRuleTestCase {
             __DIR__ . '/../../fixtures/drupal/core/lib/Drupal/Core/Access/RouteProcessorCsrf.php',
             []
         ];
+        yield [
+            __DIR__ . '/../../fixtures/drupal/core/lib/Drupal/Core/Render/PlaceholderGenerator.php',
+            []
+        ];
+        yield [
+            __DIR__ . '/../../fixtures/drupal/core/lib/Drupal/Core/Render/Renderer.php',
+            []
+        ];
     }
 
 
