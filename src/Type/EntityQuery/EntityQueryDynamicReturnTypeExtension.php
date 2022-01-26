@@ -24,7 +24,10 @@ class EntityQueryDynamicReturnTypeExtension implements DynamicMethodReturnTypeEx
 
     public function isMethodSupported(MethodReflection $methodReflection): bool
     {
-        return true;
+        return in_array($methodReflection->getName(), [
+            'count',
+            'execute',
+        ], true);
     }
 
     public function getTypeFromMethodCall(
@@ -58,15 +61,6 @@ class EntityQueryDynamicReturnTypeExtension implements DynamicMethodReturnTypeEx
                 return new ArrayType(new IntegerType(), new StringType());
             }
             return $defaultReturnType;
-        }
-
-        // Fallback for all other methods on \Drupal\Core\Entity\Query\QueryInterface
-        // to ensure the default return type of `$this` is the correct type from the
-        // parent caller. The default return type is cached with the entity storage property.
-        // @todo This means we're doing something wrong. But this makes it work.
-        // The default return type of EntityQueryType can be cached with an invalid entity storage type.
-        if ($defaultReturnType->equals($varType)) {
-            return $varType;
         }
 
         return $defaultReturnType;
