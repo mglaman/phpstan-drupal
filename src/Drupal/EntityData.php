@@ -42,7 +42,7 @@ final class EntityData
         return $this->className === null ? null : new ObjectType($this->className);
     }
 
-    public function getStorageType(): ?ObjectType
+    public function getStorageType(): ?EntityStorageType
     {
         if ($this->storageClassName === null) {
             $classType = $this->getClassType();

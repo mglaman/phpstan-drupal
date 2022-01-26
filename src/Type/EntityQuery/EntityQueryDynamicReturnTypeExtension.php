@@ -38,6 +38,7 @@ class EntityQueryDynamicReturnTypeExtension implements DynamicMethodReturnTypeEx
         $defaultReturnType = ParametersAcceptorSelector::selectSingle($methodReflection->getVariants())->getReturnType();
         $varType = $scope->getType($methodCall->var);
         $methodName = $methodReflection->getName();
+
         if ($methodName === 'count') {
             if ($varType instanceof ObjectType) {
                 return new EntityQueryCountType(
@@ -53,14 +54,15 @@ class EntityQueryDynamicReturnTypeExtension implements DynamicMethodReturnTypeEx
             if ($varType instanceof EntityQueryCountType) {
                 return new IntegerType();
             }
-            if ($varType instanceof ObjectType) {
-                // @todo if this is a config storage, it'd string keys.
-                // revisit after https://github.com/mglaman/phpstan-drupal/pull/239
-                // then we can check what kind of storage we have.
+            if ($varType instanceof ConfigEntityQueryType) {
+                return new ArrayType(new StringType(), new StringType());
+            }
+            if ($varType instanceof ContentEntityQueryType) {
                 return new ArrayType(new IntegerType(), new StringType());
             }
             return $defaultReturnType;
         }
+
         return $defaultReturnType;
     }
 }
