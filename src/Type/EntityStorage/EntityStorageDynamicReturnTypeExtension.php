@@ -4,6 +4,8 @@ namespace mglaman\PHPStanDrupal\Type\EntityStorage;
 
 use Drupal\Core\Entity\EntityStorageInterface;
 use mglaman\PHPStanDrupal\Drupal\EntityDataRepository;
+use mglaman\PHPStanDrupal\Type\EntityQuery\ConfigEntityQueryType;
+use mglaman\PHPStanDrupal\Type\EntityQuery\ContentEntityQueryType;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\MethodReflection;
@@ -77,16 +79,25 @@ class EntityStorageDynamicReturnTypeExtension implements DynamicMethodReturnType
             return new ArrayType(new IntegerType(), $type);
         }
         if ($methodReflection->getName() === 'getQuery') {
-            $defaultReturnType = ParametersAcceptorSelector::selectSingle($methodReflection->getVariants())->getReturnType();
-            if (!$defaultReturnType instanceof ObjectType) {
-                throw new ShouldNotHappenException();
+            $returnType = ParametersAcceptorSelector::selectSingle($methodReflection->getVariants())->getReturnType();
+            if (!$returnType instanceof ObjectType) {
+                return $returnType;
             }
-            return new EntityQueryType(
-                $defaultReturnType->getClassName(),
-                $callerType,
-                $defaultReturnType->getSubtractedType(),
-                $defaultReturnType->getClassReflection()
-            );
+            if ($callerType instanceof ContentEntityStorageType) {
+                return new ContentEntityQueryType(
+                    $returnType->getClassName(),
+                    $returnType->getSubtractedType(),
+                    $returnType->getClassReflection()
+                );
+            }
+            if ($callerType instanceof ConfigEntityStorageType) {
+                return new ConfigEntityQueryType(
+                    $returnType->getClassName(),
+                    $returnType->getSubtractedType(),
+                    $returnType->getClassReflection()
+                );
+            }
+            return $returnType;
         }
 
         return $type;

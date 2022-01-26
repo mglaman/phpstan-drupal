@@ -3,12 +3,14 @@
 namespace mglaman\PHPStanDrupal\Type;
 
 use mglaman\PHPStanDrupal\Drupal\EntityDataRepository;
-use mglaman\PHPStanDrupal\Type\EntityStorage\EntityQueryType;
+use mglaman\PHPStanDrupal\Type\EntityQuery\ConfigEntityQueryType;
+use mglaman\PHPStanDrupal\Type\EntityQuery\ContentEntityQueryType;
+use mglaman\PHPStanDrupal\Type\EntityStorage\ConfigEntityStorageType;
+use mglaman\PHPStanDrupal\Type\EntityStorage\ContentEntityStorageType;
 use PhpParser\Node\Expr\StaticCall;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\ParametersAcceptorSelector;
-use PHPStan\ShouldNotHappenException;
 use PHPStan\Type\Constant\ConstantStringType;
 use PHPStan\Type\DynamicStaticMethodReturnTypeExtension;
 use PHPStan\Type\ObjectType;
@@ -58,17 +60,26 @@ class DrupalStaticEntityQueryDynamicReturnTypeExtension implements DynamicStatic
             return $returnType;
         }
         $entityType = $this->entityDataRepository->get($entityTypeId);
-        if ($entityType->getStorageType() === null) {
+        $entityStorageType = $entityType->getStorageType();
+        if ($entityStorageType === null) {
             return $returnType;
         }
-        // @todo I think we're doing things wrong if this return type gets cached.
-        //   but  maybe we cannot do anything single we `selectSingle` from the default return type?
-        //   We should probably just use a ConfigEntityQueryType and ContentEntityQueryType to avoid the problem.
-        return new EntityQueryType(
-            $returnType->getClassName(),
-            $entityType->getStorageType(),
-            $returnType->getSubtractedType(),
-            $returnType->getClassReflection()
-        );
+
+        if ($entityStorageType instanceof ContentEntityStorageType) {
+            return new ContentEntityQueryType(
+                $returnType->getClassName(),
+                $returnType->getSubtractedType(),
+                $returnType->getClassReflection()
+            );
+        }
+        if ($entityStorageType instanceof ConfigEntityStorageType) {
+            return new ConfigEntityQueryType(
+                $returnType->getClassName(),
+                $returnType->getSubtractedType(),
+                $returnType->getClassReflection()
+            );
+        }
+
+        return $returnType;
     }
 }

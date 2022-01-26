@@ -3,9 +3,6 @@
 namespace mglaman\PHPStanDrupal\Type\EntityQuery;
 
 use Drupal\Core\Entity\Query\QueryInterface;
-use mglaman\PHPStanDrupal\Type\EntityStorage\ConfigEntityStorageType;
-use mglaman\PHPStanDrupal\Type\EntityStorage\ContentEntityStorageType;
-use mglaman\PHPStanDrupal\Type\EntityStorage\EntityQueryType;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\MethodReflection;
@@ -54,13 +51,11 @@ class EntityQueryDynamicReturnTypeExtension implements DynamicMethodReturnTypeEx
             if ($varType instanceof EntityQueryCountType) {
                 return new IntegerType();
             }
-            if ($varType instanceof EntityQueryType) {
-                if ($varType->getEntityStorageType() instanceof ConfigEntityStorageType) {
-                    return new ArrayType(new StringType(), new StringType());
-                }
-                if ($varType->getEntityStorageType() instanceof ContentEntityStorageType) {
-                    return new ArrayType(new IntegerType(), new StringType());
-                }
+            if ($varType instanceof ConfigEntityQueryType) {
+                return new ArrayType(new StringType(), new StringType());
+            }
+            if ($varType instanceof ContentEntityQueryType) {
+                return new ArrayType(new IntegerType(), new StringType());
             }
             return $defaultReturnType;
         }
