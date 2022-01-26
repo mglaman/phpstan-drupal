@@ -7,6 +7,7 @@ use PHPStan\Analyser\Scope;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
 use PHPStan\Type\ObjectType;
+use PHPStan\Type\TypeCombinator;
 
 final class BrowserTestBaseDefaultThemeRule implements Rule
 {
@@ -31,12 +32,17 @@ final class BrowserTestBaseDefaultThemeRule implements Rule
 
         $classType = $scope->resolveTypeByName($node->namespacedName);
         assert($classType instanceof ObjectType);
-        $browserTestBaseAncestor = $classType->getAncestorWithClassName('Drupal\\Tests\\BrowserTestBase');
-        if ($browserTestBaseAncestor === null) {
+
+        $browserTestBaseType = new ObjectType('Drupal\\Tests\\BrowserTestBase');
+        if (!$browserTestBaseType->isSuperTypeOf($classType)->yes()) {
             return [];
         }
-        $browserTestBaseAncestor = $classType->getAncestorWithClassName('Drupal\\FunctionalTests\\Update\\UpdatePathTestBase');
-        if ($browserTestBaseAncestor !== null) {
+
+        $excludedTestTypes = TypeCombinator::union(
+            new ObjectType('Drupal\\FunctionalTests\\Update\\UpdatePathTestBase'),
+            new ObjectType('Drupal\\FunctionalTests\\Installer\\InstallerExistingConfigTestBase')
+        );
+        if ($excludedTestTypes->isSuperTypeOf($classType)->yes()) {
             return [];
         }
 
