@@ -29,6 +29,10 @@ final class BrowserTestBaseDefaultThemeRule implements Rule
         if ($node->namespacedName === null) {
             return [];
         }
+        $testNamespacePart = (string) $node->namespacedName->slice(1, 3);
+        if ($testNamespacePart !== 'Tests\\Functional' && $testNamespacePart !== 'Tests\\FunctionalJavascript') {
+            return [];
+        }
 
         $classType = $scope->resolveTypeByName($node->namespacedName);
         assert($classType instanceof ObjectType);
