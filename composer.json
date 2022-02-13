@@ -17,6 +17,7 @@
         "webflo/drupal-finder": "^1.2"
     },
     "require-dev": {
+        "behat/mink": "^1.8",
         "composer/installers": "^1.9",
         "drupal/core-recommended": "^8.8@alpha || ^9.0",
         "drush/drush": "^9.6 || ^10.0",
