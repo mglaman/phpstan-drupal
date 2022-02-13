@@ -29,10 +29,6 @@ final class BrowserTestBaseDefaultThemeRule implements Rule
         if ($node->namespacedName === null) {
             return [];
         }
-        $testNamespacePart = (string) $node->namespacedName->slice(1, 3);
-        if ($testNamespacePart !== 'Tests\\Functional' && $testNamespacePart !== 'Tests\\FunctionalJavascript') {
-            return [];
-        }
 
         // Only inspect tests.
         // @todo replace this str_ends_with() when php 8 is required.
