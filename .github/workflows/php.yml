@@ -92,7 +92,7 @@ jobs:
       - name: "require phpstan-drupal"
         run: |
           cd ~/drupal
-          COMPOSER_MEMORY_LIMIT=-1 composer require mglaman/phpstan-drupal "*"
+          COMPOSER_MEMORY_LIMIT=-1 composer require mglaman/phpstan-drupal "*" --with-all-dependencies
           cp $GITHUB_WORKSPACE/tests/fixtures/config/drupal-phpstan.neon phpstan.neon
       - name: "Test core/install.php"
         run: |
