@@ -43,7 +43,7 @@ commands:
             cd /tmp/drupal
             composer require --dev drupal/core-dev:^8.8
             composer config repositories.1 '{"type": "path", "url": "'${CIRCLE_WORKING_DIRECTORY}'", "options": { "symlink": false }}'
-            composer require --dev mglaman/phpstan-drupal "*"
+            composer require --dev mglaman/phpstan-drupal "*" phpstan/extension-installer
             cat composer.json
             cp ~/repo/tests/fixtures/config/drupal-phpstan.neon /tmp/drupal/phpstan.neon
             ./vendor/bin/phpstan --version
