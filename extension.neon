@@ -11,6 +11,8 @@ parameters:
 		- install
 		- profile
 		- engine
+	scanFiles:
+		- stubs/Twig/functions.stub
 	drupal:
 		drupal_root: '%currentWorkingDirectory%'
 		entityMapping:
