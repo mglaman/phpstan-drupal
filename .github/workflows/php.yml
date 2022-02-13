@@ -47,7 +47,8 @@ jobs:
         run: "composer require phpspec/prophecy-phpunit:^2 --dev --no-update"
         if: ${{ matrix.drupal != '^8.9' }}
       - name: "Install dependencies"
-        run: "composer update --no-progress --prefer-dist"
+        # Specify COMPOSER_ROOT_VERSION for 10.0.x, see https://getcomposer.org/doc/articles/troubleshooting.md#dependencies-on-the-root-package
+        run: "COMPOSER_ROOT_VERSION=dev-main composer update --no-progress --prefer-dist"
       - name: "PHPCS"
         run: "php vendor/bin/phpcs src"
       - name: "PHPStan"
@@ -92,7 +93,7 @@ jobs:
       - name: "require phpstan-drupal"
         run: |
           cd ~/drupal
-          COMPOSER_MEMORY_LIMIT=-1 composer require mglaman/phpstan-drupal *@dev
+          COMPOSER_MEMORY_LIMIT=-1 composer require mglaman/phpstan-drupal "*@dev as 1.0.x-dev"
           cp $GITHUB_WORKSPACE/tests/fixtures/config/drupal-phpstan.neon phpstan.neon
       - name: "Test core/install.php"
         run: |
