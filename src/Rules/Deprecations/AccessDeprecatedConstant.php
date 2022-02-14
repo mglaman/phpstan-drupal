@@ -87,7 +87,6 @@ class AccessDeprecatedConstant implements \PHPStan\Rules\Rule
             'PREG_CLASS_CJK' => 'Deprecated in drupal:9.1.0 and is removed from drupal:10.0.0. Use \Drupal\search\SearchTextProcessorInterface::PREG_CLASS_CJK instead.',
             'PREG_CLASS_NUMBERS' => 'Deprecated in drupal:9.1.0 and is removed from drupal:10.0.0. Use \Drupal\search\SearchTextProcessorInterface::PREG_CLASS_NUMBERS',
             'PREG_CLASS_PUNCTUATION' => 'Deprecated in drupal:9.1.0 and is removed from drupal:10.0.0. Use \Drupal\search\SearchTextProcessorInterface::PREG_CLASS_PUNCTUATION',
-            'REQUEST_TIME' => 'Deprecated in drupal:8.3.0 and is removed from drupal:10.0.0. Use \Drupal::time()->getRequestTime();',
             'SCHEMA_UNINSTALLED' => 'Deprecated in drupal:9.3.0 and is removed from drupal:10.0.0. Use \Drupal\Core\Update\UpdateHookRegistry::SCHEMA_UNINSTALLED',
             'DRUPAL_USER_TIMEZONE_DEFAULT' => 'Deprecated in drupal:8.3.0 and is removed from drupal:9.0.0. Use \Drupal\user\UserInterface::TIMEZONE_DEFAULT instead.',
             'DRUPAL_USER_TIMEZONE_EMPTY' => 'Deprecated in drupal:8.3.0 and is removed from drupal:9.0.0. Use \Drupal\user\UserInterface::TIMEZONE_EMPTY instead.',
