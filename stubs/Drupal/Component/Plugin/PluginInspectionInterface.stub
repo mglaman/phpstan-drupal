@@ -1,0 +1,6 @@
+<?php
+
+namespace Drupal\Component\Plugin;
+
+interface PluginInspectionInterface {
+}

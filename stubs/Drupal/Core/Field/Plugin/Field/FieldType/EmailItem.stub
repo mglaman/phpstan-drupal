@@ -1,0 +1,11 @@
+<?php
+
+namespace Drupal\Core\Field\Plugin\Field\FieldType;
+
+use Drupal\Core\Field\FieldItemBase;
+
+/**
+ * @property string $value
+ */
+class EmailItem extends FieldItemBase {
+}

@@ -1,0 +1,12 @@
+<?php
+
+namespace Drupal\Core\TypedData\Plugin\DataType;
+
+use Drupal\Core\TypedData\TypedData;
+use Drupal\Core\TypedData\ComplexDataInterface;
+
+/**
+ * @implements \IteratorAggregate<string, \Drupal\Core\TypedData\TypedDataInterface>
+ */
+class Map extends TypedData implements \IteratorAggregate, ComplexDataInterface {
+}

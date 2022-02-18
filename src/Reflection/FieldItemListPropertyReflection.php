@@ -43,6 +43,7 @@ class FieldItemListPropertyReflection implements PropertyReflection
             return new ObjectType('Drupal\Core\Entity\EntityInterface');
         }
         if ($this->propertyName === 'target_id') {
+            // @todo needs to be union type.
             return new StringType();
         }
         // @todo this is wrong, integer/bool/decimal/etc all use single value property.

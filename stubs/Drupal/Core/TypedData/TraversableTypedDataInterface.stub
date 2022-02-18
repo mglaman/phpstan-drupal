@@ -1,0 +1,9 @@
+<?php
+
+namespace Drupal\Core\TypedData;
+
+/**
+ * @extends \Traversable<string, \Drupal\Core\TypedData\TypedDataInterface>
+ */
+interface TraversableTypedDataInterface extends TypedDataInterface, \Traversable {
+}

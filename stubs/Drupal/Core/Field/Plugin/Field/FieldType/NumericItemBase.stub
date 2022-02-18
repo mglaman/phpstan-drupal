@@ -1,0 +1,8 @@
+<?php
+
+namespace Drupal\Core\Field\Plugin\Field\FieldType;
+
+use Drupal\Core\Field\FieldItemBase;
+
+abstract class NumericItemBase extends FieldItemBase {
+}

@@ -13,6 +13,37 @@ parameters:
 		- engine
 	scanFiles:
 		- stubs/Twig/functions.stub
+	stubFiles:
+		- stubs/Drupal/Component/Plugin/PluginInspectionInterface.stub
+		- stubs/Drupal/Core/Field/Plugin/Field/FieldItemBase.stub
+		- stubs/Drupal/Core/Field/Plugin/Field/FieldItemInterface.stub
+		- stubs/Drupal/Core/Field/Plugin/Field/PreconfiguredFieldUiOptionsInterface.stub
+		- stubs/Drupal/Core/Field/Plugin/Field/FieldType/BooleanItem.stub
+		- stubs/Drupal/Core/Field/Plugin/Field/FieldType/ChangedItem.stub
+		- stubs/Drupal/Core/Field/Plugin/Field/FieldType/CreatedItem.stub
+		- stubs/Drupal/Core/Field/Plugin/Field/FieldType/DecimalItem.stub
+		- stubs/Drupal/Core/Field/Plugin/Field/FieldType/EmailItem.stub
+		- stubs/Drupal/Core/Field/Plugin/Field/FieldType/EntityReferenceItem.stub
+		- stubs/Drupal/Core/Field/Plugin/Field/FieldType/FloatItem.stub
+		- stubs/Drupal/Core/Field/Plugin/Field/FieldType/IntegerItem.stub
+		- stubs/Drupal/Core/Field/Plugin/Field/FieldType/LanguageItem.stub
+		- stubs/Drupal/Core/Field/Plugin/Field/FieldType/MapItem.stub
+		- stubs/Drupal/Core/Field/Plugin/Field/FieldType/NumericItemBase.stub
+		- stubs/Drupal/Core/Field/Plugin/Field/FieldType/PasswordItem.stub
+		- stubs/Drupal/Core/Field/Plugin/Field/FieldType/StringItem.stub
+		- stubs/Drupal/Core/Field/Plugin/Field/FieldType/StringItemBase.stub
+		- stubs/Drupal/Core/Field/Plugin/Field/FieldType/StringLongItem.stub
+		- stubs/Drupal/Core/Field/Plugin/Field/FieldType/TimestampItem.stub
+		- stubs/Drupal/Core/Field/Plugin/Field/FieldType/UriItem.stub
+		- stubs/Drupal/Core/Field/Plugin/Field/FieldType/UuidItem.stub
+		- stubs/Drupal/Core/TypedData/ComplexDataInterface.stub
+		- stubs/Drupal/Core/TypedData/OptionsProviderInterface.stub
+		- stubs/Drupal/Core/TypedData/TraversableTypedDataInterface.stub
+		- stubs/Drupal/Core/TypedData/TypedData.stub
+		- stubs/Drupal/Core/TypedData/TypedDataInterface.stub
+		- stubs/Drupal/Core/TypedData/Plugin/DataType/Map.stub
+		- stubs/Drupal/link/LinkItemInterface.stub
+		- stubs/Drupal/link/Plugin/Field/FieldType/LinkItem.stub
 	drupal:
 		drupal_root: '%currentWorkingDirectory%'
 		entityMapping:
