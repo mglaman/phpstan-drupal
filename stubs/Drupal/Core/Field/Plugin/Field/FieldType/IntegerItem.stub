@@ -1,0 +1,9 @@
+<?php
+
+namespace Drupal\Core\Field\Plugin\Field\FieldType;
+
+/**
+ * @property int $value
+ */
+class IntegerItem extends NumericItemBase {
+}

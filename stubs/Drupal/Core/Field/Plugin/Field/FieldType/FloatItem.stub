@@ -1,0 +1,9 @@
+<?php
+
+namespace Drupal\Core\Field\Plugin\Field\FieldType;
+
+/**
+ * @property float $value
+ */
+class FloatItem extends NumericItemBase {
+}

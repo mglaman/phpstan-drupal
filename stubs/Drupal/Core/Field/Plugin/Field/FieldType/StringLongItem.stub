@@ -1,0 +1,6 @@
+<?php
+
+namespace Drupal\Core\Field\Plugin\Field\FieldType;
+
+class StringLongItem extends StringItemBase {
+}
