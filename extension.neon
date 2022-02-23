@@ -11,6 +11,8 @@ parameters:
 		- install
 		- profile
 		- engine
+	dynamicConstantNames:
+		- Drupal::VERSION
 	scanFiles:
 		- stubs/Twig/functions.stub
 	stubFiles:
