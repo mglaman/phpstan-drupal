@@ -48,3 +48,14 @@ function phpstan_fixtures_using_deprecated_constants(): void {
     print FILE_INSECURE_EXTENSION_REGEX;
     print PREG_CLASS_PUNCTUATION;
 }
+
+function phpstan_fixtures_condition_manager_context(): void {
+    $condition_manager = \Drupal::service('plugin.manager.condition');
+    $configuration = [
+        'foo' => 'bar',
+        'context' => [
+            'entity:type' => 'node',
+        ],
+    ];
+    $foo = $condition_manager->createInstance('barbaz', $configuration);
+}
