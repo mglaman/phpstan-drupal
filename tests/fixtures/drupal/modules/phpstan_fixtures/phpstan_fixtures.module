@@ -42,3 +42,9 @@ function phpstan_fixtures_thing_with_anonymous_class(): void {
         }
     };
 }
+
+function phpstan_fixtures_using_deprecated_constants(): void {
+    print SCHEMA_UNINSTALLED;
+    print FILE_INSECURE_EXTENSION_REGEX;
+    print PREG_CLASS_PUNCTUATION;
+}
