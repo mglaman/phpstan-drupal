@@ -49,10 +49,6 @@ class AccessDeprecatedConstant implements \PHPStan\Rules\Rule
             'DRUPAL_AUTHENTICATED_RID' => 'Deprecated in drupal:8.0.0 and is removed from drupal:9.0.0. Use Drupal\Core\Session\AccountInterface::AUTHENTICATED_ROLE or \Drupal\user\RoleInterface::AUTHENTICATED_ID instead.',
             'REQUEST_TIME' => 'Deprecated in drupal:8.3.0 and is removed from drupal:10.0.0. Use \Drupal::time()->getRequestTime(); ',
             'DRUPAL_PHP_FUNCTION_PATTERN' => 'Deprecated in drupal:8.8.0 and is removed from drupal:9.0.0. Use \Drupal\Core\Extension\ExtensionDiscovery::PHP_FUNCTION_PATTERN instead.',
-            'DRUPAL_MINIMUM_PHP' => 'Deprecated in drupal:9.1.0 and is removed from drupal:10.0.0. Use \Drupal::MINIMUM_PHP instead.',
-            'DRUPAL_MINIMUM_PHP_MEMORY_LIMIT' => 'Deprecated in drupal:9.1.0 and is removed from drupal:10.0.0. Use \Drupal::MINIMUM_PHP_MEMORY_LIMIT instead.',
-            'DRUPAL_MINIMUM_SUPPORTED_PHP' => 'Deprecated in drupal:9.1.0 and is removed from drupal:10.0.0. Use \Drupal::MINIMUM_SUPPORTED_PHP instead.',
-            'DRUPAL_RECOMMENDED_PHP' => 'Deprecated in drupal:9.1.0 and is removed from drupal:10.0.0. Use \Drupal::RECOMMENDED_PHP instead.',
             'CONFIG_ACTIVE_DIRECTORY' => 'Deprecated in drupal:8.0.0 and is removed from drupal:9.0.0. Drupal core no longer creates an active directory.',
             'CONFIG_SYNC_DIRECTORY' => 'Deprecated in drupal:8.8.0 and is removed from drupal:9.0.0. Use \Drupal\Core\Site\Settings::get(\'config_sync_directory\') instead.',
             'CONFIG_STAGING_DIRECTORY' => 'Deprecated in drupal:8.0.0 and is removed from drupal:9.0.0. The staging directory was renamed to sync.',
@@ -64,8 +60,6 @@ class AccessDeprecatedConstant implements \PHPStan\Rules\Rule
             'FILE_EXISTS_RENAME' => 'Deprecated in drupal:8.7.0 and is removed from drupal:9.0.0. Use \Drupal\Core\File\FileSystemInterface::EXISTS_RENAME.',
             'FILE_EXISTS_REPLACE' => 'Deprecated in drupal:8.7.0 and is removed from drupal:9.0.0. Use \Drupal\Core\File\FileSystemInterface::EXISTS_REPLACE.',
             'FILE_EXISTS_ERROR' => 'Deprecated in drupal:8.7.0 and is removed from drupal:9.0.0. Use \Drupal\Core\File\FileSystemInterface::EXISTS_ERROR.',
-            'FILE_INSECURE_EXTENSION_REGEX' => 'Deprecated in drupal:9.2.0 and is removed from drupal:10.0.0. Use \Drupal\Core\File\FileSystemInterface::INSECURE_EXTENSION_REGEX.',
-            'FILE_STATUS_PERMANENT' => 'Deprecated in drupal:9.3.0 and is removed from drupal:10.0.0. Use \Drupal\file\FileInterface::STATUS_PERMANENT or \Drupal\file\FileInterface::setPermanent().',
             'AGGREGATOR_CLEAR_NEVER' => 'Deprecated in drupal:8.3.0 and is removed from drupal:9.0.0. Use \Drupal\aggregator\FeedStorageInterface::CLEAR_NEVER instead.',
             'COMMENT_ANONYMOUS_MAYNOT_CONTACT' => 'Deprecated in drupal:8.3.0 and is removed from drupal:9.0.0. Use \Drupal\comment\CommentInterface::ANONYMOUS_MAYNOT_CONTACT instead.',
             'COMMENT_ANONYMOUS_MAY_CONTACT' => 'Deprecated in drupal:8.3.0 and is removed from drupal:9.0.0. Use \Drupal\comment\CommentInterface::ANONYMOUS_MAY_CONTACT instead.',
@@ -84,10 +78,6 @@ class AccessDeprecatedConstant implements \PHPStan\Rules\Rule
             'NODE_STICKY' => 'Deprecated in drupal:8.?.? and is removed from drupal:9.0.0. Use \Drupal\node\NodeInterface::STICKY instead.',
             'RESPONSIVE_IMAGE_EMPTY_IMAGE' => 'Deprecated in drupal:8.3.0 and is removed from drupal:9.0.0. Use Drupal\responsive_image\ResponsiveImageStyleInterface::EMPTY_IMAGE instead.',
             'RESPONSIVE_IMAGE_ORIGINAL_IMAGE' => 'Deprecated in drupal:8.3.0 and is removed from drupal:9.0.0. Use \Drupal\responsive_image\ResponsiveImageStyleInterface::ORIGINAL_IMAGE instead.',
-            'PREG_CLASS_CJK' => 'Deprecated in drupal:9.1.0 and is removed from drupal:10.0.0. Use \Drupal\search\SearchTextProcessorInterface::PREG_CLASS_CJK instead.',
-            'PREG_CLASS_NUMBERS' => 'Deprecated in drupal:9.1.0 and is removed from drupal:10.0.0. Use \Drupal\search\SearchTextProcessorInterface::PREG_CLASS_NUMBERS',
-            'PREG_CLASS_PUNCTUATION' => 'Deprecated in drupal:9.1.0 and is removed from drupal:10.0.0. Use \Drupal\search\SearchTextProcessorInterface::PREG_CLASS_PUNCTUATION',
-            'SCHEMA_UNINSTALLED' => 'Deprecated in drupal:9.3.0 and is removed from drupal:10.0.0. Use \Drupal\Core\Update\UpdateHookRegistry::SCHEMA_UNINSTALLED',
             'DRUPAL_USER_TIMEZONE_DEFAULT' => 'Deprecated in drupal:8.3.0 and is removed from drupal:9.0.0. Use \Drupal\user\UserInterface::TIMEZONE_DEFAULT instead.',
             'DRUPAL_USER_TIMEZONE_EMPTY' => 'Deprecated in drupal:8.3.0 and is removed from drupal:9.0.0. Use \Drupal\user\UserInterface::TIMEZONE_EMPTY instead.',
             'DRUPAL_USER_TIMEZONE_SELECT' => 'Deprecated in drupal:8.3.0 and is removed from drupal:9.0.0. Use \Drupal\user\UserInterface::TIMEZONE_SELECT instead.',
@@ -108,6 +98,32 @@ class AccessDeprecatedConstant implements \PHPStan\Rules\Rule
             'USER_REGISTER_VISITORS' => 'Deprecated in drupal:8.3.0 and is removed from drupal:9.0.0. Use \Drupal\user\UserInterface::REGISTER_VISITORS instead.',
             'USER_REGISTER_VISITORS_ADMINISTRATIVE_APPROVAL' => 'Deprecated in drupal:8.3.0 and is removed from drupal:9.0.0. Use \Drupal\user\UserInterface::REGISTER_VISITORS_ADMINISTRATIVE_APPROVAL instead.',
         ];
+        [$major, $minor] = explode('.', \Drupal::VERSION, 3);
+        if ($major === '9') {
+            if ((int) $minor >= 1) {
+                $deprecatedConstants = array_merge($deprecatedConstants, [
+                    'DRUPAL_MINIMUM_PHP' => 'Deprecated in drupal:9.1.0 and is removed from drupal:10.0.0. Use \Drupal::MINIMUM_PHP instead.',
+                    'DRUPAL_MINIMUM_PHP_MEMORY_LIMIT' => 'Deprecated in drupal:9.1.0 and is removed from drupal:10.0.0. Use \Drupal::MINIMUM_PHP_MEMORY_LIMIT instead.',
+                    'DRUPAL_MINIMUM_SUPPORTED_PHP' => 'Deprecated in drupal:9.1.0 and is removed from drupal:10.0.0. Use \Drupal::MINIMUM_SUPPORTED_PHP instead.',
+                    'DRUPAL_RECOMMENDED_PHP' => 'Deprecated in drupal:9.1.0 and is removed from drupal:10.0.0. Use \Drupal::RECOMMENDED_PHP instead.',
+                    'PREG_CLASS_CJK' => 'Deprecated in drupal:9.1.0 and is removed from drupal:10.0.0. Use \Drupal\search\SearchTextProcessorInterface::PREG_CLASS_CJK instead.',
+                    'PREG_CLASS_NUMBERS' => 'Deprecated in drupal:9.1.0 and is removed from drupal:10.0.0. Use \Drupal\search\SearchTextProcessorInterface::PREG_CLASS_NUMBERS',
+                    'PREG_CLASS_PUNCTUATION' => 'Deprecated in drupal:9.1.0 and is removed from drupal:10.0.0. Use \Drupal\search\SearchTextProcessorInterface::PREG_CLASS_PUNCTUATION',
+                ]);
+            }
+            if ((int) $minor >= 2) {
+                $deprecatedConstants = array_merge($deprecatedConstants, [
+                    'FILE_INSECURE_EXTENSION_REGEX' => 'Deprecated in drupal:9.2.0 and is removed from drupal:10.0.0. Use \Drupal\Core\File\FileSystemInterface::INSECURE_EXTENSION_REGEX.',
+                ]);
+            }
+            if ((int) $minor >= 3) {
+                $deprecatedConstants = array_merge($deprecatedConstants, [
+                    'FILE_STATUS_PERMANENT' => 'Deprecated in drupal:9.3.0 and is removed from drupal:10.0.0. Use \Drupal\file\FileInterface::STATUS_PERMANENT or \Drupal\file\FileInterface::setPermanent().',
+                    'SCHEMA_UNINSTALLED' => 'Deprecated in drupal:9.3.0 and is removed from drupal:10.0.0. Use \Drupal\Core\Update\UpdateHookRegistry::SCHEMA_UNINSTALLED',
+                ]);
+            }
+        }
+
         $constantName = $this->reflectionProvider->resolveConstantName($node->name, $scope);
         if (isset($deprecatedConstants[$constantName])) {
             return [
