@@ -1,0 +1,12 @@
+<?php
+
+namespace Drupal\file\Plugin\Field\FieldType;
+
+use Drupal\Core\Field\Plugin\Field\FieldType\UriItem;
+
+/**
+ * @property string $url
+ */
+class FileUriItem extends UriItem {
+
+}
