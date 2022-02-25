@@ -18,6 +18,8 @@ use Drupal\Core\Field\Plugin\Field\FieldType\StringLongItem;
 use Drupal\Core\Field\Plugin\Field\FieldType\TimestampItem;
 use Drupal\Core\Field\Plugin\Field\FieldType\UriItem;
 use Drupal\Core\Field\Plugin\Field\FieldType\UuidItem;
+use Drupal\file\Plugin\Field\FieldType\FileItem;
+use Drupal\file\Plugin\Field\FieldType\FileUriItem;
 use Drupal\link\Plugin\Field\FieldType\LinkItem;
 use Drupal\node\Entity\Node;
 use function PHPStan\Testing\assertType;
@@ -131,3 +133,16 @@ $uuid_field = $node->get('field_uuid')->first();
 assert($uuid_field instanceof UuidItem);
 assertType(UuidItem::class, $uuid_field);
 assertType('string', $uuid_field->value);
+
+// FileItem.
+$file_field = $node->get('field_file')->first();
+assert($file_field instanceof FileItem);
+assertType(FileItem::class, $file_field);
+assertType('bool', $file_field->display);
+assertType('string', $file_field->description);
+
+// FileUriItem.
+$file_uri_field = $node->get('field_file')->first();
+assert($file_uri_field instanceof FileUriItem);
+assertType(FileUriItem::class, $file_uri_field);
+assertType('string', $file_uri_field->url);

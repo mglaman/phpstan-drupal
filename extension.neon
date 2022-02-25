@@ -44,6 +44,8 @@ parameters:
 		- stubs/Drupal/Core/TypedData/TypedData.stub
 		- stubs/Drupal/Core/TypedData/TypedDataInterface.stub
 		- stubs/Drupal/Core/TypedData/Plugin/DataType/Map.stub
+		- stubs/Drupal/file/Plugin/Field/FieldType/FileItem.stub
+		- stubs/Drupal/file/Plugin/Field/FieldType/FileUriItem.stub
 		- stubs/Drupal/link/LinkItemInterface.stub
 		- stubs/Drupal/link/Plugin/Field/FieldType/LinkItem.stub
 	drupal:
