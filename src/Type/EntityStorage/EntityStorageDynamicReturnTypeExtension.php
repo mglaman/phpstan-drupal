@@ -16,6 +16,7 @@ use PHPStan\Type\DynamicMethodReturnTypeExtension;
 use PHPStan\Type\IntegerType;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\StringType;
+use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
 
 class EntityStorageDynamicReturnTypeExtension implements DynamicMethodReturnTypeExtension
@@ -60,6 +61,18 @@ class EntityStorageDynamicReturnTypeExtension implements DynamicMethodReturnType
         $callerType = $scope->getType($methodCall->var);
 
         if (!$callerType instanceof EntityStorageType) {
+            if (!$callerType instanceof ObjectType) {
+                return ParametersAcceptorSelector::selectSingle($methodReflection->getVariants())->getReturnType();
+            }
+
+            // Workaround because cannot figure out why the caller type is not an EntityStorageType
+            // when it has been type hinted.
+            // Instead, we try to infer the type, i.e. ContentEntityStorageType or ConfigEntityStorageType, here.
+            // @todo: we should definitively look for other cases that getQuery.
+            if ($methodReflection->getName() === 'getQuery') {
+                return $this->getReturnTypeForGetQueryMethod($methodReflection, EntityStorageHelper::getTypeFromStorageObjectType($callerType));
+            }
+
             return ParametersAcceptorSelector::selectSingle($methodReflection->getVariants())->getReturnType();
         }
 
@@ -79,27 +92,32 @@ class EntityStorageDynamicReturnTypeExtension implements DynamicMethodReturnType
             return new ArrayType(new IntegerType(), $type);
         }
         if ($methodReflection->getName() === 'getQuery') {
-            $returnType = ParametersAcceptorSelector::selectSingle($methodReflection->getVariants())->getReturnType();
-            if (!$returnType instanceof ObjectType) {
-                return $returnType;
-            }
-            if ($callerType instanceof ContentEntityStorageType) {
-                return new ContentEntityQueryType(
-                    $returnType->getClassName(),
-                    $returnType->getSubtractedType(),
-                    $returnType->getClassReflection()
-                );
-            }
-            if ($callerType instanceof ConfigEntityStorageType) {
-                return new ConfigEntityQueryType(
-                    $returnType->getClassName(),
-                    $returnType->getSubtractedType(),
-                    $returnType->getClassReflection()
-                );
-            }
-            return $returnType;
+            return $this->getReturnTypeForGetQueryMethod($methodReflection, $callerType);
         }
 
         return $type;
+    }
+
+    private function getReturnTypeForGetQueryMethod(MethodReflection $methodReflection, ?Type $entityStorageType): Type
+    {
+        $returnType = ParametersAcceptorSelector::selectSingle($methodReflection->getVariants())->getReturnType();
+        if (!$returnType instanceof ObjectType) {
+            return $returnType;
+        }
+        if ($entityStorageType instanceof ContentEntityStorageType) {
+            return new ContentEntityQueryType(
+                $returnType->getClassName(),
+                $returnType->getSubtractedType(),
+                $returnType->getClassReflection()
+            );
+        }
+        if ($entityStorageType instanceof ConfigEntityStorageType) {
+            return new ConfigEntityQueryType(
+                $returnType->getClassName(),
+                $returnType->getSubtractedType(),
+                $returnType->getClassReflection()
+            );
+        }
+        return $returnType;
     }
 }
