@@ -69,7 +69,7 @@ $entity_reference_field = $node->get('field_entity_reference')->first();
 assert($entity_reference_field instanceof EntityReferenceItem);
 assertType(EntityReferenceItem::class, $entity_reference_field);
 assertType('int|string', $entity_reference_field->target_id);
-assertType('Drupal\Core\Entity\EntityInterface', $entity_reference_field->entity);
+assertType('Drupal\Core\Entity\EntityInterface|null', $entity_reference_field->entity);
 
 // FloatItem.
 $float_field = $node->get('field_float')->first();
