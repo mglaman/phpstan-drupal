@@ -2,23 +2,23 @@
 
 namespace mglaman\PHPStanDrupal\Drupal;
 
-use PHPStan\Reflection\ReflectionProvider;
+use PHPStan\Type\ObjectType;
 
 final class EntityDataRepository
 {
-
     /**
-     * @var array<string, array<string, string>>
-     */
-    private $entityMapping;
-    /**
-     * @var array<string, EntityData|null>
+     * @var array<string, EntityData>
      */
     private $entityData;
 
     public function __construct(array $entityMapping)
     {
-        $this->entityMapping = $entityMapping;
+        foreach ($entityMapping as $entityTypeId => $entityData) {
+            $this->entityData[$entityTypeId] = new EntityData(
+                $entityTypeId,
+                $entityData
+            );
+        }
     }
 
     public function get(string $entityTypeId): EntityData
@@ -26,9 +26,20 @@ final class EntityDataRepository
         if (!isset($this->entityData[$entityTypeId])) {
             $this->entityData[$entityTypeId] = new EntityData(
                 $entityTypeId,
-                $this->entityMapping[$entityTypeId] ?? []
+                []
             );
         }
         return $this->entityData[$entityTypeId];
+    }
+
+    public function resolveFromStorage(ObjectType $callerType): ?EntityData
+    {
+        foreach ($this->entityData as $entityData) {
+            $storageType = $entityData->getStorageType();
+            if ($storageType !== null && $callerType->isSuperTypeOf($storageType)->yes()) {
+                return $entityData;
+            }
+        }
+        return null;
     }
 }
