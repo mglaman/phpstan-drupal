@@ -248,6 +248,17 @@ rules:
 	- mglaman\PHPStanDrupal\Rules\Drupal\GlobalDrupalDependencyInjectionRule
 	- mglaman\PHPStanDrupal\Rules\Drupal\PluginManager\PluginManagerSetsCacheBackendRule
 	- mglaman\PHPStanDrupal\Rules\Deprecations\AccessDeprecatedConstant
+	- mglaman\PHPStanDrupal\Rules\Classes\ClassExtendsInternalClassRule
+	- mglaman\PHPStanDrupal\Rules\Classes\PluginManagerInspectionRule
+	- mglaman\PHPStanDrupal\Rules\Deprecations\ConditionManagerCreateInstanceContextConfigurationRule
+	- mglaman\PHPStanDrupal\Rules\Drupal\RenderCallbackRule
+	- mglaman\PHPStanDrupal\Rules\Deprecations\StaticServiceDeprecatedServiceRule
+	- mglaman\PHPStanDrupal\Rules\Deprecations\GetDeprecatedServiceRule
+	- mglaman\PHPStanDrupal\Rules\Drupal\Tests\BrowserTestBaseDefaultThemeRule
+	- mglaman\PHPStanDrupal\Rules\Deprecations\ConfigEntityConfigExportRule
+	- mglaman\PHPStanDrupal\Rules\Deprecations\PluginAnnotationContextDefinitionsRule
+	- mglaman\PHPStanDrupal\Rules\Drupal\ModuleLoadInclude
+	- mglaman\PHPStanDrupal\Rules\Drupal\LoadIncludes
 services:
 	-
 		class: mglaman\PHPStanDrupal\Drupal\ServiceMap
@@ -257,7 +268,6 @@ services:
 		class: mglaman\PHPStanDrupal\Drupal\EntityDataRepository
 		arguments:
 			entityMapping: %drupal.entityMapping%
-
 	-
 		class: mglaman\PHPStanDrupal\Type\EntityTypeManagerGetStorageDynamicReturnTypeExtension
 		tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
@@ -300,52 +310,6 @@ services:
 	-
 		class: mglaman\PHPStanDrupal\Reflection\EntityFieldMethodsViaMagicReflectionExtension
 		tags: [phpstan.broker.methodsClassReflectionExtension]
-	-
-		class: mglaman\PHPStanDrupal\Rules\Classes\ClassExtendsInternalClassRule
-		tags: [phpstan.rules.rule]
-		arguments:
-			reflectionProvider: @reflectionProvider
-	-
-		class: mglaman\PHPStanDrupal\Rules\Classes\PluginManagerInspectionRule
-		tags: [phpstan.rules.rule]
-		arguments:
-			reflectionProvider: @reflectionProvider
-	-
-		class: mglaman\PHPStanDrupal\Rules\Drupal\LoadIncludes
-		tags: [phpstan.rules.rule]
-		arguments:
-			extensionMap: @mglaman\PHPStanDrupal\Drupal\ExtensionMap
-	-
-		class: mglaman\PHPStanDrupal\Rules\Drupal\ModuleLoadInclude
-		tags: [phpstan.rules.rule]
-		arguments:
-			extensionMap: @mglaman\PHPStanDrupal\Drupal\ExtensionMap
-
-	-
-		class: mglaman\PHPStanDrupal\Rules\Deprecations\PluginAnnotationContextDefinitionsRule
-		tags: [phpstan.rules.rule]
-
-	-
-		class: mglaman\PHPStanDrupal\Rules\Deprecations\ConfigEntityConfigExportRule
-		tags: [phpstan.rules.rule]
-
-	-
-		class: mglaman\PHPStanDrupal\Rules\Drupal\Tests\BrowserTestBaseDefaultThemeRule
-		tags: [phpstan.rules.rule]
-
-	-
-		class: mglaman\PHPStanDrupal\Rules\Deprecations\GetDeprecatedServiceRule
-		tags: [phpstan.rules.rule]
-	-
-		class: mglaman\PHPStanDrupal\Rules\Deprecations\StaticServiceDeprecatedServiceRule
-		tags: [phpstan.rules.rule]
-
-	-
-		class: mglaman\PHPStanDrupal\Rules\Drupal\RenderCallbackRule
-		tags: [phpstan.rules.rule]
-	-
-		class: mglaman\PHPStanDrupal\Rules\Deprecations\ConditionManagerCreateInstanceContextConfigurationRule
-		tags: [phpstan.rules.rule]
 	-
 		class: mglaman\PHPStanDrupal\Drupal\DrupalStubFilesExtension
 		tags: [phpstan.stubFilesExtension]
