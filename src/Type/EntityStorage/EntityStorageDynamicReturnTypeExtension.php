@@ -2,23 +2,17 @@
 
 namespace mglaman\PHPStanDrupal\Type\EntityStorage;
 
-use Drupal\Core\Config\Entity\ConfigEntityStorageInterface;
-use Drupal\Core\Entity\ContentEntityStorageInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use mglaman\PHPStanDrupal\Drupal\EntityDataRepository;
-use mglaman\PHPStanDrupal\Type\EntityQuery\ConfigEntityQueryType;
-use mglaman\PHPStanDrupal\Type\EntityQuery\ContentEntityQueryType;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\ParametersAcceptorSelector;
-use PHPStan\ShouldNotHappenException;
 use PHPStan\Type\ArrayType;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
 use PHPStan\Type\IntegerType;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\StringType;
-use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
 
 class EntityStorageDynamicReturnTypeExtension implements DynamicMethodReturnTypeExtension
@@ -49,7 +43,6 @@ class EntityStorageDynamicReturnTypeExtension implements DynamicMethodReturnType
                 'loadMultiple',
                 'loadByProperties',
                 'loadUnchanged',
-                'getQuery',
             ],
             true
         );
@@ -63,29 +56,6 @@ class EntityStorageDynamicReturnTypeExtension implements DynamicMethodReturnType
         $callerType = $scope->getType($methodCall->var);
         if (!$callerType instanceof ObjectType) {
             return ParametersAcceptorSelector::selectSingle($methodReflection->getVariants())->getReturnType();
-        }
-
-        if ($methodReflection->getName() === 'getQuery') {
-            $returnType = ParametersAcceptorSelector::selectSingle($methodReflection->getVariants())->getReturnType();
-            if (!$returnType instanceof ObjectType) {
-                return $returnType;
-            }
-
-            if ((new ObjectType(ContentEntityStorageInterface::class))->isSuperTypeOf($callerType)->yes()) {
-                return new ContentEntityQueryType(
-                    $returnType->getClassName(),
-                    $returnType->getSubtractedType(),
-                    $returnType->getClassReflection()
-                );
-            }
-            if ((new ObjectType(ConfigEntityStorageInterface::class))->isSuperTypeOf($callerType)->yes()) {
-                return new ConfigEntityQueryType(
-                    $returnType->getClassName(),
-                    $returnType->getSubtractedType(),
-                    $returnType->getClassReflection()
-                );
-            }
-            return $returnType;
         }
 
         if (!$callerType instanceof EntityStorageType) {
