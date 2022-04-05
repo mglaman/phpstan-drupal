@@ -7,7 +7,7 @@ use PHPStan\Type\ObjectType;
 /**
  * Type used to represent an entity query instance for config entity query.
  */
-final class ConfigEntityQueryType extends ObjectType
+final class ConfigEntityQueryType extends EntityQueryType
 {
 
 }
