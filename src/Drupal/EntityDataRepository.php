@@ -2,6 +2,9 @@
 
 namespace mglaman\PHPStanDrupal\Drupal;
 
+use Drupal\Core\Config\Entity\ConfigEntityStorageInterface;
+use Drupal\Core\Entity\ContentEntityStorageInterface;
+use Drupal\Core\Entity\EntityStorageInterface;
 use PHPStan\Type\ObjectType;
 
 final class EntityDataRepository
@@ -34,6 +37,15 @@ final class EntityDataRepository
 
     public function resolveFromStorage(ObjectType $callerType): ?EntityData
     {
+        if ($callerType->equals(new ObjectType(EntityStorageInterface::class))) {
+            return null;
+        }
+        if ($callerType->equals(new ObjectType(ConfigEntityStorageInterface::class))) {
+            return null;
+        }
+        if ($callerType->equals(new ObjectType(ContentEntityStorageInterface::class))) {
+            return null;
+        }
         foreach ($this->entityData as $entityData) {
             $storageType = $entityData->getStorageType();
             if ($storageType !== null && $callerType->isSuperTypeOf($storageType)->yes()) {
