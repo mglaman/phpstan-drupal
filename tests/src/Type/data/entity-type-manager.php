@@ -3,7 +3,6 @@
 namespace EntityTypeManagerGetStorage;
 
 use function PHPStan\Testing\assertType;
-use function PHPUnit\Framework\assertInstanceOf;
 
 $etm = \Drupal::entityTypeManager();
 

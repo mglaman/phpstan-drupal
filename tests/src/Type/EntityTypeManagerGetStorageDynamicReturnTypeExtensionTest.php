@@ -21,6 +21,7 @@ final class EntityTypeManagerGetStorageDynamicReturnTypeExtensionTest extends Ty
     public function dataFileAsserts(): iterable
     {
         yield from $this->gatherAssertTypes(__DIR__ . '/data/entity-type-manager.php');
+        yield from $this->gatherAssertTypes(__DIR__ . '/data/bug-377.php');
     }
 
     /**
