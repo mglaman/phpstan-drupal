@@ -259,6 +259,7 @@ rules:
 	- mglaman\PHPStanDrupal\Rules\Deprecations\PluginAnnotationContextDefinitionsRule
 	- mglaman\PHPStanDrupal\Rules\Drupal\ModuleLoadInclude
 	- mglaman\PHPStanDrupal\Rules\Drupal\LoadIncludes
+	- mglaman\PHPStanDrupal\Rules\Drupal\EntityQuery\EntityQueryHasAccessCheckRule
 services:
 	-
 		class: mglaman\PHPStanDrupal\Drupal\ServiceMap
@@ -285,6 +286,9 @@ services:
 		tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
 	-
 		class: mglaman\PHPStanDrupal\Type\EntityQuery\EntityQueryDynamicReturnTypeExtension
+		tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
+	-
+		class: mglaman\PHPStanDrupal\Type\EntityQuery\EntityQueryAccessCheckDynamicReturnTypeExtension
 		tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
 	-
 		class: mglaman\PHPStanDrupal\Type\UrlToStringDynamicReturnTypeExtension

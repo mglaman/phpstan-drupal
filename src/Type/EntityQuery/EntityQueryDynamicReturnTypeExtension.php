@@ -52,13 +52,19 @@ class EntityQueryDynamicReturnTypeExtension implements DynamicMethodReturnTypeEx
 
         if ($methodName === 'execute') {
             if ($varType instanceof EntityQueryCountType) {
-                return new IntegerType();
+                return $varType->hasAccessCheck()
+                    ? new IntegerType()
+                    : new EntityQueryExecuteWithoutAccessCheckCountType();
             }
             if ($varType instanceof ConfigEntityQueryType) {
-                return new ArrayType(new StringType(), new StringType());
+                return $varType->hasAccessCheck()
+                    ? new ArrayType(new StringType(), new StringType())
+                    : new EntityQueryExecuteWithoutAccessCheckType(new StringType(), new StringType());
             }
             if ($varType instanceof ContentEntityQueryType) {
-                return new ArrayType(new IntegerType(), new StringType());
+                return $varType->hasAccessCheck()
+                    ? new ArrayType(new IntegerType(), new StringType())
+                    : new EntityQueryExecuteWithoutAccessCheckType(new IntegerType(), new StringType());
             }
             return $defaultReturnType;
         }
