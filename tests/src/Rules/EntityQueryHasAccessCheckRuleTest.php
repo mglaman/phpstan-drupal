@@ -25,18 +25,23 @@ final class EntityQueryHasAccessCheckRuleTest extends DrupalRuleTestCase
     public function cases(): \Generator
     {
         yield [
-            [__DIR__.'/../../fixtures/drupal/modules/phpstan_fixtures/src/EntityQueryHasAccessRule.php'],
+            [__DIR__.'/../../fixtures/drupal/modules/phpstan_fixtures/src/EntityQueryWithAccessRule.php'],
             [],
         ];
 
         yield [
-            [__DIR__.'/../../fixtures/drupal/modules/phpstan_fixtures/src/EntityQueryDoesNotHaveAccessRule.php'],
+            [__DIR__.'/../../fixtures/drupal/modules/phpstan_fixtures/src/EntityQueryWithoutAccessRule.php'],
             [
                 [
                     'Missing explicit access check on entity query.',
-                    13,
+                    11,
                     'See https://www.drupal.org/node/3201242',
-                ]
+                ],
+                [
+                    'Missing explicit access check on entity query.',
+                    19,
+                    'See https://www.drupal.org/node/3201242',
+                ],
             ],
         ];
     }

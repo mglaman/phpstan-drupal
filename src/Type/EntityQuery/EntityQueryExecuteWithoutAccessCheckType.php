@@ -8,7 +8,7 @@ use PHPStan\Type\ArrayType;
 
 use PHPStan\Type\StringType;
 
-final class EntityQueryExecuteDoesNotHaveAccessCheckType extends ArrayType
+final class EntityQueryExecuteWithoutAccessCheckType extends ArrayType
 {
 
 }

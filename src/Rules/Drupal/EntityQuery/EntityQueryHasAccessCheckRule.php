@@ -4,20 +4,18 @@ declare(strict_types=1);
 
 namespace mglaman\PHPStanDrupal\Rules\Drupal\EntityQuery;
 
-use mglaman\PHPStanDrupal\Type\EntityQuery\EntityQueryExecuteDoesNotHaveAccessCheckCountType;
-use mglaman\PHPStanDrupal\Type\EntityQuery\EntityQueryExecuteDoesNotHaveAccessCheckType;
-use mglaman\PHPStanDrupal\Type\EntityQuery\EntityQueryType;
+use mglaman\PHPStanDrupal\Type\EntityQuery\EntityQueryExecuteWithoutAccessCheckCountType;
+use mglaman\PHPStanDrupal\Type\EntityQuery\EntityQueryExecuteWithoutAccessCheckType;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
-use function PHPStan\dumpType;
 
 final class EntityQueryHasAccessCheckRule implements Rule
 {
     public function getNodeType(): string
     {
-        return \PhpParser\Node\Expr\MethodCall::class;
+        return Node\Expr\MethodCall::class;
     }
 
     public function processNode(Node $node, Scope $scope): array
@@ -36,7 +34,7 @@ final class EntityQueryHasAccessCheckRule implements Rule
 
         $type = $scope->getType($node);
 
-        if (!$type instanceof EntityQueryExecuteDoesNotHaveAccessCheckCountType && !$type instanceof EntityQueryExecuteDoesNotHaveAccessCheckType) {
+        if (!$type instanceof EntityQueryExecuteWithoutAccessCheckCountType && !$type instanceof EntityQueryExecuteWithoutAccessCheckType) {
             return [];
         }
 

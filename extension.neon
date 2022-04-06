@@ -288,7 +288,7 @@ services:
 		class: mglaman\PHPStanDrupal\Type\EntityQuery\EntityQueryDynamicReturnTypeExtension
 		tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
 	-
-		class: mglaman\PHPStanDrupal\Type\EntityQuery\EntityQueryHasAccessCheckDynamicReturnTypeExtension
+		class: mglaman\PHPStanDrupal\Type\EntityQuery\EntityQueryAccessCheckDynamicReturnTypeExtension
 		tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
 	-
 		class: mglaman\PHPStanDrupal\Type\UrlToStringDynamicReturnTypeExtension

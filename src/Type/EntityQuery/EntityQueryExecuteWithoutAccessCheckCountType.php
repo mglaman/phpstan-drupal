@@ -6,7 +6,7 @@ namespace mglaman\PHPStanDrupal\Type\EntityQuery;
 
 use PHPStan\Type\IntegerType;
 
-final class EntityQueryExecuteDoesNotHaveAccessCheckCountType extends IntegerType
+final class EntityQueryExecuteWithoutAccessCheckCountType extends IntegerType
 {
 
 }

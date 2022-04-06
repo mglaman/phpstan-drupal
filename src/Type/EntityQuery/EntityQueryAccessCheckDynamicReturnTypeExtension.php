@@ -12,7 +12,7 @@ use PHPStan\Reflection\ParametersAcceptorSelector;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
 use PHPStan\Type\Type;
 
-class EntityQueryHasAccessCheckDynamicReturnTypeExtension implements DynamicMethodReturnTypeExtension
+class EntityQueryAccessCheckDynamicReturnTypeExtension implements DynamicMethodReturnTypeExtension
 {
     public function getClass(): string
     {
