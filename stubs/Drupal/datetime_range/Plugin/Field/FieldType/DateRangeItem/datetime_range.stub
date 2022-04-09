@@ -1,0 +1,7 @@
+<?php
+
+namespace Drupal\datetime_range\Plugin\Field\DateRangeItem;
+
+class datetime_range{
+
+}
