@@ -5,8 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="33571e5e-0553-44f6-863f-3a4a7c8c4f87" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/composer.json" beforeDir="false" afterPath="$PROJECT_DIR$/composer.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Drupal/DrupalAutoloader.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Drupal/DrupalAutoloader.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -156,6 +155,7 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../New folder" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
@@ -180,7 +180,8 @@
       <updated>1649482313711</updated>
       <workItem from="1649482340672" duration="29000" />
       <workItem from="1649482568735" duration="581000" />
-      <workItem from="1649483238694" duration="5617000" />
+      <workItem from="1649483238694" duration="6340000" />
+      <workItem from="1649536156395" duration="3671000" />
     </task>
     <servers />
   </component>
