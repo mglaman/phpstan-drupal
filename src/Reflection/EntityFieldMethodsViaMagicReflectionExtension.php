@@ -3,8 +3,8 @@
 namespace mglaman\PHPStanDrupal\Reflection;
 
 use PHPStan\Reflection\ClassReflection;
-use PHPStan\Reflection\MethodsClassReflectionExtension;
 use PHPStan\Reflection\MethodReflection;
+use PHPStan\Reflection\MethodsClassReflectionExtension;
 use PHPStan\Type\ObjectType;
 
 /**
