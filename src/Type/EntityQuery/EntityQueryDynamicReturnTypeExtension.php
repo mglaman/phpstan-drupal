@@ -39,15 +39,21 @@ class EntityQueryDynamicReturnTypeExtension implements DynamicMethodReturnTypeEx
         $varType = $scope->getType($methodCall->var);
         $methodName = $methodReflection->getName();
 
-        if ($methodName === 'count') {
-            if ($varType instanceof ObjectType) {
-                return new EntityQueryCountType(
-                    $varType->getClassName(),
-                    $varType->getSubtractedType(),
-                    $varType->getClassReflection()
-                );
-            }
+        if (!$varType instanceof ObjectType) {
             return $defaultReturnType;
+        }
+
+        if ($methodName === 'count') {
+            $returnType = new EntityQueryCountType(
+                $varType->getClassName(),
+                $varType->getSubtractedType(),
+                $varType->getClassReflection()
+            );
+            if ($varType instanceof EntityQueryType && $varType->hasAccessCheck()) {
+                return $returnType->withAccessCheck();
+            }
+
+            return $returnType;
         }
 
         if ($methodName === 'execute') {
