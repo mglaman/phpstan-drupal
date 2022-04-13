@@ -4,7 +4,6 @@ namespace mglaman\PHPStanDrupal\Rules\Deprecations;
 
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
-use PHPStan\Broker\Broker;
 use PHPStan\Reflection\FunctionReflection;
 use PHPStan\Reflection\ReflectionProvider;
 

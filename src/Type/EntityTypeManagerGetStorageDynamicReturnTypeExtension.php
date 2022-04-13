@@ -2,20 +2,14 @@
 
 namespace mglaman\PHPStanDrupal\Type;
 
-use Drupal\Core\Config\Entity\ConfigEntityStorageInterface;
-use Drupal\Core\Entity\ContentEntityStorageInterface;
 use mglaman\PHPStanDrupal\Drupal\EntityDataRepository;
-use mglaman\PHPStanDrupal\Type\EntityStorage\ConfigEntityStorageType;
-use mglaman\PHPStanDrupal\Type\EntityStorage\ContentEntityStorageType;
 use mglaman\PHPStanDrupal\Type\EntityStorage\EntityStorageType;
 use PhpParser\Node\Expr\BinaryOp\Concat;
 use PhpParser\Node\Expr\MethodCall;
-use PhpParser\Node\Scalar\String_;
 use PhpParser\Node\VariadicPlaceholder;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\ParametersAcceptorSelector;
-use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\ShouldNotHappenException;
 use PHPStan\Type\Constant\ConstantStringType;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;

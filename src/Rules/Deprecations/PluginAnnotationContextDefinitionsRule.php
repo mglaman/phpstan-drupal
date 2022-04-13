@@ -5,7 +5,6 @@ namespace mglaman\PHPStanDrupal\Rules\Deprecations;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ClassReflection;
-use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\ShouldNotHappenException;
 
 final class PluginAnnotationContextDefinitionsRule extends DeprecatedAnnotationsRuleBase

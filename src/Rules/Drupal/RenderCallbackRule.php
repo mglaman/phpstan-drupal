@@ -19,11 +19,8 @@ use PHPStan\Type\IntersectionType;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\ThisType;
 use PHPStan\Type\Type;
-use PHPStan\Type\TypeCombinator;
 use PHPStan\Type\UnionType;
 use PHPStan\Type\VerbosityLevel;
-use Drupal\Core\Render\PlaceholderGeneratorInterface;
-use Drupal\Core\Render\RendererInterface;
 
 final class RenderCallbackRule implements Rule
 {

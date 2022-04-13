@@ -30,7 +30,7 @@ jobs:
       - name: "Install dependencies"
         run: "composer update --no-progress --prefer-dist"
       - name: "PHPCS"
-        run: "php vendor/bin/phpcs src"
+        run: "php vendor/bin/phpcs"
       - name: "PHPStan"
         run: "php vendor/bin/phpstan analyze"
   tests:

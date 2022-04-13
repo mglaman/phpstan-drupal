@@ -3,8 +3,8 @@
 namespace mglaman\PHPStanDrupal\Type;
 
 use Drupal\Core\DependencyInjection\ClassResolverInterface;
-use PhpParser\Node\Expr\MethodCall;
 use mglaman\PHPStanDrupal\Drupal\ServiceMap;
+use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\ParametersAcceptorSelector;

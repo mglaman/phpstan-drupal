@@ -2,12 +2,12 @@
 
 namespace mglaman\PHPStanDrupal\Type;
 
+use mglaman\PHPStanDrupal\Drupal\DrupalServiceDefinition;
+use mglaman\PHPStanDrupal\Drupal\ServiceMap;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Scalar\String_;
 use PhpParser\Node\VariadicPlaceholder;
 use PHPStan\Analyser\Scope;
-use mglaman\PHPStanDrupal\Drupal\DrupalServiceDefinition;
-use mglaman\PHPStanDrupal\Drupal\ServiceMap;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\ParametersAcceptorSelector;
 use PHPStan\ShouldNotHappenException;
