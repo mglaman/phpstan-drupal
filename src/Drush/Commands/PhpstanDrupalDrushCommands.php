@@ -2,6 +2,7 @@
 
 namespace mglaman\PHPStanDrupal\Drush\Commands;
 
+use Drupal\Core\Serialization\Yaml;
 use Drush\Commands\DrushCommands;
 
 final class PhpstanDrupalDrushCommands extends DrushCommands
@@ -22,31 +23,28 @@ final class PhpstanDrupalDrushCommands extends DrushCommands
                 'web/themes/custom',
                 'web/profiles/custom',
             ],
-            // @todo can we have this override _everything_ phpstan-drupal provides? or is it a merge.
-            'entityMapping' => [
+            'drupal' => [
+                // @todo can we have this override _everything_ phpstan-drupal provides? or is it a merge.
+                'entityMapping' => [
+                ],
             ],
+
         ];
 
         $entity_type_manager = \Drupal::entityTypeManager();
         foreach ($entity_type_manager->getDefinitions() as $definition) {
-            $parameters['entityMapping'][$definition->id()] = [
+            $parameters['drupal']['entityMapping'][$definition->id()] = [
                 'class' => $definition->getClass(),
                 'storage' => $definition->getStorageClass(),
             ];
         }
 
-        // @todo this is just silly, reinventing NEON encoder so it's not a Drupal dependency.
-        $output = <<<NEON
-parameters:
-
-NEON;
-;
-        foreach ($parameters as $key => $value) {
-            $output .= "$key:";
-            if (is_array($value)) {
-                $output .= "\n\t";
-            }
-        }
+        $config = [
+            'parameters' => $parameters,
+        ];
+        $output = Yaml::encode($config);
+        // Replace 2 spaces with tabs for NEON compatibility.
+        $output = str_replace('  ', "\t", $output);
 
         if ($options['file'] !== null) {
             file_put_contents($options['file'], $output);
