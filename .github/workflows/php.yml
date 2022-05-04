@@ -74,7 +74,7 @@ jobs:
       - name: "Install dependencies"
         run: "composer update --no-progress --prefer-dist"
       - name: "PHPUnit"
-        run: "php vendor/bin/phpunit --debug"
+        run: "php vendor/bin/phpunit"
 
   build_integration:
     needs:
