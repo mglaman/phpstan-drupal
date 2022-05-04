@@ -207,3 +207,65 @@ jobs:
         run: |
           cd ~/drupal
           ./vendor/bin/phpstan analyze web/core/modules/dynamic_page_cache --debug
+
+  drush_command:
+    needs:
+      - lint
+      - tests
+    continue-on-error: ${{ matrix.experimental }}
+    runs-on: "ubuntu-latest"
+    name: "Drush command | PHP ${{ matrix.php-version }} | Drupal ${{ matrix.drupal }}"
+    strategy:
+      matrix:
+        experimental: [false]
+        php-version:
+          - "8.0"
+        drupal:
+          - "^9.0"
+        include:
+          - php-version: "8.1"
+            drupal: "10.0.x-dev"
+            experimental: true
+    steps:
+      - name: "Checkout"
+        uses: "actions/checkout@v2"
+      - name: "Install PHP"
+        uses: "shivammathur/setup-php@v2"
+        with:
+          coverage: "none"
+          php-version: "${{ matrix.php-version }}"
+          tools: composer:v2
+          extensions: dom, curl, libxml, mbstring, zip, pdo, mysql, pdo_mysql, bcmath, gd, exif, iconv
+      - name: Setup Drupal
+        uses: bluehorndigital/setup-drupal@v1.0.3
+        with:
+          version: ${{ matrix.drupal }}
+          path: ~/drupal
+      - name: Add Drush to Drupal
+        run: |
+          cd ~/drupal
+          composer require drush/drush
+      - name: "set the version alias for self"
+        run: |
+          if [ "${{ github.event_name }}" == 'pull_request' ]; then
+            echo ::set-output name=VERSION_ALIAS::dev-"${{ github.sha }}"
+          else
+            echo ::set-output name=VERSION_ALIAS::dev-main
+          fi
+        id: branch_alias
+      - name: "require phpstan-drupal"
+        run: |
+          cd ~/drupal
+          COMPOSER_MEMORY_LIMIT=-1 composer require mglaman/phpstan-drupal "${{ steps.branch_alias.outputs.VERSION_ALIAS }} as 1.1.99" phpstan/extension-installer --with-all-dependencies
+      - name: "Install Drupal"
+        run: |
+          cd ~/drupal
+          php vendor/bin/drush site-install --db-url=sqlite://sites/default/files/.ht.sqlite
+      - name: "Generate PHPStan config"
+        run: |
+          cd ~/drupal
+          php vendor/bin/drush phpstan:setup --file ../phpstan.neon
+      - name: "Test core/install.php"
+        run: |
+          cd ~/drupal
+          ./vendor/bin/phpstan analyze web/core/install.php --debug
