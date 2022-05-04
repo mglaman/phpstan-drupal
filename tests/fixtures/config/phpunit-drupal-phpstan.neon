@@ -14,9 +14,7 @@ parameters:
 			content_entity_using_default_storage:
 				class: Drupal\phpstan_fixtures\Entity\ContentEntityUsingDefaultStorage
 includes:
-	- ../../../extension.neon
-	- ../../../rules.neon
-	- ../../../vendor/phpstan/phpstan-deprecation-rules/rules.neon
+	- phpstan-drupal-includes.neon
 # @todo remove after https://github.com/mglaman/phpstan-drupal/issues/399.
 conditionalTags:
 	PhpParser\NodeVisitor\NodeConnectingVisitor:
