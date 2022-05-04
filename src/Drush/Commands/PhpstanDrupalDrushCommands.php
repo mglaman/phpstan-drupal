@@ -2,7 +2,6 @@
 
 namespace mglaman\PHPStanDrupal\Drush\Commands;
 
-use Drupal\Core\Serialization\Yaml;
 use Drush\Commands\DrushCommands;
 
 final class PhpstanDrupalDrushCommands extends DrushCommands
@@ -12,8 +11,10 @@ final class PhpstanDrupalDrushCommands extends DrushCommands
      * @command phpstan-drupal:setup
      * @option file
      * @bootstrap full
+     *
+     * @param array{file: string} $options
      */
-    public function setup($options = ['file' => null]): void
+    public function setup(array $options = ['file' => '']): void
     {
         $parameters = [
             'level' => 2,
@@ -42,15 +43,34 @@ final class PhpstanDrupalDrushCommands extends DrushCommands
         $config = [
             'parameters' => $parameters,
         ];
-        $output = Yaml::encode($config);
-        // Replace 2 spaces with tabs for NEON compatibility.
-        $output = str_replace('  ', "\t", $output);
+        $output = rtrim($this->createNeon($config));
 
-        if ($options['file'] !== null) {
+        if ($options['file'] !== '') {
             file_put_contents($options['file'], $output);
         } else {
             $this->io()->writeln($output);
         }
     }
 
+    private function createNeon(array $config, int $spacing = 0): string
+    {
+        $output = '';
+        foreach ($config as $key => $value) {
+            $indent = str_repeat("\t", $spacing);
+            if (!is_array($value)) {
+                $key = is_int($key) ? '- ' : "$key: ";
+                if (!is_string($value)) {
+                    $value = \json_encode($value);
+                }
+
+                $output .= "$indent$key" . $value . PHP_EOL;
+            } elseif (count($value) === 0) {
+                $output .= "$indent$key: []" . PHP_EOL;
+            } else {
+                $output .= "$indent$key:" . PHP_EOL;
+                $output .= $this->createNeon($value, $spacing + 1);
+            }
+        }
+        return $output;
+    }
 }
