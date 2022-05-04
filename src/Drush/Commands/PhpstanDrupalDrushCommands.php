@@ -2,34 +2,50 @@
 
 namespace mglaman\PHPStanDrupal\Drush\Commands;
 
+use DrupalFinder\DrupalFinder;
 use Drush\Commands\DrushCommands;
 
 final class PhpstanDrupalDrushCommands extends DrushCommands
 {
 
     /**
-     * @command phpstan-drupal:setup
-     * @option file
+     * Creates configuration for PHPStan based on your Drupal site.
+     *
+     * @command phpstan:setup
+     * @option drupal_root The path to Drupal.
+     * @option file The output file.
      * @bootstrap full
      *
-     * @param array{file: string} $options
+     * @phpstan-param array{drupal_root: string, file: string} $options
      */
-    public function setup(array $options = ['file' => '']): void
+    public function setup(array $options = ['drupal_root' => '', 'file' => '']): void
     {
+        $finder = new DrupalFinder();
+
+        if ($options['drupal_root'] === '') {
+            $options['drupal_root'] = getcwd();
+        }
+
+        $finder->locateRoot($options['drupal_root']);
+        if (!$finder->locateRoot($options['drupal_root'])) {
+            throw new \RuntimeException('Unable to detect Drupal at ' . $options['drupal_root']);
+        }
+
+        $drupalRoot = str_replace($finder->getComposerRoot() . DIRECTORY_SEPARATOR, '', $finder->getDrupalRoot());
+
         $parameters = [
             'level' => 2,
             'paths' => [
-                // @todo use drupal-finder for docroot
-                'web/modules/custom',
-                'web/themes/custom',
-                'web/profiles/custom',
+                "$drupalRoot/modules/custom",
+                "$drupalRoot/themes/custom",
+                "$drupalRoot/profiles/custom",
             ],
             'drupal' => [
+                'drupal_root' => $drupalRoot,
                 // @todo can we have this override _everything_ phpstan-drupal provides? or is it a merge.
                 'entityMapping' => [
                 ],
             ],
-
         ];
 
         $entity_type_manager = \Drupal::entityTypeManager();

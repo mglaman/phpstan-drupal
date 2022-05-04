@@ -43,10 +43,11 @@ final class PhpstanDrupalDrushCommandsTest extends TestCase
         self::assertEquals('parameters:
 	level: 2
 	paths:
-		- web/modules/custom
-		- web/themes/custom
-		- web/profiles/custom
+		- tests/fixtures/drupal/modules/custom
+		- tests/fixtures/drupal/themes/custom
+		- tests/fixtures/drupal/profiles/custom
 	drupal:
+		drupal_root: tests/fixtures/drupal
 		entityMapping:
 			node:
 				class: Drupal\node\Entity\Node
