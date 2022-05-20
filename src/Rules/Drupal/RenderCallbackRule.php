@@ -2,6 +2,8 @@
 
 namespace mglaman\PHPStanDrupal\Rules\Drupal;
 
+use Drupal\Core\Render\PlaceholderGenerator;
+use Drupal\Core\Render\Renderer;
 use mglaman\PHPStanDrupal\Drupal\ServiceMap;
 use PhpParser\Node;
 use PhpParser\Node\Name;
@@ -63,18 +65,22 @@ final class RenderCallbackRule implements Rule
 
         // @todo Move into its own rule.
         if ($keyChecked === '#lazy_builder') {
-            // Check if being used in array_intersect_key.
-            // NOTE: This only works against existing patterns in Drupal core where the array with boolean values is
-            // being passed as the argument to array_intersect_key.
-            $parent = $node->getAttribute('parent');
-            if ($parent instanceof Node\Expr\Array_) {
-                $parent = $parent->getAttribute('parent');
-                if ($parent instanceof Node\Arg) {
-                    $parent = $parent->getAttribute('parent');
-                    if ($parent instanceof Node\Expr\FuncCall
-                        && $parent->name instanceof Name
-                        && $parent->name->toString() === 'array_intersect_key'
-                    ) {
+            if ($scope->isInClass()) {
+                $classReflection = $scope->getClassReflection();
+                // @todo why doesn't isInClass assert this isn't null?
+                assert($classReflection !== null);
+                $classType = new ObjectType($classReflection->getName());
+                // These classes use #lazy_builder in array_intersect_key. With
+                // PHPStan 1.6, nodes do not track their parent/next/prev which
+                // saves a lot of memory. But makes it harder to detect if we're
+                // in a call to array_intersect_key. This is an easier workaround.
+                $allowedTypes = [
+                    PlaceholderGenerator::class,
+                    Renderer::class,
+                    'Drupal\Tests\Core\Render\RendererPlaceholdersTest',
+                ];
+                foreach ($allowedTypes as $allowedType) {
+                    if ($classType->isInstanceOf($allowedType)->yes()) {
                         return [];
                     }
                 }

@@ -7,7 +7,7 @@ use mglaman\PHPStanDrupal\Drupal\ServiceMap;
 use mglaman\PHPStanDrupal\Tests\DrupalRuleTestCase;
 use mglaman\PHPStanDrupal\Rules\Drupal\RenderCallbackRule;
 
-final class PreRenderCallbackRuleTest extends DrupalRuleTestCase {
+final class RenderCallbackRuleTest extends DrupalRuleTestCase {
 
     protected function getRule(): \PHPStan\Rules\Rule
     {
