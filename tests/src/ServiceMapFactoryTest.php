@@ -19,6 +19,7 @@ final class ServiceMapFactoryTest extends TestCase
      * @covers \mglaman\PHPStanDrupal\Drupal\DrupalServiceDefinition::getId
      * @covers \mglaman\PHPStanDrupal\Drupal\ServiceMap::setDrupalServices
      * @covers \mglaman\PHPStanDrupal\Drupal\ServiceMap::getService
+     * @covers \mglaman\PHPStanDrupal\Drupal\ServiceMap::resolveParentDefinition
      */
     public function testFactory(string $id, callable $validator): void
     {
