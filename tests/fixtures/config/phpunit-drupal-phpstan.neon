@@ -17,7 +17,3 @@ includes:
 	- ../../../extension.neon
 	- ../../../rules.neon
 	- ../../../vendor/phpstan/phpstan-deprecation-rules/rules.neon
-# @todo remove after https://github.com/mglaman/phpstan-drupal/issues/399.
-conditionalTags:
-	PhpParser\NodeVisitor\NodeConnectingVisitor:
-		phpstan.parser.richParserNodeVisitor: true
