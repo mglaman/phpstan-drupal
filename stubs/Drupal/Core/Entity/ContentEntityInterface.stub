@@ -1,0 +1,12 @@
+<?php
+
+namespace Drupal\Core\Entity;
+
+/**
+ * @extends \Traversable<string, \Drupal\Core\Field\FieldItemListInterface>
+ *
+ * @see \Drupal\Core\Entity\FieldableEntityInterface::getFields
+ */
+interface ContentEntityInterface extends \Traversable, FieldableEntityInterface, TranslatableRevisionableInterface, SynchronizableInterface {
+
+}

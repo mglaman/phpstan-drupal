@@ -10,5 +10,6 @@ parameters:
 		- tests/src
 	excludePaths:
 		-  tests/src/Type/data/*.php
+		-  tests/src/Rules/data/*.php
 	dynamicConstantNames:
 		- Drupal::VERSION
