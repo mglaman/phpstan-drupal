@@ -2,7 +2,6 @@
 
 namespace mglaman\PHPStanDrupal\Reflection;
 
-use PHPStan\BetterReflection\Reflection\ReflectionClass;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\PropertiesClassReflectionExtension;
 use PHPStan\Reflection\PropertyReflection;
