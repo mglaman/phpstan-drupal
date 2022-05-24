@@ -42,9 +42,7 @@ class PluginManagerSetsCacheBackendRule extends AbstractPluginManagerRule
             throw new ShouldNotHappenException();
         }
 
-        $classReflection = $scopeClassReflection->getNativeReflection();
-
-        if (!$this->isPluginManager($classReflection)) {
+        if (!$this->isPluginManager($scopeClassReflection)) {
             return [];
         }
 
