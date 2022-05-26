@@ -23,6 +23,10 @@ final class GlobalDrupalDependencyInjectionRuleTest extends DrupalRuleTestCase {
     public function resultData(): \Generator
     {
         yield [
+            __DIR__ . '/data/drupal-static.php',
+            [],
+        ];
+        yield [
             __DIR__ . '/../../fixtures/drupal/modules/phpstan_fixtures/src/UsesDeprecatedUrlFunction.php',
             [
                 [
