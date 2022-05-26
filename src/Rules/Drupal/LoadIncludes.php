@@ -70,7 +70,7 @@ class LoadIncludes extends LoadIncludeBase
             return [
                 RuleErrorBuilder::message(sprintf(
                     'File %s could not be loaded from %s::loadInclude',
-                    $module->getPath() . DIRECTORY_SEPARATOR . $filename,
+                    $module->getPath() . '/' . $filename,
                     ModuleHandlerInterface::class
                 ))
                     ->line($node->getLine())
