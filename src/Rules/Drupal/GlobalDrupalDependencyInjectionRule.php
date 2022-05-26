@@ -32,7 +32,6 @@ class GlobalDrupalDependencyInjectionRule implements Rule
             throw new ShouldNotHappenException();
         }
 
-        $classReflection = $scopeClassReflection->getNativeReflection();
         $allowed_list = [
             // Ignore tests.
             'PHPUnit\Framework\Test',
@@ -45,11 +44,14 @@ class GlobalDrupalDependencyInjectionRule implements Rule
             // Entities don't use services for now
             // @see https://www.drupal.org/project/drupal/issues/2913224
             'Drupal\Core\Entity\EntityInterface',
+            // Stream wrappers are only registered as a service for their tags
+            // and cannot use dependency injection. Function calls like
+            // file_exists, stat, etc. will construct the class directly.
+            'Drupal\Core\StreamWrapper\StreamWrapperInterface',
         ];
-        $implemented_interfaces = $classReflection->getInterfaceNames();
 
         foreach ($allowed_list as $item) {
-            if (in_array($item, $implemented_interfaces, true)) {
+            if ($scopeClassReflection->implementsInterface($item)) {
                 return [];
             }
         }
