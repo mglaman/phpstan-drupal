@@ -129,13 +129,12 @@ example for adding a mapping for Search API:
 parameters:
 	drupal:
 		entityMapping:
-			block:
-				search_api_index:
-					class: Drupal\search_api\Entity\Index
-					storage: Drupal\search_api\Entity\SearchApiConfigEntityStorage
-				search_api_server:
-					class: Drupal\search_api\Entity\Server
-					storage: Drupal\search_api\Entity\SearchApiConfigEntityStorage			    
+			search_api_index:
+				class: Drupal\search_api\Entity\Index
+				storage: Drupal\search_api\Entity\SearchApiConfigEntityStorage
+			search_api_server:
+				class: Drupal\search_api\Entity\Server
+				storage: Drupal\search_api\Entity\SearchApiConfigEntityStorage			    
 ```
 
 Similarly, the `EntityStorageDynamicReturnTypeExtension` service helps to determine the type of the entity which is
