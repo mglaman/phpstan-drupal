@@ -37,9 +37,6 @@
         "phpstan/phpstan-phpunit": "PHPUnit extensions and rules for PHPStan."
     },
     "autoload": {
-        "files": [
-            "drupal-phpunit-hack.php"
-        ],
         "psr-4": {
             "mglaman\\PHPStanDrupal\\": "src/"
         }

@@ -5,7 +5,6 @@ parameters:
 	reportUnmatchedIgnoredErrors: false
 	paths:
 		- src
-		- drupal-phpunit-hack.php
 		- drupal-autoloader.php
 		- tests/src
 	excludePaths:
