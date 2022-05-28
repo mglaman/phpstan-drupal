@@ -1,0 +1,17 @@
+<?php
+
+namespace Drupal\Core\Access;
+
+use Drupal\Core\Session\AccountInterface;
+
+interface AccessibleInterface {
+
+  /**
+   * @param string $operation
+   * @param \Drupal\Core\Session\AccountInterface $account
+   * @param bool $return_as_object
+   *
+   * @return ($return_as_object is true ? \Drupal\Core\Access\AccessResultInterface : bool)
+   */
+    public function access(string $operation, AccountInterface $account = NULL, bool $return_as_object = FALSE);
+}
