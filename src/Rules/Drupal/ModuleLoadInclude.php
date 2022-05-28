@@ -58,7 +58,7 @@ class ModuleLoadInclude extends LoadIncludeBase
             return [
                 RuleErrorBuilder::message(sprintf(
                     'File %s could not be loaded from module_load_include.',
-                    $module->getPath() . DIRECTORY_SEPARATOR . $filename
+                    $module->getPath() . '/' . $filename
                 ))
                     ->line($node->getLine())
                     ->build()
