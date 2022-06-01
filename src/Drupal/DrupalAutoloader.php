@@ -191,6 +191,7 @@ class DrupalAutoloader
 
         $service_map = $container->getByType(ServiceMap::class);
         $service_map->setDrupalServices($this->serviceMap);
+        ServiceMapStaticAccessor::registerInstance($service_map);
 
         if (interface_exists(\PHPUnit\Framework\Test::class)
             && class_exists('Drupal\TestTools\PhpUnitCompatibility\PhpUnit8\ClassWriter')) {
