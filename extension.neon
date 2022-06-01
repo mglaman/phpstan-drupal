@@ -277,9 +277,6 @@ services:
 		class: mglaman\PHPStanDrupal\Type\UrlToStringDynamicReturnTypeExtension
 		tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
 	-
-		class: mglaman\PHPStanDrupal\Type\AccessibleReturnTypeExtension
-		tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
-	-
 		class: mglaman\PHPStanDrupal\Type\EntityAccessControlHandlerReturnTypeExtension
 		tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
 	-
