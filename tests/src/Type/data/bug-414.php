@@ -20,9 +20,10 @@ function (EntityInterface $entity): void {
     $access = $entity->access(...$accessArgs);
     assertType('bool', $access);
 
-    $accessArgs = ['delete', null, true];
-    $access = $entity->access(...$accessArgs);
-    assertType(AccessResultInterface::class, $access);
+    // @todo test after https://github.com/phpstan/phpstan/issues/7369
+    // $accessArgs = ['delete', null, true];
+    // $access = $entity->access(...$accessArgs);
+    // assertType(AccessResultInterface::class, $access);
 };
 
 function (EntityInterface $entity): void {
