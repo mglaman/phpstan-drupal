@@ -3,7 +3,7 @@
 namespace Drupal\Core\TypedData;
 
 /**
- * @template I
+ * @template I of int|string
  * @template T of TypedDataInterface
  * @extends \Traversable<I, T>
  */
