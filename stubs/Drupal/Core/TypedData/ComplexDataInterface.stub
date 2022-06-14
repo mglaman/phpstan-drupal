@@ -2,5 +2,8 @@
 
 namespace Drupal\Core\TypedData;
 
+/**
+ * @extends TraversableTypedDataInterface<string, TypedDataInterface>
+ */
 interface ComplexDataInterface extends TraversableTypedDataInterface {
 }

@@ -2,6 +2,14 @@
 
 namespace Drupal\Core\Field;
 
-interface FieldItemListInterface {
+use Drupal\Core\Access\AccessibleInterface;
+use Drupal\Core\TypedData\ListInterface;
+
+/**
+ * @template T of FieldItemInterface
+ * @extends ListInterface<T>
+ * @property mixed $value
+ */
+interface FieldItemListInterface extends ListInterface {
 
 }

@@ -1,0 +1,11 @@
+<?php
+
+namespace Drupal\Core\TypedData;
+
+/**
+ * @template T of TypedDataInterface
+ * @extends TraversableTypedDataInterface<int, T>
+ * @extends \ArrayAccess<int,T>
+ */
+interface ListInterface extends TraversableTypedDataInterface, \ArrayAccess, \Countable {
+}
