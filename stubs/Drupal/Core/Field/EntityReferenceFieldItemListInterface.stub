@@ -1,0 +1,16 @@
+<?php
+
+namespace Drupal\Core\Field;
+
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Field\Plugin\Field\FieldType\EntityReferenceItem;
+
+/**
+ * @template T of EntityInterface
+ * @extends FieldItemListInterface<EntityReferenceItem<T>>
+ * @property int|string|null $target_id
+ * @property ?T $entity
+ */
+interface EntityReferenceFieldItemListInterface extends FieldItemListInterface {
+
+}
