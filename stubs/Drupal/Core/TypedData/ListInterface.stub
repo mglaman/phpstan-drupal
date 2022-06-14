@@ -8,4 +8,15 @@ namespace Drupal\Core\TypedData;
  * @extends \ArrayAccess<int,T>
  */
 interface ListInterface extends TraversableTypedDataInterface, \ArrayAccess, \Countable {
+
+  /**
+   * @return ?T
+   */
+  public function first();
+
+  /**
+   * @return ?T
+   */
+  public function get(int $index);
+
 }
