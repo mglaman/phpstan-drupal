@@ -5,6 +5,11 @@ namespace Drupal\Core\Entity;
 interface FieldableEntityInterface extends EntityInterface {
 
     /**
+     * @return \Drupal\Core\Field\FieldItemListInterface<\Drupal\Core\Field\FieldItemInterface>
+     */
+    public function get(string $field_name);
+
+    /**
      * @return array<string, \Drupal\Core\Field\FieldDefinitionInterface>
      */
     public static function baseFieldDefinitions(EntityTypeInterface $entity_type): array;
