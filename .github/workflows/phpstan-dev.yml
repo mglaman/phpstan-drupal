@@ -1,4 +1,4 @@
-name: PHPStan dev
+name: PHPStan other versions
 on:
   push:
     branches: [main]
@@ -7,9 +7,9 @@ on:
   schedule:
     - cron: 0 0 * * *
 jobs:
-  verify:
+  dev:
     runs-on: "ubuntu-latest"
-    name: Lint
+    name: "1.7.x-dev"
     steps:
       - name: "Checkout"
         uses: "actions/checkout@v2"
@@ -22,6 +22,31 @@ jobs:
           extensions: dom, curl, libxml, mbstring, zip, pdo, mysql, pdo_mysql, gd
       - name: "Bump PHPStan"
         run: "composer require --no-update phpstan/phpstan:1.7.x-dev"
+      - name: "Add phpspec/prophecy-phpunit"
+        run: "composer require phpspec/prophecy-phpunit:^2 --dev --no-update"
+      - name: "Install dependencies"
+        run: "composer update --no-progress --prefer-dist"
+      - name: "PHPCS"
+        run: "php vendor/bin/phpcs"
+      - name: "PHPStan"
+        run: "php vendor/bin/phpstan analyze"
+      - name: "PHPUnit"
+        run: "php vendor/bin/phpunit"
+  last_minor:
+    runs-on: "ubuntu-latest"
+    name: "1.6.x"
+    steps:
+      - name: "Checkout"
+        uses: "actions/checkout@v2"
+      - name: "Install PHP"
+        uses: "shivammathur/setup-php@v2"
+        with:
+          coverage: "none"
+          php-version: 8.1
+          tools: composer:v2
+          extensions: dom, curl, libxml, mbstring, zip, pdo, mysql, pdo_mysql, gd
+      - name: "Bump PHPStan"
+        run: "composer require --no-update phpstan/phpstan:~1.6.0"
       - name: "Add phpspec/prophecy-phpunit"
         run: "composer require phpspec/prophecy-phpunit:^2 --dev --no-update"
       - name: "Install dependencies"
