@@ -377,9 +377,11 @@ class ExtensionDiscovery
             $type = false;
             $file = $fileinfo->openFile('r');
             while (!$type && !$file->eof()) {
-                preg_match('@^type:\s*(\'|")?(\w+)\1?\s*$@', $file->fgets(), $matches);
-                if (isset($matches[2])) {
-                    $type = $matches[2];
+                if ($line = $file->fgets()) {
+                    preg_match('@^type:\s*(\'|")?(\w+)\1?\s*$@', $line, $matches);
+                    if (isset($matches[2])) {
+                        $type = $matches[2];
+                    }
                 }
             }
             if ($type === false) {
