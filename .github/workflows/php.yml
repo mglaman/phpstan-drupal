@@ -109,7 +109,7 @@ jobs:
           tools: composer:v2
           extensions: dom, curl, libxml, mbstring, zip, pdo, mysql, pdo_mysql, bcmath, gd, exif, iconv
       - name: Setup Drupal
-        uses: bluehorndigital/setup-drupal@v1.0.3
+        uses: bluehorndigital/setup-drupal@v1.0.4
         with:
           version: ${{ matrix.drupal }}
           path: ~/drupal
@@ -130,10 +130,6 @@ jobs:
         run: |
           cd ~/drupal
           ./vendor/bin/phpstan analyze web/core/install.php --debug
-      - name: "Test core/tests/Drupal/Tests/UnitTestCase.php"
-        run: |
-          cd ~/drupal
-          ./vendor/bin/phpstan analyze web/core/tests/Drupal/Tests/SkippedDeprecationTest.php --debug
       - name: "Test BrowserTestBase is autoloaded"
         run: |
           cd ~/drupal
@@ -186,7 +182,7 @@ jobs:
           tools: composer:v2
           extensions: dom, curl, libxml, mbstring, zip, pdo, mysql, pdo_mysql, bcmath, gd, exif, iconv
       - name: Setup Drupal
-        uses: bluehorndigital/setup-drupal@v1.0.3
+        uses: bluehorndigital/setup-drupal@v1.0.4
         with:
           version: ${{ matrix.drupal }}
           path: ~/drupal
