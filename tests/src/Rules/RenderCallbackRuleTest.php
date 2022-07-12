@@ -52,7 +52,7 @@ final class RenderCallbackRuleTest extends DrupalRuleTestCase {
                     'Change record: https://www.drupal.org/node/2966725.',
                 ],
                 [
-                    "#pre_render callback class 'Drupal\pre_render_callback_rule\NotTrustedCallback' at key '3' does not implement Drupal\Core\Security\TrustedCallbackInterface.",
+                    "#pre_render callback class 'static(Drupal\pre_render_callback_rule\NotTrustedCallback)' at key '3' does not implement Drupal\Core\Security\TrustedCallbackInterface.",
                     29,
                     'Change record: https://www.drupal.org/node/2966725.',
                 ],
@@ -100,8 +100,9 @@ final class RenderCallbackRuleTest extends DrupalRuleTestCase {
             __DIR__ . '/data/bug-424.php',
             [
                 [
-                    "#lazy_builder callback 'Bug424\\\Foo:…' at key '0' is not callable.",
+                    "#lazy_builder callback class 'static(Bug424\Foo)' at key '0' does not implement Drupal\Core\Security\TrustedCallbackInterface.",
                     10,
+                    "Change record: https://www.drupal.org/node/2966725."
                 ],
                 [
                     "#lazy_builder callback class 'static(Bug424\Foo)' at key '0' does not implement Drupal\Core\Security\TrustedCallbackInterface.",

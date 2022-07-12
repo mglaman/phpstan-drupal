@@ -46,7 +46,8 @@
             "mglaman\\PHPStanDrupal\\Tests\\": "tests/src/"
         },
         "classmap": [
-            "tests/src/Type/data"
+            "tests/src/Type/data",
+            "tests/src/Rules/data"
         ]
     },
     "extra": {

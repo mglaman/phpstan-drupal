@@ -150,6 +150,12 @@ final class RenderCallbackRule implements Rule
                     ->tip('Change record: https://www.drupal.org/node/2966725.')
                     ->build();
             }
+
+            if (!$trustedCallbackType->isSuperTypeOf($type)->yes()) {
+                return RuleErrorBuilder::message(
+                    sprintf("%s callback class %s at key '%s' does not implement Drupal\Core\Security\TrustedCallbackInterface.", $keyChecked, $type->describe(VerbosityLevel::value()), $pos)
+                )->line($errorLine)->tip('Change record: https://www.drupal.org/node/2966725.')->build();
+            }
         } elseif ($type instanceof ConstantArrayType) {
             if (!$type->isCallable()->yes()) {
                 return RuleErrorBuilder::message(
@@ -204,8 +210,14 @@ final class RenderCallbackRule implements Rule
             if ($node instanceof Node\Expr\BinaryOp\Concat) {
                 $leftType = $scope->getType($node->left);
                 $rightType = $scope->getType($node->right);
-                if ($leftType instanceof GenericClassStringType && $leftType->getGenericType() instanceof StaticType && $rightType instanceof ConstantStringType) {
-                    return new ConstantStringType($leftType->getGenericType()->getClassName() . $rightType->getValue());
+                if ($rightType instanceof ConstantStringType && $leftType instanceof GenericClassStringType && $leftType->getGenericType() instanceof StaticType) {
+                    return new ConstantArrayType(
+                        [new ConstantIntegerType(0), new ConstantIntegerType(1)],
+                        [
+                            $leftType->getGenericType(),
+                            new ConstantStringType(ltrim($rightType->getValue(), ':'))
+                        ]
+                    );
                 }
             }
         } elseif ($type instanceof ConstantStringType) {
@@ -234,7 +246,7 @@ final class RenderCallbackRule implements Rule
                 return new ConstantArrayType(
                     [new ConstantIntegerType(0), new ConstantIntegerType(1)],
                     [
-                        new ConstantStringType($matches[1], true),
+                        new StaticType($this->reflectionProvider->getClass($matches[1])),
                         new ConstantStringType($matches[2])
                     ]
                 );
