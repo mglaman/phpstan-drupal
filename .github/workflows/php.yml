@@ -109,21 +109,10 @@ jobs:
           tools: composer:v2
           extensions: dom, curl, libxml, mbstring, zip, pdo, mysql, pdo_mysql, bcmath, gd, exif, iconv
       - name: Setup Drupal
-        uses: bluehorndigital/setup-drupal@v1.0.3
+        uses: bluehorndigital/setup-drupal@v1.0.4
         with:
           version: ${{ matrix.drupal }}
           path: ~/drupal
-      -   name: Fix allow-plugins (8.9)
-          if: ${{ matrix.drupal == '^8.9' }}
-          run: |
-              cd ~/drupal
-              composer config --no-plugins allow-plugins.drupal/core-composer-scaffold true
-              composer config --no-plugins allow-plugins.drupal/core-project-message true
-      -   name: Fix allow-plugins
-          run: |
-              cd ~/drupal
-              composer config --no-plugins allow-plugins.composer/installers true
-              composer config --no-plugins allow-plugins.dealerdirect/phpcodesniffer-composer-installer true
       - name: "set the version alias for self"
         run: |
           if [ "${{ github.event_name }}" == 'pull_request' ]; then
