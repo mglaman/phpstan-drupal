@@ -1,6 +1,8 @@
 services:
   service_map.my_service:
     class: Drupal\service_map\MyService
+  Drupal\service_map\MyService:
+    class: Drupal\service_map\MyService
   GuzzleHttp\Client: '@http_client'
   Drupal\Core\Config\ConfigFactoryInterface: '@config.factory'
   Drupal\Core\Messenger\MessengerInterface: '@messenger'

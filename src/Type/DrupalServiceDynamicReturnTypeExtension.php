@@ -5,7 +5,9 @@ namespace mglaman\PHPStanDrupal\Type;
 use Drupal;
 use mglaman\PHPStanDrupal\Drupal\DrupalServiceDefinition;
 use mglaman\PHPStanDrupal\Drupal\ServiceMap;
+use PhpParser\Node\Expr\ClassConstFetch;
 use PhpParser\Node\Expr\StaticCall;
+use PhpParser\Node\Name\FullyQualified;
 use PhpParser\Node\Scalar\String_;
 use PhpParser\Node\VariadicPlaceholder;
 use PHPStan\Analyser\Scope;
@@ -51,17 +53,29 @@ class DrupalServiceDynamicReturnTypeExtension implements DynamicStaticMethodRetu
         if ($arg1 instanceof VariadicPlaceholder) {
             throw new ShouldNotHappenException();
         }
+
         $arg1 = $arg1->value;
-        if (!$arg1 instanceof String_) {
-            // @todo determine what these types are.
-            return $returnType;
+
+        if ($arg1 instanceof String_) {
+            $serviceId = $arg1->value;
+            return $this->getServiceType($serviceId) ?? $returnType;
         }
 
-        $serviceId = $arg1->value;
+        if ($arg1 instanceof ClassConstFetch && $arg1->class instanceof FullyQualified) {
+            $serviceId = (string) $arg1->class;
+            return $this->getServiceType($serviceId) ?? $returnType;
+        }
+
+        return $returnType;
+    }
+
+    protected function getServiceType(string $serviceId): ?Type
+    {
         $service = $this->serviceMap->getService($serviceId);
         if ($service instanceof DrupalServiceDefinition) {
             return $service->getType();
         }
-        return $returnType;
+
+        return null;
     }
 }

@@ -17,4 +17,9 @@ function test(): void {
     assertType(MyService::class, \Drupal::service('class_resolver')->getInstanceFromDefinition('service_map.my_service'));
     assertType(MyService::class, \Drupal::classResolver()->getInstanceFromDefinition('service_map.my_service'));
     assertType(MyService::class, \Drupal::classResolver('service_map.my_service'));
+
+    assertType(MyService::class, (new ClassResolver())->getInstanceFromDefinition(MyService::class));
+    assertType(MyService::class, \Drupal::service('class_resolver')->getInstanceFromDefinition(MyService::class));
+    assertType(MyService::class, \Drupal::classResolver()->getInstanceFromDefinition(MyService::class));
+    assertType(MyService::class, \Drupal::classResolver(MyService::class));
 }

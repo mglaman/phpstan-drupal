@@ -18,4 +18,5 @@ function test(): void {
     assertType(MyService::class, $container->get('service_map.concrete_service_with_a_parent_which_has_a_parent'));
     assertType(Override::class, $container->get('service_map.concrete_service_overriding_definition_of_its_parent'));
     assertType(Concrete::class, $container->get('service_map.concrete_overriding_its_parent_which_has_a_parent'));
+    assertType(MyService::class, $container->get(MyService::class));
 }
