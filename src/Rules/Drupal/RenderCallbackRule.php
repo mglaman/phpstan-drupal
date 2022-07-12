@@ -19,6 +19,7 @@ use PHPStan\Type\Constant\ConstantStringType;
 use PHPStan\Type\Generic\GenericClassStringType;
 use PHPStan\Type\IntersectionType;
 use PHPStan\Type\ObjectType;
+use PHPStan\Type\StaticType;
 use PHPStan\Type\ThisType;
 use PHPStan\Type\Type;
 use PHPStan\Type\UnionType;
@@ -149,6 +150,12 @@ final class RenderCallbackRule implements Rule
                     ->tip('Change record: https://www.drupal.org/node/2966725.')
                     ->build();
             }
+
+            if (!$trustedCallbackType->isSuperTypeOf($type)->yes()) {
+                return RuleErrorBuilder::message(
+                    sprintf("%s callback class %s at key '%s' does not implement Drupal\Core\Security\TrustedCallbackInterface.", $keyChecked, $type->describe(VerbosityLevel::value()), $pos)
+                )->line($errorLine)->tip('Change record: https://www.drupal.org/node/2966725.')->build();
+            }
         } elseif ($type instanceof ConstantArrayType) {
             if (!$type->isCallable()->yes()) {
                 return RuleErrorBuilder::message(
@@ -185,25 +192,6 @@ final class RenderCallbackRule implements Rule
                     sprintf("%s callback %s at key '%s' is not callable.", $keyChecked, $type->describe(VerbosityLevel::value()), $pos)
                 )->line($errorLine)->build();
             }
-        } elseif ($type instanceof IntersectionType) {
-            // Try to provide a tip for this weird occurrence.
-            $tip = '';
-            if ($node instanceof Node\Expr\BinaryOp\Concat) {
-                $leftStringType = $scope->getType($node->left)->toString();
-                $rightStringType = $scope->getType($node->right)->toString();
-                if ($leftStringType instanceof GenericClassStringType && $rightStringType instanceof ConstantStringType) {
-                    $methodName = str_replace(':', '', $rightStringType->getValue());
-                    $tip = "Refactor concatenation of `static::class` with method name to an array callback: [static::class, '$methodName']";
-                }
-            }
-
-            if ($tip === '') {
-                $tip = 'If this error is unexpected, open an issue with the error and sample code https://github.com/mglaman/phpstan-drupal/issues/new';
-            }
-
-            return RuleErrorBuilder::message(
-                sprintf("%s value '%s' at key '%s' is invalid.", $keyChecked, $type->describe(VerbosityLevel::value()), $pos)
-            )->line($errorLine)->tip($tip)->build();
         } else {
             return RuleErrorBuilder::message(
                 sprintf("%s value '%s' at key '%s' is invalid.", $keyChecked, $type->describe(VerbosityLevel::value()), $pos)
@@ -217,7 +205,22 @@ final class RenderCallbackRule implements Rule
     private function getType(Node\Expr $node, Scope $scope):  Type
     {
         $type = $scope->getType($node);
-        if ($type instanceof ConstantStringType) {
+        if ($type instanceof IntersectionType) {
+            // Covers concatenation of static::class . '::methodName'.
+            if ($node instanceof Node\Expr\BinaryOp\Concat) {
+                $leftType = $scope->getType($node->left);
+                $rightType = $scope->getType($node->right);
+                if ($rightType instanceof ConstantStringType && $leftType instanceof GenericClassStringType && $leftType->getGenericType() instanceof StaticType) {
+                    return new ConstantArrayType(
+                        [new ConstantIntegerType(0), new ConstantIntegerType(1)],
+                        [
+                            $leftType->getGenericType(),
+                            new ConstantStringType(ltrim($rightType->getValue(), ':'))
+                        ]
+                    );
+                }
+            }
+        } elseif ($type instanceof ConstantStringType) {
             if ($type->isClassString()) {
                 return $type;
             }
@@ -243,7 +246,7 @@ final class RenderCallbackRule implements Rule
                 return new ConstantArrayType(
                     [new ConstantIntegerType(0), new ConstantIntegerType(1)],
                     [
-                        new ConstantStringType($matches[1], true),
+                        new StaticType($this->reflectionProvider->getClass($matches[1])),
                         new ConstantStringType($matches[2])
                     ]
                 );

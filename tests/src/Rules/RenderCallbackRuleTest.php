@@ -52,7 +52,7 @@ final class RenderCallbackRuleTest extends DrupalRuleTestCase {
                     'Change record: https://www.drupal.org/node/2966725.',
                 ],
                 [
-                    "#pre_render callback class 'Drupal\pre_render_callback_rule\NotTrustedCallback' at key '3' does not implement Drupal\Core\Security\TrustedCallbackInterface.",
+                    "#pre_render callback class 'static(Drupal\pre_render_callback_rule\NotTrustedCallback)' at key '3' does not implement Drupal\Core\Security\TrustedCallbackInterface.",
                     29,
                     'Change record: https://www.drupal.org/node/2966725.',
                 ],
@@ -65,13 +65,7 @@ final class RenderCallbackRuleTest extends DrupalRuleTestCase {
         ];
         yield [
             __DIR__ . '/../../fixtures/drupal/modules/pre_render_callback_rule/src/RenderArrayWithPreRenderCallback.php',
-            [
-                [
-                    "#pre_render value 'non-empty-string' at key '3' is invalid.",
-                    19,
-                    "Refactor concatenation of `static::class` with method name to an array callback: [static::class, 'preRenderCallback']"
-                ]
-            ]
+            []
         ];
         yield [
             __DIR__ . '/../../fixtures/drupal/modules/pre_render_callback_rule/src/RenderCallbackInterfaceObject.php',
@@ -79,13 +73,7 @@ final class RenderCallbackRuleTest extends DrupalRuleTestCase {
         ];
         yield [
             __DIR__ . '/../../fixtures/drupal/modules/pre_render_callback_rule/src/LazyBuilderWithConstant.php',
-            [
-                [
-                    "#lazy_builder value 'non-empty-string' at key '0' is invalid.",
-                    25,
-                    "Refactor concatenation of `static::class` with method name to an array callback: [static::class, 'lazyBuilder']"
-                ]
-            ]
+            []
         ];
         yield [
             __DIR__ . '/../../fixtures/drupal/modules/pre_render_callback_rule/src/FormWithClosure.php',
@@ -112,9 +100,9 @@ final class RenderCallbackRuleTest extends DrupalRuleTestCase {
             __DIR__ . '/data/bug-424.php',
             [
                 [
-                    "#lazy_builder value 'non-empty-string' at key '0' is invalid.",
+                    "#lazy_builder callback class 'static(Bug424\Foo)' at key '0' does not implement Drupal\Core\Security\TrustedCallbackInterface.",
                     10,
-                    "Refactor concatenation of `static::class` with method name to an array callback: [static::class, 'contentLazyBuilder']"
+                    "Change record: https://www.drupal.org/node/2966725."
                 ],
                 [
                     "#lazy_builder callback class 'static(Bug424\Foo)' at key '0' does not implement Drupal\Core\Security\TrustedCallbackInterface.",
