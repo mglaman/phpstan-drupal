@@ -2,9 +2,9 @@
 
 namespace mglaman\PHPStanDrupal\Rules\Deprecations;
 
+use mglaman\PHPStanDrupal\Internal\DeprecatedScopeCheck;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
-use PHPStan\Reflection\FunctionReflection;
 use PHPStan\Reflection\ReflectionProvider;
 
 class AccessDeprecatedConstant implements \PHPStan\Rules\Rule
@@ -24,16 +24,7 @@ class AccessDeprecatedConstant implements \PHPStan\Rules\Rule
     public function processNode(Node $node, Scope $scope): array
     {
         assert($node instanceof Node\Expr\ConstFetch);
-        $class = $scope->getClassReflection();
-        if ($class !== null && $class->isDeprecated()) {
-            return [];
-        }
-        $trait = $scope->getTraitReflection();
-        if ($trait !== null && $trait->isDeprecated()) {
-            return [];
-        }
-        $function = $scope->getFunction();
-        if ($function instanceof FunctionReflection && $function->isDeprecated()->yes()) {
+        if (DeprecatedScopeCheck::inDeprecatedScope($scope)) {
             return [];
         }
 
