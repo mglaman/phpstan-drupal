@@ -3,7 +3,9 @@
 namespace Drupal\Core\TypedData;
 
 /**
- * @extends \Traversable<string, \Drupal\Core\TypedData\TypedDataInterface>
+ * @template I of int|string
+ * @template T of TypedDataInterface
+ * @extends \Traversable<I, T>
  */
 interface TraversableTypedDataInterface extends TypedDataInterface, \Traversable {
 }

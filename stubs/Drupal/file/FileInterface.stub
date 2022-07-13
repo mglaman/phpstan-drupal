@@ -1,0 +1,9 @@
+<?php
+
+namespace Drupal\file;
+
+use Drupal\Core\Entity\EntityInterface;
+
+interface FileInterface extends EntityInterface {
+
+}
