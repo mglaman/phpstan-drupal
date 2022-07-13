@@ -27,7 +27,7 @@ final class SymfonyCmfRoutingInClassMethodSignatureRule implements Rule
             return [];
         }
         [$major, $minor] = explode('.', \Drupal::VERSION, 3);
-        if ($major !== '9' && (int) $minor > 1) {
+        if ($major !== '9' || (int) $minor < 1) {
             return [];
         }
         $method = $scope->getFunction();
