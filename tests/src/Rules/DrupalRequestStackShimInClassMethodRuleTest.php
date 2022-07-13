@@ -34,12 +34,6 @@ final class DrupalRequestStackShimInClassMethodRuleTest extends DrupalRuleTestCa
                         9,
                         'Change record: https://www.drupal.org/node/3253744',
                     ],
-                    // @todo needs specific \PhpParser\Node\Expr\New_ rule.
-                    [
-                        '',
-                        11,
-                        'Change record: https://www.drupal.org/node/3253744',
-                    ],
                 ]
             );
         }

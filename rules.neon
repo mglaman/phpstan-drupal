@@ -18,3 +18,4 @@ rules:
 	- mglaman\PHPStanDrupal\Rules\Deprecations\SymfonyCmfRouteObjectInterfaceConstantsRule
 	- mglaman\PHPStanDrupal\Rules\Deprecations\SymfonyCmfRoutingInClassMethodSignatureRule
 	- mglaman\PHPStanDrupal\Rules\Drupal\DrupalRequestStackShimInClassMethodRule
+	- mglaman\PHPStanDrupal\Rules\Drupal\DrupalRequestStackShimInstantiationRule
