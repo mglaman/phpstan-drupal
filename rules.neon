@@ -16,3 +16,4 @@ rules:
 	- mglaman\PHPStanDrupal\Rules\Drupal\LoadIncludes
 	- mglaman\PHPStanDrupal\Rules\Drupal\EntityQuery\EntityQueryHasAccessCheckRule
 	- mglaman\PHPStanDrupal\Rules\Deprecations\SymfonyCmfRouteObjectInterfaceConstantsRule
+	- mglaman\PHPStanDrupal\Rules\Deprecations\SymfonyCmfRoutingInClassMethodSignatureRule

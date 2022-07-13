@@ -10,7 +10,7 @@ class Foo {
     public function a(\Symfony\Cmf\Component\Routing\RouteObjectInterface $object) {
 
     }
-    public function b(\Symfony\Cmf\Component\Routing\RouteProviderInterface $provider) {
+    public function b(\Symfony\Cmf\Component\Routing\RouteProviderInterface $provider): \Symfony\Cmf\Component\Routing\RouteObjectInterface {
 
     }
     public function c(\Symfony\Cmf\Component\Routing\LazyRouteCollection $collection) {
@@ -24,7 +24,7 @@ class Bar {
     public function a(\Drupal\Core\Routing\RouteObjectInterface $object) {
 
     }
-    public function b(\Drupal\Core\Routing\RouteProviderInterface $provider) {
+    public function b(\Drupal\Core\Routing\RouteProviderInterface $provider): \Drupal\Core\Routing\RouteObjectInterface {
 
     }
     public function c(\Drupal\Core\Routing\LazyRouteCollection $collection) {
