@@ -31,12 +31,12 @@ interface FieldableEntityInterface extends EntityInterface {
     public function toArray(): array;
 
     /**
-     * @return array<string, \Drupal\Core\Field\FieldItemListInterface>
+     * @return array<string, \Drupal\Core\Field\FieldItemListInterface<\Drupal\Core\Field\FieldItemInterface>>
      */
     public function getFields(bool $include_computed = TRUE): array;
 
     /**
-     * @return array<string, \Drupal\Core\Field\FieldItemListInterface>
+     * @return array<string, \Drupal\Core\Field\FieldItemListInterface<\Drupal\Core\Field\FieldItemInterface>>
      */
     public function getTranslatableFields(bool $include_computed = TRUE): array;
 }
