@@ -16,6 +16,9 @@ class Foo {
     public function c(\Symfony\Cmf\Component\Routing\LazyRouteCollection $collection) {
 
     }
+    public function getIterator(): \Traversable {
+        return new \ArrayIterator([]);
+    }
 }
 class Bar {
     public const NAME = \Drupal\Core\Routing\RouteObjectInterface::ROUTE_NAME;
@@ -28,6 +31,9 @@ class Bar {
 
     }
     public function c(\Drupal\Core\Routing\LazyRouteCollection $collection) {
+
+    }
+    public function d(): \Symfony\Component\Routing\RouteCollection {
 
     }
 }

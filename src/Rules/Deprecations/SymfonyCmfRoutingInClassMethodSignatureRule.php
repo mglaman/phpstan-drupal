@@ -46,7 +46,7 @@ final class SymfonyCmfRoutingInClassMethodSignatureRule implements Rule
         foreach ($methodSignature->getParameters() as $parameter) {
             foreach ($parameter->getType()->getReferencedClasses() as $referencedClass) {
                 $referencedClassType = new ObjectType($referencedClass);
-                if ($referencedClassType->isSuperTypeOf($cmfRouteObjectInterfaceType)->yes()) {
+                if ($cmfRouteObjectInterfaceType->equals($referencedClassType)) {
                     $errors[] = RuleErrorBuilder::message(
                         sprintf(
                             $errorMessage,
@@ -56,7 +56,7 @@ final class SymfonyCmfRoutingInClassMethodSignatureRule implements Rule
                             '\Drupal\Core\Routing\RouteObjectInterface'
                         )
                     )->tip('Change record: https://www.drupal.org/node/3151009')->build();
-                } elseif ($referencedClassType->isSuperTypeOf($cmfRouteProviderInterfaceType)->yes()) {
+                } elseif ($cmfRouteProviderInterfaceType->equals($referencedClassType)) {
                     $errors[] = RuleErrorBuilder::message(
                         sprintf(
                             $errorMessage,
@@ -66,7 +66,7 @@ final class SymfonyCmfRoutingInClassMethodSignatureRule implements Rule
                             '\Drupal\Core\Routing\RouteProviderInterface'
                         )
                     )->tip('Change record: https://www.drupal.org/node/3151009')->build();
-                } elseif ($referencedClassType->isSuperTypeOf($cmfLazyRouteCollectionType)->yes()) {
+                } elseif ($cmfLazyRouteCollectionType->equals($referencedClassType)) {
                     $errors[] = RuleErrorBuilder::message(
                         sprintf(
                             $errorMessage,
@@ -84,7 +84,7 @@ final class SymfonyCmfRoutingInClassMethodSignatureRule implements Rule
         $returnClasses = $methodSignature->getReturnType()->getReferencedClasses();
         foreach ($returnClasses as $returnClass) {
             $returnType = new ObjectType($returnClass);
-            if ($returnType->isSuperTypeOf($cmfRouteObjectInterfaceType)->yes()) {
+            if ($cmfRouteObjectInterfaceType->equals($returnType)) {
                 $errors[] = RuleErrorBuilder::message(
                     sprintf(
                         $errorMessage,
@@ -94,7 +94,7 @@ final class SymfonyCmfRoutingInClassMethodSignatureRule implements Rule
                         '\Drupal\Core\Routing\RouteObjectInterface'
                     )
                 )->tip('Change record: https://www.drupal.org/node/3151009')->build();
-            } elseif ($returnType->isSuperTypeOf($cmfRouteProviderInterfaceType)->yes()) {
+            } elseif ($cmfRouteProviderInterfaceType->equals($returnType)) {
                 $errors[] = RuleErrorBuilder::message(
                     sprintf(
                         $errorMessage,
@@ -104,7 +104,7 @@ final class SymfonyCmfRoutingInClassMethodSignatureRule implements Rule
                         '\Drupal\Core\Routing\RouteProviderInterface'
                     )
                 )->tip('Change record: https://www.drupal.org/node/3151009')->build();
-            } elseif ($returnType->isSuperTypeOf($cmfLazyRouteCollectionType)->yes()) {
+            } elseif ($cmfLazyRouteCollectionType->equals($returnType)) {
                 $errors[] = RuleErrorBuilder::message(
                     sprintf(
                         $errorMessage,
