@@ -1,0 +1,16 @@
+<?php
+
+namespace Drupal\filter;
+
+use Drupal\Core\Render\BubbleableMetadata;
+
+class FilterProcessResult extends BubbleableMetadata {
+
+    /**
+     * @param callable-string $callback
+     * @param array<int|string, mixed> $args
+     */
+    public function createPlaceholder($callback, array $args): string {
+
+    }
+}

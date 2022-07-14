@@ -111,6 +111,10 @@ final class RenderCallbackRuleTest extends DrupalRuleTestCase {
                 ]
             ]
         ];
+        yield [
+            __DIR__ . '/../../fixtures/drupal/core/modules/filter/src/FilterProcessResult.php',
+            []
+        ];
     }
 
 

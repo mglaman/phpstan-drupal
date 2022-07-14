@@ -1,0 +1,7 @@
+<?php
+
+namespace Drupal\Core\Cache;
+
+class CacheableMetadata implements RefinableCacheableDependencyInterface {
+
+}

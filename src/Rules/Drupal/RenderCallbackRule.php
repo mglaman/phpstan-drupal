@@ -192,6 +192,9 @@ final class RenderCallbackRule implements Rule
                     sprintf("%s callback %s at key '%s' is not callable.", $keyChecked, $type->describe(VerbosityLevel::value()), $pos)
                 )->line($errorLine)->build();
             }
+        } elseif ($type->isCallable()->yes()) {
+            // If the value has been marked as callable or callable-string, we cannot resolve the callable, trust it.
+            return null;
         } else {
             return RuleErrorBuilder::message(
                 sprintf("%s value '%s' at key '%s' is invalid.", $keyChecked, $type->describe(VerbosityLevel::value()), $pos)
