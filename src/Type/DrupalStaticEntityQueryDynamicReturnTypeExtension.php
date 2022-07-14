@@ -5,6 +5,7 @@ namespace mglaman\PHPStanDrupal\Type;
 use mglaman\PHPStanDrupal\Drupal\EntityDataRepository;
 use mglaman\PHPStanDrupal\Type\EntityQuery\ConfigEntityQueryType;
 use mglaman\PHPStanDrupal\Type\EntityQuery\ContentEntityQueryType;
+use mglaman\PHPStanDrupal\Type\EntityQuery\EntityQueryType;
 use mglaman\PHPStanDrupal\Type\EntityStorage\ConfigEntityStorageType;
 use mglaman\PHPStanDrupal\Type\EntityStorage\ContentEntityStorageType;
 use PhpParser\Node\Expr\StaticCall;
@@ -80,6 +81,10 @@ class DrupalStaticEntityQueryDynamicReturnTypeExtension implements DynamicStatic
             );
         }
 
-        return $returnType;
+        return new EntityQueryType(
+            $returnType->getClassName(),
+            $returnType->getSubtractedType(),
+            $returnType->getClassReflection()
+        );
     }
 }
