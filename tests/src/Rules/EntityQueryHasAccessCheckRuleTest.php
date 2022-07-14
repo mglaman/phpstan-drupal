@@ -45,11 +45,11 @@ final class EntityQueryHasAccessCheckRuleTest extends DrupalRuleTestCase
             ],
         ];
 
-        yield [
+        yield 'bug-438.php' => [
             [__DIR__ . '/data/bug-438.php'],
             []
         ];
-        yield [
+        yield 'bug-396a.php' => [
             [__DIR__.'/data/bug-396a.php'],
             [
                 [
@@ -59,11 +59,11 @@ final class EntityQueryHasAccessCheckRuleTest extends DrupalRuleTestCase
                 ]
             ]
         ];
-        yield [
+        yield 'bug-396b.php' => [
             [__DIR__ . '/data/bug-396b.php'],
             []
         ];
-        yield [
+        yield 'bug-396c.php' => [
             [__DIR__ . '/data/bug-396c.php'],
             []
         ];

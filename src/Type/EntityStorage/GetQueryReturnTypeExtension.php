@@ -7,6 +7,7 @@ use Drupal\Core\Entity\ContentEntityStorageInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use mglaman\PHPStanDrupal\Type\EntityQuery\ConfigEntityQueryType;
 use mglaman\PHPStanDrupal\Type\EntityQuery\ContentEntityQueryType;
+use mglaman\PHPStanDrupal\Type\EntityQuery\EntityQueryType;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\MethodReflection;
@@ -56,6 +57,10 @@ final class GetQueryReturnTypeExtension implements DynamicMethodReturnTypeExtens
                 $returnType->getClassReflection()
             );
         }
-        return $returnType;
+        return new EntityQueryType(
+            $returnType->getClassName(),
+            $returnType->getSubtractedType(),
+            $returnType->getClassReflection()
+        );
     }
 }
