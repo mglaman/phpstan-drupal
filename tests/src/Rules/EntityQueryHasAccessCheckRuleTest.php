@@ -49,8 +49,8 @@ final class EntityQueryHasAccessCheckRuleTest extends DrupalRuleTestCase
             [__DIR__ . '/data/bug-438.php'],
             []
         ];
-        yield 'bug-396a.php' => [
-            [__DIR__.'/data/bug-396a.php'],
+        yield 'bug-396a1.php' => [
+            [__DIR__.'/data/bug-396a1.php'],
             [
                 [
                     'Missing explicit access check on entity query.',
@@ -59,12 +59,24 @@ final class EntityQueryHasAccessCheckRuleTest extends DrupalRuleTestCase
                 ]
             ]
         ];
+        yield 'bug-396a2.php' => [
+            [__DIR__ . '/data/bug-396a2.php'],
+            []
+        ];
+        yield 'bug-396a3.php' => [
+            [__DIR__ . '/data/bug-396a3.php'],
+            []
+        ];
         yield 'bug-396b.php' => [
             [__DIR__ . '/data/bug-396b.php'],
             []
         ];
         yield 'bug-396c.php' => [
             [__DIR__ . '/data/bug-396c.php'],
+            []
+        ];
+        yield 'bug-437.php' => [
+            [__DIR__ . '/data/bug-437.php'],
             []
         ];
     }
