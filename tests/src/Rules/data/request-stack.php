@@ -2,6 +2,8 @@
 
 namespace DrupalRequestStackShim;
 
+use Symfony\Component\HttpFoundation\Request;
+
 class Foo {
     public function __construct(\Symfony\Component\HttpFoundation\RequestStack $stack)
     {
@@ -9,6 +11,10 @@ class Foo {
     public function getStack(): \Symfony\Component\HttpFoundation\RequestStack
     {
         return new \Symfony\Component\HttpFoundation\RequestStack();
+    }
+
+    public function a(): ?Request {
+        return $this->getStack()->getMasterRequest();
     }
 }
 class Bar {
@@ -18,5 +24,11 @@ class Bar {
     public function getStack(): \Drupal\Core\Http\RequestStack
     {
         return new \Drupal\Core\Http\RequestStack();
+    }
+    public function a(): ?Request {
+        return $this->getStack()->getMasterRequest();
+    }
+    public function b(): ?Request {
+        return $this->getStack()->getMainRequest();
     }
 }
