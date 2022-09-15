@@ -22,4 +22,9 @@ class EntityQueryType extends ObjectType
 
         return $type;
     }
+
+    protected function describeAdditionalCacheKey(): string
+    {
+        return $this->hasAccessCheck ? 'with-access-check' : '';
+    }
 }
