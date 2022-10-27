@@ -67,10 +67,10 @@ parameters:
 	reportUnmatchedIgnoredErrors: false
 	# Ignore phpstan-drupal extension's rules.
 	ignoreErrors:
-		- '#\Drupal calls should be avoided in classes, use dependency injection instead#'
-		- '#Plugin definitions cannot be altered.#'
-		- '#Missing cache backend declaration for performance.#'
-		- '#Plugin manager has cache backend specified but does not declare cache tags.#'
+		- '#^\\Drupal calls should be avoided in classes, use dependency injection instead$#D'
+		- '#^Plugin definitions cannot be altered\.$#D'
+		- '#^Missing cache backend declaration for performance\.#D'
+		- '#^Plugin manager has cache backend specified but does not declare cache tags\.#D'
 includes:
 	- vendor/mglaman/phpstan-drupal/extension.neon
 	- vendor/phpstan/phpstan-deprecation-rules/rules.neon
