@@ -162,15 +162,17 @@ final class RenderCallbackRule implements Rule
                     sprintf("%s callback %s at key '%s' is not callable.", $keyChecked, $type->describe(VerbosityLevel::value()), $pos)
                 )->line($errorLine)->build();
             }
-            $typeAndMethodName = $type->findTypeAndMethodName();
-            if ($typeAndMethodName === null) {
+            $typeAndMethodNames = $type->findTypeAndMethodNames();
+            if ($typeAndMethodNames === []) {
                 throw new \PHPStan\ShouldNotHappenException();
             }
 
-            if (!$trustedCallbackType->isSuperTypeOf($typeAndMethodName->getType())->yes()) {
-                return RuleErrorBuilder::message(
-                    sprintf("%s callback class '%s' at key '%s' does not implement Drupal\Core\Security\TrustedCallbackInterface.", $keyChecked, $typeAndMethodName->getType()->describe(VerbosityLevel::value()), $pos)
-                )->line($errorLine)->tip('Change record: https://www.drupal.org/node/2966725.')->build();
+            foreach ($typeAndMethodNames as $typeAndMethodName) {
+                if (!$trustedCallbackType->isSuperTypeOf($typeAndMethodName->getType())->yes()) {
+                    return RuleErrorBuilder::message(
+                        sprintf("%s callback class '%s' at key '%s' does not implement Drupal\Core\Security\TrustedCallbackInterface.", $keyChecked, $typeAndMethodName->getType()->describe(VerbosityLevel::value()), $pos)
+                    )->line($errorLine)->tip('Change record: https://www.drupal.org/node/2966725.')->build();
+                }
             }
         } elseif ($type instanceof ClosureType) {
             if ($scope->isInClass()) {
