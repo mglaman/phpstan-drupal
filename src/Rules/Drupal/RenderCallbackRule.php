@@ -68,8 +68,6 @@ final class RenderCallbackRule implements Rule
         if ($keyChecked === '#lazy_builder') {
             if ($scope->isInClass()) {
                 $classReflection = $scope->getClassReflection();
-                // @todo why doesn't isInClass assert this isn't null?
-                assert($classReflection !== null);
                 $classType = new ObjectType($classReflection->getName());
                 // These classes use #lazy_builder in array_intersect_key. With
                 // PHPStan 1.6, nodes do not track their parent/next/prev which
@@ -177,9 +175,6 @@ final class RenderCallbackRule implements Rule
         } elseif ($type instanceof ClosureType) {
             if ($scope->isInClass()) {
                 $classReflection = $scope->getClassReflection();
-                if ($classReflection === null) {
-                    throw new \PHPStan\ShouldNotHappenException();
-                }
                 $classType = new ObjectType($classReflection->getName());
                 $formType = new ObjectType('\Drupal\Core\Form\FormInterface');
                 if ($formType->isSuperTypeOf($classType)->yes()) {
@@ -247,7 +242,7 @@ final class RenderCallbackRule implements Rule
             }
             // @see \PHPStan\Type\Constant\ConstantStringType::isCallable
             preg_match('#^([a-zA-Z_\\x7f-\\xff\\\\][a-zA-Z0-9_\\x7f-\\xff\\\\]*)::([a-zA-Z_\\x7f-\\xff][a-zA-Z0-9_\\x7f-\\xff]*)\\z#', $type->getValue(), $matches);
-            if ($matches !== null && count($matches) > 0) {
+            if (count($matches) > 0) {
                 return new ConstantArrayType(
                     [new ConstantIntegerType(0), new ConstantIntegerType(1)],
                     [
