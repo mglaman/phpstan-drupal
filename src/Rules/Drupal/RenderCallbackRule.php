@@ -68,8 +68,6 @@ final class RenderCallbackRule implements Rule
         if ($keyChecked === '#lazy_builder') {
             if ($scope->isInClass()) {
                 $classReflection = $scope->getClassReflection();
-                // @todo why doesn't isInClass assert this isn't null?
-                assert($classReflection !== null);
                 $classType = new ObjectType($classReflection->getName());
                 // These classes use #lazy_builder in array_intersect_key. With
                 // PHPStan 1.6, nodes do not track their parent/next/prev which
@@ -162,22 +160,21 @@ final class RenderCallbackRule implements Rule
                     sprintf("%s callback %s at key '%s' is not callable.", $keyChecked, $type->describe(VerbosityLevel::value()), $pos)
                 )->line($errorLine)->build();
             }
-            $typeAndMethodName = $type->findTypeAndMethodName();
-            if ($typeAndMethodName === null) {
+            $typeAndMethodNames = $type->findTypeAndMethodNames();
+            if ($typeAndMethodNames === []) {
                 throw new \PHPStan\ShouldNotHappenException();
             }
 
-            if (!$trustedCallbackType->isSuperTypeOf($typeAndMethodName->getType())->yes()) {
-                return RuleErrorBuilder::message(
-                    sprintf("%s callback class '%s' at key '%s' does not implement Drupal\Core\Security\TrustedCallbackInterface.", $keyChecked, $typeAndMethodName->getType()->describe(VerbosityLevel::value()), $pos)
-                )->line($errorLine)->tip('Change record: https://www.drupal.org/node/2966725.')->build();
+            foreach ($typeAndMethodNames as $typeAndMethodName) {
+                if (!$trustedCallbackType->isSuperTypeOf($typeAndMethodName->getType())->yes()) {
+                    return RuleErrorBuilder::message(
+                        sprintf("%s callback class '%s' at key '%s' does not implement Drupal\Core\Security\TrustedCallbackInterface.", $keyChecked, $typeAndMethodName->getType()->describe(VerbosityLevel::value()), $pos)
+                    )->line($errorLine)->tip('Change record: https://www.drupal.org/node/2966725.')->build();
+                }
             }
         } elseif ($type instanceof ClosureType) {
             if ($scope->isInClass()) {
                 $classReflection = $scope->getClassReflection();
-                if ($classReflection === null) {
-                    throw new \PHPStan\ShouldNotHappenException();
-                }
                 $classType = new ObjectType($classReflection->getName());
                 $formType = new ObjectType('\Drupal\Core\Form\FormInterface');
                 if ($formType->isSuperTypeOf($classType)->yes()) {
@@ -224,7 +221,7 @@ final class RenderCallbackRule implements Rule
                 }
             }
         } elseif ($type instanceof ConstantStringType) {
-            if ($type->isClassString()) {
+            if ($type->isClassStringType()->yes()) {
                 return $type;
             }
             // Covers  \Drupal\Core\Controller\ControllerResolver::createController.
@@ -245,7 +242,7 @@ final class RenderCallbackRule implements Rule
             }
             // @see \PHPStan\Type\Constant\ConstantStringType::isCallable
             preg_match('#^([a-zA-Z_\\x7f-\\xff\\\\][a-zA-Z0-9_\\x7f-\\xff\\\\]*)::([a-zA-Z_\\x7f-\\xff][a-zA-Z0-9_\\x7f-\\xff]*)\\z#', $type->getValue(), $matches);
-            if ($matches !== null && count($matches) > 0) {
+            if (count($matches) > 0) {
                 return new ConstantArrayType(
                     [new ConstantIntegerType(0), new ConstantIntegerType(1)],
                     [

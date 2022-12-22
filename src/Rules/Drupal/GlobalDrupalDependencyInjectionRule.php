@@ -28,9 +28,6 @@ class GlobalDrupalDependencyInjectionRule implements Rule
             return [];
         }
         $scopeClassReflection = $scope->getClassReflection();
-        if ($scopeClassReflection === null) {
-            throw new ShouldNotHappenException();
-        }
 
         $allowed_list = [
             // Ignore tests.
