@@ -13,4 +13,9 @@ use Drupal\Core\Field\Plugin\Field\FieldType\EntityReferenceItem;
  */
 interface EntityReferenceFieldItemListInterface extends FieldItemListInterface {
 
+  /**
+   * @return array<int, T>
+   */
+  public function referencedEntities();
+
 }
