@@ -17,14 +17,17 @@ class EntityQueryType extends ObjectType
 
     public function withAccessCheck(): self
     {
-        $type = clone $this;
+        $type = new self(
+            $this->getClassName(),
+            $this->getSubtractedType(),
+            $this->getClassReflection()
+        );
         $type->hasAccessCheck = true;
-
         return $type;
     }
 
     protected function describeAdditionalCacheKey(): string
     {
-        return $this->hasAccessCheck ? 'with-access-check' : '';
+        return $this->hasAccessCheck ? 'with-access-check' : 'without-access-check';
     }
 }
