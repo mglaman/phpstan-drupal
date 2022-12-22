@@ -30,7 +30,7 @@
         "symfony/phpunit-bridge": "^3.4.3 || ^4.4 || ^5.4 || ^6.0"
     },
     "conflict": {
-        "phpstan/phpstan": "^1.10.0"
+        "phpstan/phpstan": "^2.0"
     },
     "minimum-stability": "dev",
     "prefer-stable": true,
