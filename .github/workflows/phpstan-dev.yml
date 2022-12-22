@@ -13,9 +13,7 @@ jobs:
     strategy:
       matrix:
         phpstan:
-          - '1.8.x-dev'
-          - '1.7.x-dev'
-          - '1.6.x-dev'
+          - '1.9.x-dev'
     steps:
       - name: "Checkout"
         uses: "actions/checkout@v2"
