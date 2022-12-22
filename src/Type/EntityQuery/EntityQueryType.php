@@ -17,7 +17,10 @@ class EntityQueryType extends ObjectType
 
     public function withAccessCheck(): self
     {
-        $type = new self(
+        // The constructor of ObjectType is under backward compatibility promise.
+        // @see https://phpstan.org/developing-extensions/backward-compatibility-promise
+        // @phpstan-ignore-next-line
+        $type = new static(
             $this->getClassName(),
             $this->getSubtractedType(),
             $this->getClassReflection()
