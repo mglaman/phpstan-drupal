@@ -4,7 +4,10 @@ namespace Bug494Example;
 
 class TestClass {
 
-    public function bug494($entity_type): void
+    /**
+     * Tests entity count queries with access check and unknown entity type.
+     */
+    public function bug494(string $entity_type): void
     {
         \Drupal::entityQuery($entity_type)
             ->accessCheck(FALSE)
