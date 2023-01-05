@@ -58,7 +58,7 @@ class DrupalStaticEntityQueryDynamicReturnTypeExtension implements DynamicStatic
             $entityTypeId = $type->getValue();
         } else {
             // We're unsure what specific EntityQueryType it is, so let's stick
-            // with the general class itself, so at least it gets access checked
+            // with the general class itself to ensure it gets access checked.
             return new EntityQueryType(
                 $returnType->getClassName(),
                 $returnType->getSubtractedType(),
