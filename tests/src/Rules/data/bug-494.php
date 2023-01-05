@@ -20,11 +20,6 @@ class TestClass {
             ->execute();
 
         \Drupal::entityQuery($entity_type)
-            ->condition('field_test', 'foo', '=')
-            ->accessCheck(FALSE)
-            ->execute();        
-
-        \Drupal::entityQuery($entity_type)
             ->accessCheck(FALSE)
             ->condition('field_test', 'foo', '=')
             ->count()
