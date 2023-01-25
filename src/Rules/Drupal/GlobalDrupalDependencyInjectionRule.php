@@ -29,6 +29,11 @@ class GlobalDrupalDependencyInjectionRule implements Rule
         }
         $scopeClassReflection = $scope->getClassReflection();
 
+        // Enums cannot have dependency injection.
+        if ($scopeClassReflection->isEnum()) {
+            return [];
+        }
+
         $allowed_list = [
             // Ignore tests.
             'PHPUnit\Framework\Test',
