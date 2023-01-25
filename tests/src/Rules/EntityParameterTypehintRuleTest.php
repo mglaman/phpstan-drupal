@@ -11,9 +11,16 @@ final class EntityParameterTypehintRuleTest extends DrupalRuleTestCase
 {
     protected function getRule(): Rule
     {
-        $broker = $this->createReflectionProvider();
         // @phpstan-ignore-next-line
-        return new MissingFunctionParameterTypehintRule(new MissingTypehintCheck($broker, true, true, true, true, []));
+        return new MissingFunctionParameterTypehintRule(
+            // @phpstan-ignore-next-line
+            new MissingTypehintCheck(
+                true,
+                true,
+                true,
+                true,
+                []
+            ));
     }
 
     public function testRule(): void

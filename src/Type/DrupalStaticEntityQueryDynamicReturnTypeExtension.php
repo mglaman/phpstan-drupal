@@ -57,8 +57,13 @@ class DrupalStaticEntityQueryDynamicReturnTypeExtension implements DynamicStatic
         if ($type instanceof ConstantStringType) {
             $entityTypeId = $type->getValue();
         } else {
-            // @todo determine what these types are, and try to resolve entity name from.
-            return $returnType;
+            // We're unsure what specific EntityQueryType it is, so let's stick
+            // with the general class itself to ensure it gets access checked.
+            return new EntityQueryType(
+                $returnType->getClassName(),
+                $returnType->getSubtractedType(),
+                $returnType->getClassReflection()
+            );
         }
         $entityType = $this->entityDataRepository->get($entityTypeId);
         $entityStorageType = $entityType->getStorageType();

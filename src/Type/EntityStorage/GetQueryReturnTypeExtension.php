@@ -25,7 +25,10 @@ final class GetQueryReturnTypeExtension implements DynamicMethodReturnTypeExtens
 
     public function isMethodSupported(MethodReflection $methodReflection): bool
     {
-        return $methodReflection->getName() === 'getQuery';
+        return in_array($methodReflection->getName(), [
+            'getQuery',
+            'getAggregateQuery',
+        ], true);
     }
 
     public function getTypeFromMethodCall(
