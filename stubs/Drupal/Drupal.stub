@@ -1,0 +1,36 @@
+<?php
+
+class Drupal {
+
+    /**
+     * @var \Symfony\Component\DependencyInjection\ContainerInterface|null
+     */
+    protected static $container;
+
+    /**
+     * @phpstan-param service-id-string $id
+     */
+    public static function service($id) {
+        return static::getContainer()->get($id);
+    }
+
+    /**
+     * @phpstan-param service-id-string $id
+     */
+    public static function hasService($id): bool {
+        // Check hasContainer() first in order to always return a Boolean.
+        return static::hasContainer() && static::getContainer()->has($id);
+    }
+
+    /**
+     * @return \Symfony\Component\DependencyInjection\ContainerInterface
+     */
+    public static function getContainer(): \Symfony\Component\DependencyInjection\ContainerInterface {
+        return static::$container;
+    }
+
+    public static function hasContainer(): bool {
+        return static::$container !== NULL;
+    }
+
+}

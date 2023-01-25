@@ -297,3 +297,7 @@ services:
 	-
 		class: mglaman\PHPStanDrupal\Drupal\DrupalStubFilesExtension
 		tags: [phpstan.stubFilesExtension]
+	-
+		class: mglaman\PHPStanDrupal\Type\ServiceIdTypeNodeResolverExtension
+		tags:
+			- phpstan.phpDoc.typeNodeResolverExtension
