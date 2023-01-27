@@ -185,7 +185,9 @@ class DrupalAutoloader
                 - { name: route_enhancer }
                  */
                 if (is_array($serviceDefinition)) {
-                    unset($serviceDefinition['tags'], $serviceDefinition['calls'], $serviceDefinition['configurator'], $serviceDefinition['factory']);
+                    foreach (['tags', 'calls', 'configurator', 'factory'] as $key) {
+                        unset($serviceDefinition[$key]);
+                    }
                 }
                 $this->serviceMap[$serviceId] = $serviceDefinition;
             }
