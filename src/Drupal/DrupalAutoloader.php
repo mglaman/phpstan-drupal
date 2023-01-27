@@ -186,7 +186,9 @@ class DrupalAutoloader
                  */
                 if (is_array($serviceDefinition)) {
                     foreach (['tags', 'calls', 'configurator', 'factory'] as $key) {
-                        unset($serviceDefinition[$key]);
+                        if (isset($serviceDefinition[$key])) {
+                            unset($serviceDefinition[$key]);
+                        }
                     }
                 }
                 $this->serviceMap[$serviceId] = $serviceDefinition;
