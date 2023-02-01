@@ -297,3 +297,7 @@ services:
 	-
 		class: mglaman\PHPStanDrupal\Drupal\DrupalStubFilesExtension
 		tags: [phpstan.stubFilesExtension]
+	-
+		class: mglaman\PHPStanDrupal\Type\EntityQuery\AccessCheckTypeSpecifyingExtension
+		tags:
+			- phpstan.typeSpecifier.methodTypeSpecifyingExtension
