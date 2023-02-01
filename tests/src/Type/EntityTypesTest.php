@@ -14,6 +14,7 @@ final class EntityTypesTest extends TypeInferenceTestCase
     public function dataFileAsserts(): iterable
     {
         yield from $this->gatherAssertTypes(__DIR__ . '/data/entity-type-stubs.php');
+        yield from $this->gatherAssertTypes(__DIR__ . '/data/bug-499.php');
     }
 
     /**
