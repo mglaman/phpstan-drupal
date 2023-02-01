@@ -32,6 +32,10 @@ includes:
 ```
 </details>
 
+## Getting help
+
+Ask for assistance in the [discussions](https://github.com/mglaman/phpstan-drupal/discussions) or [#phpstan](https://drupal.slack.com/archives/C033S2JUMLJ) channel on Drupal Slack.
+
 ## Excluding tests from analysis
 
 To exclude tests from analysis, add the following parameter
