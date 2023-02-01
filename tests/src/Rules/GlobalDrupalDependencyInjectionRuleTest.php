@@ -52,6 +52,14 @@ final class GlobalDrupalDependencyInjectionRuleTest extends DrupalRuleTestCase {
             __DIR__ . '/../../fixtures/drupal/modules/phpstan_fixtures/src/Entity/ReflectionEntityTest.php',
             [],
         ];
+
+        if (PHP_VERSION_ID >= 80100) {
+            yield [
+                __DIR__ . '/data/bug-500.php',
+                [],
+            ];
+        }
+
     }
 
 
