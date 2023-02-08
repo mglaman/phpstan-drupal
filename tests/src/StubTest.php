@@ -14,12 +14,15 @@ final class StubTest extends PHPStanTestCase
     use AdditionalConfigFilesTrait;
 
     public function testValid(): void {
-        $projectStubFiles = self::getContainer()
-            ->getByType(StubFilesProvider::class)
-            ->getProjectStubFiles();
-        $stubErrors = self::getContainer()
-            ->getByType(StubValidator::class)
-            ->validate($projectStubFiles, true);
+        $stubFilesProvider = self::getContainer()
+            ->getByType(StubFilesProvider::class);
+        // @phpstan-ignore-next-line
+        $projectStubFiles = $stubFilesProvider->getProjectStubFiles();
+
+        $stubValidators = self::getContainer()
+            ->getByType(StubValidator::class);
+        // @phpstan-ignore-next-line
+        $stubErrors = $stubValidators->validate($projectStubFiles, true);
         $errorsAsArrays = array_map(
             static fn (Error $error) => $error->jsonSerialize(),
             $stubErrors
