@@ -43,8 +43,13 @@ final class AccessCheckTypeSpecifyingExtension implements MethodTypeSpecifyingEx
         $returnType = ParametersAcceptorSelector::selectSingle($methodReflection->getVariants())->getReturnType();
         $expr = $node->var;
         if (!$returnType instanceof EntityQueryType) {
-            return $this->typeSpecifier->create($expr, $returnType, TypeSpecifierContext::createTruthy());
+            return new SpecifiedTypes([]);
         }
-        return $this->typeSpecifier->create($expr, $returnType->withAccessCheck(), TypeSpecifierContext::createTruthy());
+        return $this->typeSpecifier->create(
+            $expr,
+            $returnType->withAccessCheck(),
+            TypeSpecifierContext::createTruthy(),
+            true
+        );
     }
 }
