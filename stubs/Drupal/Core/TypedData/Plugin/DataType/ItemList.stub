@@ -1,0 +1,16 @@
+<?php
+
+namespace Drupal\Core\TypedData\Plugin\DataType;
+
+use Drupal\Core\TypedData\ComplexDataInterface;
+use Drupal\Core\TypedData\ListInterface;
+use Drupal\Core\TypedData\TypedData;
+use Drupal\Core\TypedData\TypedDataInterface;
+
+/**
+ * @template T of TypedDataInterface
+ * @implements \IteratorAggregate<int, T>
+ * @implements ListInterface<T>
+ */
+class ItemList extends TypedData implements \IteratorAggregate, ListInterface {
+}
