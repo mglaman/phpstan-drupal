@@ -1,0 +1,13 @@
+<?php
+
+namespace Drupal\Core\DependencyInjection;
+
+interface ClassResolverInterface {
+
+    /**
+     * @template T of object
+     * @param class-string<T> $definition
+     * @return T
+     */
+    public function getInstanceFromDefinition(string $definition): object;
+}
