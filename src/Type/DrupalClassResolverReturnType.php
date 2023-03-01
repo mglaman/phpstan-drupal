@@ -10,7 +10,6 @@ use PhpParser\Node\Expr\CallLike;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\ParametersAcceptorSelector;
-use PHPStan\Type\Constant\ConstantStringType;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\Type;
 
@@ -24,15 +23,16 @@ final class DrupalClassResolverReturnType
         ServiceMap $serviceMap
     ): Type {
         $arg1 = $scope->getType($methodCall->getArgs()[0]->value);
-        if (!$arg1 instanceof ConstantStringType) {
+        if (count($arg1->getConstantStrings()) === 0) {
             return ParametersAcceptorSelector::selectSingle($methodReflection->getVariants())->getReturnType();
         }
 
-        $serviceDefinition = $serviceMap->getService($arg1->getValue());
+        $serviceName = $arg1->getConstantStrings()[0];
+        $serviceDefinition = $serviceMap->getService($serviceName->getValue());
         if ($serviceDefinition instanceof DrupalServiceDefinition) {
             return $serviceDefinition->getType();
         }
 
-        return new ObjectType($arg1->getValue());
+        return new ObjectType($serviceName->getValue());
     }
 }

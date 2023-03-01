@@ -12,7 +12,6 @@ use PhpParser\Node\Expr\StaticCall;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\ParametersAcceptorSelector;
-use PHPStan\Type\Constant\ConstantStringType;
 use PHPStan\Type\DynamicStaticMethodReturnTypeExtension;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\Type;
@@ -54,9 +53,8 @@ class DrupalStaticEntityQueryDynamicReturnTypeExtension implements DynamicStatic
             return $returnType;
         }
         $type = $scope->getType($args[0]->value);
-        if ($type instanceof ConstantStringType) {
-            $entityTypeId = $type->getValue();
-        } else {
+
+        if (count($type->getConstantStrings()) === 0) {
             // We're unsure what specific EntityQueryType it is, so let's stick
             // with the general class itself to ensure it gets access checked.
             return new EntityQueryType(
@@ -65,6 +63,7 @@ class DrupalStaticEntityQueryDynamicReturnTypeExtension implements DynamicStatic
                 $returnType->getClassReflection()
             );
         }
+        $entityTypeId = $type->getConstantStrings()[0]->getValue();
         $entityType = $this->entityDataRepository->get($entityTypeId);
         $entityStorageType = $entityType->getStorageType();
         if ($entityStorageType === null) {
