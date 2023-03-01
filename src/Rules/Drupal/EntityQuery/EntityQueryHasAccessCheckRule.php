@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace mglaman\PHPStanDrupal\Rules\Drupal\EntityQuery;
 
+use mglaman\PHPStanDrupal\Type\EntityQuery\ConfigEntityQueryType;
 use mglaman\PHPStanDrupal\Type\EntityQuery\EntityQueryExecuteWithoutAccessCheckCountType;
 use mglaman\PHPStanDrupal\Type\EntityQuery\EntityQueryExecuteWithoutAccessCheckType;
 use PhpParser\Node;
@@ -35,6 +36,11 @@ final class EntityQueryHasAccessCheckRule implements Rule
         $type = $scope->getType($node);
 
         if (!$type instanceof EntityQueryExecuteWithoutAccessCheckCountType && !$type instanceof EntityQueryExecuteWithoutAccessCheckType) {
+            return [];
+        }
+
+        $parent = $scope->getType($node->var);
+        if ($parent instanceof ConfigEntityQueryType) {
             return [];
         }
 
