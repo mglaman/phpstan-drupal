@@ -96,15 +96,15 @@ final class EntityFieldsViaMagicReflectionExtensionTest extends PHPStanTestCase 
         $classReflection = $this->createReflectionProvider()->getClass(EntityTest::class);
         $propertyReflection = $this->extension->getProperty($classReflection, 'field_myfield');
         $readableType = $propertyReflection->getReadableType();
-        assert($readableType instanceof ObjectType);
+        self::assertInstanceOf(ObjectType::class, $readableType);
         self::assertEquals(FieldItemListInterface::class, $readableType->getClassName());
         $writeableType = $propertyReflection->getWritableType();
-        assert($writeableType instanceof ObjectType);
+        self::assertInstanceOf(ObjectType::class, $writeableType);
         self::assertEquals(FieldItemListInterface::class, $writeableType->getClassName());
 
         $originalPropertyReflection = $this->extension->getProperty($classReflection, 'original');
         $readableType = $originalPropertyReflection->getReadableType();
-        assert($readableType instanceof ObjectType);
+        self::assertInstanceOf(ObjectType::class, $readableType);
         self::assertEquals(ContentEntityInterface::class, $readableType->getClassName());
     }
 

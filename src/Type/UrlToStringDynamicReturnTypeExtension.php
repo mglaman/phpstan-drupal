@@ -8,7 +8,6 @@ use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\ParametersAcceptorSelector;
-use PHPStan\Type\Constant\ConstantBooleanType;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\StringType;
@@ -37,14 +36,13 @@ final class UrlToStringDynamicReturnTypeExtension implements DynamicMethodReturn
         }
 
         $arg1 = $scope->getType($methodCall->getArgs()[0]->value);
-        if (!$arg1 instanceof ConstantBooleanType) {
+        if (!$arg1->isBoolean()->yes()) {
             return ParametersAcceptorSelector::selectSingle($methodReflection->getVariants())->getReturnType();
         }
 
-        if (true === $arg1->getValue()) {
+        if ($arg1->isTrue()->yes()) {
             return new ObjectType(GeneratedUrl::class);
         }
-
         return new StringType();
     }
 }
