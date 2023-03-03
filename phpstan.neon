@@ -12,3 +12,5 @@ parameters:
 		-  tests/src/Rules/data/*.php
 	dynamicConstantNames:
 		- Drupal::VERSION
+includes:
+	- phpstan-baseline.neon
