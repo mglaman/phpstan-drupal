@@ -221,7 +221,7 @@ final class RenderCallbackRule implements Rule
                 }
             }
         } elseif ($type instanceof ConstantStringType) {
-            if (method_exists($type, 'isClassStringType') && $type->isClassStringType()->yes()) {
+            if ($type->isClassString()) {
                 return $type;
             }
             // Covers  \Drupal\Core\Controller\ControllerResolver::createController.
