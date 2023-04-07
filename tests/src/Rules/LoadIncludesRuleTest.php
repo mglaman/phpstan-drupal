@@ -41,8 +41,8 @@ final class LoadIncludesRuleTest extends DrupalRuleTestCase
             [],
         ];
 
-        yield 'bug-x.php' => [
-            [__DIR__.'/data/bug-x.php'],
+        yield 'bug-516.php' => [
+            [__DIR__.'/data/bug-516.php'],
             []
         ];
     }
