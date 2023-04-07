@@ -48,6 +48,11 @@ class LoadIncludes extends LoadIncludeBase
         try {
             // Try to invoke it similarly as the module handler itself.
             [$moduleName, $filename] = $this->parseLoadIncludeArgs($args[0], $args[1], $args[2] ?? null, $scope);
+            if (!$moduleName && !$filename) {
+                // Couldn't determine module- nor file-name, most probably
+                // because it's a variable. Nothing to load, bail now.
+                return [];
+            }
             $module = $this->extensionMap->getModule($moduleName);
             if ($module === null) {
                 return [
