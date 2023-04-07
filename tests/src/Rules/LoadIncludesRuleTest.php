@@ -12,26 +12,39 @@ final class LoadIncludesRuleTest extends DrupalRuleTestCase
         return self::getContainer()->getByType(LoadIncludes::class);
     }
 
-    public function testRule(): void
+    /**
+     * @dataProvider cases
+     */
+    public function test(array $files, array $errors): void
     {
-        $this->analyse([
-            __DIR__ . '/../../fixtures/drupal/modules/phpstan_fixtures/phpstan_fixtures.module'
-        ],
+        $this->analyse($files, $errors);
+    }
+
+    public function cases(): \Generator
+    {
+        yield [
+            [
+                __DIR__ . '/../../fixtures/drupal/modules/phpstan_fixtures/phpstan_fixtures.module'
+            ],
             [
                 [
                     'File modules/phpstan_fixtures/phpstan_fixtures.fetch.inc could not be loaded from Drupal\Core\Extension\ModuleHandlerInterface::loadInclude',
                     30
                 ]
-            ]);
-    }
+            ],
+        ];
 
-    public function testFormStateLoadInclude(): void
-    {
-        $this->analyse([
-            __DIR__ . '/../../fixtures/drupal/core/tests/Drupal/Tests/Core/Form/FormStateTest.php'
-        ],
+        yield [
             [
-            ]);
+                __DIR__ . '/../../fixtures/drupal/core/tests/Drupal/Tests/Core/Form/FormStateTest.php'
+            ],
+            [],
+        ];
+
+        yield 'bug-x.php' => [
+            [__DIR__.'/data/bug-x.php'],
+            []
+        ];
     }
 
 }
