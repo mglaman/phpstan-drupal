@@ -34,11 +34,11 @@ abstract class LoadIncludeBase implements Rule
     {
         $moduleName = $this->getStringArgValue($module->value, $scope);
         if ($moduleName === null) {
-            return [];
+            return [false, false];
         }
         $fileType = $this->getStringArgValue($type->value, $scope);
         if ($fileType === null) {
-            return [];
+            return [false, false];
         }
         $baseName = null;
         if ($name !== null) {
