@@ -149,6 +149,9 @@ final class RenderCallbackRule implements Rule
                     ->build();
             }
 
+            $hasTrustedCallbackAttribute = $type->getCallableParametersAcceptors($scope);
+            $isTrustedCallbackType = $trustedCallbackType->isSuperTypeOf($type)->yes();
+
             if (!$trustedCallbackType->isSuperTypeOf($type)->yes()) {
                 return RuleErrorBuilder::message(
                     sprintf("%s callback class %s at key '%s' does not implement Drupal\Core\Security\TrustedCallbackInterface.", $keyChecked, $type->describe(VerbosityLevel::value()), $pos)
@@ -166,7 +169,19 @@ final class RenderCallbackRule implements Rule
             }
 
             foreach ($typeAndMethodNames as $typeAndMethodName) {
-                if (!$trustedCallbackType->isSuperTypeOf($typeAndMethodName->getType())->yes()) {
+                $testReflection = $scope->getMethodReflection($typeAndMethodName->getType(), $typeAndMethodName->getMethod());
+                if ($testReflection === null) {
+                    $isTrustedMethod = false;
+                } else {
+                    // @todo does PHPStan have a better way?
+                    // @see https://github.com/phpstan/phpstan/discussions/5863
+                    $methodNativeClassReflection = $testReflection->getDeclaringClass()->getNativeReflection();
+                    $methodNativeReflection = $methodNativeClassReflection->getMethod($typeAndMethodName->getMethod());
+                    $isTrustedMethod = (bool) $methodNativeReflection->getAttributes('Drupal\Core\Security\Attribute\TrustedCallback');
+                }
+
+                $isTrustedCallbackType = $trustedCallbackType->isSuperTypeOf($typeAndMethodName->getType())->yes();
+                if (!$isTrustedCallbackType && !$isTrustedMethod) {
                     return RuleErrorBuilder::message(
                         sprintf("%s callback class '%s' at key '%s' does not implement Drupal\Core\Security\TrustedCallbackInterface.", $keyChecked, $typeAndMethodName->getType()->describe(VerbosityLevel::value()), $pos)
                     )->line($errorLine)->tip('Change record: https://www.drupal.org/node/2966725.')->build();
