@@ -115,6 +115,10 @@ final class RenderCallbackRuleTest extends DrupalRuleTestCase {
             __DIR__ . '/../../fixtures/drupal/core/modules/filter/src/FilterProcessResult.php',
             []
         ];
+        yield [
+            __DIR__ . '/data/bug-527.php',
+            [],
+        ];
     }
 
 
