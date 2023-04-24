@@ -137,5 +137,11 @@ final class EntityQueryHasAccessCheckRuleTest extends DrupalRuleTestCase
             [__DIR__.'/data/bug-479.php'],
             []
         ];
+
+        yield 'bug-530.php' => [
+            [__DIR__.'/data/bug-530.php'],
+            []
+        ];
+
     }
 }
