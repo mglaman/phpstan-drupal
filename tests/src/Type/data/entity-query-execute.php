@@ -62,14 +62,14 @@ assertType(
         ->execute()
 );
 assertType(
-    'array<string, string>',
+    'int',
     \Drupal::entityTypeManager()->getStorage('block')->getQuery()
         ->accessCheck(TRUE)
         ->count()
         ->execute()
 );
 assertType(
-    'array<string, string>',
+    'int',
     \Drupal::entityQuery('block')
         ->accessCheck(TRUE)
         ->count()
@@ -87,4 +87,4 @@ $query = \Drupal::entityTypeManager()->getStorage('block')->getQuery()
 assertType('array<string, string>', $query->execute());
 $query = \Drupal::entityTypeManager()->getStorage('block')->getQuery()
     ->accessCheck(TRUE)->count();
-assertType('array<string, string>', $query->execute());
+assertType('int', $query->execute());
