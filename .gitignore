@@ -7,3 +7,4 @@ composer.lock
 # Fix PHPUnit compatibility mutated class.
 /tests/fixtures/TestCase.php
 .phpunit.result.cache
+.idea/
