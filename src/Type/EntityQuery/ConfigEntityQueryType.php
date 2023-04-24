@@ -5,7 +5,7 @@ namespace mglaman\PHPStanDrupal\Type\EntityQuery;
 /**
  * Type used to represent an entity query instance for config entity query.
  */
-final class ConfigEntityQueryType extends EntityQueryType
+class ConfigEntityQueryType extends EntityQueryType
 {
 
 }

@@ -44,11 +44,23 @@ class EntityQueryDynamicReturnTypeExtension implements DynamicMethodReturnTypeEx
         }
 
         if ($methodName === 'count') {
-            $returnType = new EntityQueryCountType(
-                $varType->getClassName(),
-                $varType->getSubtractedType(),
-                $varType->getClassReflection()
-            );
+            if ($varType instanceof ConfigEntityQueryType) {
+                $returnType = new ConfigEntityQueryCountType(
+                    $varType->getClassName(),
+                    $varType->getSubtractedType(),
+                    $varType->getClassReflection()
+                );
+
+                // Config entities don't require an access check.
+                return $returnType->withAccessCheck();
+            }
+            if ($varType instanceof EntityQueryType) {
+                $returnType = new EntityQueryCountType(
+                    $varType->getClassName(),
+                    $varType->getSubtractedType(),
+                    $varType->getClassReflection()
+                );
+            }
             if ($varType instanceof EntityQueryType && $varType->hasAccessCheck()) {
                 return $returnType->withAccessCheck();
             }
@@ -63,9 +75,8 @@ class EntityQueryDynamicReturnTypeExtension implements DynamicMethodReturnTypeEx
                     : new EntityQueryExecuteWithoutAccessCheckCountType();
             }
             if ($varType instanceof ConfigEntityQueryType) {
-                return $varType->hasAccessCheck()
-                    ? new ArrayType(new StringType(), new StringType())
-                    : new EntityQueryExecuteWithoutAccessCheckType(new StringType(), new StringType());
+                // Config entities don't require an access check.
+                return new ArrayType(new StringType(), new StringType());
             }
             if ($varType instanceof ContentEntityQueryType) {
                 return $varType->hasAccessCheck()
