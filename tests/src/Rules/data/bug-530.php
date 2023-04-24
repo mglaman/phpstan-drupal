@@ -11,12 +11,13 @@ class TestClass {
 
     public ConfigEntityStorageInterface $storage;
 
-    public function setUp(): void {
-        /** @var ConfigEntityStorageInterface  $this->storage */
+    public function setUp(): void
+    {
         $this->storage = \Drupal::entityTypeManager()->getStorage('menu');
     }
 
-    public function bug530(string $entity_type): void {
+    public function bug530(string $entity_type): void
+    {
         // Test "normal" entity query with class property.
         $this->storage->getQuery()
             ->condition('field_test', 'foo', '=')
@@ -25,7 +26,7 @@ class TestClass {
         // Test "normal" entity query with inline type hint.
         /** @var \Drupal\Core\Config\Entity\ConfigEntityStorageInterface $storage */
         $storage = \Drupal::entityTypeManager()->getStorage('menu');
-        $count = $this->storage->getQuery()
+        $count = $storage->getQuery()
             ->condition('field_test', 'foo', '=')
             ->execute();
 
@@ -38,9 +39,10 @@ class TestClass {
         // Test count entity query with inline type hint.
         /** @var \Drupal\Core\Config\Entity\ConfigEntityStorageInterface $storage */
         $storage = \Drupal::entityTypeManager()->getStorage('menu');
-        $count = $this->storage->getQuery()
+        $count = $storage->getQuery()
             ->condition('field_test', 'foo', '=')
             ->count()
             ->execute();
     }
+
 }
