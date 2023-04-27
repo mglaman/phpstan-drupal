@@ -173,18 +173,18 @@ final class RenderCallbackRule implements Rule
             }
 
             foreach ($typeAndMethodNames as $typeAndMethodName) {
-                $isTrustedCallbackAttribute = TrinaryLogic::createNo();
-                if (class_exists(TrustedCallback::class)) {
-                    $isTrustedCallbackAttribute = $isTrustedCallbackAttribute->lazyOr(
-                        $typeAndMethodName->getType()->getObjectClassReflections(),
-                        function (ClassReflection $reflection) use ($typeAndMethodName) {
-                            $hasAttribute = $reflection->getNativeReflection()
-                                ->getMethod($typeAndMethodName->getMethod())
-                                ->getAttributes(TrustedCallback::class);
-                            return TrinaryLogic::createFromBoolean(count($hasAttribute) > 0);
+                $isTrustedCallbackAttribute = TrinaryLogic::createNo()->lazyOr(
+                    $typeAndMethodName->getType()->getObjectClassReflections(),
+                    function (ClassReflection $reflection) use ($typeAndMethodName) {
+                        if (!class_exists(TrustedCallback::class)) {
+                            return TrinaryLogic::createNo();
                         }
-                    );
-                }
+                        $hasAttribute = $reflection->getNativeReflection()
+                            ->getMethod($typeAndMethodName->getMethod())
+                            ->getAttributes(TrustedCallback::class);
+                        return TrinaryLogic::createFromBoolean(count($hasAttribute) > 0);
+                    }
+                );
 
                 $isTrustedCallbackInterfaceType = $trustedCallbackType->isSuperTypeOf($typeAndMethodName->getType())->yes();
                 if (!$isTrustedCallbackInterfaceType && !$isTrustedCallbackAttribute->yes()) {
