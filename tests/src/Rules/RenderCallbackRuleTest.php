@@ -25,43 +25,57 @@ final class RenderCallbackRuleTest extends DrupalRuleTestCase {
         $this->analyse([$path], $errorMessages);
     }
 
-    public function fileData(): \Generator
+    public static function fileData(): \Generator
     {
+        $pre_render_callback_rule_set_one = [
+            [
+                "#pre_render value 'null' at key '0' is invalid.",
+                14
+            ],
+            [
+                'The "#pre_render" render array value expects an array of callbacks.',
+                18
+            ],
+            [
+                'The "#pre_render" render array value expects an array of callbacks.',
+                21
+            ],
+            [
+                "#pre_render callback 'invalid_func' at key '0' is not callable.",
+                26
+            ],
+            [
+                "#pre_render callback 'sample_pre_render…' at key '1' is not trusted.",
+                27,
+                'Change record: https://www.drupal.org/node/2966725.',
+            ],
+        ];
+        if (version_compare(\Drupal::VERSION, '10.1', '<')) {
+            $pre_render_callback_rule_set_one[] = [
+                "#pre_render callback class 'static(Drupal\pre_render_callback_rule\NotTrustedCallback)' at key '3' does not implement Drupal\Core\Security\TrustedCallbackInterface.",
+                29,
+                'Change record: https://www.drupal.org/node/2966725.',
+            ];
+            $pre_render_callback_rule_set_one[] = [
+                "#pre_render callback class 'Drupal\pre_render_callback_rule\NotTrustedCallback' at key '4' does not implement Drupal\Core\Security\TrustedCallbackInterface.",
+                30,
+                'Change record: https://www.drupal.org/node/2966725.',
+            ];
+        } else {
+            $pre_render_callback_rule_set_one[] = [
+                "#pre_render callback method 'array{static(Drupal\pre_render_callback_rule\NotTrustedCallback), 'unsafeCallback'}' at key '3' does not implement attribute \Drupal\Core\Security\Attribute\TrustedCallback.",
+                29,
+                'Change record: https://www.drupal.org/node/3349470',
+            ];
+            $pre_render_callback_rule_set_one[] = [
+                "#pre_render callback method 'array{'\\\Drupal\\\pre_render…', 'unsafeCallback'}' at key '4' does not implement attribute \Drupal\Core\Security\Attribute\TrustedCallback.",
+                30,
+                'Change record: https://www.drupal.org/node/3349470',
+            ];
+        }
         yield [
           __DIR__ . '/../../fixtures/drupal/modules/pre_render_callback_rule/pre_render_callback_rule.module',
-            [
-                [
-                    "#pre_render value 'null' at key '0' is invalid.",
-                    14
-                ],
-                [
-                    'The "#pre_render" render array value expects an array of callbacks.',
-                    18
-                ],
-                [
-                    'The "#pre_render" render array value expects an array of callbacks.',
-                    21
-                ],
-                [
-                    "#pre_render callback 'invalid_func' at key '0' is not callable.",
-                    26
-                ],
-                [
-                    "#pre_render callback 'sample_pre_render…' at key '1' is not trusted.",
-                    27,
-                    'Change record: https://www.drupal.org/node/2966725.',
-                ],
-                [
-                    "#pre_render callback class 'static(Drupal\pre_render_callback_rule\NotTrustedCallback)' at key '3' does not implement Drupal\Core\Security\TrustedCallbackInterface.",
-                    29,
-                    'Change record: https://www.drupal.org/node/2966725.',
-                ],
-                [
-                    "#pre_render callback class 'Drupal\pre_render_callback_rule\NotTrustedCallback' at key '4' does not implement Drupal\Core\Security\TrustedCallbackInterface.",
-                    30,
-                    'Change record: https://www.drupal.org/node/2966725.',
-                ],
-            ]
+            $pre_render_callback_rule_set_one
         ];
         yield [
             __DIR__ . '/../../fixtures/drupal/modules/pre_render_callback_rule/src/RenderArrayWithPreRenderCallback.php',
@@ -96,9 +110,9 @@ final class RenderCallbackRuleTest extends DrupalRuleTestCase {
             __DIR__ . '/../../fixtures/drupal/core/lib/Drupal/Core/Render/Renderer.php',
             []
         ];
-        yield [
-            __DIR__ . '/data/bug-424.php',
-            [
+
+        if (version_compare(\Drupal::VERSION, '10.1', '<')) {
+            $bug424 = [
                 [
                     "#lazy_builder callback class 'static(Bug424\Foo)' at key '0' does not implement Drupal\Core\Security\TrustedCallbackInterface.",
                     10,
@@ -109,12 +123,41 @@ final class RenderCallbackRuleTest extends DrupalRuleTestCase {
                     17,
                     "Change record: https://www.drupal.org/node/2966725."
                 ]
-            ]
+            ];
+        } else {
+            $bug424 = [
+                [
+                    "#lazy_builder callback method 'array{static(Bug424\Foo), 'contentLazyBuilder'}' at key '0' does not implement attribute \Drupal\Core\Security\Attribute\TrustedCallback.",
+                    10,
+                    "Change record: https://www.drupal.org/node/3349470"
+                ],
+                [
+                    "#lazy_builder callback method 'array{class-string<static(Bug424\Foo)>, 'contentLazyBuilder'}' at key '0' does not implement attribute \Drupal\Core\Security\Attribute\TrustedCallback.",
+                    17,
+                    "Change record: https://www.drupal.org/node/3349470"
+                ]
+            ];
+        }
+        yield [
+            __DIR__ . '/data/bug-424.php',
+            $bug424
         ];
         yield [
             __DIR__ . '/../../fixtures/drupal/core/modules/filter/src/FilterProcessResult.php',
             []
         ];
+        if (version_compare(\Drupal::VERSION, '10.1', '>=')) {
+            yield [
+                __DIR__ . '/data/bug-527.php',
+                [
+                    [
+                        "#lazy_builder callback method 'array{'Bug527\\\Foo', 'someCallback'}' at key '0' does not implement attribute \Drupal\Core\Security\Attribute\TrustedCallback.",
+                        27,
+                        "Change record: https://www.drupal.org/node/3349470"
+                    ]
+                ],
+            ];
+        }
     }
 
 
