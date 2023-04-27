@@ -208,7 +208,7 @@ final class RenderCallbackRule implements Rule
                                 $typeAndMethodName->getType()->describe(VerbosityLevel::value()),
                                 $pos
                             )
-                        )->line($errorLine)->tip('Change record: https://www.drupal.org/node/2966725')->build();
+                        )->line($errorLine)->tip('Change record: https://www.drupal.org/node/2966725.')->build();
                     }
                 }
             }
