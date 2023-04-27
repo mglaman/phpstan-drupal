@@ -27,41 +27,55 @@ final class RenderCallbackRuleTest extends DrupalRuleTestCase {
 
     public static function fileData(): \Generator
     {
+        $pre_render_callback_rule_set_one = [
+            [
+                "#pre_render value 'null' at key '0' is invalid.",
+                14
+            ],
+            [
+                'The "#pre_render" render array value expects an array of callbacks.',
+                18
+            ],
+            [
+                'The "#pre_render" render array value expects an array of callbacks.',
+                21
+            ],
+            [
+                "#pre_render callback 'invalid_func' at key '0' is not callable.",
+                26
+            ],
+            [
+                "#pre_render callback 'sample_pre_render…' at key '1' is not trusted.",
+                27,
+                'Change record: https://www.drupal.org/node/2966725.',
+            ],
+        ];
+        if (version_compare(\Drupal::VERSION, '10.1', '<')) {
+            $pre_render_callback_rule_set_one[] = [
+                "#pre_render callback class 'static(Drupal\pre_render_callback_rule\NotTrustedCallback)' at key '3' does not implement Drupal\Core\Security\TrustedCallbackInterface.",
+                29,
+                'Change record: https://www.drupal.org/node/2966725.',
+            ];
+            $pre_render_callback_rule_set_one[] = [
+                "#pre_render callback class 'Drupal\pre_render_callback_rule\NotTrustedCallback' at key '4' does not implement Drupal\Core\Security\TrustedCallbackInterface.",
+                30,
+                'Change record: https://www.drupal.org/node/2966725.',
+            ];
+        } else {
+            $pre_render_callback_rule_set_one[] = [
+                "#pre_render callback class 'static(Drupal\pre_render_callback_rule\NotTrustedCallback)' at key '3' does not implement attribute \Drupal\Core\Security\Attribute\TrustedCallback.",
+                29,
+                'Change record: https://www.drupal.org/node/3349470.',
+            ];
+            $pre_render_callback_rule_set_one[] = [
+                "#pre_render callback class 'Drupal\pre_render_callback_rule\NotTrustedCallback' at key '4' does not implement attribute \Drupal\Core\Security\Attribute\TrustedCallback.",
+                30,
+                'Change record: https://www.drupal.org/node/3349470.',
+            ];
+        }
         yield [
           __DIR__ . '/../../fixtures/drupal/modules/pre_render_callback_rule/pre_render_callback_rule.module',
-            [
-                [
-                    "#pre_render value 'null' at key '0' is invalid.",
-                    14
-                ],
-                [
-                    'The "#pre_render" render array value expects an array of callbacks.',
-                    18
-                ],
-                [
-                    'The "#pre_render" render array value expects an array of callbacks.',
-                    21
-                ],
-                [
-                    "#pre_render callback 'invalid_func' at key '0' is not callable.",
-                    26
-                ],
-                [
-                    "#pre_render callback 'sample_pre_render…' at key '1' is not trusted.",
-                    27,
-                    'Change record: https://www.drupal.org/node/2966725.',
-                ],
-                [
-                    "#pre_render callback class 'static(Drupal\pre_render_callback_rule\NotTrustedCallback)' at key '3' does not implement Drupal\Core\Security\TrustedCallbackInterface.",
-                    29,
-                    'Change record: https://www.drupal.org/node/2966725.',
-                ],
-                [
-                    "#pre_render callback class 'Drupal\pre_render_callback_rule\NotTrustedCallback' at key '4' does not implement Drupal\Core\Security\TrustedCallbackInterface.",
-                    30,
-                    'Change record: https://www.drupal.org/node/2966725.',
-                ],
-            ]
+            $pre_render_callback_rule_set_one
         ];
         yield [
             __DIR__ . '/../../fixtures/drupal/modules/pre_render_callback_rule/src/RenderArrayWithPreRenderCallback.php',
