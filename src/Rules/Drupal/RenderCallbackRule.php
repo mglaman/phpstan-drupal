@@ -5,6 +5,7 @@ namespace mglaman\PHPStanDrupal\Rules\Drupal;
 use Drupal\Core\Render\Element\RenderCallbackInterface;
 use Drupal\Core\Render\PlaceholderGenerator;
 use Drupal\Core\Render\Renderer;
+use Drupal\Core\Security\Attribute\TrustedCallback;
 use Drupal\Core\Security\TrustedCallbackInterface;
 use mglaman\PHPStanDrupal\Drupal\ServiceMap;
 use PhpParser\Node;
@@ -173,13 +174,13 @@ final class RenderCallbackRule implements Rule
 
             foreach ($typeAndMethodNames as $typeAndMethodName) {
                 $isTrustedCallbackAttribute = TrinaryLogic::createNo();
-                if (version_compare(\Drupal::VERSION, '10.1', '>=')) {
+                if (class_exists(TrustedCallback::class)) {
                     $isTrustedCallbackAttribute = $isTrustedCallbackAttribute->lazyOr(
                         $typeAndMethodName->getType()->getObjectClassReflections(),
                         function (ClassReflection $reflection) use ($typeAndMethodName) {
                             $hasAttribute = $reflection->getNativeReflection()
                                 ->getMethod($typeAndMethodName->getMethod())
-                                ->getAttributes('Drupal\Core\Security\Attribute\TrustedCallback');
+                                ->getAttributes(TrustedCallback::class);
                             return TrinaryLogic::createFromBoolean(count($hasAttribute) > 0);
                         }
                     );
@@ -187,7 +188,7 @@ final class RenderCallbackRule implements Rule
 
                 $isTrustedCallbackInterfaceType = $trustedCallbackType->isSuperTypeOf($typeAndMethodName->getType())->yes();
                 if (!$isTrustedCallbackInterfaceType && !$isTrustedCallbackAttribute->yes()) {
-                    if (version_compare(\Drupal::VERSION, '10.1', '>=')) {
+                    if (class_exists(TrustedCallback::class)) {
                         $errors[] =  RuleErrorBuilder::message(
                             sprintf(
                                 "%s callback method '%s' at key '%s' does not implement attribute \Drupal\Core\Security\Attribute\TrustedCallback.",
