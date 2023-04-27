@@ -2,17 +2,18 @@
 
 namespace mglaman\PHPStanDrupal\Rules\Drupal;
 
+use Drupal\Core\Render\Element\RenderCallbackInterface;
 use Drupal\Core\Render\PlaceholderGenerator;
 use Drupal\Core\Render\Renderer;
+use Drupal\Core\Security\Attribute\TrustedCallback;
+use Drupal\Core\Security\TrustedCallbackInterface;
 use mglaman\PHPStanDrupal\Drupal\ServiceMap;
 use PhpParser\Node;
 use PhpParser\Node\Name;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ClassReflection;
-use PHPStan\Reflection\Php\PhpMethodReflection;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Rules\Rule;
-use PHPStan\Rules\RuleError;
 use PHPStan\Rules\RuleErrorBuilder;
 use PHPStan\TrinaryLogic;
 use PHPStan\Type\ClosureType;
@@ -23,13 +24,9 @@ use PHPStan\Type\Generic\GenericClassStringType;
 use PHPStan\Type\IntersectionType;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\StaticType;
-use PHPStan\Type\ThisType;
 use PHPStan\Type\Type;
 use PHPStan\Type\UnionType;
 use PHPStan\Type\VerbosityLevel;
-use Drupal\Core\Security\Attribute\TrustedCallback;
-use Drupal\Core\Render\Element\RenderCallbackInterface;
-use Drupal\Core\Security\TrustedCallbackInterface;
 
 final class RenderCallbackRule implements Rule
 {
@@ -232,7 +229,6 @@ final class RenderCallbackRule implements Rule
         }
 
         return $errors;
-
     }
 
     // @todo move to a helper, as Drupal uses `service:method` references a lot.
