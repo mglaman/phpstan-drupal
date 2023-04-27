@@ -5,7 +5,6 @@ namespace mglaman\PHPStanDrupal\Rules\Drupal;
 use Drupal\Core\Render\Element\RenderCallbackInterface;
 use Drupal\Core\Render\PlaceholderGenerator;
 use Drupal\Core\Render\Renderer;
-use Drupal\Core\Security\Attribute\TrustedCallback;
 use Drupal\Core\Security\TrustedCallbackInterface;
 use mglaman\PHPStanDrupal\Drupal\ServiceMap;
 use PhpParser\Node;
