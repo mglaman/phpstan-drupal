@@ -2,16 +2,20 @@
 
 namespace mglaman\PHPStanDrupal\Rules\Drupal;
 
+use Drupal\Core\Render\Element\RenderCallbackInterface;
 use Drupal\Core\Render\PlaceholderGenerator;
 use Drupal\Core\Render\Renderer;
+use Drupal\Core\Security\Attribute\TrustedCallback;
+use Drupal\Core\Security\TrustedCallbackInterface;
 use mglaman\PHPStanDrupal\Drupal\ServiceMap;
 use PhpParser\Node;
 use PhpParser\Node\Name;
 use PHPStan\Analyser\Scope;
+use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Rules\Rule;
-use PHPStan\Rules\RuleError;
 use PHPStan\Rules\RuleErrorBuilder;
+use PHPStan\TrinaryLogic;
 use PHPStan\Type\ClosureType;
 use PHPStan\Type\Constant\ConstantArrayType;
 use PHPStan\Type\Constant\ConstantIntegerType;
@@ -20,7 +24,6 @@ use PHPStan\Type\Generic\GenericClassStringType;
 use PHPStan\Type\IntersectionType;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\StaticType;
-use PHPStan\Type\ThisType;
 use PHPStan\Type\Type;
 use PHPStan\Type\UnionType;
 use PHPStan\Type\VerbosityLevel;
@@ -28,9 +31,16 @@ use PHPStan\Type\VerbosityLevel;
 final class RenderCallbackRule implements Rule
 {
 
-    protected ReflectionProvider $reflectionProvider;
+    private ReflectionProvider $reflectionProvider;
 
-    protected ServiceMap $serviceMap;
+    private ServiceMap $serviceMap;
+
+    private array $supportedKeys = [
+        '#pre_render',
+        '#post_render',
+        '#access_callback',
+        '#lazy_builder',
+    ];
 
     public function __construct(ReflectionProvider $reflectionProvider, ServiceMap $serviceMap)
     {
@@ -51,20 +61,18 @@ final class RenderCallbackRule implements Rule
             return [];
         }
 
-        // @todo this should be 3 rules.
         // @see https://www.drupal.org/node/2966725
-        $keysToCheck = ['#pre_render', '#post_render', '#access_callback', '#lazy_builder'];
-        $keySearch = array_search($key->value, $keysToCheck, true);
+        $keySearch = array_search($key->value, $this->supportedKeys, true);
         if ($keySearch === false) {
             return [];
         }
-        $keyChecked = $keysToCheck[$keySearch];
-
+        $keyChecked = $this->supportedKeys[$keySearch];
         $value = $node->value;
 
-        $errors = [];
+        if ($keyChecked === '#access_callback') {
+            return $this->doProcessNode($node->value, $scope, $keyChecked, 0);
+        }
 
-        // @todo Move into its own rule.
         if ($keyChecked === '#lazy_builder') {
             if ($scope->isInClass()) {
                 $classReflection = $scope->getClassReflection();
@@ -73,15 +81,13 @@ final class RenderCallbackRule implements Rule
                 // PHPStan 1.6, nodes do not track their parent/next/prev which
                 // saves a lot of memory. But makes it harder to detect if we're
                 // in a call to array_intersect_key. This is an easier workaround.
-                $allowedTypes = [
-                    PlaceholderGenerator::class,
-                    Renderer::class,
-                    'Drupal\Tests\Core\Render\RendererPlaceholdersTest',
-                ];
-                foreach ($allowedTypes as $allowedType) {
-                    if ($classType->isInstanceOf($allowedType)->yes()) {
-                        return [];
-                    }
+                $allowedTypes = new UnionType([
+                    new ObjectType(PlaceholderGenerator::class),
+                    new ObjectType(Renderer::class),
+                    new ObjectType('Drupal\Tests\Core\Render\RendererPlaceholdersTest'),
+                ]);
+                if ($allowedTypes->isSuperTypeOf($classType)->yes()) {
+                    return [];
                 }
             }
 
@@ -98,107 +104,131 @@ final class RenderCallbackRule implements Rule
                 return [];
             }
             // @todo take $value->items[1] and validate parameters against the callback.
-            $errors[] = $this->doProcessNode($value->items[0]->value, $scope, $keyChecked, 0);
-        } elseif ($keyChecked === '#access_callback') {
-            // @todo move into its own rule.
-            $errors[] = $this->doProcessNode($value, $scope, $keyChecked, 0);
-        } else {
-            // @todo keep here.
-            if (!$value instanceof Node\Expr\Array_) {
-                return [
-                    RuleErrorBuilder::message(sprintf('The "%s" render array value expects an array of callbacks.', $keyChecked))
-                        ->line($node->getLine())->build()
-                ];
-            }
-            if (count($value->items) === 0) {
-                return [];
-            }
-            foreach ($value->items as $pos => $item) {
-                if (!$item instanceof Node\Expr\ArrayItem) {
-                    continue;
-                }
-                $errors[] = $this->doProcessNode($item->value, $scope, $keyChecked, $pos);
-            }
+            return $this->doProcessNode($value->items[0]->value, $scope, $keyChecked, 0);
         }
-        return array_filter($errors);
+
+        if (!$value instanceof Node\Expr\Array_) {
+            return [
+                RuleErrorBuilder::message(sprintf('The "%s" render array value expects an array of callbacks.', $keyChecked))
+                    ->line($node->getLine())->build()
+            ];
+        }
+        if (count($value->items) === 0) {
+            return [];
+        }
+        $errors = [];
+        foreach ($value->items as $pos => $item) {
+            if (!$item instanceof Node\Expr\ArrayItem) {
+                continue;
+            }
+            $errors[] = $this->doProcessNode($item->value, $scope, $keyChecked, $pos);
+        }
+        return array_merge(...$errors);
     }
 
-    private function doProcessNode(Node\Expr $node, Scope $scope, string $keyChecked, int $pos): ?RuleError
+    /**
+    @return (string|\PHPStan\Rules\RuleError)[] errors
+     */
+    private function doProcessNode(Node\Expr $node, Scope $scope, string $keyChecked, int $pos): array
     {
         $trustedCallbackType = new UnionType([
-            new ObjectType('Drupal\Core\Security\TrustedCallbackInterface'),
-            new ObjectType('Drupal\Core\Render\Element\RenderCallbackInterface'),
+            new ObjectType(TrustedCallbackInterface::class),
+            new ObjectType(RenderCallbackInterface::class),
         ]);
 
+        $errors = [];
         $errorLine = $node->getLine();
         $type = $this->getType($node, $scope);
 
-        if ($type instanceof ConstantStringType) {
-            if (!$type->isCallable()->yes()) {
-                return RuleErrorBuilder::message(
-                    sprintf("%s callback %s at key '%s' is not callable.", $keyChecked, $type->describe(VerbosityLevel::value()), $pos)
+        foreach ($type->getConstantStrings() as $constantStringType) {
+            if (!$constantStringType->isCallable()->yes()) {
+                $errors[] = RuleErrorBuilder::message(
+                    sprintf("%s callback %s at key '%s' is not callable.", $keyChecked, $constantStringType->describe(VerbosityLevel::value()), $pos)
                 )->line($errorLine)->build();
-            }
-            // We can determine if the callback is callable through the type system. However, we cannot determine
-            // if it is just a function or a static class call (MyClass::staticFunc).
-            if ($this->reflectionProvider->hasFunction(new Name($type->getValue()), null)) {
-                return RuleErrorBuilder::message(
-                    sprintf("%s callback %s at key '%s' is not trusted.", $keyChecked, $type->describe(VerbosityLevel::value()), $pos)
+            } elseif ($this->reflectionProvider->hasFunction(new Name($constantStringType->getValue()), null)) {
+                // We can determine if the callback is callable through the type system. However, we cannot determine
+                // if it is just a function or a static class call (MyClass::staticFunc).
+                $errors[] = RuleErrorBuilder::message(
+                    sprintf("%s callback %s at key '%s' is not trusted.", $keyChecked, $constantStringType->describe(VerbosityLevel::value()), $pos)
                 )->line($errorLine)
                     ->tip('Change record: https://www.drupal.org/node/2966725.')
                     ->build();
-            }
-
-            if (!$trustedCallbackType->isSuperTypeOf($type)->yes()) {
-                return RuleErrorBuilder::message(
-                    sprintf("%s callback class %s at key '%s' does not implement Drupal\Core\Security\TrustedCallbackInterface.", $keyChecked, $type->describe(VerbosityLevel::value()), $pos)
+            } elseif (!$trustedCallbackType->isSuperTypeOf($type)->yes()) {
+                $errors[] = RuleErrorBuilder::message(
+                    sprintf("%s callback class %s at key '%s' does not implement Drupal\Core\Security\TrustedCallbackInterface.", $keyChecked, $constantStringType->describe(VerbosityLevel::value()), $pos)
                 )->line($errorLine)->tip('Change record: https://www.drupal.org/node/2966725.')->build();
             }
-        } elseif ($type instanceof ConstantArrayType) {
-            if (!$type->isCallable()->yes()) {
-                return RuleErrorBuilder::message(
-                    sprintf("%s callback %s at key '%s' is not callable.", $keyChecked, $type->describe(VerbosityLevel::value()), $pos)
+        }
+
+        foreach ($type->getConstantArrays() as $constantArrayType) {
+            if (!$constantArrayType->isCallable()->yes()) {
+                $errors[] = RuleErrorBuilder::message(
+                    sprintf("%s callback %s at key '%s' is not callable.", $keyChecked, $constantArrayType->describe(VerbosityLevel::value()), $pos)
                 )->line($errorLine)->build();
+                continue;
             }
-            $typeAndMethodNames = $type->findTypeAndMethodNames();
+            $typeAndMethodNames = $constantArrayType->findTypeAndMethodNames();
             if ($typeAndMethodNames === []) {
-                throw new \PHPStan\ShouldNotHappenException();
+                continue;
             }
 
             foreach ($typeAndMethodNames as $typeAndMethodName) {
-                if (!$trustedCallbackType->isSuperTypeOf($typeAndMethodName->getType())->yes()) {
-                    return RuleErrorBuilder::message(
-                        sprintf("%s callback class '%s' at key '%s' does not implement Drupal\Core\Security\TrustedCallbackInterface.", $keyChecked, $typeAndMethodName->getType()->describe(VerbosityLevel::value()), $pos)
-                    )->line($errorLine)->tip('Change record: https://www.drupal.org/node/2966725.')->build();
+                $isTrustedCallbackAttribute = TrinaryLogic::createNo()->lazyOr(
+                    $typeAndMethodName->getType()->getObjectClassReflections(),
+                    function (ClassReflection $reflection) use ($typeAndMethodName) {
+                        if (!class_exists(TrustedCallback::class)) {
+                            return TrinaryLogic::createNo();
+                        }
+                        $hasAttribute = $reflection->getNativeReflection()
+                            ->getMethod($typeAndMethodName->getMethod())
+                            ->getAttributes(TrustedCallback::class);
+                        return TrinaryLogic::createFromBoolean(count($hasAttribute) > 0);
+                    }
+                );
+
+                $isTrustedCallbackInterfaceType = $trustedCallbackType->isSuperTypeOf($typeAndMethodName->getType())->yes();
+                if (!$isTrustedCallbackInterfaceType && !$isTrustedCallbackAttribute->yes()) {
+                    if (class_exists(TrustedCallback::class)) {
+                        $errors[] =  RuleErrorBuilder::message(
+                            sprintf(
+                                "%s callback method '%s' at key '%s' does not implement attribute \Drupal\Core\Security\Attribute\TrustedCallback.",
+                                $keyChecked,
+                                $constantArrayType->describe(VerbosityLevel::value()),
+                                $pos
+                            )
+                        )->line($errorLine)->tip('Change record: https://www.drupal.org/node/3349470')->build();
+                    } else {
+                        $errors[] =  RuleErrorBuilder::message(
+                            sprintf(
+                                "%s callback class '%s' at key '%s' does not implement Drupal\Core\Security\TrustedCallbackInterface.",
+                                $keyChecked,
+                                $typeAndMethodName->getType()->describe(VerbosityLevel::value()),
+                                $pos
+                            )
+                        )->line($errorLine)->tip('Change record: https://www.drupal.org/node/2966725.')->build();
+                    }
                 }
             }
-        } elseif ($type instanceof ClosureType) {
-            if ($scope->isInClass()) {
-                $classReflection = $scope->getClassReflection();
-                $classType = new ObjectType($classReflection->getName());
-                $formType = new ObjectType('\Drupal\Core\Form\FormInterface');
-                if ($formType->isSuperTypeOf($classType)->yes()) {
-                    return RuleErrorBuilder::message(
-                        sprintf("%s may not contain a closure at key '%s' as forms may be serialized and serialization of closures is not allowed.", $keyChecked, $pos)
-                    )->line($errorLine)->build();
-                }
-            }
-        } elseif ($type instanceof ThisType) {
-            if (!$type->isCallable()->yes()) {
-                return RuleErrorBuilder::message(
-                    sprintf("%s callback %s at key '%s' is not callable.", $keyChecked, $type->describe(VerbosityLevel::value()), $pos)
+        }
+        // @todo move to its own rule for 1.2.0, FormClosureSerializationRule.
+        if (($type instanceof ClosureType) && $scope->isInClass()) {
+            $classReflection = $scope->getClassReflection();
+            $classType = new ObjectType($classReflection->getName());
+            $formType = new ObjectType('\Drupal\Core\Form\FormInterface');
+            if ($formType->isSuperTypeOf($classType)->yes()) {
+                $errors[] = RuleErrorBuilder::message(
+                    sprintf("%s may not contain a closure at key '%s' as forms may be serialized and serialization of closures is not allowed.", $keyChecked, $pos)
                 )->line($errorLine)->build();
             }
-        } elseif ($type->isCallable()->yes()) {
-            // If the value has been marked as callable or callable-string, we cannot resolve the callable, trust it.
-            return null;
-        } else {
-            return RuleErrorBuilder::message(
+        }
+
+        if (count($errors) === 0 && !$type->isCallable()->yes()) {
+            $errors[] = RuleErrorBuilder::message(
                 sprintf("%s value '%s' at key '%s' is invalid.", $keyChecked, $type->describe(VerbosityLevel::value()), $pos)
             )->line($errorLine)->build();
         }
 
-        return null;
+        return $errors;
     }
 
     // @todo move to a helper, as Drupal uses `service:method` references a lot.
