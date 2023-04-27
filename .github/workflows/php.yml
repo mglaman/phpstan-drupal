@@ -69,7 +69,7 @@ jobs:
         run: "composer require phpunit/phpunit:6.5.14 drush/drush:~9 drupal/core-recommended:${{ matrix.drupal }} drupal/core-dev:${{ matrix.drupal }} --with-all-dependencies --dev --no-update"
         if: ${{ matrix.drupal == '^8.9' }}
       - name: "Upgrade to drupal/core:10.0.x and drush/drush:^11.0"
-        run: "composer require drupal/core-recommended:${{ matrix.drupal }} drush/drush:^11.0 --with-all-dependencies --dev --no-update"
+        run: "composer require drupal/core-recommended:${{ matrix.drupal }} --with-all-dependencies --dev --no-update"
         if: ${{ matrix.drupal == '10.0.x-dev' || matrix.drupal == '10.1.x-dev' }}
       - name: "Add phpspec/prophecy-phpunit"
         run: "composer require phpspec/prophecy-phpunit:^2 --dev --no-update"
