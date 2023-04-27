@@ -52,10 +52,6 @@ class EntityQueryDynamicReturnTypeExtension implements DynamicMethodReturnTypeEx
             if ($varType instanceof EntityQueryType && $varType->hasAccessCheck()) {
                 return $returnType->withAccessCheck();
             }
-            if ($varType instanceof ConfigEntityQueryType) {
-                // Config entities don't require an access check.
-                return $returnType->withAccessCheck();
-            }
 
             return $returnType;
         }
@@ -67,8 +63,9 @@ class EntityQueryDynamicReturnTypeExtension implements DynamicMethodReturnTypeEx
                     : new EntityQueryExecuteWithoutAccessCheckCountType();
             }
             if ($varType instanceof ConfigEntityQueryType) {
-                // Config entities don't require an access check.
-                return new ArrayType(new StringType(), new StringType());
+                return $varType->hasAccessCheck()
+                    ? new ArrayType(new StringType(), new StringType())
+                    : new EntityQueryExecuteWithoutAccessCheckType(new StringType(), new StringType());
             }
             if ($varType instanceof ContentEntityQueryType) {
                 return $varType->hasAccessCheck()
