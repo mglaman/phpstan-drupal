@@ -180,7 +180,7 @@ final class RenderCallbackRule implements Rule
                         function (ClassReflection $reflection) use ($typeAndMethodName) {
                             $hasAttribute = $reflection->getNativeReflection()
                                 ->getMethod($typeAndMethodName->getMethod())
-                                ->getAttributes(TrustedCallback::class);
+                                ->getAttributes('Drupal\Core\Security\Attribute\TrustedCallback');
                             return TrinaryLogic::createFromBoolean(count($hasAttribute) > 0);
                         }
                     );
