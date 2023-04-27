@@ -63,14 +63,14 @@ final class RenderCallbackRuleTest extends DrupalRuleTestCase {
             ];
         } else {
             $pre_render_callback_rule_set_one[] = [
-                "#pre_render callback class 'static(Drupal\pre_render_callback_rule\NotTrustedCallback)' at key '3' does not implement attribute \Drupal\Core\Security\Attribute\TrustedCallback.",
+                "#pre_render callback method 'array{static(Drupal\pre_render_callback_rule\NotTrustedCallback), 'unsafeCallback'}' at key '3' does not implement attribute \Drupal\Core\Security\Attribute\TrustedCallback.",
                 29,
-                'Change record: https://www.drupal.org/node/3349470.',
+                'Change record: https://www.drupal.org/node/3349470',
             ];
             $pre_render_callback_rule_set_one[] = [
-                "#pre_render callback class 'Drupal\pre_render_callback_rule\NotTrustedCallback' at key '4' does not implement attribute \Drupal\Core\Security\Attribute\TrustedCallback.",
+                "#pre_render callback method 'array{'\\\Drupal\\\pre_render…', 'unsafeCallback'}' at key '4' does not implement attribute \Drupal\Core\Security\Attribute\TrustedCallback.",
                 30,
-                'Change record: https://www.drupal.org/node/3349470.',
+                'Change record: https://www.drupal.org/node/3349470',
             ];
         }
         yield [
@@ -110,9 +110,9 @@ final class RenderCallbackRuleTest extends DrupalRuleTestCase {
             __DIR__ . '/../../fixtures/drupal/core/lib/Drupal/Core/Render/Renderer.php',
             []
         ];
-        yield [
-            __DIR__ . '/data/bug-424.php',
-            [
+
+        if (version_compare(\Drupal::VERSION, '10.1', '<')) {
+            $bug424 = [
                 [
                     "#lazy_builder callback class 'static(Bug424\Foo)' at key '0' does not implement Drupal\Core\Security\TrustedCallbackInterface.",
                     10,
@@ -123,7 +123,24 @@ final class RenderCallbackRuleTest extends DrupalRuleTestCase {
                     17,
                     "Change record: https://www.drupal.org/node/2966725."
                 ]
-            ]
+            ];
+        } else {
+            $bug424 = [
+                [
+                    "#lazy_builder callback method 'array{static(Bug424\Foo), 'contentLazyBuilder'}' at key '0' does not implement attribute \Drupal\Core\Security\Attribute\TrustedCallback.",
+                    10,
+                    "Change record: https://www.drupal.org/node/3349470"
+                ],
+                [
+                    "#lazy_builder callback method 'array{class-string<static(Bug424\Foo)>, 'contentLazyBuilder'}' at key '0' does not implement attribute \Drupal\Core\Security\Attribute\TrustedCallback.",
+                    17,
+                    "Change record: https://www.drupal.org/node/3349470"
+                ]
+            ];
+        }
+        yield [
+            __DIR__ . '/data/bug-424.php',
+            $bug424
         ];
         yield [
             __DIR__ . '/../../fixtures/drupal/core/modules/filter/src/FilterProcessResult.php',
