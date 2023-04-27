@@ -2,12 +2,12 @@
 
 namespace mglaman\PHPStanDrupal\Type;
 
+use Drupal\Core\Config\Entity\ConfigEntityStorageInterface;
+use Drupal\Core\Entity\ContentEntityStorageInterface;
 use mglaman\PHPStanDrupal\Drupal\EntityDataRepository;
 use mglaman\PHPStanDrupal\Type\EntityQuery\ConfigEntityQueryType;
 use mglaman\PHPStanDrupal\Type\EntityQuery\ContentEntityQueryType;
 use mglaman\PHPStanDrupal\Type\EntityQuery\EntityQueryType;
-use mglaman\PHPStanDrupal\Type\EntityStorage\ConfigEntityStorageType;
-use mglaman\PHPStanDrupal\Type\EntityStorage\ContentEntityStorageType;
 use PhpParser\Node\Expr\StaticCall;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\MethodReflection;
@@ -70,14 +70,14 @@ class DrupalStaticEntityQueryDynamicReturnTypeExtension implements DynamicStatic
             return $returnType;
         }
 
-        if ($entityStorageType instanceof ContentEntityStorageType) {
+        if ((new ObjectType(ContentEntityStorageInterface::class))->isSuperTypeOf($entityStorageType)->yes()) {
             return new ContentEntityQueryType(
                 $returnType->getClassName(),
                 $returnType->getSubtractedType(),
                 $returnType->getClassReflection()
             );
         }
-        if ($entityStorageType instanceof ConfigEntityStorageType) {
+        if ((new ObjectType(ConfigEntityStorageInterface::class))->isSuperTypeOf($entityStorageType)->yes()) {
             return new ConfigEntityQueryType(
                 $returnType->getClassName(),
                 $returnType->getSubtractedType(),
