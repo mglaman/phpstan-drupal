@@ -127,7 +127,7 @@ final class RenderCallbackRule implements Rule
     }
 
     /**
-    @return (string|RuleError)[] errors
+    @return (string|\PHPStan\Rules\RuleError)[] errors
      */
     private function doProcessNode(Node\Expr $node, Scope $scope, string $keyChecked, int $pos): array
     {
