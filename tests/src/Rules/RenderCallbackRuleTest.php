@@ -25,7 +25,7 @@ final class RenderCallbackRuleTest extends DrupalRuleTestCase {
         $this->analyse([$path], $errorMessages);
     }
 
-    public function fileData(): \Generator
+    public static function fileData(): \Generator
     {
         yield [
           __DIR__ . '/../../fixtures/drupal/modules/pre_render_callback_rule/pre_render_callback_rule.module',
@@ -115,10 +115,18 @@ final class RenderCallbackRuleTest extends DrupalRuleTestCase {
             __DIR__ . '/../../fixtures/drupal/core/modules/filter/src/FilterProcessResult.php',
             []
         ];
-        yield [
-            __DIR__ . '/data/bug-527.php',
-            [],
-        ];
+        if (version_compare(\Drupal::VERSION, '10.1', '>=')) {
+            yield [
+                __DIR__ . '/data/bug-527.php',
+                [
+                    [
+                        "#lazy_builder callback method 'array{'Bug527\\\Foo', 'someCallback'}' at key '0' does not implement attribute \Drupal\Core\Security\Attribute\TrustedCallback.",
+                        27,
+                        "Change record: https://www.drupal.org/node/3349470"
+                    ]
+                ],
+            ];
+        }
     }
 
 
