@@ -42,7 +42,7 @@ final class GetQueryReturnTypeExtension implements DynamicMethodReturnTypeExtens
         }
 
         $callerType = $scope->getType($methodCall->var);
-        if (!$callerType instanceof ObjectType) {
+        if (!$callerType->isObject()->yes()) {
             return $returnType;
         }
 
