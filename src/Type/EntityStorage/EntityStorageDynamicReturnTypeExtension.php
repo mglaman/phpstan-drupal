@@ -2,6 +2,7 @@
 
 namespace mglaman\PHPStanDrupal\Type\EntityStorage;
 
+use Drupal\Core\Config\Entity\ConfigEntityStorageInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use mglaman\PHPStanDrupal\Drupal\EntityDataRepository;
 use PhpParser\Node\Expr\MethodCall;
@@ -76,7 +77,7 @@ class EntityStorageDynamicReturnTypeExtension implements DynamicMethodReturnType
         }
 
         if (\in_array($methodReflection->getName(), ['loadMultiple', 'loadByProperties'], true)) {
-            if ($callerType instanceof ConfigEntityStorageType) {
+            if ((new ObjectType(ConfigEntityStorageInterface::class))->isSuperTypeOf($callerType)->yes()) {
                 return new ArrayType(new StringType(), $type);
             }
 
