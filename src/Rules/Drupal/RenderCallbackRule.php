@@ -153,7 +153,7 @@ final class RenderCallbackRule implements Rule
                 )->line($errorLine)
                     ->tip('Change record: https://www.drupal.org/node/2966725.')
                     ->build();
-            } elseif (!$trustedCallbackType->isSuperTypeOf($type)->yes()) {
+            } elseif (!$trustedCallbackType->isSuperTypeOf(new ObjectType(explode('::', $constantStringType->getValue())[0]))->yes()) {
                 $errors[] = RuleErrorBuilder::message(
                     sprintf("%s callback class %s at key '%s' does not implement Drupal\Core\Security\TrustedCallbackInterface.", $keyChecked, $constantStringType->describe(VerbosityLevel::value()), $pos)
                 )->line($errorLine)->tip('Change record: https://www.drupal.org/node/2966725.')->build();
