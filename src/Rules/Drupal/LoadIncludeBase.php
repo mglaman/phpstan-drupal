@@ -43,6 +43,9 @@ abstract class LoadIncludeBase implements Rule
         $baseName = null;
         if ($name !== null) {
             $baseName = $this->getStringArgValue($name->value, $scope);
+            if ($baseName === null) {
+                return [false, false];
+            }
         }
         if ($baseName === null) {
             $baseName = $moduleName;
