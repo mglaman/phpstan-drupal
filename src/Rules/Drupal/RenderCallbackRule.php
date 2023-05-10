@@ -153,10 +153,19 @@ final class RenderCallbackRule implements Rule
                 )->line($errorLine)
                     ->tip('Change record: https://www.drupal.org/node/2966725.')
                     ->build();
-            } elseif (!$trustedCallbackType->isSuperTypeOf(new ObjectType(explode('::', $constantStringType->getValue())[0]))->yes()) {
-                $errors[] = RuleErrorBuilder::message(
-                    sprintf("%s callback class %s at key '%s' does not implement Drupal\Core\Security\TrustedCallbackInterface.", $keyChecked, $constantStringType->describe(VerbosityLevel::value()), $pos)
-                )->line($errorLine)->tip('Change record: https://www.drupal.org/node/2966725.')->build();
+            } else {
+                // @see \PHPStan\Type\Constant\ConstantStringType::isCallable
+                preg_match('#^([a-zA-Z_\\x7f-\\xff\\\\][a-zA-Z0-9_\\x7f-\\xff\\\\]*)::([a-zA-Z_\\x7f-\\xff][a-zA-Z0-9_\\x7f-\\xff]*)\\z#', $constantStringType->getValue(), $matches);
+                if (count($matches) === 0) {
+                    $errors[] = RuleErrorBuilder::message(
+                        sprintf("%s callback %s at key '%s' is not callable.", $keyChecked, $constantStringType->describe(VerbosityLevel::value()), $pos)
+                    )->line($errorLine)->build();
+                } elseif (!$trustedCallbackType->isSuperTypeOf(new ObjectType($matches[1]))->yes()) {
+                    $errors[] = RuleErrorBuilder::message(
+                        sprintf("%s callback class %s at key '%s' does not implement Drupal\Core\Security\TrustedCallbackInterface.", $keyChecked, $constantStringType->describe(VerbosityLevel::value()), $pos)
+                    )->line($errorLine)->tip('Change record: https://www.drupal.org/node/2966725.')->build();
+                }
+
             }
         }
 
