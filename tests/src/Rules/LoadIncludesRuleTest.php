@@ -50,6 +50,20 @@ final class LoadIncludesRuleTest extends DrupalRuleTestCase
             [__DIR__.'/data/bug-547.php'],
             []
         ];
+
+        yield 'bug-177.php' => [
+            [__DIR__.'/data/bug-177.php'],
+            [
+                [
+                    'File core/modules/locale/locale.fetch.php could not be loaded from Drupal\Core\Extension\ModuleHandlerInterface::loadInclude',
+                    6
+                ],
+                [
+                    'File core/modules/locale/locale.fetch.php could not be loaded from Drupal\Core\Extension\ModuleHandlerInterface::loadInclude',
+                    8
+                ],
+            ]
+        ];
     }
 
 }
