@@ -6,7 +6,6 @@ use mglaman\PHPStanDrupal\Drupal\ExtensionMap;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
 use PHPStan\Rules\Rule;
-use PHPStan\Type\Constant\ConstantStringType;
 
 abstract class LoadIncludeBase implements Rule
 {
@@ -24,8 +23,9 @@ abstract class LoadIncludeBase implements Rule
     private function getStringArgValue(Node\Expr $expr, Scope $scope): ?string
     {
         $type = $scope->getType($expr);
-        if ($type instanceof ConstantStringType) {
-            return $type->getValue();
+        $stringTypes = $type->getConstantStrings();
+        if (count($stringTypes) > 0) {
+            return $stringTypes[0]->getValue();
         }
         return null;
     }
@@ -43,6 +43,9 @@ abstract class LoadIncludeBase implements Rule
         $baseName = null;
         if ($name !== null) {
             $baseName = $this->getStringArgValue($name->value, $scope);
+            if ($baseName === null) {
+                return [false, false];
+            }
         }
         if ($baseName === null) {
             $baseName = $moduleName;
