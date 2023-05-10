@@ -158,6 +158,11 @@ final class RenderCallbackRuleTest extends DrupalRuleTestCase {
                 ],
             ];
         }
+
+        yield [
+            __DIR__ . '/data/bug-543.php',
+            []
+        ];
     }
 
 
