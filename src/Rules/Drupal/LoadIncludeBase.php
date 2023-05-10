@@ -24,8 +24,9 @@ abstract class LoadIncludeBase implements Rule
     private function getStringArgValue(Node\Expr $expr, Scope $scope): ?string
     {
         $type = $scope->getType($expr);
-        if ($type instanceof ConstantStringType) {
-            return $type->getValue();
+        $stringTypes = $type->getConstantStrings();
+        if (count($stringTypes) > 0) {
+            return $stringTypes[0]->getValue();
         }
         return null;
     }
