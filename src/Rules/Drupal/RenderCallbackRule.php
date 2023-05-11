@@ -40,6 +40,8 @@ final class RenderCallbackRule implements Rule
         '#post_render',
         '#access_callback',
         '#lazy_builder',
+        '#date_time_callbacks',
+        '#date_date_callbacks',
     ];
 
     public function __construct(ReflectionProvider $reflectionProvider, ServiceMap $serviceMap)
