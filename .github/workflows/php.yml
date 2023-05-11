@@ -28,7 +28,7 @@ jobs:
           tools: composer:v2
           extensions: dom, curl, libxml, mbstring, zip, pdo, mysql, pdo_mysql, gd
       - name: "Install dependencies"
-        run: "composer update --no-progress --prefer-dist"
+        uses: "ramsey/composer-install@v2"
       - name: "PHPCS"
         run: "php vendor/bin/phpcs"
       - name: "PHPStan"
@@ -75,7 +75,7 @@ jobs:
         run: "composer require phpspec/prophecy-phpunit:^2 --dev --no-update"
         if: ${{ matrix.drupal != '^8.9' }}
       - name: "Install dependencies"
-        run: "composer update --no-progress --prefer-dist"
+        uses: "ramsey/composer-install@v2"
       - name: "PHPUnit"
         run: "php vendor/bin/phpunit"
 
