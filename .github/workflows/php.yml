@@ -245,6 +245,10 @@ jobs:
         run: |
          cd ${{ runner.temp }}
          git clone https://git.drupalcode.org/project/drupal.git
+         cd drupal
+         composer config repositories.0 composer https://packages.drupal.org/8
+         composer config repositories.1 path $GITHUB_WORKSPACE
+
       - name: "Install Drupal core dependencies"
         uses: "ramsey/composer-install@v2"
         with:
