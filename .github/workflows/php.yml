@@ -241,19 +241,20 @@ jobs:
           php-version: "8.1"
           tools: composer:v2
           extensions: dom, curl, libxml, mbstring, zip, pdo, mysql, pdo_mysql, bcmath, gd, exif, iconv
-      - name: Setup Drupal core
-        run: |
-          cd ~
-          git clone https://git.drupalcode.org/project/drupal.git
+      - name: "Checkout Drupal core"
+        uses: "actions/checkout@v3"
+        with:
+          repository: https://git.drupalcode.org/project/drupal.git
+          path: ${{ runner.temp }}
       - name: "Install Drupal core dependencies"
         uses: "ramsey/composer-install@v2"
         with:
-          working-directory: "~/drupal"
+          working-directory: "${{ runner.temp }}/drupal"
       - name: "require phpstan-drupal"
         run: |
-          cd ~/drupal
+          cd ${{ runner.temp }}/drupal
           composer require mglaman/phpstan-drupal "${{ steps.branch_alias.outputs.VERSION_ALIAS }} as 1.1.99" --with-all-dependencies
       - name: "Check baseline"
         run: |
-          cd ~/drupal
+          cd ${{ runner.temp }}/drupal
           ./vendor/bin/phpstan analyze --configuration=core/phpstan.neon.dist
