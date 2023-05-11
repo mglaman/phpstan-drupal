@@ -228,7 +228,7 @@ jobs:
       - name: determine phpstan cache directory
         run: echo PHPSTAN_TMP_DIR=$(php -r "print sys_get_temp_dir() . '/phpstan';") >> $GITHUB_OUTPUT
         id: phpstan_tmp_dir
-      - name: cache phptan
+      - name: cache phpstan
         uses: actions/cache@v3
         with:
           path: ${{ steps.phpstan_tmp_dir.outputs.PHPSTAN_TMP_DIR }}
