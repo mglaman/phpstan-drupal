@@ -232,15 +232,15 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ${{ steps.phpstan_tmp_dir.outputs.PHPSTAN_TMP_DIR }}
-          key: ${{ runner.os }}-phpstan
-          restore-keys: ${{ runner.os }}-phpstan
+          key: ${{ runner.os }}-phpstan-core-baseline
+          restore-keys: ${{ runner.os }}-phpstan-core-baseline
       - name: "Install PHP"
         uses: "shivammathur/setup-php@v2"
         with:
           coverage: "none"
           php-version: "8.1"
           tools: composer:v2
-          extensions: dom, curl, libxml, mbstring, zip, pdo, mysql, pdo_mysql, bcmath, gd, exif, iconv
+          extensions: dom, curl, libxml, mbstring, zip, pdo, mysql, pdo_mysql, gd, apcu
       - name: "Checkout Drupal core"
         run: |
          cd ${{ runner.temp }}
