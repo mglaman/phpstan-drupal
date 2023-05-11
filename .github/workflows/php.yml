@@ -245,14 +245,14 @@ jobs:
         run: |
          cd ${{ runner.temp }}
          git clone https://git.drupalcode.org/project/drupal.git
-      - name: "require phpstan-drupal"
-        run: |
-          cd ${{ runner.temp }}/drupal
-          composer require --dev mglaman/phpstan-drupal "${{ steps.branch_alias.outputs.VERSION_ALIAS }} as 1.1.99" --no-update
       - name: "Install Drupal core dependencies"
         uses: "ramsey/composer-install@v2"
         with:
           working-directory: "${{ runner.temp }}/drupal"
+      - name: "require phpstan-drupal"
+        run: |
+          cd ${{ runner.temp }}/drupal
+          composer require --dev mglaman/phpstan-drupal "${{ steps.branch_alias.outputs.VERSION_ALIAS }} as 1.1.99" --with-all-dependencies
       - name: "Check baseline"
         run: |
           cd ${{ runner.temp }}/drupal
