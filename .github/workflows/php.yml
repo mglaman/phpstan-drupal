@@ -242,10 +242,9 @@ jobs:
           tools: composer:v2
           extensions: dom, curl, libxml, mbstring, zip, pdo, mysql, pdo_mysql, bcmath, gd, exif, iconv
       - name: "Checkout Drupal core"
-        uses: "actions/checkout@v3"
-        with:
-          repository: https://git.drupalcode.org/project/drupal.git
-          path: ${{ runner.temp }}
+        run: |
+         cd ${{ runner.temp }}
+         git clone https://git.drupalcode.org/project/drupal.git
       - name: "Install Drupal core dependencies"
         uses: "ramsey/composer-install@v2"
         with:
