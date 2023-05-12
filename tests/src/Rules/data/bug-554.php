@@ -69,6 +69,10 @@ class TestClass implements FormInterface, TrustedCallbackInterface {
             '#date_date_element' => 'HTML Date',
             '#date_time_element' => 'HTML Time',
             '#date_increment' => 1,
+            // We test callbacks:
+            //  - by calling it by method name.
+            //  - by calling it using a variable.
+            //  - which don't exist.
             '#date_date_callbacks' => [[$this, 'datetimeDateCallbackTrusted'], [$this, $date_callback], [$this, 'notExisting']],
             '#date_time_callbacks' => [[$this, 'datetimeTimeCallbackTrusted'], [$this, $time_callback], [$this, 'notExisting']],
         ];
