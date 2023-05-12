@@ -161,7 +161,16 @@ final class RenderCallbackRuleTest extends DrupalRuleTestCase {
 
         yield [
             __DIR__ . '/data/bug-543.php',
-            []
+            [
+                [
+                    "#access_callback callback array{static(Bug543\TestAccessClass), 'accessResultForbiddenNotInTrustedCallbacks'} at key '0' does not implement Drupal\Core\Security\TrustedCallbackInterface.",
+                    58
+                ],
+                [
+                    "#access_callback callback array{static(Bug543\TestAccessClass), 'accessResultForbiddenNotInTrustedCallbacks'} at key '0' does not implement Drupal\Core\Security\TrustedCallbackInterface.",
+                    103
+                ],
+            ],
         ];
     }
 
