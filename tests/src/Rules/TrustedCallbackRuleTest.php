@@ -168,11 +168,11 @@ final class TrustedCallbackRuleTest extends DrupalRuleTestCase {
             [
                 [
                     '#date_date_callbacks callback array{$this(Bug554\\TestClass), \'notExisting\'} at key \'2\' is not callable.',
-                     72
+                     76
                 ],
                 [
                     '#date_time_callbacks callback array{$this(Bug554\\TestClass), \'notExisting\'} at key \'2\' is not callable.',
-                     73
+                     77
                 ],
             ]
         ];
