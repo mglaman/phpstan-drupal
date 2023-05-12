@@ -6,7 +6,7 @@ rules:
 	- mglaman\PHPStanDrupal\Rules\Classes\ClassExtendsInternalClassRule
 	- mglaman\PHPStanDrupal\Rules\Classes\PluginManagerInspectionRule
 	- mglaman\PHPStanDrupal\Rules\Deprecations\ConditionManagerCreateInstanceContextConfigurationRule
-	- mglaman\PHPStanDrupal\Rules\Drupal\RenderCallbackRule
+	- mglaman\PHPStanDrupal\Rules\Drupal\TrustedCallbackRule
 	- mglaman\PHPStanDrupal\Rules\Deprecations\StaticServiceDeprecatedServiceRule
 	- mglaman\PHPStanDrupal\Rules\Deprecations\GetDeprecatedServiceRule
 	- mglaman\PHPStanDrupal\Rules\Drupal\Tests\BrowserTestBaseDefaultThemeRule

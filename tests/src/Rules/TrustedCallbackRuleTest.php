@@ -5,13 +5,14 @@ namespace mglaman\PHPStanDrupal\Tests\Rules;
 
 use mglaman\PHPStanDrupal\Drupal\ServiceMap;
 use mglaman\PHPStanDrupal\Tests\DrupalRuleTestCase;
-use mglaman\PHPStanDrupal\Rules\Drupal\RenderCallbackRule;
+use mglaman\PHPStanDrupal\Rules\Drupal\TrustedCallbackRule;
+use PHPStan\Rules\Rule;
 
-final class RenderCallbackRuleTest extends DrupalRuleTestCase {
+final class TrustedCallbackRuleTest extends DrupalRuleTestCase {
 
-    protected function getRule(): \PHPStan\Rules\Rule
+    protected function getRule(): Rule
     {
-        return new RenderCallbackRule(
+        return new TrustedCallbackRule(
             $this->createReflectionProvider(),
             self::getContainer()->getByType(ServiceMap::class)
         );
@@ -158,10 +159,22 @@ final class RenderCallbackRuleTest extends DrupalRuleTestCase {
                 ],
             ];
         }
-
         yield [
             __DIR__ . '/data/bug-543.php',
             []
+        ];
+        yield [
+            __DIR__ . '/data/bug-554.php',
+            [
+                [
+                    '#date_date_callbacks callback array{$this(Bug554\\TestClass), \'notExisting\'} at key \'2\' is not callable.',
+                     72
+                ],
+                [
+                    '#date_time_callbacks callback array{$this(Bug554\\TestClass), \'notExisting\'} at key \'2\' is not callable.',
+                     73
+                ],
+            ]
         ];
     }
 
