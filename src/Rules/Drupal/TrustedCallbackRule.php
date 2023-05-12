@@ -133,6 +133,8 @@ final class TrustedCallbackRule implements Rule
      */
     private function doProcessNode(Node\Expr $node, Scope $scope, string $keyChecked, int $pos): array
     {
+        $checkIsCallable = TRUE;
+
         $trustedCallbackType = new UnionType([
             new ObjectType(TrustedCallbackInterface::class),
             new ObjectType(RenderCallbackInterface::class),
@@ -172,6 +174,13 @@ final class TrustedCallbackRule implements Rule
 
         foreach ($type->getConstantArrays() as $constantArrayType) {
             if (!$constantArrayType->isCallable()->yes()) {
+                if ($constantArrayType->getItemType() instanceof UnionType
+                    && !($constantArrayType->getValuesArray()->getValueTypes()[1] instanceof ConstantStringType)) {
+                    // Right-hand side of UnionType is a variable. Nothing to
+                    // check, bail now.
+                    $checkIsCallable = FALSE;
+                    break;
+                }
                 $errors[] = RuleErrorBuilder::message(
                     sprintf("%s callback %s at key '%s' is not callable.", $keyChecked, $constantArrayType->describe(VerbosityLevel::value()), $pos)
                 )->line($errorLine)->build();
@@ -232,7 +241,7 @@ final class TrustedCallbackRule implements Rule
             }
         }
 
-        if (count($errors) === 0 && !$type->isCallable()->yes()) {
+        if (count($errors) === 0 && ($checkIsCallable && !$type->isCallable()->yes())) {
             $errors[] = RuleErrorBuilder::message(
                 sprintf("%s value '%s' at key '%s' is invalid.", $keyChecked, $type->describe(VerbosityLevel::value()), $pos)
             )->line($errorLine)->build();
