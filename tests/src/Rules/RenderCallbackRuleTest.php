@@ -5,14 +5,14 @@ namespace mglaman\PHPStanDrupal\Tests\Rules;
 
 use mglaman\PHPStanDrupal\Drupal\ServiceMap;
 use mglaman\PHPStanDrupal\Tests\DrupalRuleTestCase;
-use mglaman\PHPStanDrupal\Rules\Drupal\TrustedCallbackRule;
+use mglaman\PHPStanDrupal\Rules\Drupal\RenderCallbackRule;
 use PHPStan\Rules\Rule;
 
-final class TrustedCallbackRuleTest extends DrupalRuleTestCase {
+final class RenderCallbackRuleTest extends DrupalRuleTestCase {
 
     protected function getRule(): Rule
     {
-        return new TrustedCallbackRule(
+        return new RenderCallbackRule(
             $this->createReflectionProvider(),
             self::getContainer()->getByType(ServiceMap::class)
         );

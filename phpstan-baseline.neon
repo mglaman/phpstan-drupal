@@ -18,22 +18,22 @@ parameters:
 		-
 			message: "#^Doing instanceof PHPStan\\\\Type\\\\Constant\\\\ConstantArrayType is error\\-prone and deprecated\\. Use Type\\:\\:getConstantArrays\\(\\) instead\\.$#"
 			count: 1
-			path: src/Rules/Drupal/TrustedCallbackRule.php
+			path: src/Rules/Drupal/RenderCallbackRule.php
 
 		-
 			message: "#^Doing instanceof PHPStan\\\\Type\\\\Constant\\\\ConstantStringType is error\\-prone and deprecated\\. Use Type\\:\\:getConstantStrings\\(\\) instead\\.$#"
 			count: 3
-			path: src/Rules/Drupal/TrustedCallbackRule.php
+			path: src/Rules/Drupal/RenderCallbackRule.php
 
 		-
 			message: "#^Doing instanceof PHPStan\\\\Type\\\\Generic\\\\GenericClassStringType is error\\-prone and deprecated\\. Use Type\\:\\:isClassStringType\\(\\) and Type\\:\\:getClassStringObjectType\\(\\) instead\\.$#"
 			count: 1
-			path: src/Rules/Drupal/TrustedCallbackRule.php
+			path: src/Rules/Drupal/RenderCallbackRule.php
 
 		-
 			message: "#^Doing instanceof PHPStan\\\\Type\\\\IntersectionType is error\\-prone and deprecated\\.$#"
 			count: 1
-			path: src/Rules/Drupal/TrustedCallbackRule.php
+			path: src/Rules/Drupal/RenderCallbackRule.php
 
 		-
 			message: "#^Doing instanceof PHPStan\\\\Type\\\\ObjectType is error\\-prone and deprecated\\. Use Type\\:\\:isObject\\(\\) or Type\\:\\:getObjectClassNames\\(\\) instead\\.$#"

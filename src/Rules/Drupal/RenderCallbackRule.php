@@ -28,7 +28,7 @@ use PHPStan\Type\Type;
 use PHPStan\Type\UnionType;
 use PHPStan\Type\VerbosityLevel;
 
-final class TrustedCallbackRule implements Rule
+final class RenderCallbackRule implements Rule
 {
 
     private ReflectionProvider $reflectionProvider;
