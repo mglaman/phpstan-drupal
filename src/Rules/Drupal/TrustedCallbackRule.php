@@ -133,7 +133,7 @@ final class TrustedCallbackRule implements Rule
      */
     private function doProcessNode(Node\Expr $node, Scope $scope, string $keyChecked, int $pos): array
     {
-        $checkIsCallable = TRUE;
+        $checkIsCallable = true;
 
         $trustedCallbackType = new UnionType([
             new ObjectType(TrustedCallbackInterface::class),
@@ -178,7 +178,7 @@ final class TrustedCallbackRule implements Rule
                     && !($constantArrayType->getValuesArray()->getValueTypes()[1] instanceof ConstantStringType)) {
                     // Right-hand side of UnionType is a variable. Nothing to
                     // check, bail now.
-                    $checkIsCallable = FALSE;
+                    $checkIsCallable = false;
                     break;
                 }
                 $errors[] = RuleErrorBuilder::message(
