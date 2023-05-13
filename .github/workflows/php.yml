@@ -53,7 +53,7 @@ jobs:
             drupal: "^10.0"
             experimental: false
           - php-version: "8.1"
-            drupal: "10.1.x-dev"
+            drupal: "11.x-dev"
             experimental: true
     steps:
       - name: "Checkout"
@@ -70,7 +70,7 @@ jobs:
         if: ${{ matrix.drupal == '^8.9' }}
       - name: "Upgrade to drupal/core:10.0.x and drush/drush:^11.0"
         run: "composer require drupal/core-recommended:${{ matrix.drupal }} --with-all-dependencies --dev --no-update"
-        if: ${{ matrix.drupal == '10.0.x-dev' || matrix.drupal == '10.1.x-dev' }}
+        if: ${{ matrix.drupal == '10.0.x-dev' || matrix.drupal == '11.x-dev' }}
       - name: "Add phpspec/prophecy-phpunit"
         run: "composer require phpspec/prophecy-phpunit:^2 --dev --no-update"
         if: ${{ matrix.drupal != '^8.9' }}
