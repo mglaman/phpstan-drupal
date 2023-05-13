@@ -119,9 +119,9 @@ jobs:
       - name: "set the version alias for self"
         run: |
           if [ "${{ github.event_name }}" == 'pull_request' ]; then
-            echo ::set-output name=VERSION_ALIAS::dev-"${{ github.sha }}"
+            echo "VERSION_ALIAS=dev-"${{ github.sha }}"" >> $GITHUB_OUTPUT
           else
-            echo ::set-output name=VERSION_ALIAS::dev-main
+            echo "VERSION_ALIAS=dev-main" >> $GITHUB_OUTPUT
           fi
         id: branch_alias
       - name: "require phpstan-drupal"
