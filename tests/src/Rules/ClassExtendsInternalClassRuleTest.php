@@ -42,7 +42,7 @@ final class ClassExtendsInternalClassRuleTest extends DrupalRuleTestCase
     public function testRule(string $path, array $errorMessages): void
     {
         [$version, $minor] = explode('.', \Drupal::VERSION, 3);
-        if (($version === '10' || ($version === '9' && (int) $minor >= 4))
+        if (($version >= '10' || ($version === '9' && (int) $minor >= 4))
             && $path === __DIR__ . '/../../fixtures/drupal/modules/phpstan_fixtures/src/Form/ExtendsContentEntityDeleteForm.php') {
                 self::markTestSkipped('@internal was removed in 10.0.x and 9.4.x');
         }
