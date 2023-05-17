@@ -13,7 +13,7 @@ final class RenderCallbackRuleTest extends DrupalRuleTestCase {
     protected function getRule(): Rule
     {
         return new RenderCallbackRule(
-            $this->createReflectionProvider(),
+            self::createReflectionProvider(),
             self::getContainer()->getByType(ServiceMap::class)
         );
     }
@@ -168,11 +168,11 @@ final class RenderCallbackRuleTest extends DrupalRuleTestCase {
             [
                 [
                     '#date_date_callbacks callback array{$this(Bug554\\TestClass), \'notExisting\'} at key \'2\' is not callable.',
-                     76
+                     79
                 ],
                 [
                     '#date_time_callbacks callback array{$this(Bug554\\TestClass), \'notExisting\'} at key \'2\' is not callable.',
-                     77
+                     84
                 ],
             ]
         ];

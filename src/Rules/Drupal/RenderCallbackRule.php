@@ -174,12 +174,19 @@ final class RenderCallbackRule implements Rule
 
         foreach ($type->getConstantArrays() as $constantArrayType) {
             if (!$constantArrayType->isCallable()->yes()) {
-                if ($constantArrayType->getItemType() instanceof UnionType
-                    && !($constantArrayType->getValuesArray()->getValueTypes()[1] instanceof ConstantStringType)) {
-                    // Right-hand side of UnionType is a variable. Nothing to
-                    // check, bail now.
-                    $checkIsCallable = false;
-                    break;
+                // If the right-hand side of the array is a variable, we cannot
+                // determine if it is callable. Bail now.
+                $itemType = $constantArrayType->getItemType();
+                if ($itemType instanceof UnionType) {
+                    $unionConstantStrings = array_merge(...array_map(static function (Type $type) {
+                        return $type->getConstantStrings();
+                    }, $itemType->getTypes()));
+                    if (count($unionConstantStrings) === 0) {
+                        // Right-hand side of UnionType is not a constant string. We cannot determine if the dynamic
+                        // value is callable or not.
+                        $checkIsCallable = false;
+                        break;
+                    }
                 }
                 $errors[] = RuleErrorBuilder::message(
                     sprintf("%s callback %s at key '%s' is not callable.", $keyChecked, $constantArrayType->describe(VerbosityLevel::value()), $pos)
