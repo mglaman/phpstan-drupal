@@ -1,0 +1,6 @@
+<?php
+
+namespace Drupal\Core\Entity;
+
+interface RevisionableInterface extends EntityInterface {
+}

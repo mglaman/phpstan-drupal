@@ -72,10 +72,10 @@ final class EntityFieldsViaMagicReflectionExtensionTest extends PHPStanTestCase 
             'target_id',
             true,
         ];
-        yield 'field item list: value' => [
+        yield 'field item list: value (read from interface stub)' => [
             \Drupal\Core\Field\FieldItemList::class,
             'value',
-            true,
+            false,
         ];
         yield 'field item list_interface: value' => [
             \Drupal\Core\Field\FieldItemListInterface::class,

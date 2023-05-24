@@ -13,7 +13,8 @@ final class EntityPropertyTypeTest extends TypeInferenceTestCase
 
     public function dataFileAsserts(): iterable
     {
-        yield from $this->gatherAssertTypes(__DIR__ . '/data/entity-properties.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/entity-properties.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/book-module.php');
     }
 
     /**

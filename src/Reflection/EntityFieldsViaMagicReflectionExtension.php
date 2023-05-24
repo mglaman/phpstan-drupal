@@ -28,6 +28,12 @@ class EntityFieldsViaMagicReflectionExtension implements PropertiesClassReflecti
             return false;
         }
 
+        foreach ($classReflection->getAncestors() as $ancestor) {
+            if (array_key_exists($propertyName, $ancestor->getPropertyTags())) {
+                return false;
+            }
+        }
+
         // We need to find a way to parse the entity annotation so that at the minimum the `entity_keys` are
         // supported. The real fix is Drupal developers _really_ need to start writing @property definitions in the
         // class doc if they don't get `get` methods.
