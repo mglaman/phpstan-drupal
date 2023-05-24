@@ -19,8 +19,8 @@ final class RequestStackGetMainRequestRuleTest extends DrupalRuleTestCase
         [$version] = explode('.', \Drupal::VERSION, 2);
         if ($version === '8') {
             $this->analyse([__DIR__.'/data/request-stack.php'], []);
-        } elseif ($version === '10') {
-            self::markTestSkipped('Not tested on 10.x.x');
+        } elseif ($version >= '10') {
+            self::markTestSkipped('Not tested on 10.x.x or higher');
         } else {
             $this->analyse(
                 [__DIR__.'/data/request-stack.php'],

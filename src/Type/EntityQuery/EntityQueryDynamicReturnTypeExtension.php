@@ -44,20 +44,19 @@ class EntityQueryDynamicReturnTypeExtension implements DynamicMethodReturnTypeEx
         }
 
         if ($methodName === 'count') {
-            $returnType = new EntityQueryCountType(
-                $varType->getClassName(),
-                $varType->getSubtractedType(),
-                $varType->getClassReflection()
-            );
-            if ($varType instanceof EntityQueryType && $varType->hasAccessCheck()) {
-                return $returnType->withAccessCheck();
+            if ($varType instanceof EntityQueryType) {
+                return $varType->asCount();
             }
-
-            return $returnType;
+            // By now we are sure we can't determine anything about what query
+            // the count method is on, so we ignore it.
+            return $defaultReturnType;
         }
 
         if ($methodName === 'execute') {
-            if ($varType instanceof EntityQueryCountType) {
+            if (!$varType instanceof EntityQueryType) {
+                return $defaultReturnType;
+            }
+            if ($varType->isCount()) {
                 return $varType->hasAccessCheck()
                     ? new IntegerType()
                     : new EntityQueryExecuteWithoutAccessCheckCountType();
@@ -72,12 +71,9 @@ class EntityQueryDynamicReturnTypeExtension implements DynamicMethodReturnTypeEx
                     ? new ArrayType(new IntegerType(), new StringType())
                     : new EntityQueryExecuteWithoutAccessCheckType(new IntegerType(), new StringType());
             }
-            if ($varType instanceof EntityQueryType) {
-                return $varType->hasAccessCheck()
-                    ? new ArrayType(new IntegerType(), new StringType())
-                    : new EntityQueryExecuteWithoutAccessCheckType(new IntegerType(), new StringType());
-            }
-            return $defaultReturnType;
+            return $varType->hasAccessCheck()
+                ? new ArrayType(new IntegerType(), new StringType())
+                : new EntityQueryExecuteWithoutAccessCheckType(new IntegerType(), new StringType());
         }
 
         return $defaultReturnType;

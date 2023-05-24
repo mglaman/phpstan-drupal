@@ -10,9 +10,16 @@ class EntityQueryType extends ObjectType
 {
     private bool $hasAccessCheck = false;
 
+    private bool $isCount = false;
+
     public function hasAccessCheck(): bool
     {
         return $this->hasAccessCheck;
+    }
+
+    public function isCount(): bool
+    {
+        return $this->isCount;
     }
 
     public function withAccessCheck(): self
@@ -26,11 +33,29 @@ class EntityQueryType extends ObjectType
             $this->getClassReflection()
         );
         $type->hasAccessCheck = true;
+        $type->isCount = $this->isCount;
+        return $type;
+    }
+
+    public function asCount(): self
+    {
+        // @phpstan-ignore-next-line
+        $type = new static(
+            $this->getClassName(),
+            $this->getSubtractedType(),
+            $this->getClassReflection()
+        );
+        $type->hasAccessCheck = $this->hasAccessCheck;
+        $type->isCount = true;
         return $type;
     }
 
     protected function describeAdditionalCacheKey(): string
     {
-        return $this->hasAccessCheck ? 'with-access-check' : 'without-access-check';
+        $parts = [
+            $this->hasAccessCheck ? 'with-access-check' : 'without-access-check',
+            $this->isCount ? '' : 'count'
+        ];
+        return implode('-', $parts);
     }
 }
