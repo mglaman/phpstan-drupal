@@ -50,6 +50,8 @@ class GlobalDrupalDependencyInjectionRule implements Rule
             // and cannot use dependency injection. Function calls like
             // file_exists, stat, etc. will construct the class directly.
             'Drupal\Core\StreamWrapper\StreamWrapperInterface',
+            // Ignore Nightwatch test setup classes.
+            'Drupal\TestSite\TestSetupInterface',
         ];
 
         foreach ($allowed_list as $item) {
