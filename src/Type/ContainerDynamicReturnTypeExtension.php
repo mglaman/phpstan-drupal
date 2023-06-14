@@ -2,20 +2,15 @@
 
 namespace mglaman\PHPStanDrupal\Type;
 
-use mglaman\PHPStanDrupal\Drupal\DrupalServiceDefinition;
 use mglaman\PHPStanDrupal\Drupal\ServiceMap;
-use PhpParser\Node;
-use PhpParser\Node\Expr\ClassConstFetch;
 use PhpParser\Node\Expr\MethodCall;
-use PhpParser\Node\Name\FullyQualified;
-use PhpParser\Node\Scalar\String_;
-use PhpParser\Node\VariadicPlaceholder;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\ParametersAcceptorSelector;
-use PHPStan\ShouldNotHappenException;
 use PHPStan\Type\Constant\ConstantBooleanType;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
+use PHPStan\Type\Type;
+use PHPStan\Type\TypeCombinator;
 use Psr\Container\ContainerInterface;
 
 class ContainerDynamicReturnTypeExtension implements DynamicMethodReturnTypeExtension
@@ -23,7 +18,7 @@ class ContainerDynamicReturnTypeExtension implements DynamicMethodReturnTypeExte
     /**
      * @var ServiceMap
      */
-    private $serviceMap;
+    private ServiceMap $serviceMap;
 
     public function __construct(ServiceMap $serviceMap)
     {
@@ -44,49 +39,26 @@ class ContainerDynamicReturnTypeExtension implements DynamicMethodReturnTypeExte
         MethodReflection $methodReflection,
         MethodCall $methodCall,
         Scope $scope
-    ): \PHPStan\Type\Type {
+    ): Type {
         $returnType = ParametersAcceptorSelector::selectSingle($methodReflection->getVariants())->getReturnType();
-        if (!isset($methodCall->args[0])) {
+        $args = $methodCall->getArgs();
+        if (count($args) !== 1) {
             return $returnType;
         }
 
-        $arg1 = $methodCall->args[0];
-        if ($arg1 instanceof VariadicPlaceholder) {
-            throw new ShouldNotHappenException();
-        }
-        $arg1 = $arg1->value;
+        $methodName = $methodReflection->getName();
+        $types = [];
+        $argType = $scope->getType($args[0]->value);
 
-        $serviceId = $this->getServiceId($arg1);
-        if ($serviceId === null) {
-            return $returnType;
-        }
-
-        if ($methodReflection->getName() === 'get') {
+        foreach ($argType->getConstantStrings() as $constantStringType) {
+            $serviceId = $constantStringType->getValue();
             $service = $this->serviceMap->getService($serviceId);
-            if ($service instanceof DrupalServiceDefinition) {
-                return $service->getType();
+            if ($methodName === 'get') {
+                $types[] = $service !== null ? $service->getType() : $returnType;
+            } elseif ($methodName === 'has') {
+                $types[] = new ConstantBooleanType($service !== null);
             }
-            return $returnType;
         }
-
-        if ($methodReflection->getName() === 'has') {
-            return new ConstantBooleanType($this->serviceMap->getService($serviceId) instanceof DrupalServiceDefinition);
-        }
-
-        throw new ShouldNotHappenException();
-    }
-
-    protected function getServiceId(Node $arg1): ?string
-    {
-        if ($arg1 instanceof String_) {
-            // @todo determine what these types are.
-            return $arg1->value;
-        }
-
-        if ($arg1 instanceof ClassConstFetch && $arg1->class instanceof FullyQualified) {
-            return (string) $arg1->class;
-        }
-
-        return null;
+        return TypeCombinator::union(...$types);
     }
 }
