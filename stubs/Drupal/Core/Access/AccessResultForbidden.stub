@@ -1,0 +1,7 @@
+<?php
+
+namespace Drupal\Core\Access;
+
+class AccessResultForbidden extends AccessResult implements AccessResultReasonInterface {
+
+}
