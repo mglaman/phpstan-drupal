@@ -55,7 +55,7 @@ class ContainerDynamicReturnTypeExtension implements DynamicMethodReturnTypeExte
             $service = $this->serviceMap->getService($serviceId);
             if ($methodName === 'get') {
                 $types[] = $service !== null ? $service->getType() : $returnType;
-            } else if ($methodName === 'has') {
+            } elseif ($methodName === 'has') {
                 $types[] = new ConstantBooleanType($service !== null);
             }
         }
