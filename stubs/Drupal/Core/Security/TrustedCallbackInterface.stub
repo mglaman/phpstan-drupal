@@ -1,0 +1,7 @@
+<?php
+
+namespace Drupal\Core\Security;
+
+interface TrustedCallbackInterface {
+
+}

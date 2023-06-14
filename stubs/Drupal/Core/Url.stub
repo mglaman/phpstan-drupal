@@ -1,0 +1,15 @@
+<?php
+
+namespace Drupal\Core;
+
+use Drupal\Core\Security\TrustedCallbackInterface;
+
+class Url implements TrustedCallbackInterface {
+
+    /**
+     * @return ($collect_bubbleable_metadata is true ? \Drupal\Core\GeneratedUrl : string)
+     */
+    public function toString(bool $collect_bubbleable_metadata = FALSE) {
+    }
+
+}
