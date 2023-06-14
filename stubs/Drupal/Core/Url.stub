@@ -9,7 +9,7 @@ class Url implements TrustedCallbackInterface {
     /**
      * @return ($collect_bubbleable_metadata is true ? \Drupal\Core\GeneratedUrl : string)
      */
-    public function toString($collect_bubbleable_metadata = FALSE) {
+    public function toString(bool $collect_bubbleable_metadata = FALSE) {
     }
 
 }
