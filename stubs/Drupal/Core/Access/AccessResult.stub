@@ -1,0 +1,21 @@
+<?php
+
+namespace Drupal\Core\Access;
+
+use Drupal\Core\Cache\RefinableCacheableDependencyInterface;
+
+abstract class AccessResult implements AccessResultInterface, RefinableCacheableDependencyInterface {
+
+    /**
+     * @return ($condition is true ? \Drupal\Core\Access\AccessResultAllowed : \Drupal\Core\Access\AccessResultNeutral)
+     */
+    public static function allowedIf(bool $condition) {
+    }
+
+    /**
+     * @return ($condition is true ? \Drupal\Core\Access\AccessResultForbidden : \Drupal\Core\Access\AccessResultNeutral)
+     */
+    public static function forbiddenIf(bool $condition, ?string $reason = NULL) {
+    }
+
+}

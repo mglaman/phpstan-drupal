@@ -1,0 +1,6 @@
+<?php
+
+namespace Drupal\Core\Access;
+
+interface AccessResultReasonInterface extends AccessResultInterface {
+}
