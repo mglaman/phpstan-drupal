@@ -4,6 +4,7 @@ namespace mglaman\PHPStanDrupal\Rules\Drupal;
 
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
+use PHPStan\Reflection\ExtendedMethodReflection;
 use PHPStan\Reflection\FunctionReflection;
 use PHPStan\Rules\Rule;
 
@@ -60,9 +61,13 @@ class GlobalDrupalDependencyInjectionRule implements Rule
         }
 
         $scopeFunction = $scope->getFunction();
-        if ($scopeFunction === null
-            || $scopeFunction instanceof FunctionReflection
-            || $scopeFunction->isStatic()) {
+        if ($scopeFunction === null) {
+            return [];
+        }
+        if (!$scopeFunction instanceof ExtendedMethodReflection) {
+            return [];
+        }
+        if ($scopeFunction->isStatic()) {
             return [];
         }
 
