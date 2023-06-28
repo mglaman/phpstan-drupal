@@ -38,7 +38,8 @@ final class BrowserTestBaseDefaultThemeRule implements Rule
 
         // Do some cheap preflight tests to make sure the class is in a
         // namespace that makes sense to inspect.
-        $parts = $node->namespacedName->parts;
+        // @phpstan-ignore-next-line
+        $parts = method_exists($node->namespacedName, 'getParts') ? $node->namespacedName->getParts() : $node->namespacedName->parts;
         // The namespace is too short to be a test so skip inspection.
         if (count($parts) < 3) {
             return [];
