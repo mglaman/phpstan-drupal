@@ -25,21 +25,16 @@ class ServiceMap
         self::$services = [];
 
         foreach ($drupalServices as $serviceId => $serviceDefinition) {
+            if (isset($serviceDefinition['alias'], $drupalServices[$serviceDefinition['alias']])) {
+                $serviceDefinition = $drupalServices[$serviceDefinition['alias']];
+            }
             if (isset($serviceDefinition['parent'], $drupalServices[$serviceDefinition['parent']])) {
                 $serviceDefinition = $this->resolveParentDefinition($serviceDefinition['parent'], $serviceDefinition, $drupalServices);
             }
 
             // @todo support factories
             if (!isset($serviceDefinition['class'])) {
-                if (isset($serviceDefinition['alias'], $drupalServices[$serviceDefinition['alias']])) {
-                    $aliasedService = $drupalServices[$serviceDefinition['alias']];
-
-                    if (isset($aliasedService['class'])) {
-                        $serviceDefinition['class'] = $drupalServices[$serviceDefinition['alias']]['class'];
-                    } elseif (class_exists($serviceDefinition['alias'])) {
-                        $serviceDefinition['class'] = $serviceDefinition['alias'];
-                    }
-                } elseif (class_exists($serviceId)) {
+                if (class_exists($serviceId)) {
                     $serviceDefinition['class'] = $serviceId;
                 } else {
                     continue;

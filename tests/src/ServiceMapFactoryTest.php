@@ -2,6 +2,7 @@
 
 namespace mglaman\PHPStanDrupal\Tests;
 
+use Drupal\Core\Logger\LoggerChannel;
 use mglaman\PHPStanDrupal\Drupal\DrupalServiceDefinition;
 use mglaman\PHPStanDrupal\Drupal\ServiceMap;
 use PHPUnit\Framework\TestCase;
@@ -81,6 +82,18 @@ final class ServiceMapFactoryTest extends TestCase
                 'class' => 'Drupal\service_map\Concrete',
                 'public' => true,
             ],
+            'logger.channel_base' => [
+                'abstract' => true,
+                'class' => LoggerChannel::class,
+                'factory' => ['@logger.factory', 'get'],
+            ],
+            'logger.channel.workspaces' => [
+                'parent' => 'logger.channel_base',
+                'arguments' => ['workspaces'],
+            ],
+            'Psr\Log\LoggerInterface $loggerWorkspaces' => [
+                'alias' => 'logger.channel.workspaces'
+            ]
         ]);
         $validator($service->getService($id));
     }
@@ -191,6 +204,12 @@ final class ServiceMapFactoryTest extends TestCase
                 self::assertEquals('Drupal\service_map\Concrete', $service->getClass());
                 self::assertTrue($service->isPublic());
                 self::assertNull($service->getAlias());
+            }
+        ];
+        yield [
+            'Psr\Log\LoggerInterface $loggerWorkspaces',
+            function (DrupalServiceDefinition $service): void {
+                self::assertEquals(LoggerChannel::class, $service->getClass());
             }
         ];
     }
