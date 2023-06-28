@@ -166,8 +166,28 @@ final class RenderCallbackRule implements Rule
                     )->line($errorLine)->build();
                 } elseif (!$trustedCallbackType->isSuperTypeOf(new ObjectType($matches[1]))->yes()) {
                     $errors[] = RuleErrorBuilder::message(
-                        sprintf("%s callback class %s at key '%s' does not implement Drupal\Core\Security\TrustedCallbackInterface.", $keyChecked, $constantStringType->describe(VerbosityLevel::value()), $pos)
+                        sprintf(
+                            "%s callback class %s at key '%s' does not implement Drupal\Core\Security\TrustedCallbackInterface.",
+                            $keyChecked,
+                            $constantStringType->describe(VerbosityLevel::value()),
+                            $pos
+                        )
                     )->line($errorLine)->tip('Change record: https://www.drupal.org/node/2966725.')->build();
+                } else {
+                    $object = (new ObjectType($matches[1]));
+                    if ($object->hasMethod('trustedCallbacks')->yes()) {
+                        $allowedMethods = $this->getTrustedCallbackValues($object);
+                        if (!in_array($matches[2], $allowedMethods, true)) {
+                            $errors[] = RuleErrorBuilder::message(
+                                sprintf(
+                                    "%s callback method '%s' is not present in 'trustedCallbacks' at key '%s'.",
+                                    $keyChecked,
+                                    $matches[2],
+                                    $pos
+                                )
+                            )->line($errorLine)->tip('Change record: https://www.drupal.org/node/2966725.')->build();
+                        }
+                    }
                 }
             }
         }
@@ -232,6 +252,21 @@ final class RenderCallbackRule implements Rule
                                 $pos
                             )
                         )->line($errorLine)->tip('Change record: https://www.drupal.org/node/2966725.')->build();
+                    }
+                } elseif ($isTrustedCallbackInterfaceType) {
+                    $object = $typeAndMethodName->getType();
+                    if ($object->hasMethod('trustedCallbacks')->yes()) {
+                        $allowedMethods = $this->getTrustedCallbackValues($typeAndMethodName->getType());
+                        if (!in_array($typeAndMethodName->getMethod(), $allowedMethods, true)) {
+                            $errors[] = RuleErrorBuilder::message(
+                                sprintf(
+                                    "%s callback method '%s' is not present in 'trustedCallbacks' at key '%s'.",
+                                    $keyChecked,
+                                    $typeAndMethodName->getMethod(),
+                                    $pos
+                                )
+                            )->line($errorLine)->tip('Change record: https://www.drupal.org/node/2966725.')->build();
+                        }
                     }
                 }
             }
@@ -309,5 +344,23 @@ final class RenderCallbackRule implements Rule
             }
         }
         return $type;
+    }
+
+    /**
+     * @return string[]
+     */
+    private function getTrustedCallbackValues(Type $type): array
+    {
+        $values = [];
+        foreach ($type->getObjectClassReflections() as $classReflection) {
+            if (!$classReflection->hasMethod('trustedCallbacks')) {
+                continue;
+            }
+            $values[] = $classReflection
+                ->getNativeReflection()
+                ->getMethod('trustedCallbacks')
+                ->invoke(null);
+        }
+        return array_merge(...$values);
     }
 }
