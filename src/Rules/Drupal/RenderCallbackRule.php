@@ -280,7 +280,7 @@ final class RenderCallbackRule implements Rule
             if ($type->isClassStringType()->yes()) {
                 return $type;
             }
-            // Covers  \Drupal\Core\Controller\ControllerResolver::createController.
+            // Covers \Drupal\Core\Controller\ControllerResolver::createController.
             if (substr_count($type->getValue(), ':') === 1) {
                 [$class_or_service, $method] = explode(':', $type->getValue(), 2);
 
@@ -291,7 +291,7 @@ final class RenderCallbackRule implements Rule
                 return new ConstantArrayType(
                     [new ConstantIntegerType(0), new ConstantIntegerType(1)],
                     [
-                        new ConstantStringType($serviceDefinition->getClass(), true),
+                        new ObjectType($serviceDefinition->getClass()),
                         new ConstantStringType($method)
                     ]
                 );
