@@ -133,6 +133,8 @@ final class RenderCallbackRule implements Rule
      */
     private function doProcessNode(Node\Expr $node, Scope $scope, string $keyChecked, int $pos): array
     {
+        $checkIsCallable = true;
+
         $trustedCallbackType = new UnionType([
             new ObjectType(TrustedCallbackInterface::class),
             new ObjectType(RenderCallbackInterface::class),
@@ -172,6 +174,20 @@ final class RenderCallbackRule implements Rule
 
         foreach ($type->getConstantArrays() as $constantArrayType) {
             if (!$constantArrayType->isCallable()->yes()) {
+                // If the right-hand side of the array is a variable, we cannot
+                // determine if it is callable. Bail now.
+                $itemType = $constantArrayType->getItemType();
+                if ($itemType instanceof UnionType) {
+                    $unionConstantStrings = array_merge(...array_map(static function (Type $type) {
+                        return $type->getConstantStrings();
+                    }, $itemType->getTypes()));
+                    if (count($unionConstantStrings) === 0) {
+                        // Right-hand side of UnionType is not a constant string. We cannot determine if the dynamic
+                        // value is callable or not.
+                        $checkIsCallable = false;
+                        break;
+                    }
+                }
                 $errors[] = RuleErrorBuilder::message(
                     sprintf("%s callback %s at key '%s' is not callable.", $keyChecked, $constantArrayType->describe(VerbosityLevel::value()), $pos)
                 )->line($errorLine)->build();
@@ -232,7 +248,7 @@ final class RenderCallbackRule implements Rule
             }
         }
 
-        if (count($errors) === 0 && !$type->isCallable()->yes()) {
+        if (count($errors) === 0 && ($checkIsCallable && !$type->isCallable()->yes())) {
             $errors[] = RuleErrorBuilder::message(
                 sprintf("%s value '%s' at key '%s' is invalid.", $keyChecked, $type->describe(VerbosityLevel::value()), $pos)
             )->line($errorLine)->build();
@@ -264,7 +280,7 @@ final class RenderCallbackRule implements Rule
             if ($type->isClassStringType()->yes()) {
                 return $type;
             }
-            // Covers  \Drupal\Core\Controller\ControllerResolver::createController.
+            // Covers \Drupal\Core\Controller\ControllerResolver::createController.
             if (substr_count($type->getValue(), ':') === 1) {
                 [$class_or_service, $method] = explode(':', $type->getValue(), 2);
 
@@ -275,7 +291,7 @@ final class RenderCallbackRule implements Rule
                 return new ConstantArrayType(
                     [new ConstantIntegerType(0), new ConstantIntegerType(1)],
                     [
-                        new ConstantStringType($serviceDefinition->getClass(), true),
+                        new ObjectType($serviceDefinition->getClass()),
                         new ConstantStringType($method)
                     ]
                 );

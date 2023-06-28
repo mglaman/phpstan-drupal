@@ -1,17 +1,19 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace mglaman\PHPStanDrupal\Tests\Type;
 
 use mglaman\PHPStanDrupal\Tests\AdditionalConfigFilesTrait;
 use PHPStan\Testing\TypeInferenceTestCase;
 
-final class UrlDynamicReturnTypeTest extends TypeInferenceTestCase
+final class AccessResultTypeTest extends TypeInferenceTestCase
 {
     use AdditionalConfigFilesTrait;
 
     public function dataFileAsserts(): iterable
     {
-        yield from $this->gatherAssertTypes(__DIR__ . '/data/url.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/access-result.php');
     }
 
     /**

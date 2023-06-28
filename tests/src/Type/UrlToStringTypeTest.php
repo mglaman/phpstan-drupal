@@ -1,20 +1,17 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace mglaman\PHPStanDrupal\Tests\Type;
 
 use mglaman\PHPStanDrupal\Tests\AdditionalConfigFilesTrait;
 use PHPStan\Testing\TypeInferenceTestCase;
 
-final class EntityPropertyTypeTest extends TypeInferenceTestCase
+final class UrlToStringTypeTest extends TypeInferenceTestCase
 {
     use AdditionalConfigFilesTrait;
 
     public function dataFileAsserts(): iterable
     {
-        yield from self::gatherAssertTypes(__DIR__ . '/data/entity-properties.php');
-        yield from self::gatherAssertTypes(__DIR__ . '/data/book-module.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/url.php');
     }
 
     /**
