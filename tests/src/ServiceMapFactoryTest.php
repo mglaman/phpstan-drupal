@@ -125,7 +125,7 @@ final class ServiceMapFactoryTest extends TestCase
         yield [
             'config.storage.sync',
             function (DrupalServiceDefinition $service): void {
-                self::assertEquals('config.storage.staging', $service->getAlias());
+                self::assertEquals('Drupal\Core\Config\FileStorage', $service->getClass());
             }
         ];
         yield [
