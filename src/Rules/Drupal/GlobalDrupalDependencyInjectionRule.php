@@ -5,7 +5,6 @@ namespace mglaman\PHPStanDrupal\Rules\Drupal;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ExtendedMethodReflection;
-use PHPStan\Reflection\FunctionReflection;
 use PHPStan\Rules\Rule;
 
 class GlobalDrupalDependencyInjectionRule implements Rule
