@@ -32,7 +32,7 @@ class LoadIncludes extends LoadIncludeBase
         }
         $type = $scope->getType($node->var);
         $moduleHandlerInterfaceType = new ObjectType(ModuleHandlerInterface::class);
-        if (!$type->isSuperTypeOf($moduleHandlerInterfaceType)->yes()) {
+        if (!$moduleHandlerInterfaceType->isSuperTypeOf($type)->yes()) {
             return [];
         }
 
