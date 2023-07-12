@@ -1,0 +1,25 @@
+<?php
+
+namespace Drupal\Core\TypedData;
+
+interface TranslatableInterface {
+
+  /**
+   * @param string $langcode
+   * @return static
+   */
+  public function getTranslation(string $langcode): static;
+
+  /**
+   * @return static
+   */
+  public function getUntranslated(): static;
+
+  /**
+   * @param string $langcode
+   * @param array<string, mixed> $values
+   * @return static
+   */
+  public function addTranslation(string $langcode, array $values = []): static;
+
+}
