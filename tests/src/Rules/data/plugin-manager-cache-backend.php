@@ -43,3 +43,45 @@ class Bar extends DefaultPluginManager
     }
 
 }
+
+class Baz extends DefaultPluginManager
+{
+
+    public function __construct(
+        \Traversable $namespaces,
+        ModuleHandlerInterface $module_handler,
+        CacheBackendInterface $cache_backend,
+        string $type,
+    ) {
+        parent::__construct(
+            'Plugin/Bar',
+            $namespaces,
+            $module_handler,
+            'BarInterface',
+            'BarAnnotation',
+        );
+        $this->setCacheBackend($cache_backend, 'bar_' . $type . '_plugins');
+    }
+
+}
+
+class Qux extends DefaultPluginManager
+{
+
+    public function __construct(
+        \Traversable $namespaces,
+        ModuleHandlerInterface $module_handler,
+        CacheBackendInterface $cache_backend,
+        string $type,
+    ) {
+        parent::__construct(
+            'Plugin/Bar',
+            $namespaces,
+            $module_handler,
+            'BarInterface',
+            'BarAnnotation',
+        );
+        $this->setCacheBackend($cache_backend, "bar_{$type}_plugins");
+    }
+
+}
