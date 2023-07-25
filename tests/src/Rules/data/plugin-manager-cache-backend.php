@@ -85,3 +85,43 @@ class Qux extends DefaultPluginManager
     }
 
 }
+
+class BarTags extends DefaultPluginManager
+{
+
+    public function __construct(
+        \Traversable $namespaces,
+        ModuleHandlerInterface $module_handler,
+        CacheBackendInterface $cache_backend
+    ) {
+        parent::__construct(
+            'Plugin/Bar',
+            $namespaces,
+            $module_handler,
+            'BarInterface',
+            'BarAnnotation',
+        );
+        $this->setCacheBackend($cache_backend, 'bar_plugins', ['bar_plugins']);
+    }
+
+}
+
+class BarTagsNotClear extends DefaultPluginManager
+{
+
+    public function __construct(
+        \Traversable $namespaces,
+        ModuleHandlerInterface $module_handler,
+        CacheBackendInterface $cache_backend
+    ) {
+        parent::__construct(
+            'Plugin/Bar',
+            $namespaces,
+            $module_handler,
+            'BarInterface',
+            'BarAnnotation',
+        );
+        $this->setCacheBackend($cache_backend, 'bar_plugins', ['plugins']);
+    }
+
+}
