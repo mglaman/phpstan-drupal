@@ -59,7 +59,7 @@ class PluginManagerSetsCacheBackendRule extends AbstractPluginManagerRule
                     throw new ShouldNotHappenException();
                 }
                 $cacheKey = $setCacheBackendArgs[1]->value;
-                if (!$cacheKey instanceof Node\Scalar\String_ && !$cacheKey instanceof Node\Scalar\Encapsed) {
+                if (!$cacheKey instanceof Node\Scalar\String_) {
                     continue;
                 }
                 $hasCacheBackendSet = true;
