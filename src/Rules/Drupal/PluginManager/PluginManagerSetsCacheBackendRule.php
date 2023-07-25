@@ -5,7 +5,7 @@ namespace mglaman\PHPStanDrupal\Rules\Drupal\PluginManager;
 use PhpParser\Node;
 use PhpParser\Node\Stmt\ClassMethod;
 use PHPStan\Analyser\Scope;
-use PHPStan\ShouldNotHappenException;
+use PHPStan\Type\Type;
 
 class PluginManagerSetsCacheBackendRule extends AbstractPluginManagerRule
 {
@@ -53,29 +53,30 @@ class PluginManagerSetsCacheBackendRule extends AbstractPluginManagerRule
                 ($statement->name instanceof Node\Identifier) &&
                 $statement->name->name === 'setCacheBackend') {
                 // setCacheBackend accepts a cache backend, the cache key, and optional (but suggested) cache tags.
-                $setCacheBackendArgs = $statement->args;
-
-                if ($setCacheBackendArgs[1] instanceof Node\VariadicPlaceholder) {
-                    throw new ShouldNotHappenException();
-                }
-                $cacheKey = $setCacheBackendArgs[1]->value;
-                if (!$cacheKey instanceof Node\Scalar\String_) {
+                $setCacheBackendArgs = $statement->getArgs();
+                if (count($setCacheBackendArgs) < 2) {
                     continue;
                 }
                 $hasCacheBackendSet = true;
 
+                $cacheKey = array_map(
+                    static fn (Type $type) => $type->getValue(),
+                    $scope->getType($setCacheBackendArgs[1]->value)->getConstantStrings()
+                );
+                if (count($cacheKey) === 0) {
+                    continue;
+                }
+
                 if (isset($setCacheBackendArgs[2])) {
-                    if ($setCacheBackendArgs[2] instanceof Node\VariadicPlaceholder) {
-                        throw new ShouldNotHappenException();
-                    }
-                    /** @var \PhpParser\Node\Expr\Array_ $cacheTags */
-                    $cacheTags = $setCacheBackendArgs[2]->value;
-                    if (count($cacheTags->items) > 0) {
-                        /** @var \PhpParser\Node\Expr\ArrayItem $item */
-                        foreach ($cacheTags->items as $item) {
-                            if (($item->value instanceof Node\Scalar\String_) &&
-                                strpos($item->value->value, $cacheKey->value) === false) {
-                                $misnamedCacheTagWarnings[] = $item->value->value;
+                    $cacheTagsType = $scope->getType($setCacheBackendArgs[2]->value);
+                    foreach ($cacheTagsType->getConstantArrays() as $constantArray) {
+                        foreach ($constantArray->getValueTypes() as $valueType) {
+                            foreach ($valueType->getConstantStrings() as $cacheTagConstantString) {
+                                foreach ($cacheKey as $cacheKeyValue) {
+                                    if (strpos($cacheTagConstantString->getValue(), $cacheKeyValue) === false) {
+                                        $misnamedCacheTagWarnings[] = $cacheTagConstantString->getValue();
+                                    }
+                                }
                             }
                         }
                     }
