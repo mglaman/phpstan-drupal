@@ -5,7 +5,6 @@ namespace mglaman\PHPStanDrupal\Rules\Drupal\PluginManager;
 use PhpParser\Node;
 use PhpParser\Node\Stmt\ClassMethod;
 use PHPStan\Analyser\Scope;
-use PHPStan\ShouldNotHappenException;
 use PHPStan\Type\Type;
 
 class PluginManagerSetsCacheBackendRule extends AbstractPluginManagerRule
