@@ -58,6 +58,11 @@ final class GlobalDrupalDependencyInjectionRuleTest extends DrupalRuleTestCase {
             [],
         ];
 
+        yield [
+            __DIR__ . '/data/bug-580.php',
+            [],
+        ];
+
         if (PHP_VERSION_ID >= 80100) {
             yield [
                 __DIR__ . '/data/bug-500.php',
