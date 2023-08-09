@@ -298,3 +298,7 @@ services:
 		class: mglaman\PHPStanDrupal\Type\EntityQuery\AccessCheckTypeSpecifyingExtension
 		tags:
 			- phpstan.typeSpecifier.methodTypeSpecifyingExtension
+	-
+		class: mglaman\PHPStanDrupal\DeprecatedScope\GroupLegacyScope
+		tags:
+			- phpstan.deprecations.deprecatedScopeResolver
