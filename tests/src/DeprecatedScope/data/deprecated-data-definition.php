@@ -1,6 +1,6 @@
 <?php
 
-namespace GroupLegacy;
+namespace Deprecated;
 
 /**
  * @deprecated

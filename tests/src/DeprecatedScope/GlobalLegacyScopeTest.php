@@ -22,13 +22,13 @@ final class GlobalLegacyScopeTest extends DrupalRuleTestCase {
 
     public function testCustomScope(): void
     {
-        require_once __DIR__ . '/data/group-legacy-data-definition.php';
+        require_once __DIR__ . '/data/deprecated-data-definition.php';
         $this->analyse(
             [__DIR__ . '/data/group-legacy.php'],
             [
                 [
-                    'Call to deprecated function GroupLegacy\deprecated_function().',
-                    19,
+                    'Call to deprecated function Deprecated\deprecated_function().',
+                    21,
                 ],
             ]
         );

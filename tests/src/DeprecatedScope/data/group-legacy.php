@@ -2,6 +2,8 @@
 
 namespace GroupLegacy;
 
+use function Deprecated\deprecated_function;
+
 /**
  * @group legacy
  */
