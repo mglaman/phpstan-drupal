@@ -16,5 +16,4 @@ final class DeprecatedScopeFactory
         }
         return new GroupLegacyScope();
     }
-
 }
