@@ -298,11 +298,7 @@ services:
 		class: mglaman\PHPStanDrupal\Type\EntityQuery\AccessCheckTypeSpecifyingExtension
 		tags:
 			- phpstan.typeSpecifier.methodTypeSpecifyingExtension
-	# Workaround to prevent adding phpstan-deprecation-rules as a direct dependency by using a nullable factory.
-	-
-		class: mglaman\PHPStanDrupal\DeprecatedScope\DeprecatedScopeFactory
 	-
 		class: mglaman\PHPStanDrupal\DeprecatedScope\GroupLegacyScope
-		factory: @mglaman\PHPStanDrupal\DeprecatedScope\DeprecatedScopeFactory::groupLegacy
 		tags:
 			- phpstan.deprecations.deprecatedScopeResolver
