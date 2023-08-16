@@ -8,7 +8,7 @@ interface RevisionableStorageInterface extends EntityStorageInterface {
    * @param int|numeric-string $revision_id
    * @return \Drupal\Core\Entity\RevisionableInterface|null
    */
-  public function loadRevision(int|string $revision_id);
+  public function loadRevision($revision_id);
 
   /**
    * @param int|numeric-string $revision_id
