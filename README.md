@@ -49,19 +49,8 @@ parameters:
 
 ## Deprecation testing
 
-Add the deprecation rules to your Drupal project's dependencies
-
-```
-composer require --dev phpstan/phpstan-deprecation-rules
-```
-
-Edit your `phpstan.neon` to look like the following:
-
-```
-includes:
-	- vendor/mglaman/phpstan-drupal/extension.neon
-	- vendor/phpstan/phpstan-deprecation-rules/rules.neon
-```
+This project depends on `phpstan/phpstan-deprecation-rules` which adds deprecation rules. We provide Drupal-specific 
+deprecated scope resolvers.
 
 To only handle deprecation testing, use a `phpstan.neon` like this:
 
@@ -79,6 +68,22 @@ includes:
 	- vendor/mglaman/phpstan-drupal/extension.neon
 	- vendor/phpstan/phpstan-deprecation-rules/rules.neon
 ```
+
+To disable deprecation rules while using `phpstan/extension-installer`, you can do the following:
+
+```json
+{
+  "extra": {
+    "phpstan/extension-installer": {
+      "ignore": [
+        "phpstan/phpstan-deprecation-rules"
+      ]
+    }
+  }
+}
+```
+
+See the `extension-installer` documentation for more information: https://github.com/phpstan/extension-installer#ignoring-a-particular-extension
 
 ## Adapting to your project
 
