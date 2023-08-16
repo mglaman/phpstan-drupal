@@ -2,6 +2,6 @@
 
 namespace Drupal\Core\Entity;
 
-interface TranslatableRevisionableStorageInterface extends TranslatableStorageInterface, RevisionableStorageInterface {
+interface TranslatableRevisionableStorageInterface extends RevisionableStorageInterface, TranslatableStorageInterface {
 
 }
