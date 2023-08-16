@@ -1,0 +1,16 @@
+<?php
+
+namespace Drupal\Core\Entity;
+
+abstract class ContentEntityStorageBase extends EntityStorageBase implements ContentEntityStorageInterface, DynamicallyFieldableEntityStorageInterface, BundleEntityStorageInterface {
+
+    /**
+     * @param int|numeric-string $revision_id
+     * @return \Drupal\Core\Entity\RevisionableInterface|null
+     * @not-deprecated
+     */
+    public function loadRevision(int|string $revision_id): \Drupal\Core\Entity\RevisionableInterface|null
+    {
+    }
+
+}
