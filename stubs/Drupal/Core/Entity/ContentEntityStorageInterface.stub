@@ -1,0 +1,9 @@
+<?php
+
+namespace Drupal\Core\Entity;
+
+// Remove extension of `EntityStorageInterface` so that `TranslatableRevisionableStorageInterface`
+// is properly processed.
+interface ContentEntityStorageInterface extends TranslatableRevisionableStorageInterface {
+
+}

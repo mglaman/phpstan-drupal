@@ -1,0 +1,12 @@
+<?php
+
+namespace Drupal\Core\Entity;
+
+// RevisionableStorageInterface before TranslatableStorageInterface so that its definition of
+// `loadRevision` is cached by PHPStan's reflection first. Otherwise PHPStan's reflection caches
+// the PhpDoc from `EntityStorageInterface::loadRevision`.
+//
+// This is fragile and relies on `ContentEntityStorageInterface` only implementing this interface.
+interface TranslatableRevisionableStorageInterface extends RevisionableStorageInterface, TranslatableStorageInterface {
+
+}
