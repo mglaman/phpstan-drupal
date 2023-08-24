@@ -11,6 +11,7 @@ parameters:
 		-  tests/src/data/*.php
 		-  tests/src/Type/data/*.php
 		-  tests/src/Rules/data/*.php
+		-  tests/src/DeprecatedScope/data/*.php
 	dynamicConstantNames:
 		- Drupal::VERSION
 includes:
