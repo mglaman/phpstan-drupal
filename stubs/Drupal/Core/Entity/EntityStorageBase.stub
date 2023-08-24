@@ -1,0 +1,7 @@
+<?php
+
+namespace Drupal\Core\Entity;
+
+abstract class EntityStorageBase extends EntityHandlerBase implements EntityStorageInterface, EntityHandlerInterface {
+
+}
