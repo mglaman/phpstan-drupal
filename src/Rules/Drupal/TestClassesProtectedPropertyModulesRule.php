@@ -7,7 +7,6 @@ namespace mglaman\PHPStanDrupal\Rules\Drupal;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
 use PHPStan\Node\ClassPropertyNode;
-use PHPStan\Reflection\ClassReflection;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
 use PHPStan\ShouldNotHappenException;
@@ -32,41 +31,27 @@ class TestClassesProtectedPropertyModulesRule implements Rule
             throw new ShouldNotHappenException();
         }
 
-        $scopeClassReflection = $scope->getClassReflection();
-
-        if (!$this->extendsPHPUnitFrameworkTestCase($scopeClassReflection)) {
+        if ($node->getName() !== 'modules') {
             return [];
         }
 
-        if ($node->getName() !== 'modules') {
+        $scopeClassReflection = $scope->getClassReflection();
+        if ($scopeClassReflection->isAnonymous()) {
+            return [];
+        }
+
+        if (!in_array(TestCase::class, $scopeClassReflection->getParentClassesNames(), true)) {
             return [];
         }
 
         if ($node->isPublic()) {
             return [
                 RuleErrorBuilder::message(
-                    sprintf('Declaring the ::$modules property as non-protected in %s is required.', $scopeClassReflection->getName())
+                    sprintf('Property %s::$modules property must be protected.', $scopeClassReflection->getDisplayName())
                 )->tip('Change record: https://www.drupal.org/node/2909426')->build(),
             ];
         }
 
         return [];
-    }
-
-    /**
-     * Checks if the given class reflection extends PHPUnit's TestCase.
-     *
-     * @param \PHPStan\Reflection\ClassReflection $classReflection
-     *   The class reflection to check.
-     *
-     * @return bool
-     *   True, if the given class reflection extends PPHPUnit's TestCase, false
-     *   otherwise.
-     */
-    protected function extendsPHPUnitFrameworkTestCase(ClassReflection $classReflection): bool
-    {
-        return
-            !$classReflection->isAnonymous()
-            && in_array(TestCase::class, $classReflection->getParentClassesNames(), true);
     }
 }

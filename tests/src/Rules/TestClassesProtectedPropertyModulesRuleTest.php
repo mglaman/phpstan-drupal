@@ -30,9 +30,9 @@ class TestClassesProtectedPropertyModulesRuleTest extends DrupalRuleTestCase
             [__DIR__ . '/data/test-cases-test-classes-protected-property-modules-rule.php'],
             [
                 [
-                    'Declaring the ::$modules property as non-protected in TestCasesTestClassesProtectedPropertyModulesRule\PublicStaticPropertyModulesClass is required.
-    💡 Change record: https://www.drupal.org/node/2909426',
-                    25
+                    'Property TestCasesTestClassesProtectedPropertyModulesRule\PublicStaticPropertyModulesClass::$modules property must be protected.',
+                    25,
+                    'Change record: https://www.drupal.org/node/2909426',
                 ],
             ],
         ];
