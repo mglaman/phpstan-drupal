@@ -196,7 +196,6 @@ class DrupalAutoloader
             && class_exists('Drupal\TestTools\PhpUnitCompatibility\PhpUnit8\ClassWriter')) {
             \Drupal\TestTools\PhpUnitCompatibility\PhpUnit8\ClassWriter::mutateTestBase($this->autoloader);
         }
-        $this->loadTestFilesWithFixtureClasses();
 
         $extension_map = $container->getByType(ExtensionMap::class);
         $extension_map->setExtensions($this->moduleData, $this->themeData, $profiles);
@@ -222,6 +221,14 @@ class DrupalAutoloader
         $this->namespaces['Drupal\\TestSite'] = $core_tests_dir . '/TestSite';
         $this->namespaces['Drupal\\TestTools'] = $core_tests_dir . '/TestTools';
         $this->namespaces['Drupal\\Tests\\TestSuites'] = $this->drupalRoot . '/core/tests/TestSuites';
+
+        $classMap = [
+            '\\Drupal\\Tests\\Core\\Render\\BubblingTest' => $this->drupalRoot . '/core/tests/Drupal/Tests/Core/Render/RendererBubblingTest.php',
+            '\\Drupal\\Tests\\Core\\Render\\PlaceholdersTest' => $this->drupalRoot . '/core/tests/Drupal/Tests/Core/Render/RendererTestBase.php',
+            '\\Drupal\\Tests\\Core\\Render\\TestAccessClass' => $this->drupalRoot . '/core/tests/Drupal/Tests/Core/Render/RendererTest.php',
+            '\\Drupal\\Tests\\Core\\Render\\TestCallables' => $this->drupalRoot . '/core/tests/Drupal/Tests/Core/Render/RendererTest.php',
+        ];
+        $this->autoloader->addClassMap($classMap);
     }
 
     protected function addModuleNamespaces(): void
@@ -324,19 +331,5 @@ class DrupalAutoloader
     protected function camelize(string $id): string
     {
         return strtr(ucwords(strtr($id, ['_' => ' ', '.' => '_ ', '\\' => '_ '])), [' ' => '']);
-    }
-
-    private function loadTestFilesWithFixtureClasses(): void
-    {
-        $files = [
-            $this->drupalRoot . '/core/tests/Drupal/Tests/Core/Render/RendererBubblingTest.php',
-            $this->drupalRoot . '/core/tests/Drupal/Tests/Core/Render/RendererTestBase.php',
-            $this->drupalRoot . '/core/tests/Drupal/Tests/Core/Render/RendererTest.php',
-        ];
-        foreach ($files as $file) {
-            if (file_exists($file)) {
-                require_once $file;
-            }
-        }
     }
 }
