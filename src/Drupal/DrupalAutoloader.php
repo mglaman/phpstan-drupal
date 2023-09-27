@@ -94,6 +94,7 @@ class DrupalAutoloader
         $this->addThemeNamespaces();
         $this->registerPs4Namespaces($this->namespaces);
         $this->loadLegacyIncludes();
+        $this->loadTestFilesWithFixtureClasses();
 
         foreach ($this->moduleData as $extension) {
             $this->loadExtension($extension);
@@ -323,5 +324,19 @@ class DrupalAutoloader
     protected function camelize(string $id): string
     {
         return strtr(ucwords(strtr($id, ['_' => ' ', '.' => '_ ', '\\' => '_ '])), [' ' => '']);
+    }
+
+    private function loadTestFilesWithFixtureClasses()
+    {
+        $files = [
+            $this->drupalRoot . '/core/tests/Drupal/Tests/Core/Render/RendererBubblingTest.php',
+            $this->drupalRoot . '/core/tests/Drupal/Tests/Core/Render/RendererTestBase.php',
+            $this->drupalRoot . '/core/tests/Drupal/Tests/Core/Render/RendererTest.php',
+        ];
+        foreach ($files as $file) {
+            if (file_exists($file)) {
+                require_once $file;
+            }
+        }
     }
 }
