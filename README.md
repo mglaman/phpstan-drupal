@@ -4,6 +4,10 @@
 
 Extension for [PHPStan](https://phpstan.org/) to allow analysis of Drupal code.
 
+PHPStan is able to [discover symbols](https://phpstan.org/user-guide/discovering-symbols) by using autoloading provided 
+by Composer. However, Drupal does not provide autoloading information for modules and themes. This project registers 
+those namespaces so that PHPStan can properly discover symbols in your Drupal code base automatically.
+
 ## Sponsors
 
 <a href="https://www.undpaul.de/"><img src="https://www.undpaul.de/themes/custom/undpaul3/logo.svg" alt="undpaul" width="250" /></a>
