@@ -94,7 +94,6 @@ class DrupalAutoloader
         $this->addThemeNamespaces();
         $this->registerPs4Namespaces($this->namespaces);
         $this->loadLegacyIncludes();
-        $this->loadTestFilesWithFixtureClasses();
 
         foreach ($this->moduleData as $extension) {
             $this->loadExtension($extension);
@@ -197,6 +196,7 @@ class DrupalAutoloader
             && class_exists('Drupal\TestTools\PhpUnitCompatibility\PhpUnit8\ClassWriter')) {
             \Drupal\TestTools\PhpUnitCompatibility\PhpUnit8\ClassWriter::mutateTestBase($this->autoloader);
         }
+        $this->loadTestFilesWithFixtureClasses();
 
         $extension_map = $container->getByType(ExtensionMap::class);
         $extension_map->setExtensions($this->moduleData, $this->themeData, $profiles);
