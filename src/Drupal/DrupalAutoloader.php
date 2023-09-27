@@ -326,7 +326,7 @@ class DrupalAutoloader
         return strtr(ucwords(strtr($id, ['_' => ' ', '.' => '_ ', '\\' => '_ '])), [' ' => '']);
     }
 
-    private function loadTestFilesWithFixtureClasses()
+    private function loadTestFilesWithFixtureClasses(): void
     {
         $files = [
             $this->drupalRoot . '/core/tests/Drupal/Tests/Core/Render/RendererBubblingTest.php',
