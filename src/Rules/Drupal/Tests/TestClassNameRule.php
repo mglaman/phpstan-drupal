@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace mglaman\PHPStanDrupal\Rules\Drupal\Tests;
 
@@ -46,16 +48,22 @@ final class TestClassNameRule implements Rule
             return [];
         }
 
+        // Check class name has suffix "Test".
         // @todo replace this str_ends_with() when php 8 is required.
         if (substr_compare($node->namespacedName->getLast(), 'Test', -4) === 0) {
             return [];
         }
 
         return [
-                RuleErrorBuilder::message('Non-abstract test classes names should always have the suffix "Test".')
-                    ->line($node->getLine())
-                    ->tip('See https://www.drupal.org/docs/develop/standards/php/object-oriented-code#naming')
-                    ->build()
+                RuleErrorBuilder::message(
+                    sprintf(
+                        'Non-abstract test classes names should always have the suffix "Test", found incorrect class name "%s".',
+                        $node->name,
+                    )
+                )
+                ->line($node->getLine())
+                ->tip('See https://www.drupal.org/docs/develop/standards/php/object-oriented-code#naming')
+                ->build()
         ];
     }
 }

@@ -33,12 +33,12 @@ class TestClassNameRuleTest extends DrupalRuleTestCase
             __DIR__ . '/data/test-cases-TestClassNameRule.php',
             [
                 [
-                    'Non-abstract test classes names should always have the suffix "Test".',
+                    'Non-abstract test classes names should always have the suffix "Test", found incorrect class name "IncorrectlyNamedDirectlyExtendingPHPUnitFrameworkTestCaseClass".',
                     29,
                     'See https://www.drupal.org/docs/develop/standards/php/object-oriented-code#naming'
                 ],
                 [
-                    'Non-abstract test classes names should always have the suffix "Test".',
+                    'Non-abstract test classes names should always have the suffix "Test", found incorrect class name "IncorrectlyNamedIndirectlyExtendingPHPUnitFrameworkTestCaseClass".',
                     39,
                     'See https://www.drupal.org/docs/develop/standards/php/object-oriented-code#naming'
                 ],

@@ -31,12 +31,12 @@ class IncorrectlyNamedDirectlyExtendingPHPUnitFrameworkTestCaseClass extends Tes
 
 }
 
-class CorrectlyNamedExtendingPHPUnitFrameworkTestCaseTest extends ViewTestBase
+class CorrectlyNamedIndirectlyExtendingPHPUnitFrameworkTestCaseTest extends ViewTestBase
 {
 
 }
 
-class IncorrectlyNamedExtendingPHPUnitFrameworkTestCaseClass extends ViewTestBase
+class IncorrectlyNamedIndirectlyExtendingPHPUnitFrameworkTestCaseClass extends ViewTestBase
 {
 
 }
