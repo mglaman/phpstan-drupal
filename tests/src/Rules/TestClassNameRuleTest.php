@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace mglaman\PHPStanDrupal\Tests\Rules;
 
@@ -6,10 +8,8 @@ use mglaman\PHPStanDrupal\Rules\Drupal\Tests\TestClassNameRule;
 use mglaman\PHPStanDrupal\Tests\DrupalRuleTestCase;
 use PHPStan\Rules\Rule;
 
-/**
- * @extends DrupalRuleTestCase<TestClassNameRuleTest>
- */
-final class TestClassNameRuleTest extends DrupalRuleTestCase {
+class TestClassNameRuleTest extends DrupalRuleTestCase
+{
 
     protected function getRule(): Rule
     {
