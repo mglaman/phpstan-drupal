@@ -41,7 +41,7 @@ final class TestClassNameRule implements Rule
             return [];
         }
 
-        // We're not interested in non-\PHPUnit\Framework\TestCase subtype classes.
+        // We're only interested in \PHPUnit\Framework\TestCase subtype classes.
         $classType = $scope->resolveTypeByName($node->namespacedName);
         $phpUnitFrameworkTestCaseType = new ObjectType(TestCase::class);
         if (!$phpUnitFrameworkTestCaseType->isSuperTypeOf($classType)->yes()) {
