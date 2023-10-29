@@ -116,7 +116,8 @@ class DrupalServiceDefinition
         }
 
         $decorating_services = $this->getDecorators();
-        if (!empty($decorating_services)) {
+        if (count($decorating_services) !== 0) {
+            $combined_services = [];
             $combined_services[] = new ObjectType($this->getClass() ?? $this->id);
             foreach ($decorating_services as $service_id => $service_definition) {
                 $combined_services[] = $service_definition->getType();
