@@ -5,6 +5,8 @@ namespace mglaman\PHPStanDrupal\Tests;
 use Drupal\Core\Logger\LoggerChannel;
 use mglaman\PHPStanDrupal\Drupal\DrupalServiceDefinition;
 use mglaman\PHPStanDrupal\Drupal\ServiceMap;
+use PHPStan\Type\ObjectType;
+use PHPStan\Type\UnionType;
 use PHPUnit\Framework\TestCase;
 
 final class ServiceMapFactoryTest extends TestCase
@@ -93,6 +95,14 @@ final class ServiceMapFactoryTest extends TestCase
             ],
             'Psr\Log\LoggerInterface $loggerWorkspaces' => [
                 'alias' => 'logger.channel.workspaces'
+            ],
+            'service_map.base_to_be_decorated' => [
+                'class' => 'Drupal\service_map\Base',
+                'abstract' => true,
+            ],
+            'service_map.deocrating_base' => [
+                'decorates' => 'service_map.base_to_be_decorated',
+                'class' => 'Drupal\service_map\SecondBase',
             ]
         ]);
         $validator($service->getService($id));
@@ -210,6 +220,17 @@ final class ServiceMapFactoryTest extends TestCase
             'Psr\Log\LoggerInterface $loggerWorkspaces',
             function (DrupalServiceDefinition $service): void {
                 self::assertEquals(LoggerChannel::class, $service->getClass());
+            }
+        ];
+        yield [
+            'service_map.base_to_be_decorated',
+            function (DrupalServiceDefinition $service): void {
+              $combined_class = [
+                new ObjectType('Drupal\service_map\Base'),
+                new ObjectType('Drupal\service_map\SecondBase')
+              ];
+              $expected_class = new UnionType($combined_class);
+              self::assertEquals($expected_class, $service->getType());
             }
         ];
     }

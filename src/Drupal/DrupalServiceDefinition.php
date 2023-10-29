@@ -5,6 +5,7 @@ namespace mglaman\PHPStanDrupal\Drupal;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\StringType;
 use PHPStan\Type\Type;
+use PHPStan\Type\UnionType;
 
 class DrupalServiceDefinition
 {
@@ -44,7 +45,12 @@ class DrupalServiceDefinition
      */
     private $alias;
 
-    public function __construct(string $id, ?string $class, bool $public = true, ?string $alias = null)
+    /**
+     * @var array<string, \mglaman\PHPStanDrupal\Drupal\DrupalServiceDefinition>
+     */
+    private $decorators = [];
+
+  public function __construct(string $id, ?string $class, bool $public = true, ?string $alias = null)
     {
         $this->id = $id;
         $this->class = $class;
@@ -109,6 +115,27 @@ class DrupalServiceDefinition
             return new StringType();
         }
 
+        $decorating_services = $this->getDecorators();
+        if (!empty($decorating_services)) {
+          $combined_services[] = new ObjectType($this->getClass() ?? $this->id);
+          foreach ($decorating_services as $service_id => $service_definition) {
+            $combined_services[] = $service_definition->getType();
+          }
+          return new UnionType($combined_services);
+        }
         return new ObjectType($this->getClass() ?? $this->id);
+    }
+
+    public function addDecorator(DrupalServiceDefinition $definition): void
+    {
+        $this->decorators[$definition->getId()] = $definition;
+    }
+
+    /**
+     * @return array<string, \mglaman\PHPStanDrupal\Drupal\DrupalServiceDefinition>
+     */
+    public function getDecorators(): array
+    {
+        return $this->decorators;
     }
 }
