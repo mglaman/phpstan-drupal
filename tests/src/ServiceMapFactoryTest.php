@@ -5,8 +5,10 @@ namespace mglaman\PHPStanDrupal\Tests;
 use Drupal\Core\Logger\LoggerChannel;
 use mglaman\PHPStanDrupal\Drupal\DrupalServiceDefinition;
 use mglaman\PHPStanDrupal\Drupal\ServiceMap;
+use PHPStan\Reflection\ReflectionProvider;
+use PHPStan\Reflection\ReflectionProviderStaticAccessor;
 use PHPStan\Type\ObjectType;
-use PHPStan\Type\UnionType;
+use PHPStan\Type\TypeCombinator;
 use PHPUnit\Framework\TestCase;
 
 final class ServiceMapFactoryTest extends TestCase
@@ -16,7 +18,10 @@ final class ServiceMapFactoryTest extends TestCase
      * @dataProvider getServiceProvider
      *
      * @covers \mglaman\PHPStanDrupal\Drupal\DrupalServiceDefinition::__construct
+     * @covers \mglaman\PHPStanDrupal\Drupal\DrupalServiceDefinition::addDecorator
      * @covers \mglaman\PHPStanDrupal\Drupal\DrupalServiceDefinition::getClass
+     * @covers \mglaman\PHPStanDrupal\Drupal\DrupalServiceDefinition::getDecorators
+     * @covers \mglaman\PHPStanDrupal\Drupal\DrupalServiceDefinition::getType
      * @covers \mglaman\PHPStanDrupal\Drupal\DrupalServiceDefinition::isPublic
      * @covers \mglaman\PHPStanDrupal\Drupal\DrupalServiceDefinition::getAlias
      * @covers \mglaman\PHPStanDrupal\Drupal\DrupalServiceDefinition::getId
@@ -26,6 +31,8 @@ final class ServiceMapFactoryTest extends TestCase
      */
     public function testFactory(string $id, callable $validator): void
     {
+        $reflection_provider = static::createMock(ReflectionProvider::class);
+        ReflectionProviderStaticAccessor::registerInstance($reflection_provider);
         $service = new ServiceMap();
         $service->setDrupalServices([
             'entity_type.manager' => [
@@ -103,7 +110,11 @@ final class ServiceMapFactoryTest extends TestCase
             'service_map.deocrating_base' => [
                 'decorates' => 'service_map.base_to_be_decorated',
                 'class' => 'Drupal\service_map\SecondBase',
-            ]
+            ],
+            'service_map.decorates_decorating_base' => [
+                'decorates' => 'service_map.deocrating_base',
+                'class' => 'Drupal\service_map\Override',
+            ],
         ]);
         $validator($service->getService($id));
     }
@@ -225,12 +236,15 @@ final class ServiceMapFactoryTest extends TestCase
         yield [
             'service_map.base_to_be_decorated',
             function (DrupalServiceDefinition $service): void {
-              $combined_class = [
-                new ObjectType('Drupal\service_map\Base'),
-                new ObjectType('Drupal\service_map\SecondBase')
-              ];
-              $expected_class = new UnionType($combined_class);
-              self::assertEquals($expected_class, $service->getType());
+                $expected_class = TypeCombinator::union(new ObjectType('Drupal\service_map\Base'), new ObjectType('Drupal\service_map\SecondBase'), new ObjectType('Drupal\service_map\Override'));
+                self::assertEquals($expected_class, $service->getType());
+            }
+        ];
+        yield [
+            'service_map.deocrating_base',
+            function (DrupalServiceDefinition $service): void {
+                $expected_class = TypeCombinator::union(new ObjectType('Drupal\service_map\SecondBase'), new ObjectType('Drupal\service_map\Override'));
+                self::assertEquals($expected_class, $service->getType());
             }
         ];
     }
