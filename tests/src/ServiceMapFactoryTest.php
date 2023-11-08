@@ -103,7 +103,11 @@ final class ServiceMapFactoryTest extends TestCase
             'service_map.deocrating_base' => [
                 'decorates' => 'service_map.base_to_be_decorated',
                 'class' => 'Drupal\service_map\SecondBase',
-            ]
+            ],
+            'decorating_an_unknown_service' => [
+                'decorates' => 'unknown',
+                'class' => 'Drupal\service_map\Override',
+            ],
         ]);
         $validator($service->getService($id));
     }
