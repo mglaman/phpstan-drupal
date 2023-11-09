@@ -122,7 +122,7 @@ class DrupalServiceDefinition
             foreach ($decorating_services as $service_id => $service_definition) {
                 $combined_services[] = $service_definition->getType();
             }
-            return call_user_func_array([TypeCombinator::class, "union"], $combined_services);
+            return TypeCombinator::union(...$combined_services);
         }
         return new ObjectType($this->getClass() ?? $this->id);
     }
