@@ -31,7 +31,7 @@ commands:
     parameters:
       project:
         type: string
-        default: 'drupal/recommended-project:^8.8@alpha'
+        default: 'drupal/recommended-project:^9.0@alpha'
     steps:
       - run: composer create-project << parameters.project >> /tmp/drupal --no-interaction --prefer-dist --ignore-platform-reqs
       - run: composer require zaporylie/composer-drupal-optimizations:^1.1 --dev --working-dir=/tmp/drupal
@@ -41,7 +41,7 @@ commands:
           name: Add as local
           command: |
             cd /tmp/drupal
-            composer require --dev drupal/core-dev:^8.8
+            composer require --dev drupal/core-dev:^9.0
             composer config repositories.1 '{"type": "path", "url": "'${CIRCLE_WORKING_DIRECTORY}'", "options": { "symlink": false }}'
             composer require --dev mglaman/phpstan-drupal "*" phpstan/extension-installer
             cat composer.json
@@ -70,7 +70,7 @@ jobs:
     steps:
       - start-project
       - create-drupal-project:
-          project: 'drupal/legacy-project:^8.8'
+          project: 'drupal/legacy-project:^9.0'
       - local-require
       - run:
           name: Run against a file
@@ -103,7 +103,7 @@ jobs:
     steps:
       - start-project
       - create-drupal-project:
-          project: 'drupal/legacy-project:^8@alpha'
+          project: 'drupal/legacy-project:^9@alpha'
       - local-require
       # Composer constraints prevent requiring via compser, but this helps test drupalci's phpstan build step as well.
       - run:
