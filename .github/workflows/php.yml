@@ -17,6 +17,7 @@ jobs:
           - "7.4"
           - "8.0"
           - "8.1"
+          - "8.2"
     steps:
       - name: "Checkout"
         uses: "actions/checkout@v3"
@@ -52,7 +53,10 @@ jobs:
           - php-version: "8.1"
             drupal: "^10.0"
             experimental: false
-          - php-version: "8.1"
+          - php-version: "8.2"
+            drupal: "^10.0"
+            experimental: false
+          - php-version: "8.2"
             drupal: "11.x-dev"
             experimental: true
     steps:
@@ -98,7 +102,7 @@ jobs:
           - php-version: "8.0"
             drupal: "^9.0"
             experimental: false
-          - php-version: "8.1"
+          - php-version: "8.2"
             drupal: "11.x-dev"
             experimental: true
     steps:
@@ -171,7 +175,7 @@ jobs:
           - "^8.9"
           - "^9.0"
         include:
-          - php-version: "8.1"
+          - php-version: "8.2"
             drupal: "11.x-dev"
             experimental: true
     steps:
@@ -238,7 +242,7 @@ jobs:
         uses: "shivammathur/setup-php@v2"
         with:
           coverage: "none"
-          php-version: "8.1"
+          php-version: "8.2"
           tools: composer:v2
           extensions: dom, curl, libxml, mbstring, zip, pdo, mysql, pdo_mysql, gd, apcu
       - name: "Checkout Drupal core"
