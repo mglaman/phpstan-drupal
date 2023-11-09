@@ -59,6 +59,9 @@ class ServiceMap
 
         foreach ($decorators as $decorated_service_id => $services) {
             foreach ($services as $dcorating_service_id) {
+                if (!isset(self::$services[$decorated_service_id])) {
+                    continue;
+                }
                 self::$services[$decorated_service_id]->addDecorator(self::$services[$dcorating_service_id]);
             }
         }
