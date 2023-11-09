@@ -43,7 +43,6 @@ jobs:
         php-version:
           - "7.4"
         drupal:
-          - "^8.9"
           - "^9.0"
         include:
           - php-version: "8.0"
@@ -65,15 +64,11 @@ jobs:
           php-version: "${{ matrix.php-version }}"
           tools: composer:v2
           extensions: dom, curl, libxml, mbstring, zip, pdo, mysql, pdo_mysql, gd
-      - name: "Downgrade dev dependencies"
-        run: "composer require phpunit/phpunit:6.5.14 drush/drush:~9 drupal/core-recommended:${{ matrix.drupal }} drupal/core-dev:${{ matrix.drupal }} --with-all-dependencies --dev --no-update"
-        if: ${{ matrix.drupal == '^8.9' }}
       - name: "Upgrade to drupal/core:${{ matrix.drupal }}"
         run: "composer require drupal/core-recommended:${{ matrix.drupal }} --with-all-dependencies --dev --no-update"
         if: ${{ matrix.drupal == '^10.0' || matrix.drupal == '11.x-dev' }}
       - name: "Add phpspec/prophecy-phpunit"
         run: "composer require phpspec/prophecy-phpunit:^2 --dev --no-update"
-        if: ${{ matrix.drupal != '^8.9' }}
       - name: "Install dependencies"
         uses: "ramsey/composer-install@v2"
       - name: "PHPUnit"
@@ -92,7 +87,6 @@ jobs:
         php-version:
           - "7.4"
         drupal:
-          - "^8.9"
           - "^9.0"
         include:
           - php-version: "8.0"
@@ -168,7 +162,6 @@ jobs:
         php-version:
           - "7.4"
         drupal:
-          - "^8.9"
           - "^9.0"
         include:
           - php-version: "8.1"
