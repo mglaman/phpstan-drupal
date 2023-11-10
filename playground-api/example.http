@@ -1,0 +1,15 @@
+POST https://gkyhj54sul.execute-api.us-east-1.amazonaws.com/prod/analyse
+Content-Type: application/json
+
+{
+  "code": "<?php\nmodule_load_include('inc', 'node', 'node.admin');",
+  "level": "9",
+  "strictRules": false,
+  "bleedingEdge": false,
+  "treatPhpDocTypesAsCertain": true,
+  "saveResult": false
+}
+
+###
+
+

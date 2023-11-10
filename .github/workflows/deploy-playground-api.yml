@@ -1,0 +1,40 @@
+name: "Deploy playground API"
+on:
+    push:
+      branches:
+        - main
+      paths:
+        - '.github/workflows/deploy-playground-api.yml'
+        - 'playground-api/**'
+
+concurrency: playground_api
+
+jobs:
+  deploy:
+    name: "Build & deploy"
+    runs-on: "ubuntu-latest"
+
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v4
+
+      - name: "Install Node"
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: "Install dependencies"
+        working-directory: ./playground-api
+        run: "npm ci"
+
+      - name: "Check"
+        working-directory: ./playground-api
+        run: "npm run check"
+
+      - name: "Deploy"
+        working-directory: ./playground-api
+        env:
+            AWS_DEFAULT_REGION: "us-east-1"
+            AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: "npm run deploy"
