@@ -16,5 +16,10 @@
             "phpstan/extension-installer": true,
             "dealerdirect/phpcodesniffer-composer-installer": true
         }
+    },
+    "scripts": {
+        "post-autoload-dump": [
+            "php scaffold.php"
+        ]
     }
 }
