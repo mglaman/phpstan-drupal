@@ -1,0 +1,21 @@
+service: phpstan-drupal-runner
+
+provider:
+  name: aws
+  region: us-east-1
+  architecture: arm64
+  stage: prod
+  versionFunctions: false
+  httpApi:
+    cors: true
+
+plugins:
+    - ./vendor/bref/bref
+
+functions:
+  analyze:
+    handler: analyze.php
+    description: ''
+    timeout: 28
+    layers:
+        - ${bref:layer.php-81-fpm}
