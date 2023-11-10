@@ -1,0 +1,4 @@
+{
+    "level": 0,
+    "code": "<?php\nmodule_load_include('inc', 'node', 'node.admin');"
+}

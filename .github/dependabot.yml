@@ -1,0 +1,22 @@
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "composer"
+    directory: "/playground-runner"
+    schedule:
+      interval: "weekly"
+    ignore:
+      - dependency-name: "drupal/core*"
+        update-types: ["version-update:semver-major"]
+    groups:
+      drupal-core:
+        patterns:
+          - "drupal/core"
+          - "drupal/core-dev"
+  - package-ecosystem: "npm"
+    directory: "/playground-runner"
+    schedule:
+      interval: "weekly"

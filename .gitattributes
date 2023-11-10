@@ -6,3 +6,5 @@ tests export-ignore
 build.xml export-ignore
 phpcs.xml export-ignore
 phpstan.neon export-ignore
+
+/playground-runner export-ignore

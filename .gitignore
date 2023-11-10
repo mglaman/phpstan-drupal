@@ -1,10 +1,11 @@
-composer.phar
-composer.lock
+/composer.phar
+/composer.lock
 /vendor/
 /clover.xml
 .circleci/config_local.yml
 
 # Fix PHPUnit compatibility mutated class.
 /tests/fixtures/TestCase.php
+/tests/fixtures/drupal/sites/simpletest/
 .phpunit.result.cache
 .idea/
