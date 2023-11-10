@@ -65,7 +65,7 @@ class DrupalAutoloader
         $drupalRoot = $finder->getDrupalRoot();
         $drupalVendorRoot = $finder->getVendorDir();
         if (! (bool) $drupalRoot || ! (bool) $drupalVendorRoot) {
-            throw new \RuntimeException("Unable to detect Drupal at $drupalRoot");
+            throw new \RuntimeException("Unable to detect Drupal at {$drupalParams['drupal_root']}");
         }
 
         $this->drupalRoot = $drupalRoot;
