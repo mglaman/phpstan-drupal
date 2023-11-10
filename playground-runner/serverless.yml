@@ -17,5 +17,4 @@ functions:
     handler: analyze.php
     description: ''
     timeout: 28
-    layers:
-        - ${bref:layer.php-81-fpm}
+    runtime: php-81
