@@ -10,6 +10,11 @@ Content-Type: application/json
   "saveResult": true
 }
 
+> {%
+client.global.set("responseId", response.body.id)
+ %}
+
 ###
 
-
+GET https://gkyhj54sul.execute-api.us-east-1.amazonaws.com/prod/result?id={{responseId}}
+Accept: application/json
