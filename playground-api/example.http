@@ -7,7 +7,7 @@ Content-Type: application/json
   "strictRules": false,
   "bleedingEdge": false,
   "treatPhpDocTypesAsCertain": true,
-  "saveResult": false
+  "saveResult": true
 }
 
 ###

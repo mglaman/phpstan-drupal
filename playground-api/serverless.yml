@@ -6,6 +6,16 @@ provider:
   architecture: arm64
   stage: prod
   region: us-east-1
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - "lambda:InvokeFunction"
+      Resource: "arn:aws:lambda:us-east-1:994345088675:function:phpstan-drupal-runner-prod-analyze"
+    - Effect: Allow
+      Action:
+        - s3:PutObject
+        - s3:GetObject
+      Resource: "arn:aws:s3:::phpstan-drupal-playground/*"
 
 plugins:
 - serverless-plugin-typescript
@@ -14,7 +24,6 @@ plugins:
 functions:
   analyseResult:
     handler: handler.analyseResult
-    role: arn:aws:iam::994345088675:role/phpstan-drupal-runner-prod-us-east-1-lambdaRole
     events:
     - http:
         method: post
@@ -23,7 +32,6 @@ functions:
 
   retrieveResult:
     handler: handler.retrieveResult
-    role: arn:aws:iam::994345088675:role/phpstan-drupal-runner-prod-us-east-1-lambdaRole
     events:
     - http:
         method: get
@@ -32,7 +40,6 @@ functions:
 
   retrieveSample:
     handler: handler.retrieveSample
-    role: arn:aws:iam::994345088675:role/phpstan-drupal-runner-prod-us-east-1-lambdaRole
     events:
       - http:
           method: get

@@ -36,6 +36,7 @@ async function analyseResultInternal(
 	const lambdaPromises: [Promise<PromiseResult<Lambda.InvocationResponse, AWSError>>, number][] = [];
 	for (const phpVersion of phpVersions) {
 		lambdaPromises.push([lambda.invoke({
+			// arn:aws:lambda:us-east-1:994345088675:function:phpstan-drupal-runner-prod-analyze
 			FunctionName: 'phpstan-drupal-runner-prod-analyze',
 			Payload: JSON.stringify({
 				code: code,
@@ -237,9 +238,8 @@ async function analyseResult(request: HttpRequest): Promise<HttpResponse> {
 			body: JSON.stringify(response),
 		});
 	} catch (e) {
-		console.debug(request)
 		console.error(e);
-		return Promise.resolve({statusCode: 500, body: JSON.stringify(request)});
+		return Promise.resolve({statusCode: 500});
 	}
 }
 
