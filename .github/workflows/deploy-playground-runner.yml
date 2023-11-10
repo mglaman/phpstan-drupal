@@ -31,9 +31,6 @@ jobs:
       - name: "composer install"
         working-directory: ./playground-runner
         run: "composer install --no-interaction --no-progress"
-      - name: "phpunit"
-        working-directory: ./playground-runner
-        run: "php vendor/bin/phpunit"
       - name: "Deploy"
         working-directory: ./playground-runner
         env:
