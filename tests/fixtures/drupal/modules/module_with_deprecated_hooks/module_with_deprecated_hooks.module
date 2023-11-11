@@ -1,0 +1,5 @@
+<?php
+
+function module_with_deprecated_hooks_example() {}
+
+function module_with_deprecated_hooks_example2() {}
