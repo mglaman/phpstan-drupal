@@ -34,17 +34,18 @@ jobs:
         run: "php vendor/bin/phpcs"
       - name: "PHPStan"
         run: "php vendor/bin/phpstan analyze"
-
   tests:
     continue-on-error: ${{ matrix.experimental }}
     runs-on: "ubuntu-latest"
     name: "Tests | PHP ${{ matrix.php-version }} | Drupal ${{ matrix.drupal }}"
     strategy:
       matrix:
+        experimental: [false]
+        php-version:
+          - "7.4"
+        drupal:
+          - "^9.0"
         include:
-          - php-version: "7.4"
-            drupal: "^9.0"
-            experimental: false
           - php-version: "8.0"
             drupal: "^9.0"
             experimental: false
@@ -86,18 +87,14 @@ jobs:
     name: "Build Integration | PHP ${{ matrix.php-version }} | Drupal ${{ matrix.drupal }}"
     strategy:
       matrix:
+        experimental: [false]
+        php-version:
+          - "7.4"
+        drupal:
+          - "^9.0"
         include:
-          - php-version: "7.4"
-            drupal: "^9.0"
-            experimental: false
           - php-version: "8.0"
             drupal: "^9.0"
-            experimental: false
-          - php-version: "8.1"
-            drupal: "^10.0"
-            experimental: false
-          - php-version: "8.2"
-            drupal: "^10.0"
             experimental: false
           - php-version: "8.2"
             drupal: "11.x-dev"
@@ -156,7 +153,6 @@ jobs:
           COMPOSER_MEMORY_LIMIT=-1 composer require drupal/video_embed_field drupal/slick
           ./vendor/bin/phpstan analyze web/modules/contrib --no-progress || if (($? == 255)); then false; else true; fi
           COMPOSER_MEMORY_LIMIT=-1 composer remove drupal/video_embed_field drupal/slick
-
   build_integration_no_phpunit:
     needs:
       - lint
@@ -166,19 +162,12 @@ jobs:
     name: "Build Integration (No PHPUnit) | PHP ${{ matrix.php-version }} | Drupal ${{ matrix.drupal }}"
     strategy:
       matrix:
+        experimental: [false]
+        php-version:
+          - "7.4"
+        drupal:
+          - "^9.0"
         include:
-          - php-version: "7.4"
-            drupal: "^9.0"
-            experimental: false
-          - php-version: "8.0"
-            drupal: "^9.0"
-            experimental: false          -
-          - php-version: "8.1"
-            drupal: "^10.0"
-            experimental: false
-          - php-version: "8.2"
-            drupal: "^10.0"
-            experimental: false
           - php-version: "8.2"
             drupal: "11.x-dev"
             experimental: true
@@ -256,6 +245,7 @@ jobs:
          cd drupal
          composer config repositories.0 composer https://packages.drupal.org/8
          composer config repositories.1 path $GITHUB_WORKSPACE
+
       - name: "Install Drupal core dependencies"
         uses: "ramsey/composer-install@v2"
         with:
@@ -263,7 +253,7 @@ jobs:
       - name: "require phpstan-drupal"
         run: |
           cd ${{ runner.temp }}/drupal
-          composer require --dev mglaman/phpstan-drupal "${{ steps.branch_alias.outputs.VERSION_ALIAS }} as 1.2.99" --with-all-dependencies
+          composer require --dev mglaman/phpstan-drupal "${{ steps.branch_alias.outputs.VERSION_ALIAS }} as 1.1.99" --with-all-dependencies
       - name: "Check baseline"
         run: |
           cd ${{ runner.temp }}/drupal
