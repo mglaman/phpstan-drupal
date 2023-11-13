@@ -5,7 +5,7 @@ namespace mglaman\PHPStanDrupal\Drupal;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\StringType;
 use PHPStan\Type\Type;
-use PHPStan\Type\UnionType;
+use PHPStan\Type\TypeCombinator;
 
 class DrupalServiceDefinition
 {
@@ -122,7 +122,7 @@ class DrupalServiceDefinition
             foreach ($decorating_services as $service_id => $service_definition) {
                 $combined_services[] = $service_definition->getType();
             }
-            return new UnionType($combined_services);
+            return TypeCombinator::union(...$combined_services);
         }
         return new ObjectType($this->getClass() ?? $this->id);
     }
