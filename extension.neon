@@ -17,7 +17,8 @@ parameters:
 		- stubs/Twig/functions.stub
 	drupal:
 		drupal_root: '%currentWorkingDirectory%'
-		opt_out_api.php: false
+		bleedingEdge:
+			checkDeprecatedHooks: false
 		entityMapping:
 			aggregator_feed:
 				class: Drupal\aggregator\Entity\Feed
@@ -234,7 +235,9 @@ parameters:
 parametersSchema:
 	drupal: structure([
 		drupal_root: string()
-		opt_out_api.php: boolean()
+		bleedingEdge: structure([
+			checkDeprecatedHooks: boolean()
+		])
 		entityMapping: arrayOf(anyOf(
 			structure([
 				class: string()
