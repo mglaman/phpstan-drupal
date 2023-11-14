@@ -16,4 +16,5 @@ parameters:
 includes:
 	- ../../../extension.neon
 	- ../../../rules.neon
+	- ../../../bleedingEdge.neon
 	- ../../../vendor/phpstan/phpstan-deprecation-rules/rules.neon

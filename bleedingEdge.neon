@@ -1,0 +1,4 @@
+parameters:
+	drupal:
+		bleedingEdge:
+			checkDeprecatedHooks: true
