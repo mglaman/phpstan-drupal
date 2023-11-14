@@ -112,7 +112,7 @@ class DrupalAutoloader
                 $this->loadAndCatchErrors($module_dir . '/' . $module_name . '.post_update.php');
             }
             // Add .api.php
-            $opt_out_of_api_php_scanning = !empty($drupalParams['opt_out_api.php']);
+            $opt_out_of_api_php_scanning = isset($drupalParams['opt_out_api.php']) && (bool) $drupalParams['opt_out_api.php'] === true;
             if (!$opt_out_of_api_php_scanning && file_exists($module_dir . '/' . $module_name . '.api.php')) {
                 $this->loadAndCatchErrors($module_dir . '/' . $module_name . '.api.php');
             }
