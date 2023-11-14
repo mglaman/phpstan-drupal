@@ -13,6 +13,7 @@ parameters:
 		- engine
 	drupal:
 		drupal_root: '%currentWorkingDirectory%'
+		opt_out_api.php: false
 		entityMapping:
 			node:
 				class: Drupal\node\Entity\Node
@@ -28,6 +29,7 @@ parameters:
 parametersSchema:
 	drupal: structure([
 		drupal_root: string()
+		opt_out_api.php: boolean()
 		entityMapping: arrayOf(anyOf(
 			structure([
 				class: string()
