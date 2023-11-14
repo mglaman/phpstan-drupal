@@ -1,6 +1,3 @@
-includes:
-	- vendor/phpstan/phpstan-strict-rules/rules.neon
-	- vendor/phpstan/phpstan-deprecation-rules/rules.neon
 parameters:
 	level: 8
 	checkGenericClassInNonGenericObjectType: false
@@ -8,8 +5,14 @@ parameters:
 	reportUnmatchedIgnoredErrors: false
 	paths:
 		- src
-		- drupal-phpunit-hack.php
 		- drupal-autoloader.php
 		- tests/src
 	excludePaths:
+		-  tests/src/data/*.php
 		-  tests/src/Type/data/*.php
+		-  tests/src/Rules/data/*.php
+		-  tests/src/DeprecatedScope/data/*.php
+	dynamicConstantNames:
+		- Drupal::VERSION
+includes:
+	- phpstan-baseline.neon

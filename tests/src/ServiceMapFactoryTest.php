@@ -2,6 +2,7 @@
 
 namespace mglaman\PHPStanDrupal\Tests;
 
+use Drupal\Core\Logger\LoggerChannel;
 use mglaman\PHPStanDrupal\Drupal\DrupalServiceDefinition;
 use mglaman\PHPStanDrupal\Drupal\ServiceMap;
 use PHPUnit\Framework\TestCase;
@@ -13,12 +14,15 @@ final class ServiceMapFactoryTest extends TestCase
      * @dataProvider getServiceProvider
      *
      * @covers \mglaman\PHPStanDrupal\Drupal\DrupalServiceDefinition::__construct
+     * @covers \mglaman\PHPStanDrupal\Drupal\DrupalServiceDefinition::addDecorator
      * @covers \mglaman\PHPStanDrupal\Drupal\DrupalServiceDefinition::getClass
+     * @covers \mglaman\PHPStanDrupal\Drupal\DrupalServiceDefinition::getDecorators
      * @covers \mglaman\PHPStanDrupal\Drupal\DrupalServiceDefinition::isPublic
      * @covers \mglaman\PHPStanDrupal\Drupal\DrupalServiceDefinition::getAlias
      * @covers \mglaman\PHPStanDrupal\Drupal\DrupalServiceDefinition::getId
      * @covers \mglaman\PHPStanDrupal\Drupal\ServiceMap::setDrupalServices
      * @covers \mglaman\PHPStanDrupal\Drupal\ServiceMap::getService
+     * @covers \mglaman\PHPStanDrupal\Drupal\ServiceMap::resolveParentDefinition
      */
     public function testFactory(string $id, callable $validator): void
     {
@@ -80,6 +84,34 @@ final class ServiceMapFactoryTest extends TestCase
                 'class' => 'Drupal\service_map\Concrete',
                 'public' => true,
             ],
+            'logger.channel_base' => [
+                'abstract' => true,
+                'class' => LoggerChannel::class,
+                'factory' => ['@logger.factory', 'get'],
+            ],
+            'logger.channel.workspaces' => [
+                'parent' => 'logger.channel_base',
+                'arguments' => ['workspaces'],
+            ],
+            'Psr\Log\LoggerInterface $loggerWorkspaces' => [
+                'alias' => 'logger.channel.workspaces'
+            ],
+            'service_map.base_to_be_decorated' => [
+                'class' => 'Drupal\service_map\Base',
+                'abstract' => true,
+            ],
+            'service_map.deocrating_base' => [
+                'decorates' => 'service_map.base_to_be_decorated',
+                'class' => 'Drupal\service_map\SecondBase',
+            ],
+            'service_map.decorates_decorating_base' => [
+                'decorates' => 'service_map.deocrating_base',
+                'class' => 'Drupal\service_map\Override',
+            ],
+            'decorating_an_unknown_service' => [
+                'decorates' => 'unknown',
+                'class' => 'Drupal\service_map\Override',
+            ],
         ]);
         $validator($service->getService($id));
     }
@@ -111,7 +143,7 @@ final class ServiceMapFactoryTest extends TestCase
         yield [
             'config.storage.sync',
             function (DrupalServiceDefinition $service): void {
-                self::assertEquals('config.storage.staging', $service->getAlias());
+                self::assertEquals('Drupal\Core\Config\FileStorage', $service->getClass());
             }
         ];
         yield [
@@ -190,6 +222,23 @@ final class ServiceMapFactoryTest extends TestCase
                 self::assertEquals('Drupal\service_map\Concrete', $service->getClass());
                 self::assertTrue($service->isPublic());
                 self::assertNull($service->getAlias());
+            }
+        ];
+        yield [
+            'Psr\Log\LoggerInterface $loggerWorkspaces',
+            function (DrupalServiceDefinition $service): void {
+                self::assertEquals(LoggerChannel::class, $service->getClass());
+            }
+        ];
+        yield [
+            'service_map.base_to_be_decorated',
+            function (DrupalServiceDefinition $service): void {
+                $decorators = $service->getDecorators();
+                self::assertCount(1, $decorators);
+                self::assertArrayHasKey('service_map.deocrating_base', $decorators);
+                $child_decorators = $decorators['service_map.deocrating_base']->getDecorators();
+                self::assertCount(1, $child_decorators);
+                self::assertArrayHasKey('service_map.decorates_decorating_base', $child_decorators);
             }
         ];
     }

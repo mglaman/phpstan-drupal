@@ -5,13 +5,13 @@ namespace mglaman\PHPStanDrupal\Tests\Type;
 use mglaman\PHPStanDrupal\Tests\AdditionalConfigFilesTrait;
 use PHPStan\Testing\TypeInferenceTestCase;
 
-final class UrlDynamicReturnTypeTest extends TypeInferenceTestCase
+final class ContentEntityTranslationTypeTest extends TypeInferenceTestCase
 {
     use AdditionalConfigFilesTrait;
 
     public function dataFileAsserts(): iterable
     {
-        yield from $this->gatherAssertTypes(__DIR__ . '/data/url.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/content-entity-translation.php');
     }
 
     /**
@@ -24,8 +24,7 @@ final class UrlDynamicReturnTypeTest extends TypeInferenceTestCase
         string $assertType,
         string $file,
         ...$args
-    ): void
-    {
+    ): void {
         $this->assertFileAsserts($assertType, $file, ...$args);
     }
 }

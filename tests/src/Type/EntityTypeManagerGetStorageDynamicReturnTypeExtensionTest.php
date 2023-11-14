@@ -2,17 +2,8 @@
 
 namespace mglaman\PHPStanDrupal\Tests\Type;
 
-use Drupal\Core\Entity\EntityTypeManager;
 use mglaman\PHPStanDrupal\Tests\AdditionalConfigFilesTrait;
-use mglaman\PHPStanDrupal\Type\EntityTypeManagerGetStorageDynamicReturnTypeExtension;
-use PhpParser\Node\Arg;
-use PhpParser\Node\Expr;
-use PhpParser\Node\Expr\MethodCall;
-use PHPStan\Analyser\OutOfClassScope;
-use PHPStan\ShouldNotHappenException;
 use PHPStan\Testing\TypeInferenceTestCase;
-use PHPStan\Type\ObjectType;
-use Prophecy\Prophet;
 
 final class EntityTypeManagerGetStorageDynamicReturnTypeExtensionTest extends TypeInferenceTestCase
 {
@@ -21,6 +12,7 @@ final class EntityTypeManagerGetStorageDynamicReturnTypeExtensionTest extends Ty
     public function dataFileAsserts(): iterable
     {
         yield from $this->gatherAssertTypes(__DIR__ . '/data/entity-type-manager.php');
+        yield from $this->gatherAssertTypes(__DIR__ . '/data/bug-377.php');
     }
 
     /**

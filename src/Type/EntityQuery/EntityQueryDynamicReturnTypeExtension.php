@@ -38,29 +38,44 @@ class EntityQueryDynamicReturnTypeExtension implements DynamicMethodReturnTypeEx
         $defaultReturnType = ParametersAcceptorSelector::selectSingle($methodReflection->getVariants())->getReturnType();
         $varType = $scope->getType($methodCall->var);
         $methodName = $methodReflection->getName();
+
+        if (!$varType instanceof ObjectType) {
+            return $defaultReturnType;
+        }
+
         if ($methodName === 'count') {
-            if ($varType instanceof ObjectType) {
-                return new EntityQueryCountType(
-                    $varType->getClassName(),
-                    $varType->getSubtractedType(),
-                    $varType->getClassReflection()
-                );
+            if ($varType instanceof EntityQueryType) {
+                return $varType->asCount();
             }
+            // By now we are sure we can't determine anything about what query
+            // the count method is on, so we ignore it.
             return $defaultReturnType;
         }
 
         if ($methodName === 'execute') {
-            if ($varType instanceof EntityQueryCountType) {
-                return new IntegerType();
+            if (!$varType instanceof EntityQueryType) {
+                return $defaultReturnType;
             }
-            if ($varType instanceof ObjectType) {
-                // @todo if this is a config storage, it'd string keys.
-                // revisit after https://github.com/mglaman/phpstan-drupal/pull/239
-                // then we can check what kind of storage we have.
-                return new ArrayType(new IntegerType(), new StringType());
+            if ($varType->isCount()) {
+                return $varType->hasAccessCheck()
+                    ? new IntegerType()
+                    : new EntityQueryExecuteWithoutAccessCheckCountType();
             }
-            return $defaultReturnType;
+            if ($varType instanceof ConfigEntityQueryType) {
+                return $varType->hasAccessCheck()
+                    ? new ArrayType(new StringType(), new StringType())
+                    : new EntityQueryExecuteWithoutAccessCheckType(new StringType(), new StringType());
+            }
+            if ($varType instanceof ContentEntityQueryType) {
+                return $varType->hasAccessCheck()
+                    ? new ArrayType(new IntegerType(), new StringType())
+                    : new EntityQueryExecuteWithoutAccessCheckType(new IntegerType(), new StringType());
+            }
+            return $varType->hasAccessCheck()
+                ? new ArrayType(new IntegerType(), new StringType())
+                : new EntityQueryExecuteWithoutAccessCheckType(new IntegerType(), new StringType());
         }
+
         return $defaultReturnType;
     }
 }

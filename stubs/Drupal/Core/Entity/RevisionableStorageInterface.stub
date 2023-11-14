@@ -1,0 +1,18 @@
+<?php
+
+namespace Drupal\Core\Entity;
+
+interface RevisionableStorageInterface extends EntityStorageInterface {
+
+  /**
+   * @param int|numeric-string $revision_id
+   * @return \Drupal\Core\Entity\RevisionableInterface|null
+   */
+  public function loadRevision($revision_id);
+
+  /**
+   * @param int|numeric-string $revision_id
+   */
+  public function deleteRevision($revision_id): void;
+
+}

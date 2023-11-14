@@ -4,9 +4,13 @@
 
 Extension for [PHPStan](https://phpstan.org/) to allow analysis of Drupal code.
 
+PHPStan is able to [discover symbols](https://phpstan.org/user-guide/discovering-symbols) by using autoloading provided 
+by Composer. However, Drupal does not provide autoloading information for modules and themes. This project registers 
+those namespaces so that PHPStan can properly discover symbols in your Drupal code base automatically.
+
 ## Sponsors
 
-<a href="https://www.undpaul.de/"><img src="https://www.undpaul.de/themes/custom/undpaul3/logo.svg" alt="undpaul" width="250" /></a> <a href="https://www.intracto.com/"><img src="https://digidak.be/wp-content/uploads/2020/03/logo-intracto-base-positief-grijs-blauw@4x-rgb.png" alt="Intracto" width="225" /></a> <a href="https://osinet.fr//"><img src="https://d3c0fbruclr8uq.cloudfront.net/sites/default/files/logo-osinet.png" alt="OSInet" width="250" /></a>
+<a href="https://www.undpaul.de/"><img src="https://www.undpaul.de/themes/custom/undpaul3/logo.svg" alt="undpaul" width="250" /></a> <a href="https://www.optasy.com/"><img src="https://www.optasy.com/images/logo.svg" alt="undpaul" width="200" /></a>
 
 [Would you like to sponsor?](https://github.com/sponsors/mglaman)
 
@@ -14,28 +18,27 @@ Extension for [PHPStan](https://phpstan.org/) to allow analysis of Drupal code.
 
 When you are using [`phpstan/extension-installer`](https://github.com/phpstan/extension-installer), `phpstan.neon` will be automatically included.
 
-Otherwise add `phpstan.neon` to your Drupal project.
+<details>
+  <summary>Manual installation</summary>
 
-Make sure it has
+If you don't want to use `phpstan/extension-installer`, include `extension.neon` in your project's PHPStan config:
 
-```neon
+```
 includes:
-	- vendor/mglaman/phpstan-drupal/extension.neon
+    - vendor/mglaman/phpstan-drupal/extension.neon
 ```
 
-## Enabling rules one-by-one
-
-If you don't want to start using all the available strict rules at once but only one or two, you can! Just don't include
-the whole `rules.neon` from this package in your configuration, but look at its contents and copy only the rules you
-want to your configuration under the `services` key:
+To include Drupal specific analysis rules, include this file:
 
 ```
-services:
-	-
-		class: PHPStan\Rules\Drupal\PluginManager\PluginManagerSetsCacheBackendRule
-		tags:
-			- phpstan.rules.rule
+includes:
+    - vendor/mglaman/phpstan-drupal/rules.neon
 ```
+</details>
+
+## Getting help
+
+Ask for assistance in the [discussions](https://github.com/mglaman/phpstan-drupal/discussions) or [#phpstan](https://drupal.slack.com/archives/C033S2JUMLJ) channel on Drupal Slack.
 
 ## Excluding tests from analysis
 
@@ -50,19 +53,8 @@ parameters:
 
 ## Deprecation testing
 
-Add the deprecation rules to your Drupal project's dependencies
-
-```
-composer require --dev phpstan/phpstan-deprecation-rules
-```
-
-Edit your `phpstan.neon` to look like the following:
-
-```
-includes:
-	- vendor/mglaman/phpstan-drupal/extension.neon
-	- vendor/phpstan/phpstan-deprecation-rules/rules.neon
-```
+This project depends on `phpstan/phpstan-deprecation-rules` which adds deprecation rules. We provide Drupal-specific 
+deprecated scope resolvers.
 
 To only handle deprecation testing, use a `phpstan.neon` like this:
 
@@ -81,6 +73,22 @@ includes:
 	- vendor/phpstan/phpstan-deprecation-rules/rules.neon
 ```
 
+To disable deprecation rules while using `phpstan/extension-installer`, you can do the following:
+
+```json
+{
+  "extra": {
+    "phpstan/extension-installer": {
+      "ignore": [
+        "phpstan/phpstan-deprecation-rules"
+      ]
+    }
+  }
+}
+```
+
+See the `extension-installer` documentation for more information: https://github.com/phpstan/extension-installer#ignoring-a-particular-extension
+
 ## Adapting to your project
 
 ### Specifying your Drupal project's root
@@ -91,16 +99,16 @@ directory using the `drupal.drupal_root` parameter.
 
 ```
 parameters:
-    drupal:
-        drupal_root: /path/to/drupal
+	drupal:
+		drupal_root: /path/to/drupal
 ```
 
 You can also use container parameters. For instance you can always set it to the current working directory.
 
 ```
 parameters:
-    drupal:
-        drupal_root: %currentWorkingDirectory%
+	drupal:
+		drupal_root: %currentWorkingDirectory%
 ```
 
 ### Entity storage mappings.
@@ -111,12 +119,20 @@ default mapping can be found in `extension.neon`. For example:
 
 ```
 parameters:
-    drupal:
-        entityTypeStorageMapping:
-            node: Drupal\node\NodeStorage
-            taxonomy_term: Drupal\taxonomy\TermStorage
-            user: Drupal\user\UserStorage
-            block: Drupal\Core\Config\Entity\ConfigEntityStorage
+	drupal:
+		entityMapping:
+			block:
+				class: Drupal\block\Entity\Block
+				storage: Drupal\Core\Config\Entity\ConfigEntityStorage
+			node:
+				class: Drupal\node\Entity\Node
+				storage: Drupal\node\NodeStorage
+			taxonomy_term:
+				class: Drupal\taxonomy\Entity\Term
+				storage: Drupal\taxonomy\TermStorage
+			user:
+				class: Drupal\user\Entity\User
+				storage: Drupal\user\UserStorage
 ```
 
 To add support for custom entities, you may add the same definition in your project's `phpstan.neon`. See the following
@@ -124,10 +140,14 @@ example for adding a mapping for Search API:
 
 ```
 parameters:
-    drupal:
-        entityTypeStorageMapping:
-            search_api_index: Drupal\search_api\Entity\SearchApiConfigEntityStorage
-            search_api_server: Drupal\search_api\Entity\SearchApiConfigEntityStorage
+	drupal:
+		entityMapping:
+			search_api_index:
+				class: Drupal\search_api\Entity\Index
+				storage: Drupal\search_api\Entity\SearchApiConfigEntityStorage
+			search_api_server:
+				class: Drupal\search_api\Entity\Server
+				storage: Drupal\search_api\Entity\SearchApiConfigEntityStorage			    
 ```
 
 Similarly, the `EntityStorageDynamicReturnTypeExtension` service helps to determine the type of the entity which is
@@ -145,11 +165,59 @@ The default mapping can be found in `extension.neon`:
 ```neon
 parameters:
 	drupal:
-		entityStorageMapping:
-			node: Drupal\node\Entity\Node
-			taxonomy_term: Drupal\taxonomy\Entity\Term
-			user: Drupal\user\Entity\User
-			block: Drupal\block\Entity\Block
+		entityMapping:
+			block:
+				class: Drupal\block\Entity\Block
+				storage: Drupal\Core\Config\Entity\ConfigEntityStorage
+			node:
+				class: Drupal\node\Entity\Node
+				storage: Drupal\node\NodeStorage
+			taxonomy_term:
+				class: Drupal\taxonomy\Entity\Term
+				storage: Drupal\taxonomy\TermStorage
+			user:
+				class: Drupal\user\Entity\User
+				storage: Drupal\user\UserStorage
 ```
 
 To add support for custom entities, you may add the same definition in your project's `phpstan.neon` likewise.
+
+### Providing entity type mappings for a contrib module
+
+Contributed modules can provide their own mapping that can be automatically registered with a user's code base when 
+they use the `phpstan/extension-installer`.  The extension installer scans installed package's `composer.json` for a 
+value in `extra.phpstan`. This will automatically bundle the defined include that contains an entity mapping 
+configuration.
+
+For example, the Paragraphs module could have the following `entity_mapping.neon` file:
+
+```neon
+parameters:
+	entityMapping:
+		paragraph:
+			class: Drupal\paragraphs\Entity\Paragraph
+		paragraphs_type:
+			class: Drupal\paragraphs\Entity\ParagraphsType
+```
+
+Then in the `composer.json` for Paragraphs, the `entity_mapping.neon` would be provided as a PHPStan include
+
+```json
+{
+  "name": "drupal/paragraphs",
+  "description": "Enables the creation of Paragraphs entities.",
+  "type": "drupal-module",
+  "license": "GPL-2.0-or-later",
+  "require": {
+    "drupal/entity_reference_revisions": "~1.3"
+  },
+  "extra": {
+    "phpstan": {
+      "includes": [
+        "entity_mapping.neon"
+      ]
+    }
+  }
+}
+
+```

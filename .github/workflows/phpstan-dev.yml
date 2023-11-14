@@ -1,0 +1,43 @@
+name: PHPStan other versions
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - 'playground-runner/**'
+      - 'playground-api/**'
+  pull_request:
+    branches: [main]
+    paths-ignore:
+      - 'playground-runner/**'
+      - 'playground-api/**'
+  schedule:
+    - cron: 0 0 * * *
+jobs:
+  dev:
+    runs-on: "ubuntu-latest"
+    name: "PHPStan ${{ matrix.phpstan }}"
+    strategy:
+      matrix:
+        phpstan:
+          - '1.10.x-dev'
+          - '1.11.x-dev'
+    steps:
+      - name: "Checkout"
+        uses: "actions/checkout@v4"
+      - name: "Install PHP"
+        uses: "shivammathur/setup-php@v2"
+        with:
+          coverage: "none"
+          php-version: 8.1
+          tools: composer:v2
+          extensions: dom, curl, libxml, mbstring, zip, pdo, mysql, pdo_mysql, gd
+      - name: "Bump PHPStan"
+        run: "composer require --no-update phpstan/phpstan:${{ matrix.phpstan }}"
+      - name: "Add phpspec/prophecy-phpunit"
+        run: "composer require phpspec/prophecy-phpunit:^2 --dev --no-update"
+      - name: "Install dependencies"
+        run: "composer update --no-progress --prefer-dist"
+      - name: "PHPStan"
+        run: "php vendor/bin/phpstan analyze"
+      - name: "PHPUnit"
+        run: "php vendor/bin/phpunit"

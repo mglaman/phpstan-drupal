@@ -1,0 +1,11 @@
+<?php
+
+namespace Drupal\Core\TypedData;
+
+/**
+ * @template I of int|string
+ * @template T of TypedDataInterface
+ * @extends \Traversable<I, T>
+ */
+interface TraversableTypedDataInterface extends TypedDataInterface, \Traversable {
+}

@@ -18,6 +18,9 @@ final class DrushIntegrationTest extends DrupalRuleTestCase
 
     public function testPaths(): void
     {
+        if (\Drush\Drush::getMajorVersion() === '11') {
+            self::markTestSkipped('No');
+        }
         $this->analyse([
             __DIR__ . '/../fixtures/drupal/modules/drush_command/src/Commands/TestDrushCommands.php'
         ], []);

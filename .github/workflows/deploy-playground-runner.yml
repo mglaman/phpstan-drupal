@@ -1,0 +1,40 @@
+name: "Deploy Playground Runner"
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/deploy-playground-runner.yml'
+      - 'playground-runner/**'
+concurrency: api_build
+jobs:
+  deploy:
+    name: "Build & deploy"
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - name: "Install Node"
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: "Install PHP"
+        uses: "shivammathur/setup-php@v2"
+        with:
+          coverage: "none"
+          php-version: "8.1"
+      - name: "npm ci"
+        working-directory: ./playground-runner
+        run: "npm ci"
+      - name: "composer install"
+        working-directory: ./playground-runner
+        run: "composer install --no-interaction --no-progress"
+      - name: "Deploy"
+        working-directory: ./playground-runner
+        env:
+          AWS_DEFAULT_REGION: "us-east-1"
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: "npm run deploy"

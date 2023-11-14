@@ -1,0 +1,42 @@
+<?php
+
+namespace Drupal\Core\Entity;
+
+interface FieldableEntityInterface extends EntityInterface {
+
+    /**
+     * @return \Drupal\Core\Field\FieldItemListInterface<\Drupal\Core\Field\FieldItemInterface>
+     */
+    public function get(string $field_name);
+
+    /**
+     * @return array<string, \Drupal\Core\Field\FieldDefinitionInterface>
+     */
+    public static function baseFieldDefinitions(EntityTypeInterface $entity_type): array;
+
+    /**
+     * @param array<string, \Drupal\Core\Field\FieldDefinitionInterface> $base_field_definitions
+     * @return array<string, \Drupal\Core\Field\FieldDefinitionInterface>
+     */
+    public static function bundleFieldDefinitions(EntityTypeInterface $entity_type, string $bundle, array $base_field_definitions): array;
+
+    /**
+     * @return array<string, \Drupal\Core\Field\FieldDefinitionInterface>
+     */
+    public function getFieldDefinitions(): array;
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function toArray(): array;
+
+    /**
+     * @return array<string, \Drupal\Core\Field\FieldItemListInterface<\Drupal\Core\Field\FieldItemInterface>>
+     */
+    public function getFields(bool $include_computed = TRUE): array;
+
+    /**
+     * @return array<string, \Drupal\Core\Field\FieldItemListInterface<\Drupal\Core\Field\FieldItemInterface>>
+     */
+    public function getTranslatableFields(bool $include_computed = TRUE): array;
+}

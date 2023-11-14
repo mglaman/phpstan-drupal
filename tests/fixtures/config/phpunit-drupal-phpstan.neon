@@ -15,4 +15,5 @@ parameters:
 				class: Drupal\phpstan_fixtures\Entity\ContentEntityUsingDefaultStorage
 includes:
 	- ../../../extension.neon
+	- ../../../rules.neon
 	- ../../../vendor/phpstan/phpstan-deprecation-rules/rules.neon

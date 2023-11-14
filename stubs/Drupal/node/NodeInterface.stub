@@ -1,0 +1,38 @@
+<?php
+
+namespace Drupal\node;
+
+use Drupal\Core\Entity\EntityPublishedInterface;
+use Drupal\Core\Entity\RevisionLogInterface;
+use Drupal\user\EntityOwnerInterface;
+use Drupal\Core\Entity\EntityChangedInterface;
+use Drupal\Core\Entity\ContentEntityInterface;
+
+/**
+ * @phpstan-type BookData array{
+ *      "nid"?: int|numeric-string,
+ *      "bid"?: int|'new'|numeric-string|false,
+ *      "original_bid"?: int|numeric-string,
+ *      "pid"?: int|numeric-string,
+ *      "parent_depth_limit"?: int|numeric-string,
+ *      "has_children"?: int|numeric-string|bool,
+ *      "weight"?: int|numeric-string,
+ *      "depth"?: int|numeric-string,
+ *      "p1"?: int|numeric-string,
+ *      "p2"?: int|numeric-string,
+ *      "p3"?: int|numeric-string,
+ *      "p4"?: int|numeric-string,
+ *      "p5"?: int|numeric-string,
+ *      "p6"?: int|numeric-string,
+ *      "p7"?: int|numeric-string,
+ *      "p8"?: int|numeric-string,
+ *      "p9"?: int|numeric-string,
+ *      "link_path"?: string,
+ *      "link_title"?: string,
+ * }
+ *
+ * @property BookData $book
+ */
+interface NodeInterface extends ContentEntityInterface, EntityChangedInterface, EntityOwnerInterface, RevisionLogInterface, EntityPublishedInterface {
+
+}

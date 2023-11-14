@@ -1,0 +1,22 @@
+<?php
+
+namespace Drupal\Core\TypedData;
+
+/**
+ * @template T of TypedDataInterface
+ * @extends TraversableTypedDataInterface<int, T>
+ * @extends \ArrayAccess<int,T>
+ */
+interface ListInterface extends TraversableTypedDataInterface, \ArrayAccess, \Countable {
+
+  /**
+   * @return ?T
+   */
+  public function first();
+
+  /**
+   * @return ?T
+   */
+  public function get(int $index);
+
+}

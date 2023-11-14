@@ -9,30 +9,61 @@ final class LoadIncludesRuleTest extends DrupalRuleTestCase
 {
     protected function getRule(): \PHPStan\Rules\Rule
     {
-        $params = self::getContainer()->getParameter('drupal');
-        return new LoadIncludes($params['drupal_root']);
+        return self::getContainer()->getByType(LoadIncludes::class);
     }
 
-    public function testRule(): void
+    /**
+     * @dataProvider cases
+     */
+    public function test(array $files, array $errors): void
     {
-        $this->analyse([
-            __DIR__ . '/../../fixtures/drupal/modules/phpstan_fixtures/phpstan_fixtures.module'
-        ],
+        $this->analyse($files, $errors);
+    }
+
+    public function cases(): \Generator
+    {
+        yield [
+            [
+                __DIR__ . '/../../fixtures/drupal/modules/phpstan_fixtures/phpstan_fixtures.module'
+            ],
             [
                 [
-                    'File tests/fixtures/drupal/modules/phpstan_fixtures/phpstan_fixtures.fetch.inc could not be loaded from Drupal\Core\Extension\ModuleHandlerInterface::loadInclude',
+                    'File modules/phpstan_fixtures/phpstan_fixtures.fetch.inc could not be loaded from Drupal\Core\Extension\ModuleHandlerInterface::loadInclude',
                     30
                 ]
-            ]);
-    }
+            ],
+        ];
 
-    public function testFormStateLoadInclude(): void
-    {
-        $this->analyse([
-            __DIR__ . '/../../fixtures/drupal/core/tests/Drupal/Tests/Core/Form/FormStateTest.php'
-        ],
+        yield [
             [
-            ]);
+                __DIR__ . '/../../fixtures/drupal/core/tests/Drupal/Tests/Core/Form/FormStateTest.php'
+            ],
+            [],
+        ];
+
+        yield 'bug-516.php' => [
+            [__DIR__.'/data/bug-516.php'],
+            []
+        ];
+
+        yield 'bug-547.php' => [
+            [__DIR__.'/data/bug-547.php'],
+            []
+        ];
+
+        yield 'bug-177.php' => [
+            [__DIR__.'/data/bug-177.php'],
+            [
+                [
+                    'File core/modules/locale/locale.fetch.php could not be loaded from Drupal\Core\Extension\ModuleHandlerInterface::loadInclude',
+                    6
+                ],
+                [
+                    'File core/modules/locale/locale.fetch.php could not be loaded from Drupal\Core\Extension\ModuleHandlerInterface::loadInclude',
+                    8
+                ],
+            ]
+        ];
     }
 
 }

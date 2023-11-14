@@ -2,6 +2,8 @@
 
 namespace mglaman\PHPStanDrupal\Drupal;
 
+use Symfony\Component\Yaml\Yaml;
+
 /**
  * Defines an extension (file) object.
  *
@@ -59,6 +61,16 @@ class Extension
     public $origin = '';
 
     /**
+     * @var array|null
+     */
+    private $info;
+
+    /**
+     * @var string[]|null
+     */
+    private $dependencies;
+
+    /**
      * Constructs a new Extension object.
      *
      * @param string $root
@@ -107,6 +119,11 @@ class Extension
     public function getPath(): string
     {
         return dirname($this->pathname);
+    }
+
+    public function getAbsolutePath(): string
+    {
+        return $this->root . DIRECTORY_SEPARATOR . $this->getPath();
     }
 
     /**
@@ -166,5 +183,50 @@ class Extension
             return true;
         }
         return false;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getDependencies(): array
+    {
+        if (\is_array($this->dependencies)) {
+            return $this->dependencies;
+        }
+
+        $info = $this->parseInfo();
+        $dependencies = $info['dependencies'] ?? [];
+
+        if ($dependencies === []) {
+            return $this->dependencies = $dependencies;
+        }
+
+        $this->dependencies = [];
+
+        // @see \Drupal\Core\Extension\Dependency::createFromString().
+        foreach ($dependencies as $dependency) {
+            if (\strpos($dependency, ':') !== false) {
+                [, $dependency] = \explode(':', $dependency);
+            }
+
+            $parts = \explode('(', $dependency, 2);
+            $this->dependencies[] = \trim($parts[0]);
+        }
+
+        return $this->dependencies;
+    }
+
+    private function parseInfo(): array
+    {
+        if (\is_array($this->info)) {
+            return $this->info;
+        }
+
+        $infoContent = \file_get_contents(\sprintf('%s/%s', $this->root, $this->getPathname()));
+        if (false === $infoContent) {
+            throw new \RuntimeException(\sprintf('Cannot read "%s', $this->getPathname()));
+        }
+
+        return $this->info = Yaml::parse($infoContent);
     }
 }

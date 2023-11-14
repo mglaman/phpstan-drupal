@@ -13,9 +13,11 @@ final class DrupalContainerDynamicReturnTypeTest extends TypeInferenceTestCase
 
     public function dataFileAsserts(): iterable
     {
-        yield from $this->gatherAssertTypes(__DIR__ . '/data/container.php');
-        yield from $this->gatherAssertTypes(__DIR__ . '/data/drupal-service-static.php');
-        yield from $this->gatherAssertTypes(__DIR__ . '/data/drupal-class-resolver.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/container.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/drupal-service-static.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/drupal-class-resolver.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/bug-563.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/container-optional.php');
     }
 
     /**

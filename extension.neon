@@ -11,21 +11,226 @@ parameters:
 		- install
 		- profile
 		- engine
+	dynamicConstantNames:
+		- Drupal::VERSION
+	scanFiles:
+		- stubs/Twig/functions.stub
 	drupal:
 		drupal_root: '%currentWorkingDirectory%'
 		opt_out_api.php: false
 		entityMapping:
+			aggregator_feed:
+				class: Drupal\aggregator\Entity\Feed
+				storage: Drupal\aggregator\FeedStorage
+
+			aggregator_item:
+				class: Drupal\aggregator\Entity\Item
+				storage: Drupal\aggregator\ItemStorage
+
+			block:
+				class: Drupal\block\Entity\Block
+				storage: Drupal\Core\Config\Entity\ConfigEntityStorage
+
+			block_content:
+				class: Drupal\block_content\Entity\BlockContent
+				storage: Drupal\Core\Entity\Sql\SqlContentEntityStorage
+
+			block_content_type:
+				class: Drupal\block_content\Entity\BlockContentType
+				storage: Drupal\Core\Config\Entity\ConfigEntityStorage
+
+			comment_type:
+				class: Drupal\comment\Entity\CommentType
+				storage: Drupal\Core\Config\Entity\ConfigEntityStorage
+
+			comment:
+				class: Drupal\comment\Entity\Comment
+				storage: Drupal\comment\CommentStorage
+
+			contact_form:
+				class: Drupal\contact\Entity\ContactForm
+				storage: Drupal\Core\Config\Entity\ConfigEntityStorage
+
+			contact_message:
+				class: Drupal\contact\Entity\Message
+				storage: Drupal\Core\Entity\ContentEntityNullStorage
+
+			content_moderation_state:
+				class: Drupal\content_moderation\Entity\ContentModerationState
+				storage: Drupal\Core\Entity\Sql\SqlContentEntityStorage
+
+			editor:
+				class: Drupal\editor\Entity\Editor
+				storage: Drupal\Core\Config\Entity\ConfigEntityStorage
+
+			field_config:
+				class: Drupal\field\Entity\FieldConfig
+				storage: Drupal\field\FieldConfigStorage
+
+			field_storage_config:
+				class: Drupal\field\Entity\FieldStorageConfig
+				storage: Drupal\field\FieldStorageConfigStorage
+
+			file:
+				class: Drupal\file\Entity\File
+				storage: Drupal\file\FileStorage
+
+			filter_format:
+				class: Drupal\filter\Entity\FilterFormat
+				storage: Drupal\Core\Config\Entity\ConfigEntityStorage
+
+			image_style:
+				class: Drupal\image\Entity\ImageStyle
+				storage: Drupal\image\ImageStyleStorage
+
+			imce_profile:
+				class: Drupal\imce\Entity\ImceProfile
+				storage: Drupal\Core\Config\Entity\ConfigEntityStorage
+
+			configurable_language:
+				class: Drupal\language\Entity\ConfigurableLanguage
+				storage: Drupal\Core\Config\Entity\ConfigEntityStorage
+
+			language_content_settings:
+				class: Drupal\language\Entity\ContentLanguageSettings
+				storage: Drupal\Core\Config\Entity\ConfigEntityStorage
+
+			media_type:
+				class: Drupal\media\Entity\MediaType
+				storage: Drupal\Core\Config\Entity\ConfigEntityStorage
+
+			media:
+				class: Drupal\media\Entity\Media
+				storage: Drupal\media\MediaStorage
+
+			menu_link_content:
+				class: Drupal\menu_link_content\Entity\MenuLinkContent
+				storage: \Drupal\menu_link_content\MenuLinkContentStorage
+
+			metatag_defaults:
+				class: Drupal\metatag\Entity\MetatagDefaults
+				storage: Drupal\Core\Config\Entity\ConfigEntityStorage
+
+			node_type:
+				class: Drupal\node\Entity\NodeType
+				storage: Drupal\Core\Config\Entity\ConfigEntityStorage
+
 			node:
 				class: Drupal\node\Entity\Node
 				storage: Drupal\node\NodeStorage
+
+			path_alias:
+				class: Drupal\path_alias\Entity\PathAlias
+				storage: Drupal\path_alias\PathAliasStorage
+
+			rdf_mapping:
+				class: Drupal\rdf\Entity\RdfMapping
+				storage: Drupal\Core\Config\Entity\ConfigEntityStorage
+
+			responsive_image_style:
+				class: Drupal\responsive_image\Entity\ResponsiveImageStyle
+				storage: Drupal\Core\Config\Entity\ConfigEntityStorage
+
+			search_page:
+				class: Drupal\search\Entity\SearchPage
+				storage: Drupal\Core\Config\Entity\ConfigEntityStorage
+
+			search_api_server:
+				class: Drupal\search_api\Entity\Server
+				storage: Drupal\search_api\Entity\SearchApiConfigEntityStorage
+
+			search_api_index:
+				class: Drupal\search_api\Entity\Index
+				storage: Drupal\search_api\Entity\SearchApiConfigEntityStorage
+
+			search_api_task:
+				class: Drupal\search_api\Entity\Task
+				storage: Drupal\Core\Entity\Sql\SqlContentEntityStorage
+
+			shortcut_set:
+				class: Drupal\shortcut\Entity\ShortcutSet
+				storage: Drupal\shortcut\ShortcutSetStorage
+
+			shortcut:
+				class: Drupal\shortcut\Entity\Shortcut
+				storage: Drupal\Core\Entity\Sql\SqlContentEntityStorage
+
+			action:
+				class: Drupal\system\Entity\Action
+				storage: Drupal\Core\Config\Entity\ConfigEntityStorage
+
+			menu:
+				class: Drupal\system\Entity\Menu
+				storage: Drupal\system\MenuStorage
+
 			taxonomy_term:
 				class: Drupal\taxonomy\Entity\Term
 				storage: Drupal\taxonomy\TermStorage
+
+			taxonomy_vocabulary:
+				class: Drupal\taxonomy\Entity\Vocabulary
+				storage: Drupal\taxonomy\VocabularyStorage
+
+			tour:
+				class: Drupal\tour\Entity\Tour
+				storage: Drupal\Core\Config\Entity\ConfigEntityStorage
+
 			user:
 				class: Drupal\user\Entity\User
 				storage: Drupal\user\UserStorage
-			block:
-				class: Drupal\block\Entity\Block
+
+			user_role:
+				class: Drupal\user\Entity\Role
+				storage: Drupal\user\RoleStorage
+
+			webform:
+				class: Drupal\webform\Entity\Webform
+				storage: \Drupal\webform\WebformEntityStorage
+
+			webform_submission:
+				class: Drupal\webform\Entity\WebformSubmission
+				storage: Drupal\webform\WebformSubmissionStorage
+
+			webform_options:
+				class: Drupal\webform\Entity\WebformOptions
+				storage: \Drupal\webform\WebformOptionsStorage
+
+			workflow:
+				class: Drupal\workflows\Entity\Workflow
+				storage: Drupal\Core\Config\Entity\ConfigEntityStorage
+
+			pathauto_pattern:
+				class: Drupal\pathauto\Entity\PathautoPattern
+				storage: Drupal\Core\Config\Entity\ConfigEntityStorage
+
+			view:
+				class: Drupal\views\Entity\View
+				storage: Drupal\Core\Config\Entity\ConfigEntityStorage
+
+			date_format:
+				class: Drupal\Core\Datetime\Entity\DateFormat
+				storage: Drupal\Core\Config\Entity\ConfigEntityStorage
+
+			entity_form_mode:
+				class: Drupal\Core\Entity\Entity\EntityFormMode
+				storage: Drupal\Core\Config\Entity\ConfigEntityStorage
+
+			entity_view_display:
+				class: Drupal\layout_builder\Entity\LayoutBuilderEntityViewDisplay
+				storage: Drupal\layout_builder\Entity\LayoutBuilderEntityViewDisplayStorage
+
+			entity_form_display:
+				class: Drupal\Core\Entity\Entity\EntityFormDisplay
+				storage: Drupal\Core\Config\Entity\ConfigEntityStorage
+
+			entity_view_mode:
+				class: Drupal\Core\Entity\Entity\EntityViewMode
+				storage: Drupal\Core\Config\Entity\ConfigEntityStorage
+
+			base_field_override:
+				class: Drupal\Core\Field\Entity\BaseFieldOverride
+				storage: Drupal\Core\Field\BaseFieldOverrideStorage
+
 parametersSchema:
 	drupal: structure([
 		drupal_root: string()
@@ -40,25 +245,23 @@ parametersSchema:
 			])
 		))
 	])
-rules:
-	- mglaman\PHPStanDrupal\Rules\Classes\PluginManagerInspectionRule
-	- mglaman\PHPStanDrupal\Rules\Drupal\Coder\DiscouragedFunctionsRule
-	- mglaman\PHPStanDrupal\Rules\Drupal\GlobalDrupalDependencyInjectionRule
-	- mglaman\PHPStanDrupal\Rules\Drupal\PluginManager\PluginManagerSetsCacheBackendRule
-	- mglaman\PHPStanDrupal\Rules\Deprecations\AccessDeprecatedConstant
 services:
 	-
 		class: mglaman\PHPStanDrupal\Drupal\ServiceMap
 	-
+		class: mglaman\PHPStanDrupal\Drupal\ExtensionMap
+	-
 		class: mglaman\PHPStanDrupal\Drupal\EntityDataRepository
 		arguments:
 			entityMapping: %drupal.entityMapping%
-
 	-
 		class: mglaman\PHPStanDrupal\Type\EntityTypeManagerGetStorageDynamicReturnTypeExtension
 		tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
 	-
 		class: mglaman\PHPStanDrupal\Type\EntityStorage\EntityStorageDynamicReturnTypeExtension
+		tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
+	-
+		class: mglaman\PHPStanDrupal\Type\EntityStorage\GetQueryReturnTypeExtension
 		tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
 	-
 		class: mglaman\PHPStanDrupal\Type\ContainerDynamicReturnTypeExtension
@@ -70,7 +273,10 @@ services:
 		class: mglaman\PHPStanDrupal\Type\EntityQuery\EntityQueryDynamicReturnTypeExtension
 		tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
 	-
-		class: mglaman\PHPStanDrupal\Type\UrlToStringDynamicReturnTypeExtension
+		class: mglaman\PHPStanDrupal\Type\EntityQuery\EntityQueryAccessCheckDynamicReturnTypeExtension
+		tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
+	-
+		class: mglaman\PHPStanDrupal\Type\EntityAccessControlHandlerReturnTypeExtension
 		tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
 	-
 		class: mglaman\PHPStanDrupal\Type\DrupalClassResolverDynamicStaticReturnTypeExtension
@@ -79,34 +285,22 @@ services:
 		class: mglaman\PHPStanDrupal\Type\DrupalServiceDynamicReturnTypeExtension
 		tags: [phpstan.broker.dynamicStaticMethodReturnTypeExtension]
 	-
+		class: mglaman\PHPStanDrupal\Type\DrupalStaticEntityQueryDynamicReturnTypeExtension
+		tags: [phpstan.broker.dynamicStaticMethodReturnTypeExtension]
+	-
 		class: mglaman\PHPStanDrupal\Reflection\EntityFieldsViaMagicReflectionExtension
 		tags: [phpstan.broker.propertiesClassReflectionExtension]
 	-
-		class: mglaman\PHPStanDrupal\Rules\Drupal\LoadIncludes
-		tags: [phpstan.rules.rule]
-		arguments:
-			- %drupal.drupal_root%
+		class: mglaman\PHPStanDrupal\Reflection\EntityFieldMethodsViaMagicReflectionExtension
+		tags: [phpstan.broker.methodsClassReflectionExtension]
 	-
-		class: mglaman\PHPStanDrupal\Rules\Drupal\ModuleLoadInclude
-		tags: [phpstan.rules.rule]
-		arguments:
-			- %drupal.drupal_root%
-
+		class: mglaman\PHPStanDrupal\Drupal\DrupalStubFilesExtension
+		tags: [phpstan.stubFilesExtension]
 	-
-		class: mglaman\PHPStanDrupal\Rules\Deprecations\PluginAnnotationContextDefinitionsRule
-		tags: [phpstan.rules.rule]
-
+		class: mglaman\PHPStanDrupal\Type\EntityQuery\AccessCheckTypeSpecifyingExtension
+		tags:
+			- phpstan.typeSpecifier.methodTypeSpecifyingExtension
 	-
-		class: mglaman\PHPStanDrupal\Rules\Deprecations\ConfigEntityConfigExportRule
-		tags: [phpstan.rules.rule]
-
-	-
-		class: mglaman\PHPStanDrupal\Rules\Drupal\Tests\BrowserTestBaseDefaultThemeRule
-		tags: [phpstan.rules.rule]
-
-	-
-		class: mglaman\PHPStanDrupal\Rules\Deprecations\GetDeprecatedServiceRule
-		tags: [phpstan.rules.rule]
-	-
-		class: mglaman\PHPStanDrupal\Rules\Deprecations\StaticServiceDeprecatedServiceRule
-		tags: [phpstan.rules.rule]
+		class: mglaman\PHPStanDrupal\DeprecatedScope\GroupLegacyScope
+		tags:
+			- phpstan.deprecations.deprecatedScopeResolver

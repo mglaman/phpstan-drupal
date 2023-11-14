@@ -1,0 +1,20 @@
+<?php
+
+namespace Drupal\Core\Field;
+
+use Drupal\Core\TypedData\Plugin\DataType\ItemList;
+
+/**
+ * @template T of \Drupal\Core\Field\FieldItemInterface
+ * @extends ItemList<T>
+ * @implements FieldItemListInterface<T>
+ */
+class FieldItemList extends ItemList implements FieldItemListInterface {
+
+  /**
+   * @return \Drupal\Core\Field\FieldItemInterface
+   */
+  protected function createItem(int $offset = 0, ?mixed $value = NULL): \Drupal\Core\Field\FieldItemInterface {
+  }
+
+}

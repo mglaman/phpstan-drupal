@@ -7,6 +7,10 @@ use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\user\UserInterface;
 
+/**
+ * @property \Drupal\Core\Field\EntityReferenceFieldItemListInterface $user_id
+ * @property \Drupal\Core\Field\EntityReferenceFieldItemListInterface<\Drupal\entity_test\Entity\EntityTest> $related
+ */
 final class ReflectionEntityTest extends ContentEntityBase {
 
     public static function baseFieldDefinitions(EntityTypeInterface $entity_type)
@@ -31,6 +35,14 @@ final class ReflectionEntityTest extends ContentEntityBase {
                     'placeholder' => '',
                 ],
             ]);
+
+        $fields['related'] = BaseFieldDefinition::create('entity_reference')
+            ->setLabel(t('Related entities'))
+            ->setDescription(t('The IDs of the related entities.'))
+            ->setSetting('target_type', 'entity_test')
+            ->setSetting('handler', 'default')
+            ->setTranslatable(TRUE)
+            ->setDisplayConfigurable('form', FALSE);
         return $fields;
     }
 

@@ -2,6 +2,7 @@
 
 namespace mglaman\PHPStanDrupal\Type\EntityStorage;
 
+use Drupal\Core\Config\Entity\ConfigEntityStorageInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use mglaman\PHPStanDrupal\Drupal\EntityDataRepository;
 use PhpParser\Node\Expr\MethodCall;
@@ -54,12 +55,20 @@ class EntityStorageDynamicReturnTypeExtension implements DynamicMethodReturnType
         Scope $scope
     ): \PHPStan\Type\Type {
         $callerType = $scope->getType($methodCall->var);
-
-        if (!$callerType instanceof EntityStorageType) {
+        if (!$callerType instanceof ObjectType) {
             return ParametersAcceptorSelector::selectSingle($methodReflection->getVariants())->getReturnType();
         }
 
-        $type = $this->entityDataRepository->get($callerType->getEntityTypeId())->getClassType();
+        if (!$callerType instanceof EntityStorageType) {
+            $resolvedEntityType = $this->entityDataRepository->resolveFromStorage($callerType);
+            if ($resolvedEntityType === null) {
+                return ParametersAcceptorSelector::selectSingle($methodReflection->getVariants())->getReturnType();
+            }
+            $type = $resolvedEntityType->getClassType();
+        } else {
+            $type = $this->entityDataRepository->get($callerType->getEntityTypeId())->getClassType();
+        }
+
         if ($type === null) {
             return ParametersAcceptorSelector::selectSingle($methodReflection->getVariants())->getReturnType();
         }
@@ -68,13 +77,17 @@ class EntityStorageDynamicReturnTypeExtension implements DynamicMethodReturnType
         }
 
         if (\in_array($methodReflection->getName(), ['loadMultiple', 'loadByProperties'], true)) {
-            if ($callerType instanceof ConfigEntityStorageType) {
+            if ((new ObjectType(ConfigEntityStorageInterface::class))->isSuperTypeOf($callerType)->yes()) {
                 return new ArrayType(new StringType(), $type);
             }
 
             return new ArrayType(new IntegerType(), $type);
         }
 
-        return $type;
+        if ($methodReflection->getName() === 'create') {
+            return $type;
+        }
+
+        return ParametersAcceptorSelector::selectSingle($methodReflection->getVariants())->getReturnType();
     }
 }

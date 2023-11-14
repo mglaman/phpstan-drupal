@@ -1,0 +1,66 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Doing instanceof PHPStan\\\\Type\\\\Constant\\\\ConstantArrayType is error\\-prone and deprecated\\. Use Type\\:\\:getConstantArrays\\(\\) instead\\.$#"
+			count: 1
+			path: src/Rules/Deprecations/ConditionManagerCreateInstanceContextConfigurationRule.php
+
+		-
+			message: "#^Doing instanceof PHPStan\\\\Type\\\\Constant\\\\ConstantStringType is error\\-prone and deprecated\\. Use Type\\:\\:getConstantStrings\\(\\) instead\\.$#"
+			count: 1
+			path: src/Rules/Deprecations/ConditionManagerCreateInstanceContextConfigurationRule.php
+
+		-
+			message: "#^Doing instanceof PHPStan\\\\Type\\\\Constant\\\\ConstantStringType is error\\-prone and deprecated\\. Use Type\\:\\:getConstantStrings\\(\\) instead\\.$#"
+			count: 1
+			path: src/Rules/Drupal/LoadIncludeBase.php
+
+		-
+			message: "#^Doing instanceof PHPStan\\\\Type\\\\Constant\\\\ConstantArrayType is error\\-prone and deprecated\\. Use Type\\:\\:getConstantArrays\\(\\) instead\\.$#"
+			count: 1
+			path: src/Rules/Drupal/RenderCallbackRule.php
+
+		-
+			message: "#^Doing instanceof PHPStan\\\\Type\\\\Constant\\\\ConstantStringType is error\\-prone and deprecated\\. Use Type\\:\\:getConstantStrings\\(\\) instead\\.$#"
+			count: 3
+			path: src/Rules/Drupal/RenderCallbackRule.php
+
+		-
+			message: "#^Doing instanceof PHPStan\\\\Type\\\\Generic\\\\GenericClassStringType is error\\-prone and deprecated\\. Use Type\\:\\:isClassStringType\\(\\) and Type\\:\\:getClassStringObjectType\\(\\) instead\\.$#"
+			count: 1
+			path: src/Rules/Drupal/RenderCallbackRule.php
+
+		-
+			message: "#^Doing instanceof PHPStan\\\\Type\\\\IntersectionType is error\\-prone and deprecated\\.$#"
+			count: 1
+			path: src/Rules/Drupal/RenderCallbackRule.php
+
+		-
+			message: "#^Doing instanceof PHPStan\\\\Type\\\\ObjectType is error\\-prone and deprecated\\. Use Type\\:\\:isObject\\(\\) or Type\\:\\:getObjectClassNames\\(\\) instead\\.$#"
+			count: 1
+			path: src/Rules/Drupal/Tests/BrowserTestBaseDefaultThemeRule.php
+
+		-
+			message: "#^Doing instanceof PHPStan\\\\Type\\\\ObjectType is error\\-prone and deprecated\\. Use Type\\:\\:isObject\\(\\) or Type\\:\\:getObjectClassNames\\(\\) instead\\.$#"
+			count: 1
+			path: src/Type/DrupalStaticEntityQueryDynamicReturnTypeExtension.php
+
+		-
+			message: "#^Doing instanceof PHPStan\\\\Type\\\\ObjectType is error\\-prone and deprecated\\. Use Type\\:\\:isObject\\(\\) or Type\\:\\:getObjectClassNames\\(\\) instead\\.$#"
+			count: 1
+			path: src/Type/EntityQuery/EntityQueryDynamicReturnTypeExtension.php
+
+		-
+			message: "#^Doing instanceof PHPStan\\\\Type\\\\ObjectType is error\\-prone and deprecated\\. Use Type\\:\\:isObject\\(\\) or Type\\:\\:getObjectClassNames\\(\\) instead\\.$#"
+			count: 1
+			path: src/Type/EntityStorage/EntityStorageDynamicReturnTypeExtension.php
+
+		-
+			message: "#^Doing instanceof PHPStan\\\\Type\\\\ObjectType is error\\-prone and deprecated\\. Use Type\\:\\:isObject\\(\\) or Type\\:\\:getObjectClassNames\\(\\) instead\\.$#"
+			count: 2
+			path: src/Type/EntityStorage/GetQueryReturnTypeExtension.php
+
+		-
+			message: "#^Doing instanceof PHPStan\\\\Type\\\\ObjectType is error\\-prone and deprecated\\. Use Type\\:\\:isObject\\(\\) or Type\\:\\:getObjectClassNames\\(\\) instead\\.$#"
+			count: 1
+			path: src/Type/EntityTypeManagerGetStorageDynamicReturnTypeExtension.php

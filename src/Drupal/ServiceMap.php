@@ -23,23 +23,23 @@ class ServiceMap
     public function setDrupalServices(array $drupalServices): void
     {
         self::$services = [];
+        $decorators = [];
 
         foreach ($drupalServices as $serviceId => $serviceDefinition) {
+            if (isset($serviceDefinition['alias'], $drupalServices[$serviceDefinition['alias']])) {
+                $serviceDefinition = $drupalServices[$serviceDefinition['alias']];
+            }
             if (isset($serviceDefinition['parent'], $drupalServices[$serviceDefinition['parent']])) {
                 $serviceDefinition = $this->resolveParentDefinition($serviceDefinition['parent'], $serviceDefinition, $drupalServices);
             }
 
+            if (isset($serviceDefinition['decorates'])) {
+                $decorators[$serviceDefinition['decorates']][] = $serviceId;
+            }
+
             // @todo support factories
             if (!isset($serviceDefinition['class'])) {
-                if (isset($serviceDefinition['alias'], $drupalServices[$serviceDefinition['alias']])) {
-                    $aliasedService = $drupalServices[$serviceDefinition['alias']];
-
-                    if (isset($aliasedService['class'])) {
-                        $serviceDefinition['class'] = $drupalServices[$serviceDefinition['alias']]['class'];
-                    } elseif (class_exists($serviceDefinition['alias'])) {
-                        $serviceDefinition['class'] = $serviceDefinition['alias'];
-                    }
-                } elseif (class_exists($serviceId)) {
+                if (class_exists($serviceId)) {
                     $serviceDefinition['class'] = $serviceId;
                 } else {
                     continue;
@@ -54,6 +54,15 @@ class ServiceMap
             $deprecated = $serviceDefinition['deprecated'] ?? null;
             if ($deprecated) {
                 self::$services[$serviceId]->setDeprecated(true, $deprecated);
+            }
+        }
+
+        foreach ($decorators as $decorated_service_id => $services) {
+            foreach ($services as $dcorating_service_id) {
+                if (!isset(self::$services[$decorated_service_id])) {
+                    continue;
+                }
+                self::$services[$decorated_service_id]->addDecorator(self::$services[$dcorating_service_id]);
             }
         }
     }

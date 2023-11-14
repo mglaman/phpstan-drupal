@@ -1,0 +1,15 @@
+<?php
+
+namespace Drupal\file\Plugin\Field\FieldType;
+
+use Drupal\Core\Field\Plugin\Field\FieldType\EntityReferenceItem;
+use Drupal\file\FileInterface;
+
+/**
+ * @extends EntityReferenceItem<FileInterface>
+ * @property bool $display
+ * @property string $description
+ */
+class FileItem extends EntityReferenceItem {
+
+}

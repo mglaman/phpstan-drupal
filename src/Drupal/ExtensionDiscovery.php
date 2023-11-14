@@ -376,10 +376,12 @@ class ExtensionDiscovery
             // Determine extension type from info file.
             $type = false;
             $file = $fileinfo->openFile('r');
-            while (!$type && !$file->eof()) {
-                preg_match('@^type:\s*(\'|")?(\w+)\1?\s*$@', $file->fgets(), $matches);
-                if (isset($matches[2])) {
-                    $type = $matches[2];
+            while ($type === false && !$file->eof()) {
+                if ($line = $file->fgets()) {
+                    preg_match('@^type:\s*(\'|")?(\w+)\1?\s*$@', $line, $matches);
+                    if (isset($matches[2])) {
+                        $type = $matches[2];
+                    }
                 }
             }
             if ($type === false) {
