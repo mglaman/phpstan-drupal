@@ -1,0 +1,11 @@
+<?php
+
+namespace DerecatedFieldWidgetHooks;
+
+function deprecated_field_widget_hooks_field_widget_form_alter() {
+
+}
+
+function deprecated_field_widget_hooks_field_widget_textfield_form_alter() {
+
+}
