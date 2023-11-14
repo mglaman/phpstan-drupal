@@ -35,18 +35,21 @@ class DeprecatedHookImplementationTest extends DrupalRuleTestCase {
                 5,
             ],
         ]);
-        $this->analyse([__DIR__ . '/data/deprecated_field_widget_hooks.module'],
-        [
-            [
-                'Function deprecated_field_widget_hooks_field_widget_form_alter implements hook_field_widget_form_alter which is deprecated in drupal:9.2.0 and is removed from drupal:10.0.0. Use
+        [$version] = explode('.', \Drupal::VERSION, 2);
+        if ($version === '9') {
+            $this->analyse([__DIR__ . '/data/deprecated_field_widget_hooks.module'],
+                [
+                    [
+                        'Function deprecated_field_widget_hooks_field_widget_form_alter implements hook_field_widget_form_alter which is deprecated in drupal:9.2.0 and is removed from drupal:10.0.0. Use
   hook_field_widget_single_element_form_alter instead.',
-                5
-            ],
-            [
-                'Function deprecated_field_widget_hooks_field_widget_textfield_form_alter implements hook_field_widget_WIDGET_TYPE_form_alter which is deprecated in drupal:9.2.0 and is removed from drupal:10.0.0. Use hook_field_widget_single_element_WIDGET_TYPE_form_alter instead.',
-                9
-            ]
-        ]);
+                        5
+                    ],
+                    [
+                        'Function deprecated_field_widget_hooks_field_widget_textfield_form_alter implements hook_field_widget_WIDGET_TYPE_form_alter which is deprecated in drupal:9.2.0 and is removed from drupal:10.0.0. Use hook_field_widget_single_element_WIDGET_TYPE_form_alter instead.',
+                        9
+                    ]
+                ]);
+        }
     }
 
 }
