@@ -18,7 +18,7 @@ parameters:
 	drupal:
 		drupal_root: '%currentWorkingDirectory%'
 		bleedingEdge:
-			checkDeprecatedHooks: false
+			checkDeprecatedHooksInApiFiles: false
 		entityMapping:
 			aggregator_feed:
 				class: Drupal\aggregator\Entity\Feed
@@ -236,7 +236,7 @@ parametersSchema:
 	drupal: structure([
 		drupal_root: string()
 		bleedingEdge: structure([
-			checkDeprecatedHooks: boolean()
+			checkDeprecatedHooksInApiFiles: boolean()
 		])
 		entityMapping: arrayOf(anyOf(
 			structure([
