@@ -2,7 +2,7 @@ POST https://gkyhj54sul.execute-api.us-east-1.amazonaws.com/prod/analyse
 Content-Type: application/json
 
 {
-  "code": "<?php\nmodule_load_include('inc', 'node', 'node.admin');",
+  "code": "<?php\n\nmodule_load_include('inc', 'foo', 'node.admin');\n\n\\Drupal::moduleHandler()->loadInclude('node', 'inc', 'node.admin');\n\n(new \\Drupal\\Component\\Uuid\\Php)->generate();",
   "level": "9",
   "strictRules": false,
   "bleedingEdge": false,

@@ -204,7 +204,7 @@ async function analyseResult(request: HttpRequest): Promise<HttpResponse> {
 			runStrictRules,
 			runBleedingEdge,
 			treatPhpDocTypesAsCertain,
-			[70200, 70300, 70400, 80000, 80100, 80200, 80300],
+			[80100, 80200, 80300],
 		);
 		const response: any = {
 			tabs: createTabs(versionedErrors),
