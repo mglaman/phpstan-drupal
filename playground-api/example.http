@@ -4,6 +4,7 @@ Content-Type: application/json
 {
   "code": "<?php\n\nmodule_load_include('inc', 'foo', 'node.admin');\n\n\\Drupal::moduleHandler()->loadInclude('node', 'inc', 'node.admin');\n\n(new \\Drupal\\Component\\Uuid\\Php)->generate();",
   "level": "9",
+  "debug": true,
   "strictRules": false,
   "bleedingEdge": false,
   "treatPhpDocTypesAsCertain": true,
