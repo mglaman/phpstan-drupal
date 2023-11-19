@@ -1,6 +1,7 @@
 {
     "require": {
         "php": "^8.1",
+        "composer-runtime-api": "^2.0",
         "bref/bref": "^2.0.0",
         "drupal/core": "^10",
         "drupal/core-dev": "^10",

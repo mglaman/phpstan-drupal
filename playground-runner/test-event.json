@@ -1,4 +1,9 @@
 {
-    "level": 0,
-    "code": "<?php\nmodule_load_include('inc', 'node', 'node.admin');"
+    "code": "<?php\n\nmodule_load_include('inc', 'foo', 'node.admin');\n\n\\Drupal::moduleHandler()->loadInclude('node', 'inc', 'node.admin');\n\n(new \\Drupal\\Component\\Uuid\\Php)->generate();",
+    "debug": true,
+    "level": "9",
+    "strictRules": false,
+    "bleedingEdge": false,
+    "treatPhpDocTypesAsCertain": true,
+    "saveResult": true
 }

@@ -2,7 +2,10 @@
 
 declare(strict_types = 1);
 
+use Composer\InstalledVersions;
+use Nette\Neon\Neon;
 use PHPStan\AnalysedCodeException;
+use PHPStan\Analyser\Analyser;
 use PHPStan\Analyser\Error;
 use PHPStan\Analyser\RuleErrorTransformer;
 use PHPStan\Analyser\ScopeContext;
@@ -11,6 +14,7 @@ use PHPStan\BetterReflection\NodeCompiler\Exception\UnableToCompileNode;
 use PHPStan\BetterReflection\Reflection\Exception\CircularReference;
 use PHPStan\BetterReflection\Reflector\Exception\IdentifierNotFound;
 use PHPStan\Collectors\CollectedData;
+use PHPStan\DependencyInjection\ContainerFactory;
 use PHPStan\Node\CollectedDataNode;
 use Symfony\Component\Console\Formatter\OutputFormatter;
 
@@ -19,9 +23,10 @@ require __DIR__.'/vendor/autoload.php';
 error_reporting(E_ALL);
 ini_set('display_errors', '1');
 
-$phpstanVersion = \Composer\InstalledVersions::getPrettyVersion('phpstan/phpstan');
-$phpstanDrupalVersion = \Composer\InstalledVersions::getPrettyVersion('mglaman/phpstan-drupal');
-$drupalCoreVersion = \Composer\InstalledVersions::getPrettyVersion('drupal/core');
+$phpstanVersion = InstalledVersions::getPrettyVersion('phpstan/phpstan');
+$phpstanDrupalVersion = InstalledVersions::getPrettyVersion('mglaman/phpstan-drupal');
+// @note: we use the constant here, because analysis fails for _some reason_ unless the class is loaded ahead of time.
+$drupalCoreVersion = \Drupal::VERSION;
 
 /**
  * @param CollectedData[] $collectedData
@@ -77,6 +82,7 @@ return function(array $event) use ($phpstanVersion, $phpstanDrupalVersion, $drup
         mkdir($tmpDir);
     }
 	clearTemp($tmpDir);
+    $debug = $event['debug'] ?? false;
 	$code = $event['code'];
 	$level = $event['level'];
 	$codePath = sys_get_temp_dir() . '/phpstan-runner/tmp.php';
@@ -100,7 +106,7 @@ return function(array $event) use ($phpstanVersion, $phpstanDrupalVersion, $drup
 		$configFiles[] = $file;
 	}
 	$finalConfigFile = $tmpDir . '/run-phpstan-tmp.neon';
-	$neon = \Nette\Neon\Neon::encode([
+	$neon = Neon::encode([
 		'includes' => $configFiles,
 		'parameters' => [
 			'inferPrivatePropertyTypeFromConstructor' => true,
@@ -110,7 +116,7 @@ return function(array $event) use ($phpstanVersion, $phpstanDrupalVersion, $drup
 				'disableRuntimeReflectionProvider' => true,
 			],
             'drupal' => [
-                'drupal_root' => \Composer\InstalledVersions::getInstallPath('drupal/core'),
+                'drupal_root' => InstalledVersions::getInstallPath('drupal/core'),
             ],
 		],
 		'services' => [
@@ -131,7 +137,7 @@ return function(array $event) use ($phpstanVersion, $phpstanDrupalVersion, $drup
 	require_once 'phar://' . $rootDir . '/vendor/phpstan/phpstan/phpstan.phar/stubs/runtime/Enum/ReflectionEnumUnitCase.php';
 	require_once 'phar://' . $rootDir . '/vendor/phpstan/phpstan/phpstan.phar/stubs/runtime/Enum/ReflectionEnumBackedCase.php';
 
-	$containerFactory = new \PHPStan\DependencyInjection\ContainerFactory($tmpDir);
+	$containerFactory = new ContainerFactory($tmpDir);
 	$container = $containerFactory->create($tmpDir, [sprintf('%s/config.level%s.neon', $containerFactory->getConfigDirectory(), $level), $finalConfigFile], [$codePath]);
 
     // Note: this is the big change from the parent script in phpstan-src.
@@ -141,18 +147,22 @@ return function(array $event) use ($phpstanVersion, $phpstanDrupalVersion, $drup
                 require_once $bootstrapFileFromArray;
             })($bootstrapFileFromArray);
         } catch (Throwable $e) {
-            $error = sprintf('%s thrown in %s on line %d while loading bootstrap file %s: %s', get_class($e), $e->getFile(), $e->getLine(), $file, $e->getMessage());
-            return ['result' => [$error], 'versions' => [
-                'phpstan' => $phpstanVersion,
-                'phpstan-drupal' => $phpstanDrupalVersion,
-                'drupal' => $drupalCoreVersion,
-            ]];
+            $error = sprintf('%s thrown in %s on line %d while loading bootstrap file %s: %s', get_class($e), $e->getFile(), $e->getLine(), $bootstrapFileFromArray, $e->getMessage());
+            return [
+                'result' => [$error],
+                'versions' => [
+                    'phpstan' => $phpstanVersion,
+                    'phpstan-drupal' => $phpstanDrupalVersion,
+                    'drupal' => $drupalCoreVersion,
+                ],
+                'request' => $event
+            ];
         }
     }
 
-	/** @var \PHPStan\Analyser\Analyser $analyser */
-	$analyser = $container->getByType(\PHPStan\Analyser\Analyser::class);
-	$analyserResult = $analyser->analyse([$codePath], null, null, false, [$codePath]);
+	/** @var Analyser $analyser */
+	$analyser = $container->getByType(Analyser::class);
+	$analyserResult = $analyser->analyse([$codePath], null, null, $debug, [$codePath]);
 	$hasInternalErrors = count($analyserResult->getInternalErrors()) > 0 || $analyserResult->hasReachedInternalErrorsCountLimit();
 	$results = $analyserResult->getErrors();
 

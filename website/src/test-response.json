@@ -1,0 +1,67 @@
+{
+  "tabs": [
+    {
+      "errors": [
+        {
+          "line": 3,
+          "message": "Call to deprecated function module_load_include():\nin drupal:9.4.0 and is removed from drupal:11.0.0.\n  Use \\Drupal::moduleHandler()->loadInclude($module, $type, $name = NULL).\n  Note that including code from uninstalled extensions is no longer\n  supported.",
+          "ignorable": true
+        },
+        {
+          "line": 3,
+          "message": "File node.admin.inc could not be loaded from module_load_include because foo module is not found.",
+          "ignorable": true
+        }
+      ],
+      "title": "PHP 8.1 – 8.3 (2 errors)"
+    }
+  ],
+  "versionedErrors": [
+    {
+      "phpVersion": 80100,
+      "errors": [
+        {
+          "line": 3,
+          "message": "Call to deprecated function module_load_include():\nin drupal:9.4.0 and is removed from drupal:11.0.0.\n  Use \\Drupal::moduleHandler()->loadInclude($module, $type, $name = NULL).\n  Note that including code from uninstalled extensions is no longer\n  supported.",
+          "ignorable": true
+        },
+        {
+          "line": 3,
+          "message": "File node.admin.inc could not be loaded from module_load_include because foo module is not found.",
+          "ignorable": true
+        }
+      ]
+    },
+    {
+      "phpVersion": 80200,
+      "errors": [
+        {
+          "line": 3,
+          "message": "Call to deprecated function module_load_include():\nin drupal:9.4.0 and is removed from drupal:11.0.0.\n  Use \\Drupal::moduleHandler()->loadInclude($module, $type, $name = NULL).\n  Note that including code from uninstalled extensions is no longer\n  supported.",
+          "ignorable": true
+        },
+        {
+          "line": 3,
+          "message": "File node.admin.inc could not be loaded from module_load_include because foo module is not found.",
+          "ignorable": true
+        }
+      ]
+    },
+    {
+      "phpVersion": 80300,
+      "errors": [
+        {
+          "line": 3,
+          "message": "Call to deprecated function module_load_include():\nin drupal:9.4.0 and is removed from drupal:11.0.0.\n  Use \\Drupal::moduleHandler()->loadInclude($module, $type, $name = NULL).\n  Note that including code from uninstalled extensions is no longer\n  supported.",
+          "ignorable": true
+        },
+        {
+          "line": 3,
+          "message": "File node.admin.inc could not be loaded from module_load_include because foo module is not found.",
+          "ignorable": true
+        }
+      ]
+    }
+  ],
+  "id": "d22c810f-dd6c-4769-aa4d-41c3be5792f4"
+}

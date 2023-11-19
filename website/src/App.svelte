@@ -1,0 +1,202 @@
+<script>
+    import {createEditor} from "./editor.js";
+    import {onMount} from "svelte";
+
+    let editor;
+    onMount(() => {
+        createEditor(editor, data.code, update => data.code = update)
+    })
+
+    const apiUrl = 'https://gkyhj54sul.execute-api.us-east-1.amazonaws.com/prod';
+    const data = {
+        code: `<?php\n\nmodule_load_include('inc', 'foo', 'node.admin');\n\n\\Drupal::moduleHandler()->loadInclude('node', 'inc', 'node.admin');`,
+        level: '9',
+        strictRules: false,
+        bleedingEdge: false,
+        treatPhpDocTypesAsCertain: true,
+        saveResult: false,
+    };
+    let processing = false;
+    let result = JSON.parse(`{
+  "tabs": [
+    {
+      "errors": [
+        {
+          "line": 3,
+          "message": "Call to deprecated function module_load_include():\\nin drupal:9.4.0 and is removed from drupal:11.0.0.\\n  Use \\\\Drupal::moduleHandler()->loadInclude($module, $type, $name = NULL).\\n  Note that including code from uninstalled extensions is no longer\\n  supported.",
+          "ignorable": true
+        },
+        {
+          "line": 3,
+          "message": "File node.admin.inc could not be loaded from module_load_include because foo module is not found.",
+          "ignorable": true
+        }
+      ],
+      "title": "PHP 8.1 – 8.3 (2 errors)"
+    }
+  ],
+  "versionedErrors": [
+    {
+      "phpVersion": 80100,
+      "errors": [
+        {
+          "line": 3,
+          "message": "Call to deprecated function module_load_include():\\nin drupal:9.4.0 and is removed from drupal:11.0.0.\\n  Use \\\\Drupal::moduleHandler()->loadInclude($module, $type, $name = NULL).\\n  Note that including code from uninstalled extensions is no longer\\n  supported.",
+          "ignorable": true
+        },
+        {
+          "line": 3,
+          "message": "File node.admin.inc could not be loaded from module_load_include because foo module is not found.",
+          "ignorable": true
+        }
+      ]
+    },
+    {
+      "phpVersion": 80200,
+      "errors": [
+        {
+          "line": 3,
+          "message": "Call to deprecated function module_load_include():\\nin drupal:9.4.0 and is removed from drupal:11.0.0.\\n  Use \\\\Drupal::moduleHandler()->loadInclude($module, $type, $name = NULL).\\n  Note that including code from uninstalled extensions is no longer\\n  supported.",
+          "ignorable": true
+        },
+        {
+          "line": 3,
+          "message": "File node.admin.inc could not be loaded from module_load_include because foo module is not found.",
+          "ignorable": true
+        }
+      ]
+    },
+    {
+      "phpVersion": 80300,
+      "errors": [
+        {
+          "line": 3,
+          "message": "Call to deprecated function module_load_include():\\nin drupal:9.4.0 and is removed from drupal:11.0.0.\\n  Use \\\\Drupal::moduleHandler()->loadInclude($module, $type, $name = NULL).\\n  Note that including code from uninstalled extensions is no longer\\n  supported.",
+          "ignorable": true
+        },
+        {
+          "line": 3,
+          "message": "File node.admin.inc could not be loaded from module_load_include because foo module is not found.",
+          "ignorable": true
+        }
+      ]
+    }
+  ],
+  "id": "d22c810f-dd6c-4769-aa4d-41c3be5792f4"
+}
+`);
+    async function analyse (event) {
+        event.preventDefault();
+        processing = true;
+        try {
+            const response = await fetch(`${apiUrl}/analyse`, {
+                method: 'POST',
+                body: JSON.stringify(data),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            result = await response.json();
+            console.log(result);
+        } catch (error) {
+            console.error(error);
+        } finally {
+            processing = false;
+        }
+    }
+</script>
+<svelte:head>
+    <!-- Fathom - beautiful, simple website analytics -->
+    <script src="https://cdn.usefathom.com/script.js" data-site="JQIHBWMK" defer></script>
+    <!-- / Fathom -->
+</svelte:head>
+<div class="py-8">
+    <main class="max-w-5xl md:px-6 mx-auto bg-white rounded-lg">
+        <div class="p-8">
+            <h1 class="text-3xl">Playground</h1>
+            <p class="mb-4 md:px-0 pt-4 px-4">Try out PHPStan with phpstan-drupal and all of its features here in the editor. <a href="https://phpstan.org/" class="hover:no-underline underline">Learn more about PHPStan »</a></p>
+            <form class="space-y-4" on:submit={analyse}>
+                <div bind:this={editor}></div>
+                {#if !editor}
+                    <textarea bind:value={data.code} rows="10" name="code" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-light-navy-blue sm:text-sm sm:leading-6"></textarea>
+                {/if}
+                {(console.log(data), '')}
+                <details class="border border-gray-300 rounded-md p-2">
+                    <summary class="text-sm">Advanced options</summary>
+                    <div class="flex flex-col items-center md:flex-row mt-4 space-x-6">
+                        <label class="inline-flex items-center md:mt-0 mt-4">
+                            <input type="checkbox" name="strictRules" bind:checked={data.strictRules} class="border-gray-300 rounded">
+                            <span class="ml-2">Strict rules</span>
+                        </label>
+                        <label class="inline-flex items-center md:mt-0 mt-4">
+                            <input type="checkbox" name="bleedingEdge" bind:checked={data.bleedingEdge} class="border-gray-300 rounded">
+                            <span class="ml-2">Bleeding edge</span>
+                        </label>
+                        <label class="inline-flex items-center md:mt-0 mt-4">
+                            <input type="checkbox" name="treatPhpDocTypesAsCertain" bind:checked={data.treatPhpDocTypesAsCertain} class="border-gray-300 rounded">
+                            <span class="ml-2">Treat PHPDoc types as certain</span>
+                        </label>
+                    </div>
+                </details>
+                <div class="flex flex-col items-center md:flex-row mt-4 space-x-4">
+                    <select name="level" bind:value={data.level} class="block border border-gray-300 md:mt-0 md:mx-0 mt-4 mx-4 rounded-md">
+                        <option value="0">Level 0</option>
+                        <option value="1">Level 1</option>
+                        <option value="2">Level 2</option>
+                        <option value="3">Level 3</option>
+                        <option value="4">Level 4</option>
+                        <option value="5">Level 5</option>
+                        <option value="6">Level 6</option>
+                        <option value="7">Level 7</option>
+                        <option value="8">Level 8</option>
+                        <option value="9">Level 9</option>
+                    </select>
+                    <button disabled={processing} class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" type="submit">Analyse</button>
+                    <div class="flex-grow"></div>
+                    <button type="button" data-bind="click: share" class="bg-gray-100 border border-gray-300 flex-grow font-medium h-10 hover:bg-gray-200 inline-flex items-center justify-center leading-4 md:flex-grow-0 md:mx-0 md:w-32 mx-4 px-2.5 py-3 rounded-lg text-md w-auto">
+                        <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" class="h-6 w-6"><path d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path></svg>
+                        <span class="ml-2" data-bind="text: shareText">Share</span>
+                    </button>
+                </div>
+            </form>
+            <div class="pt-4">
+                {#each result?.tabs || [] as tab}
+                    {#if tab.errors.length > 0}
+                        <div class="flex items-stretch md:mx-0 mx-4">
+                            <span class="bg-red-100 flex-grow font-medium h-12 inline-flex items-center justify-center leading-4 md:flex-grow-0 mt-4 px-4 py-3 rounded-lg text-lg text-red-900" data-bind="text: errorsText">
+                                Found 2 errors
+                            </span>
+                        </div>
+                        <table class="mt-8 w-full">
+                            <thead>
+                                <tr>
+                                    <th class="bg-gray-50 border-b border-gray-200 font-medium leading-4 px-6 py-3 text-base text-gray-500 text-left tracking-wider"> Line </th>
+                                    <th class="bg-gray-50 border-b border-gray-200 font-medium leading-4 px-6 py-3 text-base text-gray-500 text-left tracking-wider"> Error </th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white">
+                            {#each tab.errors as error}
+                                <tr>
+                                    <td class="border-b border-gray-200 font-medium leading-5 px-6 py-4 text-base text-gray-500">
+                                        {error.line}
+                                    </td>
+                                    <td class="border-b border-gray-200 font-medium leading-5 px-6 py-4 text-base text-gray-500">
+                                        <div class="flex flex-col md:flex-row md:items-center">
+                                            <div class="flex-shrink">
+                                                <div>{error.message}</div>
+                                                {#if error.tip}
+                                                    <div>{error.tip}</div>
+                                                {/if}
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {/each}
+                            </tbody>
+                        </table>
+                    {/if}
+                {/each}
+            </div>
+        </div>
+    </main>
+</div>
