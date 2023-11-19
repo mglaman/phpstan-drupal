@@ -261,16 +261,16 @@
         },
         {
             "name": "bref/bref",
-            "version": "2.1.7",
+            "version": "2.1.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/brefphp/bref.git",
-                "reference": "c048947f8ac2166785a671ed4673f23481f7256b"
+                "reference": "7545dbbb5fc5c2d1e806cc0083dfb126a26ebfb9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/brefphp/bref/zipball/c048947f8ac2166785a671ed4673f23481f7256b",
-                "reference": "c048947f8ac2166785a671ed4673f23481f7256b",
+                "url": "https://api.github.com/repos/brefphp/bref/zipball/7545dbbb5fc5c2d1e806cc0083dfb126a26ebfb9",
+                "reference": "7545dbbb5fc5c2d1e806cc0083dfb126a26ebfb9",
                 "shasum": ""
             },
             "require": {
@@ -324,7 +324,7 @@
             ],
             "support": {
                 "issues": "https://github.com/brefphp/bref/issues",
-                "source": "https://github.com/brefphp/bref/tree/2.1.7"
+                "source": "https://github.com/brefphp/bref/tree/2.1.8"
             },
             "funding": [
                 {
@@ -336,7 +336,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2023-11-08T09:02:57+00:00"
+            "time": "2023-11-14T14:01:56+00:00"
         },
         {
             "name": "colinodell/psr-testlogger",
@@ -3104,16 +3104,16 @@
         },
         {
             "name": "nyholm/psr7",
-            "version": "1.8.0",
+            "version": "1.8.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Nyholm/psr7.git",
-                "reference": "3cb4d163b58589e47b35103e8e5e6a6a475b47be"
+                "reference": "aa5fc277a4f5508013d571341ade0c3886d4d00e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Nyholm/psr7/zipball/3cb4d163b58589e47b35103e8e5e6a6a475b47be",
-                "reference": "3cb4d163b58589e47b35103e8e5e6a6a475b47be",
+                "url": "https://api.github.com/repos/Nyholm/psr7/zipball/aa5fc277a4f5508013d571341ade0c3886d4d00e",
+                "reference": "aa5fc277a4f5508013d571341ade0c3886d4d00e",
                 "shasum": ""
             },
             "require": {
@@ -3166,7 +3166,7 @@
             ],
             "support": {
                 "issues": "https://github.com/Nyholm/psr7/issues",
-                "source": "https://github.com/Nyholm/psr7/tree/1.8.0"
+                "source": "https://github.com/Nyholm/psr7/tree/1.8.1"
             },
             "funding": [
                 {
@@ -3178,7 +3178,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2023-05-02T11:26:24+00:00"
+            "time": "2023-11-13T09:31:12+00:00"
         },
         {
             "name": "pear/archive_tar",
@@ -9660,5 +9660,5 @@
         "composer-runtime-api": "^2.0"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.6.0"
 }
