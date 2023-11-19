@@ -36,4 +36,4 @@ jobs:
         run: aws s3 sync ./dist s3://phpstan-drupal-web
       - name: Invalidate CloudFront
         working-directory: ./app
-        run: aws cloudfront create-invalidation --distribution-id CHANGE_ME --paths "/*"
+        run: aws cloudfront create-invalidation --distribution-id EJLWUQZMNXH6E --paths "/*"
