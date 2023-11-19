@@ -9,3 +9,4 @@ phpstan.neon export-ignore
 
 /playground-runner export-ignore
 /playground-api export-ignore
+/website export-ignore
