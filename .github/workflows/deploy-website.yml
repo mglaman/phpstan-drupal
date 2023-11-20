@@ -32,8 +32,8 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
       - name: Deploy
-        working-directory: ./app
+        working-directory: ./website
         run: aws s3 sync ./dist s3://phpstan-drupal-web
       - name: Invalidate CloudFront
-        working-directory: ./app
+        working-directory: ./website
         run: aws cloudfront create-invalidation --distribution-id EJLWUQZMNXH6E --paths "/*"
