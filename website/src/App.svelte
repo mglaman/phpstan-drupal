@@ -2,13 +2,20 @@
     import {createEditor} from "./editor.js";
     import {onMount} from "svelte";
 
-    let editor;
+    let editor, editorMount;
     onMount(() => {
         const resultMatch = window.location.pathname.match(/^\/r\/([0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12})$/i);
         if (resultMatch !== null) {
-            fetchResult(resultMatch[1]);
+            fetchResult(resultMatch[1])
+                .then(() => {
+                    editor.dispatch({changes: {
+                            from: 0,
+                            to: editor.state.doc.length,
+                            insert: data.code
+                        }})
+                })
         }
-        createEditor(editor, data.code, update => data.code = update)
+        editor = createEditor(editorMount, data.code, update => data.code = update)
     })
 
     const apiUrl = 'https://gkyhj54sul.execute-api.us-east-1.amazonaws.com/prod';
@@ -161,7 +168,7 @@
             <h1 class="text-3xl">Playground</h1>
             <p class="mb-4 md:px-0 pt-4 px-4">Try out PHPStan with phpstan-drupal and all of its features here in the editor. <a href="https://phpstan.org/" class="hover:no-underline underline">Learn more about PHPStan »</a></p>
             <form class="space-y-4" on:submit={analyse}>
-                <div bind:this={editor}></div>
+                <div bind:this={editorMount}></div>
                 {#if !editor}
                     <textarea bind:value={data.code} rows="10" name="code" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-light-navy-blue sm:text-sm sm:leading-6"></textarea>
                 {/if}
@@ -197,9 +204,9 @@
                     </select>
                     <button disabled={processing} class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" type="submit">Analyse</button>
                     <div class="flex-grow"></div>
-                    <button on:click={share} type="button" data-bind="click: share" class="bg-gray-100 border border-gray-300 flex-grow font-medium h-10 hover:bg-gray-200 inline-flex items-center justify-center leading-4 md:flex-grow-0 md:mx-0 md:w-32 mx-4 px-2.5 py-3 rounded-lg text-md w-auto">
+                    <button on:click={share} type="button" class="bg-gray-100 border border-gray-300 flex-grow font-medium h-10 hover:bg-gray-200 inline-flex items-center justify-center leading-4 md:flex-grow-0 md:mx-0 md:w-32 mx-4 px-2.5 py-3 rounded-lg text-md w-auto">
                         <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" class="h-6 w-6"><path d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path></svg>
-                        <span class="ml-2" data-bind="text: shareText">Share</span>
+                        <span class="ml-2">Share</span>
                     </button>
                 </div>
             </form>
