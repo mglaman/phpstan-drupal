@@ -4,6 +4,10 @@
 
     let editor;
     onMount(() => {
+        const resultMatch = window.location.pathname.match(/^\/r\/([0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12})$/i);
+        if (resultMatch !== null) {
+            fetchResult(resultMatch[1]);
+        }
         createEditor(editor, data.code, update => data.code = update)
     })
 
@@ -13,8 +17,7 @@
         level: '9',
         strictRules: false,
         bleedingEdge: false,
-        treatPhpDocTypesAsCertain: true,
-        saveResult: false,
+        treatPhpDocTypesAsCertain: true
     };
     let processing = false;
     let result = JSON.parse(`{
@@ -85,23 +88,65 @@
   "id": "d22c810f-dd6c-4769-aa4d-41c3be5792f4"
 }
 `);
+    async function fetchResult(id) {
+        result = null;
+        processing = true;
+        try {
+            const response = await fetch(`${apiUrl}/result?id=${id}`, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json'
+                }
+            });
+            result = await response.json();
+            data.code = result.code;
+            data.level = result.level;
+            data.strictRules = result.strictRules;
+            data.bleedingEdge = result.bleedingEdge;
+            data.treatPhpDocTypesAsCertain = result.treatPhpDocTypesAsCertain;
+        } catch (error) {
+            console.error(error);
+        } finally {
+            processing = false;
+        }
+    }
     async function analyse (event) {
         event.preventDefault();
+        await doAnalyse(false);
+    }
+
+    async function doAnalyse(saveResult) {
+        result = null;
         processing = true;
         try {
             const response = await fetch(`${apiUrl}/analyse`, {
                 method: 'POST',
-                body: JSON.stringify(data),
+                body: JSON.stringify({
+                    ...data,
+                    saveResult
+                }),
                 headers: {
                     'Content-Type': 'application/json'
                 }
             });
             result = await response.json();
-            console.log(result);
         } catch (error) {
             console.error(error);
         } finally {
             processing = false;
+        }
+    }
+
+    async function share() {
+        const id = result?.id;
+        if (!id) {
+            await doAnalyse(true);
+            window.history.replaceState({}, '', '/r/' + result.id);
+        }
+        if (typeof window.navigator.share !== 'undefined') {
+            await window.navigator.share({url: window.location.href});
+        } else if (typeof window.navigator.clipboard !== 'undefined') {
+            await window.navigator.clipboard.writeText(window.location.href);
         }
     }
 </script>
@@ -120,7 +165,6 @@
                 {#if !editor}
                     <textarea bind:value={data.code} rows="10" name="code" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-light-navy-blue sm:text-sm sm:leading-6"></textarea>
                 {/if}
-                {(console.log(data), '')}
                 <details class="border border-gray-300 rounded-md p-2">
                     <summary class="text-sm">Advanced options</summary>
                     <div class="flex flex-col items-center md:flex-row mt-4 space-x-6">
@@ -153,18 +197,29 @@
                     </select>
                     <button disabled={processing} class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" type="submit">Analyse</button>
                     <div class="flex-grow"></div>
-                    <button type="button" data-bind="click: share" class="bg-gray-100 border border-gray-300 flex-grow font-medium h-10 hover:bg-gray-200 inline-flex items-center justify-center leading-4 md:flex-grow-0 md:mx-0 md:w-32 mx-4 px-2.5 py-3 rounded-lg text-md w-auto">
+                    <button on:click={share} type="button" data-bind="click: share" class="bg-gray-100 border border-gray-300 flex-grow font-medium h-10 hover:bg-gray-200 inline-flex items-center justify-center leading-4 md:flex-grow-0 md:mx-0 md:w-32 mx-4 px-2.5 py-3 rounded-lg text-md w-auto">
                         <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" class="h-6 w-6"><path d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path></svg>
                         <span class="ml-2" data-bind="text: shareText">Share</span>
                     </button>
                 </div>
             </form>
+            {#if processing}
+                <div class="m-auto w-12 h-12 mt-8">
+                    <div role="status">
+                        <svg aria-hidden="true" class="text-gray-200 animate-spin dark:text-gray-600 fill-blue-700" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/>
+                            <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill"/>
+                        </svg>
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                </div>
+            {/if}
             <div class="pt-4">
                 {#each result?.tabs || [] as tab}
                     {#if tab.errors.length > 0}
                         <div class="flex items-stretch md:mx-0 mx-4">
                             <span class="bg-red-100 flex-grow font-medium h-12 inline-flex items-center justify-center leading-4 md:flex-grow-0 mt-4 px-4 py-3 rounded-lg text-lg text-red-900" data-bind="text: errorsText">
-                                Found 2 errors
+                                Found {tab.errors.length} errors
                             </span>
                         </div>
                         <table class="mt-8 w-full">
