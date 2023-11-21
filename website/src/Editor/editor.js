@@ -7,8 +7,11 @@ import {defaultHighlightStyle, syntaxHighlighting, indentOnInput, indentUnit, br
 import {defaultKeymap, history, historyKeymap, indentWithTab} from '@codemirror/commands'
 import {closeBrackets, closeBracketsKeymap} from '@codemirror/autocomplete'
 import {php} from '@codemirror/lang-php'
+import {errorsCompartment, errorsFacet, lineErrors} from "./errors";
+import {hover} from "./hover";
 
-export function createEditor(ref, doc, callback) {
+
+export function createEditor(ref, doc, errors, callback) {
     const startState = EditorState.create({
         doc,
         extensions: [
@@ -36,6 +39,9 @@ export function createEditor(ref, doc, callback) {
                 }
                 callback(update.state.doc.toString());
             }),
+            errorsCompartment.of(errorsFacet.of(errors)),
+            lineErrors,
+            hover
         ]
     });
     return new EditorView({

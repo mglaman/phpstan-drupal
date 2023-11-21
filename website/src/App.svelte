@@ -1,21 +1,12 @@
 <script>
-    import {createEditor} from "./editor.js";
     import {onMount} from "svelte";
+    import Editor from "./Editor/Editor.svelte";
 
-    let editor, editorMount;
     onMount(() => {
         const resultMatch = window.location.pathname.match(/^\/r\/([0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12})$/i);
         if (resultMatch !== null) {
             fetchResult(resultMatch[1])
-                .then(() => {
-                    editor.dispatch({changes: {
-                            from: 0,
-                            to: editor.state.doc.length,
-                            insert: data.code
-                        }})
-                })
         }
-        editor = createEditor(editorMount, data.code, update => data.code = update)
     })
 
     const apiUrl = 'https://gkyhj54sul.execute-api.us-east-1.amazonaws.com/prod';
@@ -174,10 +165,7 @@
             <h1 class="font-bold md:text-4xl sm:text-5xl text-4xl text-gray-900 tracking-tight">PHPStan Drupal Extension Playground</h1>
             <p class="my-4">Try out PHPStan with phpstan-drupal and all of its features here in the editor. <a href="https://phpstan.org/" class="hover:no-underline underline">Learn more about PHPStan »</a></p>
             <form class="space-y-4" on:submit={analyse}>
-                <div bind:this={editorMount}></div>
-                {#if !editor}
-                    <textarea bind:value={data.code} rows="10" name="code" class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-light-navy-blue sm:text-sm sm:leading-6"></textarea>
-                {/if}
+                <Editor code={data.code} errors={result?.tabs[0]?.errors} />
                 <details class="border border-gray-300 rounded-md p-2">
                     <summary class="text-sm">Advanced options</summary>
                     <div class="flex flex-col items-center md:flex-row mt-4 space-x-6">

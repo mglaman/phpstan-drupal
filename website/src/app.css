@@ -5,3 +5,6 @@
 .cm-editor {
     @apply text-base border shadow rounded;
 }
+.ͼ2 .cm-tooltip {
+    @apply bg-transparent border-none;
+}
