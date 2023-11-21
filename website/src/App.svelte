@@ -125,6 +125,9 @@
     async function doAnalyse(saveResult) {
         result = null;
         processing = true;
+        if (typeof window.fathom !== 'undefined') {
+            window.fathom.trackEvent('analyse code');
+        }
         try {
             const response = await fetch(`${apiUrl}/analyse`, {
                 method: 'POST',
@@ -154,6 +157,9 @@
             await window.navigator.share({url: window.location.href});
         } else if (typeof window.navigator.clipboard !== 'undefined') {
             await window.navigator.clipboard.writeText(window.location.href);
+        }
+        if (typeof window.fathom !== 'undefined') {
+            window.fathom.trackEvent('shared result');
         }
     }
 </script>
