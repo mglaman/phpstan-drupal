@@ -15,6 +15,12 @@ final class FooTest {
 
         deprecated_function_call();
 
+        DeprecationHelper::backwardsCompatibleCall(\Drupal::VERSION, '10.1.0', function() {
+            deprecated_function_call();
+        }, function() {
+            count([]);
+        });
+
     }
 
 }
