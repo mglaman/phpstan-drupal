@@ -23,6 +23,12 @@ require __DIR__.'/vendor/autoload.php';
 error_reporting(E_ALL);
 ini_set('display_errors', '1');
 
+\Sentry\init([
+    'dsn' => 'https://eb2a3a58974934df33e68af214e70607@o4505060230627328.ingest.sentry.io/4506276580818944',
+    'traces_sample_rate' => 1.0,
+    'profiles_sample_rate' => 1.0,
+]);
+
 $phpstanVersion = InstalledVersions::getPrettyVersion('phpstan/phpstan');
 $phpstanDrupalVersion = InstalledVersions::getPrettyVersion('mglaman/phpstan-drupal');
 // @note: we use the constant here, because analysis fails for _some reason_ unless the class is loaded ahead of time.

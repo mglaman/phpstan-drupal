@@ -3,6 +3,15 @@ import {PromiseResult} from 'aws-sdk/lib/request';
 import middy from 'middy';
 import { cors } from 'middy/middlewares';
 import { v4 as uuid } from 'uuid';
+import * as Sentry from "@sentry/node";
+
+Sentry.init({
+  dsn: "https://eb2a3a58974934df33e68af214e70607@o4505060230627328.ingest.sentry.io/4506276580818944",
+
+  // We recommend adjusting this value in production, or using tracesSampler
+  // for finer control
+  tracesSampleRate: 1.0,
+});
 
 interface HttpRequest {
 	body: string;
@@ -239,6 +248,7 @@ async function analyseResult(request: HttpRequest): Promise<HttpResponse> {
 		});
 	} catch (e) {
 		console.error(e);
+		Sentry.captureException(e);
 		return Promise.resolve({statusCode: 500});
 	}
 }
@@ -358,6 +368,7 @@ async function retrieveResult(request: HttpRequest): Promise<HttpResponse> {
 		});
 	} catch (e) {
 		console.error(e);
+		Sentry.captureException(e);
 		return Promise.resolve({statusCode: 500});
 	}
 }
@@ -396,6 +407,7 @@ async function retrieveSample(request: HttpRequest): Promise<HttpResponse> {
 		});
 	} catch (e) {
 		console.error(e);
+		Sentry.captureException(e);
 		return Promise.resolve({statusCode: 500});
 	}
 }
@@ -443,6 +455,7 @@ async function retrieveLegacyResult(request: HttpRequest): Promise<HttpResponse>
 		});
 	} catch (e) {
 		console.error(e);
+		Sentry.captureException(e);
 		return Promise.resolve({statusCode: 500});
 	}
 }

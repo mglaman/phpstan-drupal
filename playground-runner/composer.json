@@ -8,6 +8,7 @@
         "mglaman/phpstan-drupal": "^1.2.0",
         "nette/di": "^3",
         "nette/neon": "^3.3",
+        "sentry/sentry": "^4.0",
         "symfony/console": "^6.2"
     },
     "minimum-stability": "dev",
