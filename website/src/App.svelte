@@ -156,7 +156,7 @@
 </script>
 <svelte:head>
     <!-- Fathom - beautiful, simple website analytics -->
-    <script src="https://cdn.usefathom.com/script.js" data-site="JQIHBWMK" defer></script>
+    <script src="https://cdn.usefathom.com/script.js" data-spa="auto" data-site="JQIHBWMK" defer></script>
     <!-- / Fathom -->
 </svelte:head>
 <div class="p-2 md:p-4 lg:py-8 lg:px-0">
