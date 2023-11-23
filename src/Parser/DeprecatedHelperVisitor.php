@@ -14,9 +14,8 @@ class DeprecatedHelperVisitor extends NodeVisitorAbstract implements NodeVisitor
 
     public function enterNode(Node $node)
     {
-
         if ($node instanceof Node\Expr\StaticCall) {
-            if ($node->class instanceof Node\Name\FullyQualified && $node->class->isFullyQualified() && $node->class->toString() === 'Drupal\Component\Utility\DeprecationHelper') {
+            if ($node->class instanceof Node\Name\FullyQualified && $node->class->toString() === 'Drupal\Component\Utility\DeprecationHelper') {
                 $this->deprecatedCall = $node->getArgs()[2];
                 return null;
             }
