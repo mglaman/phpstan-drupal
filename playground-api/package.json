@@ -21,7 +21,7 @@
 	"devDependencies": {
 		"@tsconfig/node18": "^18.0.0",
 		"@types/aws-lambda": "^8.10.112",
-		"@types/node": "^18.15.3",
+		"@types/node": "^20.10.4",
 		"@types/uuid": "^9.0.1",
 		"@typescript-eslint/eslint-plugin": "^6.7.5",
 		"@typescript-eslint/parser": "^6.7.5",
