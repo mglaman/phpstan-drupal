@@ -61,7 +61,7 @@ class DrupalAutoloader
          * @var array{drupal_root: string, bleedingEdge: array{checkDeprecatedHooksInApiFiles: bool}} $drupalParams
          */
         $drupalParams = $container->getParameter('drupal');
-        $drupalRoot = realpath($drupalParams['drupal_root']);
+        $drupalRoot = realpath(getenv('DRUPAL_ROOT') ?: $drupalParams['drupal_root']);
         $finder = new DrupalFinder();
         $finder->locateRoot($drupalRoot);
 
