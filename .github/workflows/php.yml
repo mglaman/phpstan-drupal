@@ -2,16 +2,8 @@ name: Tests
 on:
   push:
     branches: [main]
-    paths-ignore:
-      - 'playground-runner/**'
-      - 'playground-api/**'
-      - 'website/**'
   pull_request:
     branches: [main]
-    paths-ignore:
-      - 'playground-runner/**'
-      - 'playground-api/**'
-      - 'website/**'
   schedule:
     - cron: 0 0 * * *
 
