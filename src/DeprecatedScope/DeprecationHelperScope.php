@@ -22,8 +22,7 @@ final class DeprecationHelperScope implements DeprecatedScopeResolver
             return false;
         }
         // Only run on \Drupal\Component\Utility\DeprecationHelper::backwardsCompatibleCall().
-        if (
-            $previousCall->getName() !== 'backwardsCompatibleCall'
+        if ($previousCall->getName() !== 'backwardsCompatibleCall'
             || $previousCall->getDeclaringClass()->getName() !== DeprecationHelper::class
         ) {
             return false;
