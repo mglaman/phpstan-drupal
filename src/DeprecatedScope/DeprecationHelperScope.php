@@ -13,6 +13,9 @@ final class DeprecationHelperScope implements DeprecatedScopeResolver
 {
     public function isScopeDeprecated(Scope $scope): bool
     {
+        if (!class_exists(DeprecationHelper::class)) {
+            return false;
+        }
         $callStack = $scope->getFunctionCallStack();
         if (count($callStack) === 0) {
             return false;
