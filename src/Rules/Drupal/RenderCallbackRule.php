@@ -96,13 +96,10 @@ final class RenderCallbackRule implements Rule
             if (!$value instanceof Node\Expr\Array_) {
                 return [
                     RuleErrorBuilder::message(sprintf('The "%s" expects a callable array with arguments.', $keyChecked))
-                        ->line($node->getLine())->build()
+                        ->line($node->getStartLine())->build()
                 ];
             }
             if (count($value->items) === 0) {
-                return [];
-            }
-            if ($value->items[0] === null) {
                 return [];
             }
             // @todo take $value->items[1] and validate parameters against the callback.
@@ -112,7 +109,7 @@ final class RenderCallbackRule implements Rule
         if (!$value instanceof Node\Expr\Array_) {
             return [
                 RuleErrorBuilder::message(sprintf('The "%s" render array value expects an array of callbacks.', $keyChecked))
-                    ->line($node->getLine())->build()
+                    ->line($node->getStartLine())->build()
             ];
         }
         if (count($value->items) === 0) {
@@ -120,9 +117,6 @@ final class RenderCallbackRule implements Rule
         }
         $errors = [];
         foreach ($value->items as $pos => $item) {
-            if (!$item instanceof Node\Expr\ArrayItem) {
-                continue;
-            }
             $errors[] = $this->doProcessNode($item->value, $scope, $keyChecked, $pos);
         }
         return array_merge(...$errors);
@@ -141,7 +135,7 @@ final class RenderCallbackRule implements Rule
         ]);
 
         $errors = [];
-        $errorLine = $node->getLine();
+        $errorLine = $node->getStartLine();
         $type = $this->getType($node, $scope);
 
         foreach ($type->getConstantStrings() as $constantStringType) {

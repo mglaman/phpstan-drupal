@@ -17,9 +17,10 @@ jobs:
           - "7.4"
           - "8.0"
           - "8.1"
+          - "8.2"
     steps:
       - name: "Checkout"
-        uses: "actions/checkout@v3"
+        uses: "actions/checkout@v4"
       - name: "Install PHP"
         uses: "shivammathur/setup-php@v2"
         with:
@@ -43,7 +44,6 @@ jobs:
         php-version:
           - "7.4"
         drupal:
-          - "^8.9"
           - "^9.0"
         include:
           - php-version: "8.0"
@@ -53,11 +53,17 @@ jobs:
             drupal: "^10.0"
             experimental: false
           - php-version: "8.1"
+            drupal: "~10.1.0"
+            experimental: false
+          - php-version: "8.2"
+            drupal: "^10.0"
+            experimental: false
+          - php-version: "8.2"
             drupal: "11.x-dev"
             experimental: true
     steps:
       - name: "Checkout"
-        uses: "actions/checkout@v3"
+        uses: "actions/checkout@v4"
       - name: "Install PHP"
         uses: "shivammathur/setup-php@v2"
         with:
@@ -65,15 +71,11 @@ jobs:
           php-version: "${{ matrix.php-version }}"
           tools: composer:v2
           extensions: dom, curl, libxml, mbstring, zip, pdo, mysql, pdo_mysql, gd
-      - name: "Downgrade dev dependencies"
-        run: "composer require phpunit/phpunit:6.5.14 drush/drush:~9 drupal/core-recommended:${{ matrix.drupal }} drupal/core-dev:${{ matrix.drupal }} --with-all-dependencies --dev --no-update"
-        if: ${{ matrix.drupal == '^8.9' }}
       - name: "Upgrade to drupal/core:${{ matrix.drupal }}"
         run: "composer require drupal/core-recommended:${{ matrix.drupal }} --with-all-dependencies --dev --no-update"
         if: ${{ matrix.drupal == '^10.0' || matrix.drupal == '11.x-dev' }}
       - name: "Add phpspec/prophecy-phpunit"
         run: "composer require phpspec/prophecy-phpunit:^2 --dev --no-update"
-        if: ${{ matrix.drupal != '^8.9' }}
       - name: "Install dependencies"
         uses: "ramsey/composer-install@v2"
       - name: "PHPUnit"
@@ -92,18 +94,17 @@ jobs:
         php-version:
           - "7.4"
         drupal:
-          - "^8.9"
           - "^9.0"
         include:
           - php-version: "8.0"
             drupal: "^9.0"
             experimental: false
-          - php-version: "8.1"
+          - php-version: "8.2"
             drupal: "11.x-dev"
             experimental: true
     steps:
       - name: "Checkout"
-        uses: "actions/checkout@v3"
+        uses: "actions/checkout@v4"
       - name: "Install PHP"
         uses: "shivammathur/setup-php@v2"
         with:
@@ -168,15 +169,14 @@ jobs:
         php-version:
           - "7.4"
         drupal:
-          - "^8.9"
           - "^9.0"
         include:
-          - php-version: "8.1"
+          - php-version: "8.2"
             drupal: "11.x-dev"
             experimental: true
     steps:
       - name: "Checkout"
-        uses: "actions/checkout@v3"
+        uses: "actions/checkout@v4"
       - name: "Install PHP"
         uses: "shivammathur/setup-php@v2"
         with:
@@ -216,7 +216,7 @@ jobs:
     name: "Drupal core HEAD baseline check"
     steps:
       - name: "Checkout"
-        uses: "actions/checkout@v3"
+        uses: "actions/checkout@v4"
       - name: "set the version alias for self"
         run: |
           if [ "${{ github.event_name }}" == 'pull_request' ]; then
@@ -238,7 +238,7 @@ jobs:
         uses: "shivammathur/setup-php@v2"
         with:
           coverage: "none"
-          php-version: "8.1"
+          php-version: "8.2"
           tools: composer:v2
           extensions: dom, curl, libxml, mbstring, zip, pdo, mysql, pdo_mysql, gd, apcu
       - name: "Checkout Drupal core"

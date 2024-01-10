@@ -17,6 +17,7 @@ final class DrupalContainerDynamicReturnTypeTest extends TypeInferenceTestCase
         yield from self::gatherAssertTypes(__DIR__ . '/data/drupal-service-static.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/drupal-class-resolver.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/bug-563.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/container-optional.php');
     }
 
     /**
