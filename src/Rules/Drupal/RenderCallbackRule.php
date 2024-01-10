@@ -102,9 +102,6 @@ final class RenderCallbackRule implements Rule
             if (count($value->items) === 0) {
                 return [];
             }
-            if ($value->items[0] === null) {
-                return [];
-            }
             // @todo take $value->items[1] and validate parameters against the callback.
             return $this->doProcessNode($value->items[0]->value, $scope, $keyChecked, 0);
         }
@@ -120,9 +117,6 @@ final class RenderCallbackRule implements Rule
         }
         $errors = [];
         foreach ($value->items as $pos => $item) {
-            if (!$item instanceof Node\Expr\ArrayItem) {
-                continue;
-            }
             $errors[] = $this->doProcessNode($item->value, $scope, $keyChecked, $pos);
         }
         return array_merge(...$errors);
