@@ -96,7 +96,7 @@ final class RenderCallbackRule implements Rule
             if (!$value instanceof Node\Expr\Array_) {
                 return [
                     RuleErrorBuilder::message(sprintf('The "%s" expects a callable array with arguments.', $keyChecked))
-                        ->line($node->getLine())->build()
+                        ->line($node->getStartLine())->build()
                 ];
             }
             if (count($value->items) === 0) {
@@ -112,7 +112,7 @@ final class RenderCallbackRule implements Rule
         if (!$value instanceof Node\Expr\Array_) {
             return [
                 RuleErrorBuilder::message(sprintf('The "%s" render array value expects an array of callbacks.', $keyChecked))
-                    ->line($node->getLine())->build()
+                    ->line($node->getStartLine())->build()
             ];
         }
         if (count($value->items) === 0) {
@@ -141,7 +141,7 @@ final class RenderCallbackRule implements Rule
         ]);
 
         $errors = [];
-        $errorLine = $node->getLine();
+        $errorLine = $node->getStartLine();
         $type = $this->getType($node, $scope);
 
         foreach ($type->getConstantStrings() as $constantStringType) {
