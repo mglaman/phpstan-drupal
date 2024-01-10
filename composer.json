@@ -11,7 +11,7 @@
     ],
     "require": {
         "php": "^7.4 || ^8.0",
-        "phpstan/phpstan": "^1.10.55",
+        "phpstan/phpstan": "1.10.x-dev",
         "phpstan/phpstan-deprecation-rules": "^1.1.4",
         "symfony/finder": "^4.2 || ^5.0 || ^6.0 || ^7.0",
         "symfony/yaml": "^4.2|| ^5.0 || ^6.0 || ^7.0",

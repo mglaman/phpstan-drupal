@@ -6,7 +6,7 @@ namespace mglaman\PHPStanDrupal\DeprecatedScope;
 
 use Drupal\Component\Utility\DeprecationHelper;
 use PHPStan\Analyser\Scope;
-use PHPStan\Reflection\Php\PhpMethodReflection;
+use PHPStan\Reflection\MethodReflection;
 use PHPStan\Rules\Deprecations\DeprecatedScopeResolver;
 
 final class DeprecationHelperScope implements DeprecatedScopeResolver
@@ -16,20 +16,19 @@ final class DeprecationHelperScope implements DeprecatedScopeResolver
         if (!class_exists(DeprecationHelper::class)) {
             return false;
         }
-        $callStack = $scope->getFunctionCallStack();
+        $callStack = $scope->getFunctionCallStackWithParameters();
         if (count($callStack) === 0) {
             return false;
         }
-        $previousCall = $callStack[0];
-        if (!$previousCall instanceof PhpMethodReflection) {
+        [$function, $parameter] = $callStack[0];
+        if (!$function instanceof MethodReflection) {
             return false;
         }
-        if ($previousCall->getName() !== 'backwardsCompatibleCall'
-            || $previousCall->getDeclaringClass()->getName() !== DeprecationHelper::class
+        if ($function->getName() !== 'backwardsCompatibleCall'
+            || $function->getDeclaringClass()->getName() !== DeprecationHelper::class
         ) {
             return false;
         }
-        // @todo this currently marks `$currentCallable` as a deprecated scope.
-        return true;
+        return $parameter !== null && $parameter->getName() === 'deprecatedCallable';
     }
 }
