@@ -2,16 +2,8 @@ name: Tests
 on:
   push:
     branches: [main]
-    paths-ignore:
-      - 'playground-runner/**'
-      - 'playground-api/**'
-      - 'website/**'
   pull_request:
     branches: [main]
-    paths-ignore:
-      - 'playground-runner/**'
-      - 'playground-api/**'
-      - 'website/**'
   schedule:
     - cron: 0 0 * * *
 
@@ -59,6 +51,9 @@ jobs:
             experimental: false
           - php-version: "8.1"
             drupal: "^10.0"
+            experimental: false
+          - php-version: "8.1"
+            drupal: "~10.1.0"
             experimental: false
           - php-version: "8.2"
             drupal: "^10.0"

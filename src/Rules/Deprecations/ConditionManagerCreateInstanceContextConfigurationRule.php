@@ -47,7 +47,7 @@ final class ConditionManagerCreateInstanceContextConfigurationRule implements Ru
             if ($keyType instanceof ConstantStringType && $keyType->getValue() === 'context') {
                 return [
                     RuleErrorBuilder::message('Passing context values to plugins via configuration is deprecated in drupal:9.1.0 and will be removed before drupal:10.0.0. Instead, call ::setContextValue() on the plugin itself. See https://www.drupal.org/node/3120980')
-                        ->line($node->getLine())
+                        ->line($node->getStartLine())
                         ->build()
                 ];
             }
