@@ -52,7 +52,7 @@ class ClassExtendsInternalClassRule implements Rule
         $currentClassName = $node->namespacedName->toString();
 
         if (!NamespaceCheck::isDrupalNamespace($node)) {
-            [$this->buildError($currentClassName, $extendedClassName)->build()];
+            return [$this->buildError($currentClassName, $extendedClassName)->build()];
         }
 
         if (NamespaceCheck::isSharedNamespace($node)) {
