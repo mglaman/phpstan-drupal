@@ -9,7 +9,6 @@ use PHPStan\Analyser\Scope;
 use PHPStan\Node\ClassPropertyNode;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
-use PHPStan\ShouldNotHappenException;
 use PHPUnit\Framework\TestCase;
 
 class TestClassesProtectedPropertyModulesRule implements Rule
@@ -27,15 +26,11 @@ class TestClassesProtectedPropertyModulesRule implements Rule
     {
         assert($node instanceof ClassPropertyNode);
 
-        if (!$scope->isInClass()) {
-            throw new ShouldNotHappenException();
-        }
-
         if ($node->getName() !== 'modules') {
             return [];
         }
 
-        $scopeClassReflection = $scope->getClassReflection();
+        $scopeClassReflection = $node->getClassReflection();
         if ($scopeClassReflection->isAnonymous()) {
             return [];
         }

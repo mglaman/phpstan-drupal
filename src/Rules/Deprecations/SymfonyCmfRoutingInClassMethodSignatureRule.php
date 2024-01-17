@@ -6,7 +6,6 @@ use mglaman\PHPStanDrupal\Internal\DeprecatedScopeCheck;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
 use PHPStan\Node\InClassMethodNode;
-use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\ParametersAcceptorSelector;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
@@ -30,10 +29,7 @@ final class SymfonyCmfRoutingInClassMethodSignatureRule implements Rule
         if ($major !== '9' || (int) $minor < 1) {
             return [];
         }
-        $method = $scope->getFunction();
-        if (!$method instanceof MethodReflection) {
-            throw new \PHPStan\ShouldNotHappenException();
-        }
+        $method = $node->getMethodReflection();
 
         $cmfRouteObjectInterfaceType = new ObjectType(\Symfony\Cmf\Component\Routing\RouteObjectInterface::class);
         $cmfRouteProviderInterfaceType = new ObjectType(\Symfony\Cmf\Component\Routing\RouteProviderInterface::class);
