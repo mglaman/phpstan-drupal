@@ -2,6 +2,7 @@
 
 namespace mglaman\PHPStanDrupal\Type;
 
+use Drupal;
 use Drupal\Core\DependencyInjection\ClassResolverInterface;
 use mglaman\PHPStanDrupal\Drupal\ServiceMap;
 use PhpParser\Node\Expr\StaticCall;
@@ -26,7 +27,7 @@ class DrupalClassResolverDynamicStaticReturnTypeExtension implements DynamicStat
 
     public function getClass(): string
     {
-        return \Drupal::class;
+        return Drupal::class;
     }
 
     public function isStaticMethodSupported(MethodReflection $methodReflection): bool

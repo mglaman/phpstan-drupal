@@ -2,6 +2,7 @@
 
 namespace mglaman\PHPStanDrupal\Reflection;
 
+use LogicException;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\PropertiesClassReflectionExtension;
 use PHPStan\Reflection\PropertyReflection;
@@ -59,7 +60,7 @@ class EntityFieldsViaMagicReflectionExtension implements PropertiesClassReflecti
             return new FieldItemListPropertyReflection($classReflection, $propertyName);
         }
 
-        throw new \LogicException($classReflection->getName() . "::$propertyName should be handled earlier.");
+        throw new LogicException($classReflection->getName() . "::$propertyName should be handled earlier.");
     }
 
     public static function classObjectIsSuperOfInterface(string $name, ObjectType $interfaceObject) : TrinaryLogic

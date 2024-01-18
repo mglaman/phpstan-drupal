@@ -7,6 +7,7 @@ use PhpParser\Node;
 use PHPStan\Analyser\Scope;
 use PHPStan\Rules\RuleErrorBuilder;
 use PHPStan\Type\ObjectType;
+use Throwable;
 use function count;
 use function is_file;
 use function sprintf;
@@ -75,7 +76,7 @@ class LoadIncludes extends LoadIncludeBase
                     ->line($node->getStartLine())
                     ->build()
             ];
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             return [
                 RuleErrorBuilder::message(sprintf(
                     'A file could not be loaded from %s::loadInclude',

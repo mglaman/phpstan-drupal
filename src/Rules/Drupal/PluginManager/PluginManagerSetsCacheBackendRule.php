@@ -5,6 +5,7 @@ namespace mglaman\PHPStanDrupal\Rules\Drupal\PluginManager;
 use PhpParser\Node;
 use PhpParser\Node\Stmt\ClassMethod;
 use PHPStan\Analyser\Scope;
+use PHPStan\ShouldNotHappenException;
 use PHPStan\Type\Type;
 use function array_map;
 use function count;
@@ -29,7 +30,7 @@ class PluginManagerSetsCacheBackendRule extends AbstractPluginManagerRule
         assert($node instanceof Node\Stmt\ClassMethod);
 
         if (!$scope->isInClass()) {
-            throw new \PHPStan\ShouldNotHappenException();
+            throw new ShouldNotHappenException();
         }
 
         if ($scope->isInTrait()) {

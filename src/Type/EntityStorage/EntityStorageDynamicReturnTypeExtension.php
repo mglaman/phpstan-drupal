@@ -14,6 +14,7 @@ use PHPStan\Type\DynamicMethodReturnTypeExtension;
 use PHPStan\Type\IntegerType;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\StringType;
+use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
 use function in_array;
 
@@ -54,7 +55,7 @@ class EntityStorageDynamicReturnTypeExtension implements DynamicMethodReturnType
         MethodReflection $methodReflection,
         MethodCall $methodCall,
         Scope $scope
-    ): \PHPStan\Type\Type {
+    ): Type {
         $callerType = $scope->getType($methodCall->var);
         if (!$callerType instanceof ObjectType) {
             return ParametersAcceptorSelector::selectSingle($methodReflection->getVariants())->getReturnType();

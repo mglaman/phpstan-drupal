@@ -2,6 +2,7 @@
 
 namespace mglaman\PHPStanDrupal\Type;
 
+use Drupal;
 use Drupal\Core\Config\Entity\ConfigEntityStorageInterface;
 use Drupal\Core\Entity\ContentEntityStorageInterface;
 use mglaman\PHPStanDrupal\Drupal\EntityDataRepository;
@@ -31,7 +32,7 @@ class DrupalStaticEntityQueryDynamicReturnTypeExtension implements DynamicStatic
 
     public function getClass(): string
     {
-        return \Drupal::class;
+        return Drupal::class;
     }
 
     public function isStaticMethodSupported(MethodReflection $methodReflection): bool

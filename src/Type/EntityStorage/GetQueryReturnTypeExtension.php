@@ -14,6 +14,7 @@ use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\ParametersAcceptorSelector;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
 use PHPStan\Type\ObjectType;
+use PHPStan\Type\Type;
 use function in_array;
 
 final class GetQueryReturnTypeExtension implements DynamicMethodReturnTypeExtension
@@ -36,7 +37,7 @@ final class GetQueryReturnTypeExtension implements DynamicMethodReturnTypeExtens
         MethodReflection $methodReflection,
         MethodCall $methodCall,
         Scope $scope
-    ): \PHPStan\Type\Type {
+    ): Type {
         $returnType = ParametersAcceptorSelector::selectSingle($methodReflection->getVariants())->getReturnType();
         if (!$returnType instanceof ObjectType) {
             return $returnType;

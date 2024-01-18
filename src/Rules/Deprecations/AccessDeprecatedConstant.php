@@ -2,6 +2,7 @@
 
 namespace mglaman\PHPStanDrupal\Rules\Deprecations;
 
+use Drupal;
 use mglaman\PHPStanDrupal\Internal\DeprecatedScopeCheck;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
@@ -92,7 +93,7 @@ class AccessDeprecatedConstant implements Rule
             'USER_REGISTER_VISITORS' => 'Deprecated in drupal:8.3.0 and is removed from drupal:9.0.0. Use \Drupal\user\UserInterface::REGISTER_VISITORS instead.',
             'USER_REGISTER_VISITORS_ADMINISTRATIVE_APPROVAL' => 'Deprecated in drupal:8.3.0 and is removed from drupal:9.0.0. Use \Drupal\user\UserInterface::REGISTER_VISITORS_ADMINISTRATIVE_APPROVAL instead.',
         ];
-        [$major, $minor] = explode('.', \Drupal::VERSION, 3);
+        [$major, $minor] = explode('.', Drupal::VERSION, 3);
         if ($major === '9') {
             if ((int) $minor >= 1) {
                 $deprecatedConstants = array_merge($deprecatedConstants, [
