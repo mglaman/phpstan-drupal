@@ -8,6 +8,11 @@ use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\TypeCombinator;
+use function count;
+use function in_array;
+use function interface_exists;
+use function method_exists;
+use function substr_compare;
 
 final class BrowserTestBaseDefaultThemeRule implements Rule
 {

@@ -10,6 +10,8 @@ use PHPStan\Node\ClassPropertyNode;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
 use PHPUnit\Framework\TestCase;
+use function in_array;
+use function sprintf;
 
 class TestClassesProtectedPropertyModulesRule implements Rule
 {

@@ -10,6 +10,7 @@ use PHPStan\Rules\RuleErrorBuilder;
 use PHPStan\Type\Constant\ConstantArrayType;
 use PHPStan\Type\Constant\ConstantStringType;
 use PHPStan\Type\ObjectType;
+use function count;
 
 final class ConditionManagerCreateInstanceContextConfigurationRule implements Rule
 {

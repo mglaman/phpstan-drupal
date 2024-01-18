@@ -7,6 +7,24 @@ use DrupalFinder\DrupalFinder;
 use PHPStan\DependencyInjection\Container;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Yaml\Yaml;
+use function array_map;
+use function array_merge;
+use function array_walk;
+use function class_exists;
+use function dirname;
+use function file_exists;
+use function in_array;
+use function interface_exists;
+use function is_array;
+use function is_dir;
+use function is_string;
+use function realpath;
+use function str_replace;
+use function strpos;
+use function strtr;
+use function trigger_error;
+use function ucwords;
+use function usort;
 
 class DrupalAutoloader
 {

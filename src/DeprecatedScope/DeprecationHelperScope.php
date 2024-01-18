@@ -8,6 +8,8 @@ use Drupal\Component\Utility\DeprecationHelper;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Rules\Deprecations\DeprecatedScopeResolver;
+use function class_exists;
+use function count;
 
 final class DeprecationHelperScope implements DeprecatedScopeResolver
 {

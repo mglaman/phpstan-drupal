@@ -9,6 +9,7 @@ use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
+use function sprintf;
 
 class ClassExtendsInternalClassRule implements Rule
 {
@@ -70,9 +71,9 @@ class ClassExtendsInternalClassRule implements Rule
 
     private function buildError(?string $currentClassName, string $extendedClassName): RuleErrorBuilder
     {
-        return RuleErrorBuilder::message(\sprintf(
+        return RuleErrorBuilder::message(sprintf(
             '%s extends @internal class %s.',
-            $currentClassName !== null ? \sprintf('Class %s', $currentClassName) : 'Anonymous class',
+            $currentClassName !== null ? sprintf('Class %s', $currentClassName) : 'Anonymous class',
             $extendedClassName
         ));
     }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace mglaman\PHPStanDrupal\Type\EntityQuery;
 
 use PHPStan\Type\ObjectType;
+use function implode;
 
 class EntityQueryType extends ObjectType
 {

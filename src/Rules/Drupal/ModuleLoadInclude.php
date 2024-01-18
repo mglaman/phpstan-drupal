@@ -5,6 +5,9 @@ namespace mglaman\PHPStanDrupal\Rules\Drupal;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
 use PHPStan\Rules\RuleErrorBuilder;
+use function count;
+use function is_file;
+use function sprintf;
 
 /**
  * Handles module_load_include dynamic file loading.
@@ -31,7 +34,7 @@ class ModuleLoadInclude extends LoadIncludeBase
             return [];
         }
         $args = $node->getArgs();
-        if (\count($args) < 2) {
+        if (count($args) < 2) {
             return [];
         }
 

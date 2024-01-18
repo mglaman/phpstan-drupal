@@ -11,6 +11,7 @@ use PHPStan\Type\BooleanType;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\Type;
+use function in_array;
 
 final class EntityAccessControlHandlerReturnTypeExtension implements DynamicMethodReturnTypeExtension
 {

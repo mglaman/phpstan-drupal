@@ -10,6 +10,8 @@ use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
 use PHPStan\Type\ObjectType;
 use Symfony\Component\HttpFoundation\RequestStack as SymfonyRequestStack;
+use function explode;
+use function sprintf;
 
 final class RequestStackGetMainRequestRule implements Rule
 {

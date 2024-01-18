@@ -8,6 +8,7 @@ use PHPStan\Type\NullType;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\StringType;
 use PHPStan\Type\Type;
+use function in_array;
 
 /**
  * Allows field access via magic methods

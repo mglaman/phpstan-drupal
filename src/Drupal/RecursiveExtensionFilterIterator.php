@@ -2,6 +2,10 @@
 
 namespace mglaman\PHPStanDrupal\Drupal;
 
+use function array_merge;
+use function in_array;
+use function substr;
+
 /**
  * Filters a RecursiveDirectoryIterator to discover extensions.
  *

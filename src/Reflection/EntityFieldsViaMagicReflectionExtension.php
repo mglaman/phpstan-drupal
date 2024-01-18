@@ -7,6 +7,7 @@ use PHPStan\Reflection\PropertiesClassReflectionExtension;
 use PHPStan\Reflection\PropertyReflection;
 use PHPStan\TrinaryLogic;
 use PHPStan\Type\ObjectType;
+use function array_key_exists;
 
 /**
  * Allows field access via magic methods

@@ -6,6 +6,10 @@ use PhpParser\Node;
 use PhpParser\Node\Stmt\ClassMethod;
 use PHPStan\Analyser\Scope;
 use PHPStan\Type\Type;
+use function array_map;
+use function count;
+use function sprintf;
+use function strpos;
 
 class PluginManagerSetsCacheBackendRule extends AbstractPluginManagerRule
 {

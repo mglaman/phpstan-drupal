@@ -6,8 +6,12 @@ use mglaman\PHPStanDrupal\Internal\DeprecatedScopeCheck;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ReflectionProvider;
+use PHPStan\Rules\Rule;
+use function array_merge;
+use function explode;
+use function sprintf;
 
-class AccessDeprecatedConstant implements \PHPStan\Rules\Rule
+class AccessDeprecatedConstant implements Rule
 {
     /** @var ReflectionProvider */
     private $reflectionProvider;

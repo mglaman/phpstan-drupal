@@ -10,6 +10,8 @@ use PHPStan\Reflection\ParametersAcceptorSelector;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
 use PHPStan\Type\ObjectType;
+use function explode;
+use function sprintf;
 
 final class SymfonyCmfRoutingInClassMethodSignatureRule implements Rule
 {

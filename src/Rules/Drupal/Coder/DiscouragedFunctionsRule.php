@@ -6,6 +6,9 @@ use PhpParser\Node;
 use PhpParser\Node\Expr\FuncCall;
 use PHPStan\Analyser\Scope;
 use PHPStan\Rules\Rule;
+use function in_array;
+use function sprintf;
+use function strtolower;
 
 /**
  * Based on Drupal_Sniffs_Functions_DiscouragedFunctionsSniff.

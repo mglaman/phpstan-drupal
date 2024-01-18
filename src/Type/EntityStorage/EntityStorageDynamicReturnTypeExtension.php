@@ -15,6 +15,7 @@ use PHPStan\Type\IntegerType;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\StringType;
 use PHPStan\Type\TypeCombinator;
+use function in_array;
 
 class EntityStorageDynamicReturnTypeExtension implements DynamicMethodReturnTypeExtension
 {
@@ -36,7 +37,7 @@ class EntityStorageDynamicReturnTypeExtension implements DynamicMethodReturnType
 
     public function isMethodSupported(MethodReflection $methodReflection): bool
     {
-        return \in_array(
+        return in_array(
             $methodReflection->getName(),
             [
                 'create',
@@ -72,11 +73,11 @@ class EntityStorageDynamicReturnTypeExtension implements DynamicMethodReturnType
         if ($type === null) {
             return ParametersAcceptorSelector::selectSingle($methodReflection->getVariants())->getReturnType();
         }
-        if (\in_array($methodReflection->getName(), ['load', 'loadUnchanged'], true)) {
+        if (in_array($methodReflection->getName(), ['load', 'loadUnchanged'], true)) {
             return TypeCombinator::addNull($type);
         }
 
-        if (\in_array($methodReflection->getName(), ['loadMultiple', 'loadByProperties'], true)) {
+        if (in_array($methodReflection->getName(), ['loadMultiple', 'loadByProperties'], true)) {
             if ((new ObjectType(ConfigEntityStorageInterface::class))->isSuperTypeOf($callerType)->yes()) {
                 return new ArrayType(new StringType(), $type);
             }

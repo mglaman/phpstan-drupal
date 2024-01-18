@@ -2,6 +2,15 @@
 
 namespace mglaman\PHPStanDrupal\Drupal;
 
+use function array_filter;
+use function array_flip;
+use function array_multisort;
+use function dirname;
+use function file_exists;
+use function is_dir;
+use function preg_match;
+use function strpos;
+
 class ExtensionDiscovery
 {
 

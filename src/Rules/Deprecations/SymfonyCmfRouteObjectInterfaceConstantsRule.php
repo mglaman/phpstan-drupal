@@ -9,6 +9,8 @@ use PHPStan\Analyser\Scope;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
 use PHPStan\Type\ObjectType;
+use function explode;
+use function sprintf;
 
 final class SymfonyCmfRouteObjectInterfaceConstantsRule implements Rule
 {

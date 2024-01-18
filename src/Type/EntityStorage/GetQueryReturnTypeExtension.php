@@ -14,6 +14,7 @@ use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\ParametersAcceptorSelector;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
 use PHPStan\Type\ObjectType;
+use function in_array;
 
 final class GetQueryReturnTypeExtension implements DynamicMethodReturnTypeExtension
 {
