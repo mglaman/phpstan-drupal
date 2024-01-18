@@ -2,6 +2,7 @@
 
 namespace mglaman\PHPStanDrupal\Rules\Deprecations;
 
+use Drupal;
 use mglaman\PHPStanDrupal\Internal\DeprecatedScopeCheck;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
@@ -10,6 +11,11 @@ use PHPStan\Reflection\ParametersAcceptorSelector;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
 use PHPStan\Type\ObjectType;
+use Symfony\Cmf\Component\Routing\LazyRouteCollection;
+use Symfony\Cmf\Component\Routing\RouteObjectInterface;
+use Symfony\Cmf\Component\Routing\RouteProviderInterface;
+use function explode;
+use function sprintf;
 
 final class SymfonyCmfRoutingInClassMethodSignatureRule implements Rule
 {
@@ -25,15 +31,15 @@ final class SymfonyCmfRoutingInClassMethodSignatureRule implements Rule
         if (DeprecatedScopeCheck::inDeprecatedScope($scope)) {
             return [];
         }
-        [$major, $minor] = explode('.', \Drupal::VERSION, 3);
+        [$major, $minor] = explode('.', Drupal::VERSION, 3);
         if ($major !== '9' || (int) $minor < 1) {
             return [];
         }
         $method = $node->getMethodReflection();
 
-        $cmfRouteObjectInterfaceType = new ObjectType(\Symfony\Cmf\Component\Routing\RouteObjectInterface::class);
-        $cmfRouteProviderInterfaceType = new ObjectType(\Symfony\Cmf\Component\Routing\RouteProviderInterface::class);
-        $cmfLazyRouteCollectionType = new ObjectType(\Symfony\Cmf\Component\Routing\LazyRouteCollection::class);
+        $cmfRouteObjectInterfaceType = new ObjectType(RouteObjectInterface::class);
+        $cmfRouteProviderInterfaceType = new ObjectType(RouteProviderInterface::class);
+        $cmfLazyRouteCollectionType = new ObjectType(LazyRouteCollection::class);
 
         $methodSignature = ParametersAcceptorSelector::selectSingle($method->getVariants());
 

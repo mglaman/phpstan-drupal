@@ -13,6 +13,8 @@ use PHPStan\Type\NullType;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use function count;
+use function in_array;
 
 class ContainerDynamicReturnTypeExtension implements DynamicMethodReturnTypeExtension
 {

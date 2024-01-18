@@ -9,6 +9,10 @@ use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
+use function basename;
+use function explode;
+use function strlen;
+use function substr_replace;
 
 class DeprecatedHookImplementation implements Rule
 {

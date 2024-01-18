@@ -8,6 +8,12 @@ use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\TypeCombinator;
+use PHPUnit\Framework\Test;
+use function count;
+use function in_array;
+use function interface_exists;
+use function method_exists;
+use function substr_compare;
 
 final class BrowserTestBaseDefaultThemeRule implements Rule
 {
@@ -19,7 +25,7 @@ final class BrowserTestBaseDefaultThemeRule implements Rule
 
     public function processNode(Node $node, Scope $scope): array
     {
-        if (!interface_exists(\PHPUnit\Framework\Test::class)) {
+        if (!interface_exists(Test::class)) {
             return [];
         }
         assert($node instanceof Node\Stmt\Class_);

@@ -3,8 +3,13 @@
 namespace mglaman\PHPStanDrupal\Rules\Drupal;
 
 use PhpParser\Node;
+use PhpParser\Node\Name;
 use PHPStan\Analyser\Scope;
 use PHPStan\Rules\RuleErrorBuilder;
+use Throwable;
+use function count;
+use function is_file;
+use function sprintf;
 
 /**
  * Handles module_load_include dynamic file loading.
@@ -23,7 +28,7 @@ class ModuleLoadInclude extends LoadIncludeBase
     public function processNode(Node $node, Scope $scope): array
     {
         assert($node instanceof Node\Expr\FuncCall);
-        if (!$node->name instanceof \PhpParser\Node\Name) {
+        if (!$node->name instanceof Name) {
             return [];
         }
         $name = (string) $node->name;
@@ -31,7 +36,7 @@ class ModuleLoadInclude extends LoadIncludeBase
             return [];
         }
         $args = $node->getArgs();
-        if (\count($args) < 2) {
+        if (count($args) < 2) {
             return [];
         }
 
@@ -63,7 +68,7 @@ class ModuleLoadInclude extends LoadIncludeBase
                     ->line($node->getStartLine())
                     ->build()
             ];
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             return [
                 RuleErrorBuilder::message('A file could not be loaded from module_load_include')
                     ->line($node->getStartLine())

@@ -7,6 +7,10 @@ use PhpParser\Node;
 use PHPStan\Analyser\Scope;
 use PHPStan\Rules\RuleErrorBuilder;
 use PHPStan\Type\ObjectType;
+use Throwable;
+use function count;
+use function is_file;
+use function sprintf;
 
 class LoadIncludes extends LoadIncludeBase
 {
@@ -27,7 +31,7 @@ class LoadIncludes extends LoadIncludeBase
             return [];
         }
         $args = $node->getArgs();
-        if (\count($args) < 2) {
+        if (count($args) < 2) {
             return [];
         }
         $type = $scope->getType($node->var);
@@ -72,7 +76,7 @@ class LoadIncludes extends LoadIncludeBase
                     ->line($node->getStartLine())
                     ->build()
             ];
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             return [
                 RuleErrorBuilder::message(sprintf(
                     'A file could not be loaded from %s::loadInclude',

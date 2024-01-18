@@ -6,6 +6,7 @@ use mglaman\PHPStanDrupal\Drupal\ExtensionMap;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
 use PHPStan\Rules\Rule;
+use function count;
 
 abstract class LoadIncludeBase implements Rule
 {
