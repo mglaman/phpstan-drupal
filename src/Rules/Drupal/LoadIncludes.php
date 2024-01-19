@@ -12,6 +12,9 @@ use function count;
 use function is_file;
 use function sprintf;
 
+/**
+ * @extends LoadIncludeBase<Node\Expr\MethodCall>
+ */
 class LoadIncludes extends LoadIncludeBase
 {
 
@@ -22,7 +25,6 @@ class LoadIncludes extends LoadIncludeBase
 
     public function processNode(Node $node, Scope $scope): array
     {
-        assert($node instanceof Node\Expr\MethodCall);
         if (!$node->name instanceof Node\Identifier) {
             return [];
         }

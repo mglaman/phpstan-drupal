@@ -13,6 +13,9 @@ use PHPStan\Type\ObjectType;
 use Symfony\Cmf\Component\Routing\RouteObjectInterface as SymfonyRouteObjectInterface;
 use function sprintf;
 
+/**
+ * @implements Rule<Node\Expr\ClassConstFetch>
+ */
 final class SymfonyCmfRouteObjectInterfaceConstantsRule implements Rule
 {
 
@@ -23,7 +26,6 @@ final class SymfonyCmfRouteObjectInterfaceConstantsRule implements Rule
 
     public function processNode(Node $node, Scope $scope): array
     {
-        assert($node instanceof Node\Expr\ClassConstFetch);
         if (!$node->name instanceof Node\Identifier) {
             return [];
         }

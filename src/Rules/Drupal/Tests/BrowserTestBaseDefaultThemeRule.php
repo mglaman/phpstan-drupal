@@ -15,6 +15,9 @@ use function interface_exists;
 use function method_exists;
 use function substr_compare;
 
+/**
+ * @implements Rule<Node\Stmt\Class_>
+ */
 final class BrowserTestBaseDefaultThemeRule implements Rule
 {
 
@@ -28,7 +31,6 @@ final class BrowserTestBaseDefaultThemeRule implements Rule
         if (!interface_exists(Test::class)) {
             return [];
         }
-        assert($node instanceof Node\Stmt\Class_);
         if ($node->extends === null) {
             return [];
         }

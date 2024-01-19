@@ -12,6 +12,9 @@ use PHPStan\Analyser\Scope;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
 
+/**
+ * @implements Rule<Node\Expr\MethodCall>
+ */
 final class EntityQueryHasAccessCheckRule implements Rule
 {
     public function getNodeType(): string
@@ -21,10 +24,6 @@ final class EntityQueryHasAccessCheckRule implements Rule
 
     public function processNode(Node $node, Scope $scope): array
     {
-        if (!$node instanceof Node\Expr\MethodCall) {
-            return [];
-        }
-
         $name = $node->name;
         if (!$name instanceof Node\Identifier) {
             return [];

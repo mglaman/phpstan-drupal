@@ -17,6 +17,9 @@ use Symfony\Cmf\Component\Routing\RouteProviderInterface;
 use function explode;
 use function sprintf;
 
+/**
+ * @implements Rule<InClassMethodNode>
+ */
 final class SymfonyCmfRoutingInClassMethodSignatureRule implements Rule
 {
 
@@ -27,7 +30,6 @@ final class SymfonyCmfRoutingInClassMethodSignatureRule implements Rule
 
     public function processNode(Node $node, Scope $scope): array
     {
-        assert($node instanceof InClassMethodNode);
         if (DeprecatedScopeCheck::inDeprecatedScope($scope)) {
             return [];
         }
