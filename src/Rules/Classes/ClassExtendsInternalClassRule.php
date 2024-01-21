@@ -11,6 +11,9 @@ use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
 use function sprintf;
 
+/**
+ * @implements Rule<Class_>
+ */
 class ClassExtendsInternalClassRule implements Rule
 {
     /**
@@ -30,7 +33,6 @@ class ClassExtendsInternalClassRule implements Rule
 
     public function processNode(Node $node, Scope $scope): array
     {
-        /** @var Class_ $node */
         if (!isset($node->extends)) {
             return [];
         }

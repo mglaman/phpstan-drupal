@@ -12,6 +12,9 @@ use function array_merge;
 use function explode;
 use function sprintf;
 
+/**
+ * @implements Rule<Node\Expr\ConstFetch>
+ */
 class AccessDeprecatedConstant implements Rule
 {
     /** @var ReflectionProvider */
@@ -28,7 +31,6 @@ class AccessDeprecatedConstant implements Rule
 
     public function processNode(Node $node, Scope $scope): array
     {
-        assert($node instanceof Node\Expr\ConstFetch);
         if (DeprecatedScopeCheck::inDeprecatedScope($scope)) {
             return [];
         }

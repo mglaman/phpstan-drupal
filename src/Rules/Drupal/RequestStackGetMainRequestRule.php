@@ -14,6 +14,9 @@ use Symfony\Component\HttpFoundation\RequestStack as SymfonyRequestStack;
 use function explode;
 use function sprintf;
 
+/**
+ * @implements Rule<Node\Expr\MethodCall>
+ */
 final class RequestStackGetMainRequestRule implements Rule
 {
 
@@ -24,7 +27,6 @@ final class RequestStackGetMainRequestRule implements Rule
 
     public function processNode(Node $node, Scope $scope): array
     {
-        assert($node instanceof Node\Expr\MethodCall);
         if (DeprecatedScopeCheck::inDeprecatedScope($scope)) {
             return [];
         }

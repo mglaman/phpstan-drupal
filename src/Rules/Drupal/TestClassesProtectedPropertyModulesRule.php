@@ -13,6 +13,9 @@ use PHPUnit\Framework\TestCase;
 use function in_array;
 use function sprintf;
 
+/**
+ * @implements Rule<ClassPropertyNode>
+ */
 class TestClassesProtectedPropertyModulesRule implements Rule
 {
 
@@ -26,8 +29,6 @@ class TestClassesProtectedPropertyModulesRule implements Rule
      */
     public function processNode(Node $node, Scope $scope): array
     {
-        assert($node instanceof ClassPropertyNode);
-
         if ($node->getName() !== 'modules') {
             return [];
         }

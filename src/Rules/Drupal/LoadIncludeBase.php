@@ -8,6 +8,10 @@ use PHPStan\Analyser\Scope;
 use PHPStan\Rules\Rule;
 use function count;
 
+/**
+ * @template TNodeType of Node
+ * @implements Rule<TNodeType>
+ */
 abstract class LoadIncludeBase implements Rule
 {
 

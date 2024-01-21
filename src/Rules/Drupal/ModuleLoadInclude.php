@@ -16,6 +16,8 @@ use function sprintf;
  *
  * @note may become deprecated and removed in D10
  * @see https://www.drupal.org/project/drupal/issues/697946
+ *
+ * @extends LoadIncludeBase<Node\Expr\FuncCall>
  */
 class ModuleLoadInclude extends LoadIncludeBase
 {
@@ -27,7 +29,6 @@ class ModuleLoadInclude extends LoadIncludeBase
 
     public function processNode(Node $node, Scope $scope): array
     {
-        assert($node instanceof Node\Expr\FuncCall);
         if (!$node->name instanceof Name) {
             return [];
         }
