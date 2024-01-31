@@ -252,7 +252,7 @@ final class ServiceMapFactoryTest extends TestCase
             'Bug693\Foo',
             function (DrupalServiceDefinition $service): void {
                 self::assertCount(1, $service->getDecorators());
-                self::arrayHasKey('Bug693\\Bar', $service->getDecorators());
+                self::assertArrayHasKey('Bug693\\Bar', $service->getDecorators());
             }
         ];
     }
