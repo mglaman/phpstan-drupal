@@ -2,7 +2,14 @@
 
 namespace mglaman\PHPStanDrupal\Drupal;
 
+use RuntimeException;
 use Symfony\Component\Yaml\Yaml;
+use function explode;
+use function file_get_contents;
+use function is_array;
+use function sprintf;
+use function strpos;
+use function trim;
 
 /**
  * Defines an extension (file) object.
@@ -190,7 +197,7 @@ class Extension
      */
     public function getDependencies(): array
     {
-        if (\is_array($this->dependencies)) {
+        if (is_array($this->dependencies)) {
             return $this->dependencies;
         }
 
@@ -205,12 +212,12 @@ class Extension
 
         // @see \Drupal\Core\Extension\Dependency::createFromString().
         foreach ($dependencies as $dependency) {
-            if (\strpos($dependency, ':') !== false) {
-                [, $dependency] = \explode(':', $dependency);
+            if (strpos($dependency, ':') !== false) {
+                [, $dependency] = explode(':', $dependency);
             }
 
-            $parts = \explode('(', $dependency, 2);
-            $this->dependencies[] = \trim($parts[0]);
+            $parts = explode('(', $dependency, 2);
+            $this->dependencies[] = trim($parts[0]);
         }
 
         return $this->dependencies;
@@ -218,13 +225,13 @@ class Extension
 
     private function parseInfo(): array
     {
-        if (\is_array($this->info)) {
+        if (is_array($this->info)) {
             return $this->info;
         }
 
-        $infoContent = \file_get_contents(\sprintf('%s/%s', $this->root, $this->getPathname()));
+        $infoContent = file_get_contents(sprintf('%s/%s', $this->root, $this->getPathname()));
         if (false === $infoContent) {
-            throw new \RuntimeException(\sprintf('Cannot read "%s', $this->getPathname()));
+            throw new RuntimeException(sprintf('Cannot read "%s', $this->getPathname()));
         }
 
         return $this->info = Yaml::parse($infoContent);

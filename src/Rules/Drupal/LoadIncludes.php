@@ -7,7 +7,14 @@ use PhpParser\Node;
 use PHPStan\Analyser\Scope;
 use PHPStan\Rules\RuleErrorBuilder;
 use PHPStan\Type\ObjectType;
+use Throwable;
+use function count;
+use function is_file;
+use function sprintf;
 
+/**
+ * @extends LoadIncludeBase<Node\Expr\MethodCall>
+ */
 class LoadIncludes extends LoadIncludeBase
 {
 
@@ -18,7 +25,6 @@ class LoadIncludes extends LoadIncludeBase
 
     public function processNode(Node $node, Scope $scope): array
     {
-        assert($node instanceof Node\Expr\MethodCall);
         if (!$node->name instanceof Node\Identifier) {
             return [];
         }
@@ -27,7 +33,7 @@ class LoadIncludes extends LoadIncludeBase
             return [];
         }
         $args = $node->getArgs();
-        if (\count($args) < 2) {
+        if (count($args) < 2) {
             return [];
         }
         $type = $scope->getType($node->var);
@@ -53,7 +59,7 @@ class LoadIncludes extends LoadIncludeBase
                         ModuleHandlerInterface::class,
                         $moduleName
                     ))
-                        ->line($node->getLine())
+                        ->line($node->getStartLine())
                         ->build()
                 ];
             }
@@ -69,16 +75,16 @@ class LoadIncludes extends LoadIncludeBase
                     $module->getPath() . '/' . $filename,
                     ModuleHandlerInterface::class
                 ))
-                    ->line($node->getLine())
+                    ->line($node->getStartLine())
                     ->build()
             ];
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             return [
                 RuleErrorBuilder::message(sprintf(
                     'A file could not be loaded from %s::loadInclude',
                     ModuleHandlerInterface::class
                 ))
-                    ->line($node->getLine())
+                    ->line($node->getStartLine())
                     ->build()
             ];
         }

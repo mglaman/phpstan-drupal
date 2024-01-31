@@ -5,6 +5,9 @@ namespace mglaman\PHPStanDrupal\Drupal;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\StringType;
 use PHPStan\Type\Type;
+use PHPStan\Type\TypeCombinator;
+use function count;
+use function str_replace;
 
 class DrupalServiceDefinition
 {
@@ -43,6 +46,11 @@ class DrupalServiceDefinition
      * @var string|null
      */
     private $alias;
+
+    /**
+     * @var array<string, \mglaman\PHPStanDrupal\Drupal\DrupalServiceDefinition>
+     */
+    private $decorators = [];
 
     public function __construct(string $id, ?string $class, bool $public = true, ?string $alias = null)
     {
@@ -109,6 +117,28 @@ class DrupalServiceDefinition
             return new StringType();
         }
 
+        $decorating_services = $this->getDecorators();
+        if (count($decorating_services) !== 0) {
+            $combined_services = [];
+            $combined_services[] = new ObjectType($this->getClass() ?? $this->id);
+            foreach ($decorating_services as $service_id => $service_definition) {
+                $combined_services[] = $service_definition->getType();
+            }
+            return TypeCombinator::union(...$combined_services);
+        }
         return new ObjectType($this->getClass() ?? $this->id);
+    }
+
+    public function addDecorator(DrupalServiceDefinition $definition): void
+    {
+        $this->decorators[$definition->getId()] = $definition;
+    }
+
+    /**
+     * @return array<string, \mglaman\PHPStanDrupal\Drupal\DrupalServiceDefinition>
+     */
+    public function getDecorators(): array
+    {
+        return $this->decorators;
     }
 }

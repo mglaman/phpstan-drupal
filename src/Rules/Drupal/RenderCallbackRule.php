@@ -27,7 +27,18 @@ use PHPStan\Type\StaticType;
 use PHPStan\Type\Type;
 use PHPStan\Type\UnionType;
 use PHPStan\Type\VerbosityLevel;
+use function array_map;
+use function array_merge;
+use function class_exists;
+use function count;
+use function explode;
+use function preg_match;
+use function sprintf;
+use function substr_count;
 
+/**
+ * @implements Rule<Node\Expr\ArrayItem>
+ */
 final class RenderCallbackRule implements Rule
 {
 
@@ -57,7 +68,6 @@ final class RenderCallbackRule implements Rule
 
     public function processNode(Node $node, Scope $scope): array
     {
-        assert($node instanceof Node\Expr\ArrayItem);
         $key = $node->key;
         if (!$key instanceof Node\Scalar\String_) {
             return [];
@@ -96,13 +106,10 @@ final class RenderCallbackRule implements Rule
             if (!$value instanceof Node\Expr\Array_) {
                 return [
                     RuleErrorBuilder::message(sprintf('The "%s" expects a callable array with arguments.', $keyChecked))
-                        ->line($node->getLine())->build()
+                        ->line($node->getStartLine())->build()
                 ];
             }
             if (count($value->items) === 0) {
-                return [];
-            }
-            if ($value->items[0] === null) {
                 return [];
             }
             // @todo take $value->items[1] and validate parameters against the callback.
@@ -112,7 +119,7 @@ final class RenderCallbackRule implements Rule
         if (!$value instanceof Node\Expr\Array_) {
             return [
                 RuleErrorBuilder::message(sprintf('The "%s" render array value expects an array of callbacks.', $keyChecked))
-                    ->line($node->getLine())->build()
+                    ->line($node->getStartLine())->build()
             ];
         }
         if (count($value->items) === 0) {
@@ -120,9 +127,6 @@ final class RenderCallbackRule implements Rule
         }
         $errors = [];
         foreach ($value->items as $pos => $item) {
-            if (!$item instanceof Node\Expr\ArrayItem) {
-                continue;
-            }
             $errors[] = $this->doProcessNode($item->value, $scope, $keyChecked, $pos);
         }
         return array_merge(...$errors);
@@ -141,7 +145,7 @@ final class RenderCallbackRule implements Rule
         ]);
 
         $errors = [];
-        $errorLine = $node->getLine();
+        $errorLine = $node->getStartLine();
         $type = $this->getType($node, $scope);
 
         foreach ($type->getConstantStrings() as $constantStringType) {

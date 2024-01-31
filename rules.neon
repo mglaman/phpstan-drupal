@@ -19,3 +19,11 @@ rules:
 	- mglaman\PHPStanDrupal\Rules\Deprecations\SymfonyCmfRoutingInClassMethodSignatureRule
 	- mglaman\PHPStanDrupal\Rules\Drupal\RequestStackGetMainRequestRule
 	- mglaman\PHPStanDrupal\Rules\Drupal\TestClassesProtectedPropertyModulesRule
+
+conditionalTags:
+	mglaman\PHPStanDrupal\Rules\Drupal\Tests\TestClassSuffixNameRule:
+		phpstan.rules.rule: %drupal.rules.testClassSuffixNameRule%
+
+services:
+	-
+		class: mglaman\PHPStanDrupal\Rules\Drupal\Tests\TestClassSuffixNameRule

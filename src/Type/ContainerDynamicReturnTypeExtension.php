@@ -9,9 +9,12 @@ use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\ParametersAcceptorSelector;
 use PHPStan\Type\Constant\ConstantBooleanType;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
+use PHPStan\Type\NullType;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
-use Psr\Container\ContainerInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use function count;
+use function in_array;
 
 class ContainerDynamicReturnTypeExtension implements DynamicMethodReturnTypeExtension
 {
@@ -41,24 +44,54 @@ class ContainerDynamicReturnTypeExtension implements DynamicMethodReturnTypeExte
         Scope $scope
     ): Type {
         $returnType = ParametersAcceptorSelector::selectSingle($methodReflection->getVariants())->getReturnType();
-        $args = $methodCall->getArgs();
-        if (count($args) !== 1) {
-            return $returnType;
-        }
-
         $methodName = $methodReflection->getName();
-        $types = [];
-        $argType = $scope->getType($args[0]->value);
 
-        foreach ($argType->getConstantStrings() as $constantStringType) {
-            $serviceId = $constantStringType->getValue();
-            $service = $this->serviceMap->getService($serviceId);
-            if ($methodName === 'get') {
-                $types[] = $service !== null ? $service->getType() : $returnType;
-            } elseif ($methodName === 'has') {
+        if ($methodName === 'has') {
+            $args = $methodCall->getArgs();
+            if (count($args) !== 1) {
+                return $returnType;
+            }
+
+            $types = [];
+            $argType = $scope->getType($args[0]->value);
+
+            foreach ($argType->getConstantStrings() as $constantStringType) {
+                $serviceId = $constantStringType->getValue();
+                $service = $this->serviceMap->getService($serviceId);
                 $types[] = new ConstantBooleanType($service !== null);
             }
+
+            return TypeCombinator::union(...$types);
+        } elseif ($methodName === 'get') {
+            $args = $methodCall->getArgs();
+            if (count($args) === 0) {
+                return $returnType;
+            }
+
+            $types = [];
+
+            if (isset($args[1])) {
+                $invalidBehaviour = $scope->getType($args[1]->value);
+
+                foreach ($invalidBehaviour->getConstantScalarValues() as $value) {
+                    if ($value === ContainerInterface::NULL_ON_INVALID_REFERENCE) {
+                        $types[] = new NullType();
+                        break;
+                    }
+                }
+            }
+
+            $argType = $scope->getType($args[0]->value);
+
+            foreach ($argType->getConstantStrings() as $constantStringType) {
+                $serviceId = $constantStringType->getValue();
+                $service = $this->serviceMap->getService($serviceId);
+                $types[] = $service !== null ? $service->getType() : $returnType;
+            }
+
+            return TypeCombinator::union(...$types);
         }
-        return TypeCombinator::union(...$types);
+
+        return $returnType;
     }
 }

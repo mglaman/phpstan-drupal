@@ -2,6 +2,7 @@
 
 namespace mglaman\PHPStanDrupal\Rules\Drupal;
 
+use Drupal;
 use Drupal\Core\Http\RequestStack as DrupalRequestStack;
 use mglaman\PHPStanDrupal\Internal\DeprecatedScopeCheck;
 use PhpParser\Node;
@@ -10,7 +11,12 @@ use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
 use PHPStan\Type\ObjectType;
 use Symfony\Component\HttpFoundation\RequestStack as SymfonyRequestStack;
+use function explode;
+use function sprintf;
 
+/**
+ * @implements Rule<Node\Expr\MethodCall>
+ */
 final class RequestStackGetMainRequestRule implements Rule
 {
 
@@ -21,11 +27,10 @@ final class RequestStackGetMainRequestRule implements Rule
 
     public function processNode(Node $node, Scope $scope): array
     {
-        assert($node instanceof Node\Expr\MethodCall);
         if (DeprecatedScopeCheck::inDeprecatedScope($scope)) {
             return [];
         }
-        [$major, $minor] = explode('.', \Drupal::VERSION, 3);
+        [$major, $minor] = explode('.', Drupal::VERSION, 3);
         // Only valid for 9.3 -> 9.5. Deprecated in Drupal 10.
         if ($major !== '9' || (int) $minor < 3) {
             return [];

@@ -1,0 +1,12 @@
+<?php
+
+namespace Drupal\KernelTests;
+
+abstract class KernelTestBase {
+
+    /**
+     * @var string[]
+     */
+    protected static $modules = [];
+
+}

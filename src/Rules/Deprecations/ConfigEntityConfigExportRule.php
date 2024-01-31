@@ -8,6 +8,7 @@ use PHPStan\PhpDoc\ResolvedPhpDocBlock;
 use PHPStan\PhpDocParser\Ast\PhpDoc\PhpDocTagNode;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\ShouldNotHappenException;
+use function preg_match;
 
 final class ConfigEntityConfigExportRule extends DeprecatedAnnotationsRuleBase
 {
