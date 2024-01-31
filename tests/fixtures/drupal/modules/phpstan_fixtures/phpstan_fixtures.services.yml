@@ -1,0 +1,8 @@
+services:
+  _defaults:
+    autowire: true
+
+  Drupal\phpstan_fixtures\Foo:
+  Drupal\phpstan_fixtures\BarInterface: '@Drupal\phpstan_fixtures\Bar'
+  Drupal\phpstan_fixtures\Bar:
+    decorates: Drupal\phpstan_fixtures\Foo
