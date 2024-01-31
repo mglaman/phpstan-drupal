@@ -23,3 +23,7 @@ rules:
 conditionalTags:
 	mglaman\PHPStanDrupal\Rules\Drupal\Tests\TestClassSuffixNameRule:
 		phpstan.rules.rule: %drupal.rules.testClassSuffixNameRule%
+
+services:
+	-
+		class: mglaman\PHPStanDrupal\Rules\Drupal\Tests\TestClassSuffixNameRule
