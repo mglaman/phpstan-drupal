@@ -28,6 +28,21 @@ class ServiceMap
         $decorators = [];
 
         foreach ($drupalServices as $serviceId => $serviceDefinition) {
+            // @todo this duplicates \Symfony\Component\DependencyInjection\Loader\YamlFileLoader::parseDefinition()
+            //   Can we re-use the YamlFileLoader instead of this manual parsing?
+            if (is_string($serviceDefinition) && strpos($serviceDefinition, '@') === 0) {
+                $serviceDefinition = [
+                    'alias' => substr($serviceDefinition, 1)
+                ];
+            }
+            if (is_null($serviceDefinition)) {
+                $serviceDefinition = [];
+            }
+
+            if (!is_array($serviceDefinition)) {
+                continue;
+            }
+
             if (isset($serviceDefinition['alias'], $drupalServices[$serviceDefinition['alias']])) {
                 $serviceDefinition = $drupalServices[$serviceDefinition['alias']];
             }
@@ -41,11 +56,7 @@ class ServiceMap
 
             // @todo support factories
             if (!isset($serviceDefinition['class'])) {
-                if (class_exists($serviceId)) {
-                    $serviceDefinition['class'] = $serviceId;
-                } else {
-                    continue;
-                }
+                $serviceDefinition['class'] = $serviceId;
             }
             self::$services[$serviceId] = new DrupalServiceDefinition(
                 (string) $serviceId,
