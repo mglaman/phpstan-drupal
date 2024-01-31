@@ -1,6 +1,6 @@
 <?php
 
-namespace TestCasesTestClassNameRule;
+namespace TestCasesTestClassSuffixNameRule;
 
 use Drupal\node\Entity\Node;
 use Drupal\Tests\views\Functional\ViewTestBase;

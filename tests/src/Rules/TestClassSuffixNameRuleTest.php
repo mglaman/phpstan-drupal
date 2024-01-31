@@ -8,7 +8,7 @@ use mglaman\PHPStanDrupal\Rules\Drupal\Tests\TestClassSuffixNameRule;
 use mglaman\PHPStanDrupal\Tests\DrupalRuleTestCase;
 use PHPStan\Rules\Rule;
 
-class TestClassNameRuleTest extends DrupalRuleTestCase
+class TestClassSuffixNameRuleTest extends DrupalRuleTestCase
 {
 
     protected function getRule(): Rule
@@ -30,7 +30,7 @@ class TestClassNameRuleTest extends DrupalRuleTestCase
     public function fileData(): \Generator
     {
         yield [
-            __DIR__ . '/data/test-cases-TestClassNameRule.php',
+            __DIR__ . '/data/test-cases-TestClassSuffixNameRule.php',
             [
                 [
                     'Non-abstract test classes names should always have the suffix "Test", found incorrect class name "IncorrectlyNamedDirectlyExtendingPHPUnitFrameworkTestCaseClass".',
