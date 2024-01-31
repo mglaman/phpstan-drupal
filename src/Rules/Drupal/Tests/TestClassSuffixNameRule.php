@@ -16,7 +16,7 @@ use PHPUnit\Framework\TestCase;
  *
  * @implements Rule<Node\Stmt\Class_>
  */
-final class TestClassNameRule implements Rule
+final class TestClassSuffixNameRule implements Rule
 {
 
     public function getNodeType(): string
@@ -61,7 +61,7 @@ final class TestClassNameRule implements Rule
                         $node->name,
                     )
                 )
-                ->line($node->getLine())
+                ->line($node->getStartLine())
                 ->tip('See https://www.drupal.org/docs/develop/standards/php/object-oriented-code#naming')
                 ->build()
         ];

@@ -20,3 +20,7 @@ rules:
 	- mglaman\PHPStanDrupal\Rules\Drupal\RequestStackGetMainRequestRule
 	- mglaman\PHPStanDrupal\Rules\Drupal\TestClassesProtectedPropertyModulesRule
 	- mglaman\PHPStanDrupal\Rules\Drupal\Tests\TestClassNameRule
+
+conditionalTags:
+	mglaman\PHPStanDrupal\Rules\Drupal\Tests\TestClassSuffixNameRule:
+		phpstan.rules.rule: %drupal.rules.testClassSuffixNameRule%

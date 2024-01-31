@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace mglaman\PHPStanDrupal\Tests\Rules;
 
-use mglaman\PHPStanDrupal\Rules\Drupal\Tests\TestClassNameRule;
+use mglaman\PHPStanDrupal\Rules\Drupal\Tests\TestClassSuffixNameRule;
 use mglaman\PHPStanDrupal\Tests\DrupalRuleTestCase;
 use PHPStan\Rules\Rule;
 
@@ -13,7 +13,7 @@ class TestClassNameRuleTest extends DrupalRuleTestCase
 
     protected function getRule(): Rule
     {
-        return new TestClassNameRule();
+        return new TestClassSuffixNameRule();
     }
 
     /**
