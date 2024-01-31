@@ -55,8 +55,16 @@ class ServiceMap
             }
 
             // @todo support factories
+            if (isset($serviceDefinition['factory'])) {
+                continue;
+            }
+
             if (!isset($serviceDefinition['class'])) {
-                $serviceDefinition['class'] = $serviceId;
+                if (class_exists($serviceId)) {
+                    $serviceDefinition['class'] = $serviceId;
+                } else {
+                    continue;
+                }
             }
             self::$services[$serviceId] = new DrupalServiceDefinition(
                 (string) $serviceId,
@@ -71,11 +79,14 @@ class ServiceMap
         }
 
         foreach ($decorators as $decorated_service_id => $services) {
-            foreach ($services as $dcorating_service_id) {
-                if (!isset(self::$services[$decorated_service_id])) {
+            if (!isset(self::$services[$decorated_service_id])) {
+                continue;
+            }
+            foreach ($services as $decorating_service_id) {
+                if (!isset(self::$services[$decorating_service_id])) {
                     continue;
                 }
-                self::$services[$decorated_service_id]->addDecorator(self::$services[$dcorating_service_id]);
+                self::$services[$decorated_service_id]->addDecorator(self::$services[$decorating_service_id]);
             }
         }
     }
@@ -84,7 +95,7 @@ class ServiceMap
     {
         $parentDefinition = $drupalServices[$parentId] ?? [];
         if ([] === $parentDefinition) {
-            return $serviceDefinition;
+            return $parentDefinition;
         }
 
         if (isset($parentDefinition['parent'])) {
