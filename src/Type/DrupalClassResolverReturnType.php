@@ -12,6 +12,7 @@ use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\ParametersAcceptorSelector;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\Type;
+use function count;
 
 final class DrupalClassResolverReturnType
 {

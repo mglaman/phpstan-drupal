@@ -4,10 +4,12 @@ namespace mglaman\PHPStanDrupal\Reflection;
 
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\PropertyReflection;
+use PHPStan\TrinaryLogic;
 use PHPStan\Type\NullType;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\StringType;
 use PHPStan\Type\Type;
+use function in_array;
 
 /**
  * Allows field access via magic methods
@@ -111,9 +113,9 @@ class FieldItemListPropertyReflection implements PropertyReflection
         return null;
     }
 
-    public function isDeprecated(): \PHPStan\TrinaryLogic
+    public function isDeprecated(): TrinaryLogic
     {
-        return \PHPStan\TrinaryLogic::createNo();
+        return TrinaryLogic::createNo();
     }
 
     public function getDeprecatedDescription(): ?string
@@ -121,8 +123,8 @@ class FieldItemListPropertyReflection implements PropertyReflection
         return null;
     }
 
-    public function isInternal(): \PHPStan\TrinaryLogic
+    public function isInternal(): TrinaryLogic
     {
-        return \PHPStan\TrinaryLogic::createNo();
+        return TrinaryLogic::createNo();
     }
 }

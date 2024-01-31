@@ -2,6 +2,7 @@
 
 namespace mglaman\PHPStanDrupal\Rules\Deprecations;
 
+use Drupal;
 use Drupal\Core\Routing\RouteObjectInterface;
 use mglaman\PHPStanDrupal\Internal\DeprecatedScopeCheck;
 use PhpParser\Node;
@@ -9,7 +10,12 @@ use PHPStan\Analyser\Scope;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
 use PHPStan\Type\ObjectType;
+use Symfony\Cmf\Component\Routing\RouteObjectInterface as SymfonyRouteObjectInterface;
+use function sprintf;
 
+/**
+ * @implements Rule<Node\Expr\ClassConstFetch>
+ */
 final class SymfonyCmfRouteObjectInterfaceConstantsRule implements Rule
 {
 
@@ -20,7 +26,6 @@ final class SymfonyCmfRouteObjectInterfaceConstantsRule implements Rule
 
     public function processNode(Node $node, Scope $scope): array
     {
-        assert($node instanceof Node\Expr\ClassConstFetch);
         if (!$node->name instanceof Node\Identifier) {
             return [];
         }
@@ -36,11 +41,11 @@ final class SymfonyCmfRouteObjectInterfaceConstantsRule implements Rule
         if (DeprecatedScopeCheck::inDeprecatedScope($scope)) {
             return [];
         }
-        [$major, $minor] = explode('.', \Drupal::VERSION, 3);
+        [$major, $minor] = explode('.', Drupal::VERSION, 3);
         if ($major !== '9' && (int) $minor > 1) {
             return [];
         }
-        $cmfRouteObjectInterfaceType = new ObjectType(\Symfony\Cmf\Component\Routing\RouteObjectInterface::class);
+        $cmfRouteObjectInterfaceType = new ObjectType(SymfonyRouteObjectInterface::class);
         if (!$classType->isSuperTypeOf($cmfRouteObjectInterfaceType)->yes()) {
             return [];
         }

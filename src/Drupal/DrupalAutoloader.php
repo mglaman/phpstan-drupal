@@ -3,10 +3,34 @@
 namespace mglaman\PHPStanDrupal\Drupal;
 
 use Drupal\Core\DependencyInjection\ContainerNotInitializedException;
+use Drupal\TestTools\PhpUnitCompatibility\PhpUnit8\ClassWriter;
 use DrupalFinder\DrupalFinder;
+use Drush\Drush;
 use PHPStan\DependencyInjection\Container;
+use PHPUnit\Framework\Test;
+use ReflectionClass;
+use RuntimeException;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Yaml\Yaml;
+use Throwable;
+use function array_map;
+use function array_merge;
+use function array_walk;
+use function class_exists;
+use function dirname;
+use function file_exists;
+use function in_array;
+use function interface_exists;
+use function is_array;
+use function is_dir;
+use function is_string;
+use function realpath;
+use function str_replace;
+use function strpos;
+use function strtr;
+use function trigger_error;
+use function ucwords;
+use function usort;
 
 class DrupalAutoloader
 {
@@ -68,7 +92,7 @@ class DrupalAutoloader
         $drupalRoot = $finder->getDrupalRoot();
         $drupalVendorRoot = $finder->getVendorDir();
         if (! (bool) $drupalRoot || ! (bool) $drupalVendorRoot) {
-            throw new \RuntimeException("Unable to detect Drupal at {$drupalParams['drupal_root']}");
+            throw new RuntimeException("Unable to detect Drupal at {$drupalParams['drupal_root']}");
         }
 
         $this->drupalRoot = $drupalRoot;
@@ -142,11 +166,11 @@ class DrupalAutoloader
             }
         }
 
-        if (class_exists(\Drush\Drush::class)) {
-            $reflect = new \ReflectionClass(\Drush\Drush::class);
+        if (class_exists(Drush::class)) {
+            $reflect = new ReflectionClass(Drush::class);
             if ($reflect->getFileName() !== false) {
                 $levels = 2;
-                if (\Drush\Drush::getMajorVersion() < 9) {
+                if (Drush::getMajorVersion() < 9) {
                     $levels = 3;
                 }
                 $drushDir = dirname($reflect->getFileName(), $levels);
@@ -200,9 +224,9 @@ class DrupalAutoloader
         $service_map = $container->getByType(ServiceMap::class);
         $service_map->setDrupalServices($this->serviceMap);
 
-        if (interface_exists(\PHPUnit\Framework\Test::class)
+        if (interface_exists(Test::class)
             && class_exists('Drupal\TestTools\PhpUnitCompatibility\PhpUnit8\ClassWriter')) {
-            \Drupal\TestTools\PhpUnitCompatibility\PhpUnit8\ClassWriter::mutateTestBase($this->autoloader);
+            ClassWriter::mutateTestBase($this->autoloader);
         }
 
         $extension_map = $container->getByType(ExtensionMap::class);
@@ -307,7 +331,7 @@ class DrupalAutoloader
     {
         try {
             $extension->load();
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             // Something prevented the extension file from loading.
             // This can happen when drupal_get_path or drupal_get_filename are used outside of the scope of a function.
         }
@@ -321,7 +345,7 @@ class DrupalAutoloader
             $path = str_replace(dirname($this->drupalRoot) . '/', '', $path);
             // This can happen when drupal_get_path or drupal_get_filename are used outside the scope of a function.
             @trigger_error("$path invoked the Drupal container outside of the scope of a function or class method. It was not loaded.", E_USER_WARNING);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $path = str_replace(dirname($this->drupalRoot) . '/', '', $path);
             // Something prevented the extension file from loading.
             @trigger_error("$path failed loading due to {$e->getMessage()}", E_USER_WARNING);

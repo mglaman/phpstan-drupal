@@ -5,8 +5,16 @@ namespace mglaman\PHPStanDrupal\Rules\Drupal\PluginManager;
 use PhpParser\Node;
 use PhpParser\Node\Stmt\ClassMethod;
 use PHPStan\Analyser\Scope;
+use PHPStan\ShouldNotHappenException;
 use PHPStan\Type\Type;
+use function array_map;
+use function count;
+use function sprintf;
+use function strpos;
 
+/**
+ * @extends AbstractPluginManagerRule<ClassMethod>
+ */
 class PluginManagerSetsCacheBackendRule extends AbstractPluginManagerRule
 {
     public function getNodeType(): string
@@ -14,18 +22,10 @@ class PluginManagerSetsCacheBackendRule extends AbstractPluginManagerRule
         return ClassMethod::class;
     }
 
-    /**
-     * @param Node $node
-     * @param \PHPStan\Analyser\Scope $scope
-     * @return string[]
-     * @throws \PHPStan\ShouldNotHappenException
-     */
     public function processNode(Node $node, Scope $scope): array
     {
-        assert($node instanceof Node\Stmt\ClassMethod);
-
         if (!$scope->isInClass()) {
-            throw new \PHPStan\ShouldNotHappenException();
+            throw new ShouldNotHappenException();
         }
 
         if ($scope->isInTrait()) {

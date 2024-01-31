@@ -6,6 +6,7 @@ namespace mglaman\PHPStanDrupal\DeprecatedScope;
 
 use PHPStan\Analyser\Scope;
 use PHPStan\Rules\Deprecations\DeprecatedScopeResolver;
+use function strpos;
 
 final class GroupLegacyScope implements DeprecatedScopeResolver
 {

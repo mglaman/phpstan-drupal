@@ -8,6 +8,9 @@ use PhpParser\Node;
 use PHPStan\Analyser\Scope;
 use PHPStan\Rules\Rule;
 
+/**
+ * @implements Rule<Node\Expr\MethodCall>
+ */
 final class GetDeprecatedServiceRule implements Rule
 {
 
@@ -28,7 +31,6 @@ final class GetDeprecatedServiceRule implements Rule
 
     public function processNode(Node $node, Scope $scope): array
     {
-        assert($node instanceof Node\Expr\MethodCall);
         if (!$node->name instanceof Node\Identifier) {
             return [];
         }
