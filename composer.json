@@ -11,9 +11,9 @@
     ],
     "require": {
         "php": "^7.4 || ^8.0",
-        "symfony/finder": "^4.2 || ^5.0 || ^6.0 || ^7.0",
-        "phpstan/phpstan": "^1.10.1",
+        "phpstan/phpstan": "^1.10.56",
         "phpstan/phpstan-deprecation-rules": "^1.1.4",
+        "symfony/finder": "^4.2 || ^5.0 || ^6.0 || ^7.0",
         "symfony/yaml": "^4.2|| ^5.0 || ^6.0 || ^7.0",
         "webflo/drupal-finder": "^1.2"
     },

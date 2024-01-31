@@ -2,6 +2,8 @@
 
 namespace mglaman\PHPStanDrupal\Drupal;
 
+use function class_exists;
+
 class ServiceMap
 {
     /** @var DrupalServiceDefinition[] */

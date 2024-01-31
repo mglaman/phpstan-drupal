@@ -229,7 +229,7 @@ jobs:
         run: echo PHPSTAN_TMP_DIR=$(php -r "print sys_get_temp_dir() . '/phpstan';") >> $GITHUB_OUTPUT
         id: phpstan_tmp_dir
       - name: cache phpstan
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ steps.phpstan_tmp_dir.outputs.PHPSTAN_TMP_DIR }}
           key: ${{ runner.os }}-phpstan-core-baseline

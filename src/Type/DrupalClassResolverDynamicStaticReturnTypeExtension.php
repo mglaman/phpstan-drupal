@@ -2,6 +2,7 @@
 
 namespace mglaman\PHPStanDrupal\Type;
 
+use Drupal;
 use Drupal\Core\DependencyInjection\ClassResolverInterface;
 use mglaman\PHPStanDrupal\Drupal\ServiceMap;
 use PhpParser\Node\Expr\StaticCall;
@@ -10,6 +11,7 @@ use PHPStan\Reflection\MethodReflection;
 use PHPStan\Type\DynamicStaticMethodReturnTypeExtension;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\Type;
+use function count;
 
 class DrupalClassResolverDynamicStaticReturnTypeExtension implements DynamicStaticMethodReturnTypeExtension
 {
@@ -25,7 +27,7 @@ class DrupalClassResolverDynamicStaticReturnTypeExtension implements DynamicStat
 
     public function getClass(): string
     {
-        return \Drupal::class;
+        return Drupal::class;
     }
 
     public function isStaticMethodSupported(MethodReflection $methodReflection): bool
@@ -38,7 +40,7 @@ class DrupalClassResolverDynamicStaticReturnTypeExtension implements DynamicStat
         StaticCall $methodCall,
         Scope $scope
     ): Type {
-        if (0 === \count($methodCall->getArgs())) {
+        if (0 === count($methodCall->getArgs())) {
             return new ObjectType(ClassResolverInterface::class);
         }
 

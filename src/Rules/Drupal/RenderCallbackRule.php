@@ -27,7 +27,18 @@ use PHPStan\Type\StaticType;
 use PHPStan\Type\Type;
 use PHPStan\Type\UnionType;
 use PHPStan\Type\VerbosityLevel;
+use function array_map;
+use function array_merge;
+use function class_exists;
+use function count;
+use function explode;
+use function preg_match;
+use function sprintf;
+use function substr_count;
 
+/**
+ * @implements Rule<Node\Expr\ArrayItem>
+ */
 final class RenderCallbackRule implements Rule
 {
 
@@ -57,7 +68,6 @@ final class RenderCallbackRule implements Rule
 
     public function processNode(Node $node, Scope $scope): array
     {
-        assert($node instanceof Node\Expr\ArrayItem);
         $key = $node->key;
         if (!$key instanceof Node\Scalar\String_) {
             return [];

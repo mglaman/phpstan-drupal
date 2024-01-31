@@ -9,7 +9,14 @@ use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
+use function basename;
+use function explode;
+use function strlen;
+use function substr_replace;
 
+/**
+ * @implements Rule<Function_>
+ */
 class DeprecatedHookImplementation implements Rule
 {
 
@@ -27,7 +34,6 @@ class DeprecatedHookImplementation implements Rule
 
     public function processNode(Node $node, Scope $scope) : array
     {
-        assert($node instanceof Function_);
         if (!str_ends_with($scope->getFile(), ".module") && !str_ends_with($scope->getFile(), ".inc")) {
             return [];
         }
