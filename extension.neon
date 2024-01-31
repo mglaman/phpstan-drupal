@@ -19,6 +19,8 @@ parameters:
 		drupal_root: '%currentWorkingDirectory%'
 		bleedingEdge:
 			checkDeprecatedHooksInApiFiles: false
+		rules:
+			testClassSuffixNameRule: false
 		entityMapping:
 			aggregator_feed:
 				class: Drupal\aggregator\Entity\Feed
@@ -237,6 +239,9 @@ parametersSchema:
 		drupal_root: string()
 		bleedingEdge: structure([
 			checkDeprecatedHooksInApiFiles: boolean()
+		])
+		rules: structure([
+			testClassSuffixNameRule: boolean()
 		])
 		entityMapping: arrayOf(anyOf(
 			structure([
