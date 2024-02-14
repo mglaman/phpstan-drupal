@@ -10,7 +10,7 @@ interface CacheBackendInterface {
     /**
      * @return CacheObject|false
      */
-    public function get(string $cid, bool $allow_invalid = FALSE): object|false;
+    public function get(string $cid, bool $allow_invalid = FALSE);
 
     /**
      * @param string[] $cids
