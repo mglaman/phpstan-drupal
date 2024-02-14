@@ -99,6 +99,9 @@ jobs:
           - php-version: "8.0"
             drupal: "^9.0"
             experimental: false
+          - php-version: "8.1"
+            drupal: "^10.0"
+            experimental: false
           - php-version: "8.2"
             drupal: "11.x-dev"
             experimental: true
@@ -171,6 +174,9 @@ jobs:
         drupal:
           - "^9.0"
         include:
+          - php-version: "8.1"
+            drupal: "^10.0"
+            experimental: false
           - php-version: "8.2"
             drupal: "11.x-dev"
             experimental: true
