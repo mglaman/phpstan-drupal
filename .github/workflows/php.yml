@@ -29,7 +29,7 @@ jobs:
           tools: composer:v2
           extensions: dom, curl, libxml, mbstring, zip, pdo, mysql, pdo_mysql, gd
       - name: "Downgrade drupal/core to ^9"
-        run: "composer require drupal/core-recommended:${{ matrix.drupal }} --with-all-dependencies --dev --no-update"
+        run: "composer require drupal/core-recommended:^9 --with-all-dependencies --dev --no-update"
         if: ${{ matrix.php-version == '7.4' }}
       - name: "Add phpspec/prophecy-phpunit"
         run: "composer require phpspec/prophecy-phpunit:^2 --dev --no-update"
