@@ -1,0 +1,20 @@
+<?php
+
+namespace Drupal\Core\Cache;
+
+/**
+ * @phpstan-type CacheObject object{data: mixed, created: int, tags: string[], valid: bool, expire: int, checksum: string, serialized: int}
+ */
+interface CacheBackendInterface {
+
+    /**
+     * @return CacheObject|false
+     */
+    public function get(string $cid, bool $allow_invalid = FALSE);
+
+    /**
+     * @param string[] $cids
+     * @return CacheObject[]
+     */
+    public function getMultiple(array &$cids, bool $allow_invalid = FALSE): array;
+}
