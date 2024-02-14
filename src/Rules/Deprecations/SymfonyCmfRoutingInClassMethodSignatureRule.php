@@ -37,6 +37,11 @@ final class SymfonyCmfRoutingInClassMethodSignatureRule implements Rule
         if ($major !== '9' || (int) $minor < 1) {
             return [];
         }
+        if (!class_exists(RouteObjectInterface::class)
+            || !class_exists(RouteProviderInterface::class)
+            || !class_exists(LazyRouteCollection::class)) {
+            return [];
+        }
         $method = $node->getMethodReflection();
 
         $cmfRouteObjectInterfaceType = new ObjectType(RouteObjectInterface::class);

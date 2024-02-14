@@ -48,6 +48,7 @@ final class RequestStackGetMainRequestRule implements Rule
             $message = sprintf(
                 '%s::getMasterRequest() is deprecated in drupal:9.3.0 and is removed from drupal:10.0.0 for Symfony 6 compatibility. Use the forward compatibility shim class %s and its getMainRequest() method instead.',
                 SymfonyRequestStack::class,
+                // @phpstan-ignore-next-line
                 DrupalRequestStack::class
             );
             return [
