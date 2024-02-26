@@ -4,8 +4,8 @@ namespace mglaman\PHPStanDrupal\Rules\Drupal\Coder;
 
 use Drupal\Core\Form\FormInterface;
 use PhpParser\Node;
-use PHPStan\Node\ClassPropertyNode;
 use PHPStan\Analyser\Scope;
+use PHPStan\Node\ClassPropertyNode;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
 
@@ -41,5 +41,4 @@ final class FormNoPrivatePropertiesRule implements Rule
 
         return [];
     }
-
 }
