@@ -26,6 +26,8 @@ final class ServiceMapFactoryTest extends TestCase
      */
     public function testFactory(string $id, callable $validator): void
     {
+        require_once __DIR__ . '/data/bug-693.php';
+
         $service = new ServiceMap();
         $service->setDrupalServices([
             'entity_type.manager' => [
@@ -111,6 +113,11 @@ final class ServiceMapFactoryTest extends TestCase
             'decorating_an_unknown_service' => [
                 'decorates' => 'unknown',
                 'class' => 'Drupal\service_map\Override',
+            ],
+            'Bug693\Foo' => null,
+            'Bug693\BarInterface' => '@Bug693\Bar',
+            'Bug693\Bar' => [
+                'decorates' => 'Bug693\Foo'
             ],
         ]);
         $validator($service->getService($id));
@@ -239,6 +246,13 @@ final class ServiceMapFactoryTest extends TestCase
                 $child_decorators = $decorators['service_map.deocrating_base']->getDecorators();
                 self::assertCount(1, $child_decorators);
                 self::assertArrayHasKey('service_map.decorates_decorating_base', $child_decorators);
+            }
+        ];
+        yield [
+            'Bug693\Foo',
+            function (DrupalServiceDefinition $service): void {
+                self::assertCount(1, $service->getDecorators());
+                self::assertArrayHasKey('Bug693\\Bar', $service->getDecorators());
             }
         ];
     }
