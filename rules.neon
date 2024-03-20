@@ -23,7 +23,11 @@ rules:
 conditionalTags:
 	mglaman\PHPStanDrupal\Rules\Drupal\Tests\TestClassSuffixNameRule:
 		phpstan.rules.rule: %drupal.rules.testClassSuffixNameRule%
+	mglaman\PHPStanDrupal\Rules\Drupal\DependencySerializationTraitPropertyRule:
+		phpstan.rules.rule: %drupal.rules.dependencySerializationTraitPropertyRule%
 
 services:
 	-
 		class: mglaman\PHPStanDrupal\Rules\Drupal\Tests\TestClassSuffixNameRule
+	-
+		class: mglaman\PHPStanDrupal\Rules\Drupal\DependencySerializationTraitPropertyRule
