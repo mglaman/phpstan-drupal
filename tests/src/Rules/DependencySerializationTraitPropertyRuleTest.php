@@ -20,27 +20,27 @@ final class DependencySerializationTraitPropertyRuleTest extends DrupalRuleTestC
             [__DIR__.'/data/dependency-serialization-trait.php'],
             [
                 [
-                    'Private properties cannot be serialized with Drupal\Core\DependencyInjection\DependencySerializationTrait.',
+                    'Drupal\Core\DependencyInjection\DependencySerializationTrait does not support private properties.',
                     16,
                     'See https://www.drupal.org/node/3110266',
                 ],
                 [
-                    'Private properties cannot be serialized with Drupal\Core\DependencyInjection\DependencySerializationTrait.',
+                    'Drupal\Core\DependencyInjection\DependencySerializationTrait does not support private properties.',
                     22,
                     'See https://www.drupal.org/node/3110266',
                 ],
                 [
-                    'Read only properties cannot be serialized with Drupal\Core\DependencyInjection\DependencySerializationTrait.',
+                    'Read-only properties are incompatible with Drupal\Core\DependencyInjection\DependencySerializationTrait.',
                     22,
                     'See https://www.drupal.org/node/3110266',
                 ],
                 [
-                    'Read only properties cannot be serialized with Drupal\Core\DependencyInjection\DependencySerializationTrait.',
+                    'Read-only properties are incompatible with Drupal\Core\DependencyInjection\DependencySerializationTrait.',
                     28,
                     'See https://www.drupal.org/node/3110266',
                 ],
                 [
-                    'Private properties cannot be serialized with Drupal\Core\DependencyInjection\DependencySerializationTrait.',
+                    'Drupal\Core\DependencyInjection\DependencySerializationTrait does not support private properties.',
                     32,
                     'See https://www.drupal.org/node/3110266',
                 ],

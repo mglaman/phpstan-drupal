@@ -32,7 +32,7 @@ final class DependencySerializationTraitPropertyRule implements Rule
         if ($node->isPrivate()) {
             $errors[] = RuleErrorBuilder::message(
                 sprintf(
-                    'Private properties cannot be serialized with %s.',
+                    '%s does not support private properties.',
                     DependencySerializationTrait::class
                 )
             )->tip('See https://www.drupal.org/node/3110266')->build();
@@ -40,7 +40,7 @@ final class DependencySerializationTraitPropertyRule implements Rule
         if ($node->isReadOnly()) {
             $errors[] = RuleErrorBuilder::message(
                 sprintf(
-                    'Read only properties cannot be serialized with %s.',
+                    'Read-only properties are incompatible with %s.',
                     DependencySerializationTrait::class
                 )
             )->tip('See https://www.drupal.org/node/3110266')->build();
