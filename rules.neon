@@ -31,3 +31,5 @@ services:
 		class: mglaman\PHPStanDrupal\Rules\Drupal\Tests\TestClassSuffixNameRule
 	-
 		class: mglaman\PHPStanDrupal\Rules\Drupal\AccessResultConditionRule
+		arguments:
+			treatPhpDocTypesAsCertain: %treatPhpDocTypesAsCertain%
