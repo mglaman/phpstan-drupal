@@ -21,6 +21,7 @@ parameters:
 			checkDeprecatedHooksInApiFiles: false
 		rules:
 			testClassSuffixNameRule: false
+			accessResultConditionRule: false
 		entityMapping:
 			aggregator_feed:
 				class: Drupal\aggregator\Entity\Feed
@@ -242,6 +243,7 @@ parametersSchema:
 		])
 		rules: structure([
 			testClassSuffixNameRule: boolean()
+			accessResultConditionRule: boolean()
 		])
 		entityMapping: arrayOf(anyOf(
 			structure([
@@ -316,7 +318,3 @@ services:
 		class: mglaman\PHPStanDrupal\DeprecatedScope\DeprecationHelperScope
 		tags:
 			- phpstan.deprecations.deprecatedScopeResolver
-	-
-		class: mglaman\PHPStanDrupal\Type\AccessResultConditionTypeSpecifyingExtension
-		tags:
-			- phpstan.typeSpecifier.staticMethodTypeSpecifyingExtension

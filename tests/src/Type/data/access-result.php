@@ -13,6 +13,3 @@ assertType(AccessResultNeutral::class, AccessResult::allowedIf(false));
 
 assertType(AccessResultForbidden::class, AccessResult::forbiddenIf(true));
 assertType(AccessResultNeutral::class, AccessResult::forbiddenIf(false));
-
-$foo = AccessResult::allowedIf('foo');
-assertType('???', $foo);
