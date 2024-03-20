@@ -21,6 +21,7 @@ parameters:
 			checkDeprecatedHooksInApiFiles: false
 		rules:
 			testClassSuffixNameRule: false
+			dependencySerializationTraitPropertyRule: false
 			accessResultConditionRule: false
 		entityMapping:
 			aggregator_feed:
@@ -243,6 +244,7 @@ parametersSchema:
 		])
 		rules: structure([
 			testClassSuffixNameRule: boolean()
+			dependencySerializationTraitPropertyRule: boolean()
 			accessResultConditionRule: boolean()
 		])
 		entityMapping: arrayOf(anyOf(
