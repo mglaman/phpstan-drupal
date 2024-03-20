@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace mglaman\PHPStanDrupal\Rules\Drupal\Coder;
 
@@ -9,6 +11,9 @@ use PHPStan\Node\ClassPropertyNode;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
 
+/**
+ * @implements Rule<ClassPropertyNode>
+ */
 final class FormNoPrivatePropertiesRule implements Rule
 {
 
@@ -19,26 +24,21 @@ final class FormNoPrivatePropertiesRule implements Rule
 
     public function processNode(Node $node, Scope $scope): array
     {
-        if (!$node instanceof ClassPropertyNode
-            || !$node->getClassReflection()->implementsInterface(FormInterface::class)) {
+        if (!$node->getClassReflection()->implementsInterface(FormInterface::class)) {
             return [];
         }
 
+        $errors = [];
         if ($node->isPrivate()) {
-            return [
-                RuleErrorBuilder::message(
-                    'Private properties are note allowed on FormInterface classes due to seralisation.'
-                )->tip('See https://www.drupal.org/node/3110266')->build(),
-            ];
+            $errors[] = RuleErrorBuilder::message(
+                'Private properties are not allowed on FormInterface classes due to serialisation.'
+            )->tip('See https://www.drupal.org/node/3110266')->build();
         }
         if ($node->isReadOnly()) {
-            return [
-                RuleErrorBuilder::message(
-                    'Private properties are note allowed on FormInterface classes due to seralisation.'
-                )->tip('See https://www.drupal.org/node/3110266')->build(),
-            ];
+            $errors[] = RuleErrorBuilder::message(
+                'Read only properties are not allowed on FormInterface classes due to serialisation.'
+            )->tip('See https://www.drupal.org/node/3110266')->build();
         }
-
-        return [];
+        return $errors;
     }
 }
