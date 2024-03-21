@@ -9,7 +9,6 @@ use PhpParser\Node;
 use PHPStan\Analyser\Scope;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
-use PHPStan\Type\ConstantScalarType;
 use PHPStan\Type\VerbosityLevel;
 
 /**
@@ -59,20 +58,19 @@ final class AccessResultConditionRule implements Rule
             return [];
         }
         $conditionType = $this->treatPhpDocTypesAsCertain ? $scope->getType($condition) : $scope->getNativeType($condition);
-        // @phpstan-ignore-next-line
-        if (!$conditionType instanceof ConstantScalarType) {
-            return [];
-        }
-        $leftType = $this->treatPhpDocTypesAsCertain ? $scope->getType($condition->left) : $scope->getNativeType($condition->left);
-        $rightType = $this->treatPhpDocTypesAsCertain ? $scope->getType($condition->right) : $scope->getNativeType($condition->right);
+        $bool = $conditionType->toBoolean();
 
-        if ($conditionType->getValue() === false) {
+        if ($bool->isTrue()->or($bool->isFalse())->yes()) {
+            $leftType = $this->treatPhpDocTypesAsCertain ? $scope->getType($condition->left) : $scope->getNativeType($condition->left);
+            $rightType = $this->treatPhpDocTypesAsCertain ? $scope->getType($condition->right) : $scope->getNativeType($condition->right);
+
             return [
                 RuleErrorBuilder::message(sprintf(
-                    'Strict comparison using %s between %s and %s will always evaluate to false.',
+                    'Strict comparison using %s between %s and %s will always evaluate to %s.',
                     $condition->getOperatorSigil(),
                     $leftType->describe(VerbosityLevel::value()),
                     $rightType->describe(VerbosityLevel::value()),
+                    $bool->describe(VerbosityLevel::value()),
                 ))->identifier(sprintf('%s.alwaysFalse', $condition instanceof Node\Expr\BinaryOp\Identical ? 'identical' : 'notIdentical'))->build(),
             ];
         }
