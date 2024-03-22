@@ -3,7 +3,6 @@
 namespace mglaman\PHPStanDrupal\Rules\Drupal;
 
 use Drupal;
-use Drupal\Core\Http\RequestStack as DrupalRequestStack;
 use mglaman\PHPStanDrupal\Internal\DeprecatedScopeCheck;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
