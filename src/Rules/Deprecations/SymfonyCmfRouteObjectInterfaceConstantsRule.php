@@ -26,7 +26,6 @@ final class SymfonyCmfRouteObjectInterfaceConstantsRule implements Rule
 
     public function processNode(Node $node, Scope $scope): array
     {
-
         if (!$node->name instanceof Node\Identifier) {
             return [];
         }
@@ -49,9 +48,8 @@ final class SymfonyCmfRouteObjectInterfaceConstantsRule implements Rule
         if ((int) $minor < 1) {
             return [];
         }
-        if (!class_exists(\Symfony\Cmf\Component\Routing\RouteObjectInterface::class)) {
-            return [];
-        }
+
+        // @phpstan-ignore-next-line
         $cmfRouteObjectInterfaceType = new ObjectType(SymfonyRouteObjectInterface::class);
         if (!$classType->isSuperTypeOf($cmfRouteObjectInterfaceType)->yes()) {
             return [];

@@ -30,9 +30,6 @@ final class SymfonyCmfRoutingInClassMethodSignatureRule implements Rule
 
     public function processNode(Node $node, Scope $scope): array
     {
-        if (!class_exists(RouteObjectInterface::class) || !class_exists(RouteProviderInterface::class) || !class_exists(LazyRouteCollection::class)) {
-            return [];
-        }
         if (DeprecatedScopeCheck::inDeprecatedScope($scope)) {
             return [];
         }
@@ -42,8 +39,11 @@ final class SymfonyCmfRoutingInClassMethodSignatureRule implements Rule
         }
         $method = $node->getMethodReflection();
 
+        // @phpstan-ignore-next-line
         $cmfRouteObjectInterfaceType = new ObjectType(RouteObjectInterface::class);
+        // @phpstan-ignore-next-line
         $cmfRouteProviderInterfaceType = new ObjectType(RouteProviderInterface::class);
+        // @phpstan-ignore-next-line
         $cmfLazyRouteCollectionType = new ObjectType(LazyRouteCollection::class);
 
         $methodSignature = ParametersAcceptorSelector::selectSingle($method->getVariants());
