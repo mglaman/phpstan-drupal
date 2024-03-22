@@ -29,12 +29,12 @@ jobs:
           php-version: "${{ matrix.php-version }}"
           tools: composer:v2
           extensions: dom, curl, libxml, mbstring, zip, pdo, mysql, pdo_mysql, gd
-      - name: "Upgrade to drupal/core:^10"
-        run: "composer require drupal/core-recommended:^10 --with-all-dependencies --dev --no-update"
-        if: ${{ matrix.php-version == '8.3' }}
+      - name: "Downgrade drupal/core to ^9"
+        run: "composer require drupal/core-recommended:^9 --with-all-dependencies --dev --no-update"
+        if: ${{ matrix.php-version == '7.4' }}
       - name: "Add phpspec/prophecy-phpunit"
         run: "composer require phpspec/prophecy-phpunit:^2 --dev --no-update"
-        if: ${{ matrix.php-version == '8.3' }}
+        if: ${{ matrix.php-version == '7.4' }}
       - name: "Install dependencies"
         uses: "ramsey/composer-install@v3"
       - name: "PHPCS"
@@ -49,21 +49,16 @@ jobs:
       matrix:
         experimental: [false]
         php-version:
-          - "7.4"
+          - "8.1"
+          - "8.2"
         drupal:
-          - "^9.0"
+          - "^10"
         include:
-          - php-version: "8.0"
+          - php-version: "7.4"
             drupal: "^9.0"
             experimental: false
-          - php-version: "8.1"
-            drupal: "^10.0"
-            experimental: false
-          - php-version: "8.1"
-            drupal: "~10.1.0"
-            experimental: false
-          - php-version: "8.2"
-            drupal: "^10.0"
+          - php-version: "8.0"
+            drupal: "^9.0"
             experimental: false
           - php-version: "8.2"
             drupal: "11.x-dev"
@@ -81,11 +76,11 @@ jobs:
           php-version: "${{ matrix.php-version }}"
           tools: composer:v2
           extensions: dom, curl, libxml, mbstring, zip, pdo, mysql, pdo_mysql, gd
-      - name: "Upgrade to drupal/core:${{ matrix.drupal }}"
+      - name: "Set drupal/core to ${{ matrix.drupal }}"
         run: "composer require drupal/core-recommended:${{ matrix.drupal }} --with-all-dependencies --dev --no-update"
-        if: ${{ matrix.drupal == '^10.0' || matrix.drupal == '11.x-dev' }}
       - name: "Add phpspec/prophecy-phpunit"
         run: "composer require phpspec/prophecy-phpunit:^2 --dev --no-update"
+        if: ${{ matrix.drupal == '^9.0' }}
       - name: "Install dependencies"
         uses: "ramsey/composer-install@v3"
       - name: "PHPUnit"
@@ -102,15 +97,13 @@ jobs:
       matrix:
         experimental: [false]
         php-version:
-          - "7.4"
+          - "8.1"
+          - "8.2"
         drupal:
-          - "^9.0"
+          - "^10"
         include:
           - php-version: "8.0"
             drupal: "^9.0"
-            experimental: false
-          - php-version: "8.1"
-            drupal: "^10.0"
             experimental: false
           - php-version: "8.2"
             drupal: "11.x-dev"
@@ -183,12 +176,13 @@ jobs:
       matrix:
         experimental: [false]
         php-version:
-          - "7.4"
+          - "8.1"
+          - "8.2"
         drupal:
-          - "^9.0"
+          - "^10"
         include:
-          - php-version: "8.1"
-            drupal: "^10.0"
+          - php-version: "8.0"
+            drupal: "^9.0"
             experimental: false
           - php-version: "8.2"
             drupal: "11.x-dev"
