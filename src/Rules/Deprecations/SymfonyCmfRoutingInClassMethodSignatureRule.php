@@ -30,6 +30,9 @@ final class SymfonyCmfRoutingInClassMethodSignatureRule implements Rule
 
     public function processNode(Node $node, Scope $scope): array
     {
+        if (!class_exists(RouteObjectInterface::class)) {
+            return [];
+        }
         if (DeprecatedScopeCheck::inDeprecatedScope($scope)) {
             return [];
         }
