@@ -18,6 +18,7 @@ jobs:
           - "8.0"
           - "8.1"
           - "8.2"
+          - "8.3"
     steps:
       - name: "Checkout"
         uses: "actions/checkout@v4"
@@ -35,7 +36,7 @@ jobs:
         run: "composer require phpspec/prophecy-phpunit:^2 --dev --no-update"
         if: ${{ matrix.php-version == '7.4' }}
       - name: "Install dependencies"
-        uses: "ramsey/composer-install@v2"
+        uses: "ramsey/composer-install@v3"
       - name: "PHPCS"
         run: "php vendor/bin/phpcs"
       - name: "PHPStan"
@@ -62,6 +63,9 @@ jobs:
           - php-version: "8.2"
             drupal: "11.x-dev"
             experimental: true
+          - php-version: "8.3"
+            drupal: "11.x-dev"
+            experimental: true
     steps:
       - name: "Checkout"
         uses: "actions/checkout@v4"
@@ -78,7 +82,7 @@ jobs:
         run: "composer require phpspec/prophecy-phpunit:^2 --dev --no-update"
         if: ${{ matrix.drupal == '^9.0' }}
       - name: "Install dependencies"
-        uses: "ramsey/composer-install@v2"
+        uses: "ramsey/composer-install@v3"
       - name: "PHPUnit"
         run: "php vendor/bin/phpunit"
 
@@ -102,6 +106,9 @@ jobs:
             drupal: "^9.0"
             experimental: false
           - php-version: "8.2"
+            drupal: "11.x-dev"
+            experimental: true
+          - php-version: "8.3"
             drupal: "11.x-dev"
             experimental: true
     steps:
@@ -256,7 +263,7 @@ jobs:
          composer config repositories.1 path $GITHUB_WORKSPACE
 
       - name: "Install Drupal core dependencies"
-        uses: "ramsey/composer-install@v2"
+        uses: "ramsey/composer-install@v3"
         with:
           working-directory: "${{ runner.temp }}/drupal"
       - name: "require phpstan-drupal"

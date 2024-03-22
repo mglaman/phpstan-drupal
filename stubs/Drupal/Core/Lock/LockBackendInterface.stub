@@ -1,0 +1,18 @@
+<?php
+
+namespace Drupal\Core\Lock;
+
+interface LockBackendInterface {
+
+  /**
+   * @param string $name
+   * @param float $timeout
+   *
+   * @return bool
+   *
+   * @phpstan-impure
+   */
+  public function acquire(string $name, float $timeout = 30.0): bool;
+
+
+}

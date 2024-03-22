@@ -23,7 +23,17 @@ rules:
 conditionalTags:
 	mglaman\PHPStanDrupal\Rules\Drupal\Tests\TestClassSuffixNameRule:
 		phpstan.rules.rule: %drupal.rules.testClassSuffixNameRule%
+	mglaman\PHPStanDrupal\Rules\Drupal\DependencySerializationTraitPropertyRule:
+		phpstan.rules.rule: %drupal.rules.dependencySerializationTraitPropertyRule%
+	mglaman\PHPStanDrupal\Rules\Drupal\AccessResultConditionRule:
+		phpstan.rules.rule: %drupal.rules.accessResultConditionRule%
 
 services:
 	-
 		class: mglaman\PHPStanDrupal\Rules\Drupal\Tests\TestClassSuffixNameRule
+	-
+		class: mglaman\PHPStanDrupal\Rules\Drupal\DependencySerializationTraitPropertyRule
+	-
+		class: mglaman\PHPStanDrupal\Rules\Drupal\AccessResultConditionRule
+		arguments:
+			treatPhpDocTypesAsCertain: %treatPhpDocTypesAsCertain%
