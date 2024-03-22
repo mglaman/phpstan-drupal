@@ -46,7 +46,7 @@ final class SymfonyCmfRouteObjectInterfaceConstantsRule implements Rule
         if ($major !== '9') {
             return [];
         }
-        if ((int) $minor > 0) {
+        if ((int) $minor < 1) {
             return [];
         }
         if (!class_exists(\Symfony\Cmf\Component\Routing\RouteObjectInterface::class)) {
