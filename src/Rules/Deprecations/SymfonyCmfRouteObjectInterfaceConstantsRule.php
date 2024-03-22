@@ -49,7 +49,7 @@ final class SymfonyCmfRouteObjectInterfaceConstantsRule implements Rule
         if ((int) $minor > 0) {
             return [];
         }
-        if (!class_exists(SymfonyRouteObjectInterface::class)) {
+        if (!class_exists(\Symfony\Cmf\Component\Routing\RouteObjectInterface::class)) {
             return [];
         }
         $cmfRouteObjectInterfaceType = new ObjectType(SymfonyRouteObjectInterface::class);
