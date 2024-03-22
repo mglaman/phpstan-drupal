@@ -26,9 +26,7 @@ final class SymfonyCmfRouteObjectInterfaceConstantsRule implements Rule
 
     public function processNode(Node $node, Scope $scope): array
     {
-        if (!class_exists(SymfonyRouteObjectInterface::class)) {
-            return [];
-        }
+
         if (!$node->name instanceof Node\Identifier) {
             return [];
         }
@@ -45,7 +43,13 @@ final class SymfonyCmfRouteObjectInterfaceConstantsRule implements Rule
             return [];
         }
         [$major, $minor] = explode('.', Drupal::VERSION, 3);
-        if ($major !== '9' && (int) $minor > 1) {
+        if ($major !== '9') {
+            return [];
+        }
+        if ((int) $minor > 0) {
+            return [];
+        }
+        if (!class_exists(SymfonyRouteObjectInterface::class)) {
             return [];
         }
         $cmfRouteObjectInterfaceType = new ObjectType(SymfonyRouteObjectInterface::class);
