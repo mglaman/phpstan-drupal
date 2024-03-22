@@ -26,9 +26,6 @@ final class SymfonyCmfRouteObjectInterfaceConstantsRule implements Rule
 
     public function processNode(Node $node, Scope $scope): array
     {
-        if (!class_exists(SymfonyRouteObjectInterface::class)) {
-            return [];
-        }
         if (!$node->name instanceof Node\Identifier) {
             return [];
         }
