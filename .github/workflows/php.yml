@@ -29,6 +29,12 @@ jobs:
           php-version: "${{ matrix.php-version }}"
           tools: composer:v2
           extensions: dom, curl, libxml, mbstring, zip, pdo, mysql, pdo_mysql, gd
+      - name: "Upgrade to drupal/core:^10"
+        run: "composer require drupal/core-recommended:^10 --with-all-dependencies --dev --no-update"
+        if: ${{ matrix.php-version == '8.3' }}
+      - name: "Add phpspec/prophecy-phpunit"
+        run: "composer require phpspec/prophecy-phpunit:^2 --dev --no-update"
+        if: ${{ matrix.php-version == '8.3' }}
       - name: "Install dependencies"
         uses: "ramsey/composer-install@v3"
       - name: "PHPCS"
