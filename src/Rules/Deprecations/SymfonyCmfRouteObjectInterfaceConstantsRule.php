@@ -42,9 +42,14 @@ final class SymfonyCmfRouteObjectInterfaceConstantsRule implements Rule
             return [];
         }
         [$major, $minor] = explode('.', Drupal::VERSION, 3);
-        if ($major !== '9' && (int) $minor > 1) {
+        if ($major !== '9') {
             return [];
         }
+        if ((int) $minor < 1) {
+            return [];
+        }
+
+        // @phpstan-ignore-next-line
         $cmfRouteObjectInterfaceType = new ObjectType(SymfonyRouteObjectInterface::class);
         if (!$classType->isSuperTypeOf($cmfRouteObjectInterfaceType)->yes()) {
             return [];
