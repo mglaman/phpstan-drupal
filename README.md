@@ -10,7 +10,7 @@ those namespaces so that PHPStan can properly discover symbols in your Drupal co
 
 ## Sponsors
 
-<a href="https://www.undpaul.de/"><img src="https://www.undpaul.de/themes/custom/undpaul3/logo.svg" alt="undpaul" width="250" /></a> <a href="https://www.optasy.com/"><img src="https://www.optasy.com/images/logo.svg" alt="undpaul" width="200" /></a>
+<a href="https://www.undpaul.de/"><img src="https://www.undpaul.de/themes/custom/undpaul3/logo.svg" alt="undpaul" width="250" /></a> <a href="https://www.optasy.com/"><img src="https://optasy.com/themes/custom/optasy/img/logo_optasy.png" alt="Optasy" width="250"></a> <a href="https://www.fame.fi/"><img src="https://www.fame.fi/assets/images/fame-logo.png" alt="Fame Helsinki" width="250" ></a>
 
 [Would you like to sponsor?](https://github.com/sponsors/mglaman)
 
