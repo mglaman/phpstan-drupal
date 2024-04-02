@@ -182,7 +182,7 @@ class DrupalAutoloader
         }
 
         foreach ($this->serviceYamls as $extension => $serviceYaml) {
-            $yaml = Yaml::parseFile($serviceYaml);
+            $yaml = Yaml::parseFile($serviceYaml, Yaml::PARSE_CUSTOM_TAGS);
             // Weed out service files which only provide parameters.
             if (!isset($yaml['services']) || !is_array($yaml['services'])) {
                 continue;
