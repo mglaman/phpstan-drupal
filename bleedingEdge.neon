@@ -2,3 +2,7 @@ parameters:
 	drupal:
 		bleedingEdge:
 			checkDeprecatedHooksInApiFiles: true
+		rules:
+			testClassSuffixNameRule: true
+			dependencySerializationTraitPropertyRule: true
+			accessResultConditionRule: true
