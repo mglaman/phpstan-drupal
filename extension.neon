@@ -23,6 +23,7 @@ parameters:
 			testClassSuffixNameRule: false
 			dependencySerializationTraitPropertyRule: false
 			accessResultConditionRule: false
+			classExtendsInternalClassRule: true
 		entityMapping:
 			aggregator_feed:
 				class: Drupal\aggregator\Entity\Feed
@@ -246,6 +247,7 @@ parametersSchema:
 			testClassSuffixNameRule: boolean()
 			dependencySerializationTraitPropertyRule: boolean()
 			accessResultConditionRule: boolean()
+			classExtendsInternalClassRule: boolean()
 		])
 		entityMapping: arrayOf(anyOf(
 			structure([

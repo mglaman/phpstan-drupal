@@ -91,6 +91,19 @@ See the `extension-installer` documentation for more information: https://github
 
 ## Adapting to your project
 
+### Customizing rules
+
+#### Disabling checks for extending `@internal` classes
+
+You can disable the `ClassExtendsInternalClassRule` rule by adding the following to your `phpstan.neon`:
+
+```neon
+parameters: 
+    drupal:
+        rules:
+            classExtendsInternalClassRule: false
+```
+
 ### Specifying your Drupal project's root
 
 By default, the PHPStan Drupal extension will try to determine your Drupal project's root directory based on the working
