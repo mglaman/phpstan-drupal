@@ -3,7 +3,6 @@ rules:
 	- mglaman\PHPStanDrupal\Rules\Drupal\GlobalDrupalDependencyInjectionRule
 	- mglaman\PHPStanDrupal\Rules\Drupal\PluginManager\PluginManagerSetsCacheBackendRule
 	- mglaman\PHPStanDrupal\Rules\Deprecations\AccessDeprecatedConstant
-	- mglaman\PHPStanDrupal\Rules\Classes\ClassExtendsInternalClassRule
 	- mglaman\PHPStanDrupal\Rules\Classes\PluginManagerInspectionRule
 	- mglaman\PHPStanDrupal\Rules\Deprecations\ConditionManagerCreateInstanceContextConfigurationRule
 	- mglaman\PHPStanDrupal\Rules\Drupal\RenderCallbackRule
@@ -27,6 +26,8 @@ conditionalTags:
 		phpstan.rules.rule: %drupal.rules.dependencySerializationTraitPropertyRule%
 	mglaman\PHPStanDrupal\Rules\Drupal\AccessResultConditionRule:
 		phpstan.rules.rule: %drupal.rules.accessResultConditionRule%
+	mglaman\PHPStanDrupal\Rules\Classes\ClassExtendsInternalClassRule:
+		phpstan.rules.rule: %drupal.rules.classExtendsInternalClassRule%
 
 services:
 	-
@@ -37,3 +38,5 @@ services:
 		class: mglaman\PHPStanDrupal\Rules\Drupal\AccessResultConditionRule
 		arguments:
 			treatPhpDocTypesAsCertain: %treatPhpDocTypesAsCertain%
+	-
+		class: mglaman\PHPStanDrupal\Rules\Classes\ClassExtendsInternalClassRule
