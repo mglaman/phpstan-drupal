@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace mglaman\PHPStanDrupal\Rules\Drupal;
 
-use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node;
+use PhpParser\Node\Stmt\ClassMethod;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Rules\Rule;
@@ -57,16 +57,21 @@ final class ControllerAutoWireRule implements Rule
 
         $namespace = $class->namespacedName->toCodeString();
         $reflection = $this->reflectionProvider->getClass($namespace);
-        $extends_controllerbase = $reflection->isSubclassOf('Drupal\Core\Controller\ControllerBase');
+        $implemented_traits = array_keys($reflection->getTraits(true));
 
-        if (!$extends_controllerbase) {
+        // If no traits implemented.
+        if (!$implemented_traits) {
             return [];
         }
 
-        return [
-            RuleErrorBuilder::message(
-                'Controllers are autowired from drupal:10.2.0. Overriding the create() method is no longer required.'
-            )->tip('See https://www.drupal.org/node/3395716')->build(),
-        ];
+        if (in_array('Drupal\Core\DependencyInjection\AutowireTrait', $implemented_traits)) {
+            return [
+                RuleErrorBuilder::message(
+                    'Controllers are autowired from drupal:10.2.0. Overriding the create() method is no longer required.'
+                )->tip('See https://www.drupal.org/node/3395716')->build(),
+            ];
+        }
+
+        return [];
     }
 }
