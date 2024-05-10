@@ -2,7 +2,9 @@
 
 namespace mglaman\PHPStanDrupal\Drupal;
 
+use Composer\Autoload\ClassLoader;
 use Drupal\Core\DependencyInjection\ContainerNotInitializedException;
+use Drupal\Core\DrupalKernelInterface;
 use Drupal\TestTools\PhpUnitCompatibility\PhpUnit8\ClassWriter;
 use DrupalFinder\DrupalFinder;
 use Drush\Drush;
@@ -102,6 +104,10 @@ class DrupalAutoloader
         $this->serviceYamls['core'] = $drupalRoot . '/core/core.services.yml';
         $this->serviceClassProviders['core'] = '\Drupal\Core\CoreServiceProvider';
         $this->serviceMap['service_provider.core.service_provider'] = ['class' => $this->serviceClassProviders['core']];
+        // Attach synthetic services
+        // @see \Drupal\Core\DrupalKernel::attachSynthetic
+        $this->serviceMap['kernel'] = ['class' => DrupalKernelInterface::class];
+        $this->serviceMap['class_loader'] = ['class' => ClassLoader::class];
 
         $extensionDiscovery = new ExtensionDiscovery($this->drupalRoot);
         $extensionDiscovery->setProfileDirectories([]);
