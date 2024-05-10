@@ -89,8 +89,7 @@ class DrupalAutoloader
 
         if (class_exists(DrupalFinderComposerRuntime::class)) {
             $finder = new DrupalFinderComposerRuntime();
-            $drupalRoot = $finder->getDrupalRoot() ?? '';
-            $drupalVendorRoot = $finder->getVendorDir() ?? '';
+
         } else {
             $drupalRoot = realpath($drupalParams['drupal_root']);
             if ($drupalRoot === false) {
@@ -102,15 +101,16 @@ class DrupalAutoloader
             if (!$finder->locateRoot($drupalRoot)) {
                 throw new RuntimeException("Unable to detect Drupal in {$drupalParams['drupal_root']}");
             }
-            $drupalRoot = (string) $finder->getDrupalRoot();
-            $drupalVendorRoot = (string) $finder->getVendorDir();
         }
 
-        if ($drupalRoot === '' || $drupalVendorRoot === '') {
-            throw new RuntimeException("Unable to detect Drupal in {$finder->getComposerRoot()}");
+        $drupalRoot = $finder->getDrupalRoot();
+        $drupalVendorRoot = $finder->getVendorDir();
+        if (!(bool) $drupalRoot || !(bool) $drupalVendorRoot) {
+            throw new RuntimeException("Unable to detect Drupal in {$drupalParams['drupal_root']}");
         }
 
-        $this->drupalRoot = $drupalRoot;
+        // @phpstan-ignore-next-line
+        $this->drupalRoot = (string) $drupalRoot;
 
         $this->autoloader = include $drupalVendorRoot . '/autoload.php';
 
