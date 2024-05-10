@@ -4,6 +4,7 @@ namespace mglaman\PHPStanDrupal\Drupal;
 
 use Drupal\Core\DependencyInjection\ContainerNotInitializedException;
 use Drupal\TestTools\PhpUnitCompatibility\PhpUnit8\ClassWriter;
+use DrupalFinder\DrupalFinder;
 use DrupalFinder\DrupalFinderComposerRuntime;
 use Drush\Drush;
 use PHPStan\DependencyInjection\Container;
@@ -85,11 +86,24 @@ class DrupalAutoloader
          */
         $drupalParams = $container->getParameter('drupal');
 
-        $finder = new DrupalFinderComposerRuntime();
+        if (!class_exists(DrupalFinderComposerRuntime::class)) {
+            $drupalRoot = realpath($drupalParams['drupal_root']);
+            if ($drupalRoot === false) {
+                throw new RuntimeException("Unable to detect Drupal in {$drupalParams['drupal_root']}");
+            }
+            // @phpstan-ignore-next-line
+            $finder = new DrupalFinder();
+            // @phpstan-ignore-next-line
+            if (!$finder->locateRoot($drupalRoot)) {
+                throw new RuntimeException("Unable to detect Drupal in {$drupalParams['drupal_root']}");
+            }
+        } else {
+            $finder = new DrupalFinderComposerRuntime();
+        }
         $drupalRoot = $finder->getDrupalRoot();
         $drupalVendorRoot = $finder->getVendorDir();
 
-        if ($drupalRoot === null || $drupalVendorRoot === null) {
+        if (!is_string($drupalRoot) || !is_string($drupalVendorRoot)) {
             throw new RuntimeException("Unable to detect Drupal in {$finder->getComposerRoot()}");
         }
 
