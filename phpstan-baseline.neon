@@ -1,6 +1,40 @@
 parameters:
 	ignoreErrors:
 		-
+			message: """
+				#^Call to deprecated method locateRoot\\(\\) of class DrupalFinder\\\\DrupalFinder\\:
+				Will be removed in v2\\. Future usage should instantiate
+				  a new DrupalFinder object by passing the starting path to its
+				  constructor\\.$#
+			"""
+			count: 1
+			path: src/Drupal/DrupalAutoloader.php
+
+		-
+			message: """
+				#^Instantiation of deprecated class DrupalFinder\\\\DrupalFinder\\:
+				in drupal\\-finder\\:1\\.3\\.0 and is removed from drupal\\-finder\\:2\\.0\\.0\\.
+				  Use \\\\DrupalFinder\\\\DrupalFinderComposerRuntime instead\\.$#
+			"""
+			count: 1
+			path: src/Drupal/DrupalAutoloader.php
+
+		-
+			message: "#^Parameter \\#1 \\$root of class mglaman\\\\PHPStanDrupal\\\\Drupal\\\\ExtensionDiscovery constructor expects string, bool\\|string given\\.$#"
+			count: 1
+			path: src/Drupal/DrupalAutoloader.php
+
+		-
+			message: "#^Parameter \\#1 \\$start_path of method DrupalFinder\\\\DrupalFinder\\:\\:locateRoot\\(\\) expects string, string\\|false given\\.$#"
+			count: 1
+			path: src/Drupal/DrupalAutoloader.php
+
+		-
+			message: "#^Property mglaman\\\\PHPStanDrupal\\\\Drupal\\\\DrupalAutoloader\\:\\:\\$drupalRoot \\(string\\) does not accept bool\\|string\\.$#"
+			count: 1
+			path: src/Drupal/DrupalAutoloader.php
+
+		-
 			message: "#^Doing instanceof PHPStan\\\\Type\\\\Constant\\\\ConstantArrayType is error\\-prone and deprecated\\. Use Type\\:\\:getConstantArrays\\(\\) instead\\.$#"
 			count: 1
 			path: src/Rules/Deprecations/ConditionManagerCreateInstanceContextConfigurationRule.php
@@ -12,17 +46,7 @@ parameters:
 
 		-
 			message: "#^Doing instanceof PHPStan\\\\Type\\\\Constant\\\\ConstantStringType is error\\-prone and deprecated\\. Use Type\\:\\:getConstantStrings\\(\\) instead\\.$#"
-			count: 1
-			path: src/Rules/Drupal/LoadIncludeBase.php
-
-		-
-			message: "#^Doing instanceof PHPStan\\\\Type\\\\Constant\\\\ConstantArrayType is error\\-prone and deprecated\\. Use Type\\:\\:getConstantArrays\\(\\) instead\\.$#"
-			count: 1
-			path: src/Rules/Drupal/RenderCallbackRule.php
-
-		-
-			message: "#^Doing instanceof PHPStan\\\\Type\\\\Constant\\\\ConstantStringType is error\\-prone and deprecated\\. Use Type\\:\\:getConstantStrings\\(\\) instead\\.$#"
-			count: 3
+			count: 2
 			path: src/Rules/Drupal/RenderCallbackRule.php
 
 		-
@@ -57,7 +81,7 @@ parameters:
 
 		-
 			message: "#^Doing instanceof PHPStan\\\\Type\\\\ObjectType is error\\-prone and deprecated\\. Use Type\\:\\:isObject\\(\\) or Type\\:\\:getObjectClassNames\\(\\) instead\\.$#"
-			count: 2
+			count: 1
 			path: src/Type/EntityStorage/GetQueryReturnTypeExtension.php
 
 		-
