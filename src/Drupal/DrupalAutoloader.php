@@ -25,6 +25,7 @@ use function interface_exists;
 use function is_array;
 use function is_dir;
 use function is_string;
+use function realpath;
 use function str_replace;
 use function strpos;
 use function strtr;
@@ -86,7 +87,9 @@ class DrupalAutoloader
          */
         $drupalParams = $container->getParameter('drupal');
 
-        if (!class_exists(DrupalFinderComposerRuntime::class)) {
+        if (class_exists(DrupalFinderComposerRuntime::class)) {
+            $finder = new DrupalFinderComposerRuntime();
+        } else {
             $drupalRoot = realpath($drupalParams['drupal_root']);
             if ($drupalRoot === false) {
                 throw new RuntimeException("Unable to detect Drupal in {$drupalParams['drupal_root']}");
@@ -97,8 +100,6 @@ class DrupalAutoloader
             if (!$finder->locateRoot($drupalRoot)) {
                 throw new RuntimeException("Unable to detect Drupal in {$drupalParams['drupal_root']}");
             }
-        } else {
-            $finder = new DrupalFinderComposerRuntime();
         }
         $drupalRoot = $finder->getDrupalRoot();
         $drupalVendorRoot = $finder->getVendorDir();
