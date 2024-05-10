@@ -89,7 +89,6 @@ class DrupalAutoloader
 
         if (class_exists(DrupalFinderComposerRuntime::class)) {
             $finder = new DrupalFinderComposerRuntime();
-
         } else {
             $drupalRoot = realpath($drupalParams['drupal_root']);
             if ($drupalRoot === false) {
