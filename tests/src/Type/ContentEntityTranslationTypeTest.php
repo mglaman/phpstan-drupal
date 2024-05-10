@@ -9,7 +9,7 @@ final class ContentEntityTranslationTypeTest extends TypeInferenceTestCase
 {
     use AdditionalConfigFilesTrait;
 
-    public function dataFileAsserts(): iterable
+    public static function dataFileAsserts(): iterable
     {
         yield from self::gatherAssertTypes(__DIR__ . '/data/content-entity-translation.php');
     }

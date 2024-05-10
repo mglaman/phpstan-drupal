@@ -21,7 +21,7 @@ final class DrupalAutoloadingTest extends DrupalRuleTestCase
     }
 
 
-    public function dataFixtures(): \Generator
+    public static function dataFixtures(): \Generator
     {
         yield [
             [__DIR__ . '/../fixtures/drupal/modules/service_provider_test/src/ServiceProviderTestServiceProvider.php'],

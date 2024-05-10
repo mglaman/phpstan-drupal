@@ -40,7 +40,7 @@ final class GetDeprecatedServiceRuleTest extends DrupalRuleTestCase {
         $this->analyse([$path], $errorMessages);
     }
 
-    public function drupal8Data(): \Generator
+    public static function drupal8Data(): \Generator
     {
         yield [
             __DIR__ . '/../../fixtures/drupal/modules/phpstan_fixtures/src/Plugin/Block/EntityManagerInjectedBlock.php',
@@ -62,7 +62,7 @@ final class GetDeprecatedServiceRuleTest extends DrupalRuleTestCase {
         ];
     }
 
-    public function drupal9Data(): \Generator
+    public static function drupal9Data(): \Generator
     {
         yield [
             __DIR__ . '/../../fixtures/drupal/modules/phpstan_fixtures/phpstan_fixtures.module',

@@ -22,7 +22,7 @@ final class ConfigEntityConfigExportRuleTest extends DrupalRuleTestCase {
         $this->analyse([$path], $errorMessages);
     }
 
-    public function pluginData(): \Generator
+    public static function pluginData(): \Generator
     {
         yield [
             __DIR__ . '/../../fixtures/drupal/modules/phpstan_fixtures/src/Entity/ConfigWithoutExport.php',

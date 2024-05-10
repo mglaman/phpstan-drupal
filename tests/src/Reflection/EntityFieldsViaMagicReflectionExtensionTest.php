@@ -40,7 +40,7 @@ final class EntityFieldsViaMagicReflectionExtensionTest extends PHPStanTestCase 
         self::assertEquals($result, $this->extension->hasProperty($reflection, $property));
     }
 
-    public function dataHasProperty(): \Generator
+    public static function dataHasProperty(): \Generator
     {
         yield 'content entity supported' => [
             // @phpstan-ignore-next-line

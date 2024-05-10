@@ -26,7 +26,7 @@ final class BrowserTestBaseDefaultThemeRuleTest extends DrupalRuleTestCase {
         );
     }
 
-    public function fileData(): \Generator
+    public static function fileData(): \Generator
     {
         yield [
             __DIR__ . '/../../fixtures/drupal/modules/module_with_tests/tests/src/Functional/MissingDefaultThemeTest.php',

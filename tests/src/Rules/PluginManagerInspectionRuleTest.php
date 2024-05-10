@@ -23,7 +23,7 @@ final class PluginManagerInspectionRuleTest extends DrupalRuleTestCase
         $this->analyse([$path], $errorMessages);
     }
 
-    public function pluginManagerData(): \Generator
+    public static function pluginManagerData(): \Generator
     {
         yield 'BreakpointManager' => [
             __DIR__ . '/../../fixtures/drupal/core/modules/breakpoint/src/BreakpointManager.php',

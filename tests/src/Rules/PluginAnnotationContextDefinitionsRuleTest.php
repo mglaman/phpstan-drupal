@@ -22,7 +22,7 @@ final class PluginAnnotationContextDefinitionsRuleTest extends DrupalRuleTestCas
         $this->analyse([$path] , $errorMessages);
     }
 
-    public function pluginData(): \Generator
+    public static function pluginData(): \Generator
     {
         yield [
             __DIR__ . '/../../fixtures/drupal/modules/phpstan_fixtures/src/Plugin/Condition/ConditionWithContext.php',

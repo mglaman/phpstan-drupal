@@ -11,9 +11,9 @@ final class FieldTypesTest extends TypeInferenceTestCase
 {
     use AdditionalConfigFilesTrait;
 
-    public function dataFileAsserts(): iterable
+    public static function dataFileAsserts(): iterable
     {
-        yield from $this->gatherAssertTypes(__DIR__ . '/data/field-types.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/field-types.php');
     }
 
     /**
