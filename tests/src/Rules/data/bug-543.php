@@ -15,7 +15,7 @@ class TestClass {
      *
      * @return array
      */
-    public function providerAccessValues() {
+    public static function providerAccessValues() {
         return [
             [FALSE],
             [TRUE],

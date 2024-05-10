@@ -11,7 +11,7 @@ final class DrupalContainerDynamicReturnTypeTest extends TypeInferenceTestCase
 {
     use AdditionalConfigFilesTrait;
 
-    public function dataFileAsserts(): iterable
+    public static function dataFileAsserts(): iterable
     {
         yield from self::gatherAssertTypes(__DIR__ . '/data/container.php');
         yield from self::gatherAssertTypes(__DIR__ . '/data/drupal-service-static.php');

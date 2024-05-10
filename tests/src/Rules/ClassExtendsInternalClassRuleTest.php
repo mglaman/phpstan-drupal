@@ -49,7 +49,7 @@ final class ClassExtendsInternalClassRuleTest extends DrupalRuleTestCase
         $this->analyse([$path], $errorMessages);
     }
 
-    public function pluginData(): \Generator
+    public static function pluginData(): \Generator
     {
         yield 'extends an internal class from a non-shared namespace: phpstan_fixtures extends an internal class from Drupal core.' => [
             __DIR__ . '/../../fixtures/drupal/modules/phpstan_fixtures/src/Internal/ExtendsDrupalCoreInternalClass.php',

@@ -20,7 +20,7 @@ final class LoadIncludesRuleTest extends DrupalRuleTestCase
         $this->analyse($files, $errors);
     }
 
-    public function cases(): \Generator
+    public static function cases(): \Generator
     {
         yield [
             [

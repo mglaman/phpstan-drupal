@@ -27,7 +27,7 @@ class TestClassSuffixNameRuleTest extends DrupalRuleTestCase
         );
     }
 
-    public function fileData(): \Generator
+    public static function fileData(): \Generator
     {
         yield [
             __DIR__ . '/data/test-cases-TestClassSuffixNameRule.php',

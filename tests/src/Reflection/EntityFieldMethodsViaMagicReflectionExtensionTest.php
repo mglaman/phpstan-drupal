@@ -36,7 +36,7 @@ final class EntityFieldMethodsViaMagicReflectionExtensionTest extends PHPStanTes
         self::assertEquals($result, $this->extension->hasMethod($reflection, $method));
     }
 
-    public function dataHasMethod(): \Generator
+    public static function dataHasMethod(): \Generator
     {
         // Technically it does not have this method. But we allow it for now.
         yield 'field item list: referencedEntities' => [

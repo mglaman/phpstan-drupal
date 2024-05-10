@@ -116,7 +116,7 @@ final class ServiceMapFactoryTest extends TestCase
         $validator($service->getService($id));
     }
 
-    public function getServiceProvider(): \Iterator
+    public static function getServiceProvider(): \Iterator
     {
         yield [
             'unknown',

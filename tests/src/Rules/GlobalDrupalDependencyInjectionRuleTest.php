@@ -20,7 +20,7 @@ final class GlobalDrupalDependencyInjectionRuleTest extends DrupalRuleTestCase {
         $this->analyse([$path], $errorMessages);
     }
 
-    public function resultData(): \Generator
+    public static function resultData(): \Generator
     {
         yield [
             __DIR__ . '/data/drupal-static.php',

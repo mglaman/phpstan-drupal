@@ -9,10 +9,10 @@ final class EntityTypeManagerGetStorageDynamicReturnTypeExtensionTest extends Ty
 {
     use AdditionalConfigFilesTrait;
 
-    public function dataFileAsserts(): iterable
+    public static function dataFileAsserts(): iterable
     {
-        yield from $this->gatherAssertTypes(__DIR__ . '/data/entity-type-manager.php');
-        yield from $this->gatherAssertTypes(__DIR__ . '/data/bug-377.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/entity-type-manager.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/bug-377.php');
     }
 
     /**

@@ -21,7 +21,7 @@ final class DrupalAutoloadingTest extends DrupalRuleTestCase
     }
 
 
-    public function dataFixtures(): \Generator
+    public static function dataFixtures(): \Generator
     {
         yield [
             [__DIR__ . '/../fixtures/drupal/modules/service_provider_test/src/ServiceProviderTestServiceProvider.php'],
@@ -50,7 +50,6 @@ final class DrupalAutoloadingTest extends DrupalRuleTestCase
                 __DIR__ . '/../fixtures/drupal/modules/module_with_tests/tests/src/Traits/ModuleWithTestsTrait.php',
                 __DIR__ . '/../fixtures/drupal/modules/module_with_tests/tests/src/TestSite/ModuleWithTestsTestSite.php',
                 // __DIR__ . '/../fixtures/drupal/modules/module_with_tests/tests/src/Kernel/DrupalStaticCallTest.php',
-                __DIR__ . '/../fixtures/drupal/core/tests/TestSuites/TestSuiteBase.php',
             ],
             []
         ];

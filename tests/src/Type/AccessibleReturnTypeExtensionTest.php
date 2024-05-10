@@ -9,10 +9,10 @@ final class AccessibleReturnTypeExtensionTest extends TypeInferenceTestCase {
 
     use AdditionalConfigFilesTrait;
 
-    public function dataFileAsserts(): iterable
+    public static function dataFileAsserts(): iterable
     {
-        yield from $this->gatherAssertTypes(__DIR__ . '/data/accessible.php');
-        yield from $this->gatherAssertTypes(__DIR__ . '/data/bug-414.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/accessible.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/bug-414.php');
     }
 
     /**

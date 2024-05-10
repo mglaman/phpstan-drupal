@@ -22,7 +22,7 @@ final class EntityQueryHasAccessCheckRuleTest extends DrupalRuleTestCase
         $this->analyse($files, $errors);
     }
 
-    public function cases(): \Generator
+    public static function cases(): \Generator
     {
         yield [
             [__DIR__.'/../../fixtures/drupal/modules/phpstan_fixtures/src/EntityQueryWithAccessRule.php'],
