@@ -36,7 +36,7 @@ in drupal:10.1.0 and is removed from drupal:11.0.0. Use
                 ];
             }
             $errors[] = [
-                'Call to deprecated method loadRevision() of class Drupal\Core\Entity\EntityStorageInterface:
+                'Call to deprecated method loadRevision() of interface Drupal\Core\Entity\EntityStorageInterface:
 in drupal:10.1.0 and is removed from drupal:11.0.0. Use
 \Drupal\Core\Entity\RevisionableStorageInterface::loadRevision instead.',
                 15
