@@ -1,8 +1,10 @@
 parameters:
 	level: 8
-	checkGenericClassInNonGenericObjectType: false
-	checkMissingIterableValueType: false
-	reportUnmatchedIgnoredErrors: false
+	ignoreErrors:
+		-
+			identifier: missingType.iterableValue
+		-
+			identifier: missingType.generics
 	paths:
 		- src
 		- drupal-autoloader.php

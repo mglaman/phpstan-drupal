@@ -23,7 +23,6 @@ final class GetDeprecatedServiceRuleTest extends DrupalRuleTestCase {
         if (version_compare('9.0.0', \Drupal::VERSION) !== 1) {
             self::markTestSkipped('Only tested on Drupal 8.x.x');
         }
-        // @phpstan-ignore-next-line
         $this->analyse([$path], $errorMessages);
     }
 
@@ -36,7 +35,6 @@ final class GetDeprecatedServiceRuleTest extends DrupalRuleTestCase {
         if ($version !== '9') {
             self::markTestSkipped('Only tested on Drupal 9.x.x');
         }
-        // @phpstan-ignore-next-line
         $this->analyse([$path], $errorMessages);
     }
 
