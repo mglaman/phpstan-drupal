@@ -47,7 +47,6 @@ class ClassExtendsInternalClassRule implements Rule
             return [];
         }
 
-        // @phpstan-ignore-next-line
         if (!isset($node->namespacedName)) {
             return [$this->buildError(null, $extendedClassName)->build()];
         }

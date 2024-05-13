@@ -29,14 +29,14 @@ final class RevisionableStorageInterfaceStubTest extends DrupalRuleTestCase
             // There's a quirk on 10.1.x+ which false reports this error but was fixed on 11.x.
             if (version_compare($drupalVersion, '10.2', '<')) {
                 $errors[] = [
-                    'Call to deprecated method loadRevision() of class Drupal\Core\Entity\EntityStorageInterface:
+                    'Call to deprecated method loadRevision() of interface Drupal\Core\Entity\EntityStorageInterface:
 in drupal:10.1.0 and is removed from drupal:11.0.0. Use
 \Drupal\Core\Entity\RevisionableStorageInterface::loadRevision instead.',
                     12
                 ];
             }
             $errors[] = [
-                'Call to deprecated method loadRevision() of class Drupal\Core\Entity\EntityStorageInterface:
+                'Call to deprecated method loadRevision() of interface Drupal\Core\Entity\EntityStorageInterface:
 in drupal:10.1.0 and is removed from drupal:11.0.0. Use
 \Drupal\Core\Entity\RevisionableStorageInterface::loadRevision instead.',
                 15
