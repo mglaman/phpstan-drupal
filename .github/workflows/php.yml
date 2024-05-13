@@ -14,7 +14,6 @@ jobs:
     strategy:
       matrix:
         php-version:
-          - "7.4"
           - "8.0"
           - "8.1"
           - "8.2"
@@ -29,12 +28,6 @@ jobs:
           php-version: "${{ matrix.php-version }}"
           tools: composer:v2
           extensions: dom, curl, libxml, mbstring, zip, pdo, mysql, pdo_mysql, gd
-      - name: "Downgrade drupal/core to ^9"
-        run: "composer require drupal/core-recommended:^9 --with-all-dependencies --dev --no-update"
-        if: ${{ matrix.php-version == '7.4' }}
-      - name: "Add phpspec/prophecy-phpunit"
-        run: "composer require phpspec/prophecy-phpunit:^2 --dev --no-update"
-        if: ${{ matrix.php-version == '7.4' }}
       - name: "Install dependencies"
         uses: "ramsey/composer-install@v3"
       - name: "PHPCS"
@@ -54,9 +47,6 @@ jobs:
         drupal:
           - "^10"
         include:
-          - php-version: "7.4"
-            drupal: "^9.0"
-            experimental: false
           - php-version: "8.0"
             drupal: "^9.0"
             experimental: false
