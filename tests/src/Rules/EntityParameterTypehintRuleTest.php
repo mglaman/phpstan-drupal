@@ -20,7 +20,9 @@ final class EntityParameterTypehintRuleTest extends DrupalRuleTestCase
                 true,
                 true,
                 []
-            ));
+            ),
+            true
+        );
     }
 
     public function testRule(): void

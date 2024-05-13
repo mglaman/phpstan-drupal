@@ -13,7 +13,6 @@ jobs:
     strategy:
       matrix:
         phpstan:
-          - '1.10.x-dev'
           - '1.11.x-dev'
     steps:
       - name: "Checkout"

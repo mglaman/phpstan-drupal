@@ -11,7 +11,6 @@ final class NamespaceCheck
 {
     public static function isDrupalNamespace(Class_ $class): bool
     {
-        // @phpstan-ignore-next-line
         if (!isset($class->namespacedName)) {
             return false;
         }
@@ -25,7 +24,6 @@ final class NamespaceCheck
             return false;
         }
 
-        // @phpstan-ignore-next-line
         if (!isset($class->namespacedName)) {
             return false;
         }
