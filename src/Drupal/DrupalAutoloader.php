@@ -127,7 +127,14 @@ class DrupalAutoloader
         $this->addThemeNamespaces();
         $this->registerPs4Namespaces($this->namespaces);
         $this->loadLegacyIncludes();
-        $checkDeprecatedHooksInApiFiles =  $drupalParams['bleedingEdge']['checkDeprecatedHooksInApiFiles'];
+
+        // Trigger deprecation error if checkDeprecatedHooksInApiFiles is enabled.
+        if ($drupalParams['bleedingEdge']['checkDeprecatedHooksInApiFiles']) {
+            trigger_error('The bleedingEdge.checkDeprecatedHooksInApiFiles parameter is deprecated and will be removed in a future release.', E_USER_DEPRECATED);
+        }
+        $checkDeprecatedHooksInApiFiles = $drupalParams['bleedingEdge']['checkDeprecatedHooksInApiFiles'];
+        $checkCoreDeprecatedHooksInApiFiles = $drupalParams['bleedingEdge']['checkCoreDeprecatedHooksInApiFiles'] || $checkDeprecatedHooksInApiFiles;
+        $checkContribDeprecatedHooksInApiFiles = $drupalParams['bleedingEdge']['checkContribDeprecatedHooksInApiFiles'] || $checkDeprecatedHooksInApiFiles;
 
         foreach ($this->moduleData as $extension) {
             $this->loadExtension($extension);
