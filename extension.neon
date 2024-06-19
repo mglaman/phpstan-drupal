@@ -19,6 +19,8 @@ parameters:
 		drupal_root: '%currentWorkingDirectory%'
 		bleedingEdge:
 			checkDeprecatedHooksInApiFiles: false
+			checkCoreDeprecatedHooksInApiFiles: false
+			checkContribDeprecatedHooksInApiFiles: false
 		rules:
 			testClassSuffixNameRule: false
 			dependencySerializationTraitPropertyRule: false
