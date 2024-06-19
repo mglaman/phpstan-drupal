@@ -84,7 +84,7 @@ class DrupalAutoloader
     public function register(Container $container): void
     {
         /**
-         * @var array{drupal_root: string, bleedingEdge: array{checkDeprecatedHooksInApiFiles: bool}} $drupalParams
+         * @var array{drupal_root: string, bleedingEdge: array{checkDeprecatedHooksInApiFiles: bool, checkCoreDeprecatedHooksInApiFiles: bool, checkContribDeprecatedHooksInApiFiles: bool}} $drupalParams
          */
         $drupalParams = $container->getParameter('drupal');
         $drupalRoot = realpath($drupalParams['drupal_root']);

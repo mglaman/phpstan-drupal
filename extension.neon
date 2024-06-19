@@ -242,6 +242,8 @@ parametersSchema:
 		drupal_root: string()
 		bleedingEdge: structure([
 			checkDeprecatedHooksInApiFiles: boolean()
+			checkCoreDeprecatedHooksInApiFiles: boolean()
+			checkContribDeprecatedHooksInApiFiles: boolean()
 		])
 		rules: structure([
 			testClassSuffixNameRule: boolean()
