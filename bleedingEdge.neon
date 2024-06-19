@@ -2,7 +2,7 @@ parameters:
 	drupal:
 		bleedingEdge:
 			checkDeprecatedHooksInApiFiles: true
-			checkCoreDeprecatedHooksInApiFiles: false
+			checkCoreDeprecatedHooksInApiFiles: true
 			checkContribDeprecatedHooksInApiFiles: false
 		rules:
 			testClassSuffixNameRule: true
