@@ -2,8 +2,8 @@ parameters:
 	drupal:
 		bleedingEdge:
 			checkDeprecatedHooksInApiFiles: true
-			checkCoreDeprecatedHooksInApiFiles: false
-			checkContribDeprecatedHooksInApiFiles: false
+			checkCoreDeprecatedHooksInApiFiles: true
+			checkContribDeprecatedHooksInApiFiles: true
 		rules:
 			testClassSuffixNameRule: true
 			dependencySerializationTraitPropertyRule: true
