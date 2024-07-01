@@ -206,11 +206,12 @@ For example, the Paragraphs module could have the following `entity_mapping.neon
 
 ```neon
 parameters:
-	entityMapping:
-		paragraph:
-			class: Drupal\paragraphs\Entity\Paragraph
-		paragraphs_type:
-			class: Drupal\paragraphs\Entity\ParagraphsType
+	drupal:
+		entityMapping:
+			paragraph:
+				class: Drupal\paragraphs\Entity\Paragraph
+			paragraphs_type:
+				class: Drupal\paragraphs\Entity\ParagraphsType
 ```
 
 Then in the `composer.json` for Paragraphs, the `entity_mapping.neon` would be provided as a PHPStan include
