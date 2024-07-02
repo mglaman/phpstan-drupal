@@ -7,6 +7,7 @@ use Drupal\Core\DependencyInjection\ContainerNotInitializedException;
 use Drupal\Core\DrupalKernelInterface;
 use Drupal\TestTools\PhpUnitCompatibility\PhpUnit8\ClassWriter;
 use DrupalFinder\DrupalFinder;
+use DrupalFinder\DrupalFinderComposerRuntime;
 use Drush\Drush;
 use PHPStan\DependencyInjection\Container;
 use PHPUnit\Framework\Test;
@@ -87,17 +88,31 @@ class DrupalAutoloader
          * @var array{drupal_root: string, bleedingEdge: array{checkDeprecatedHooksInApiFiles: bool}} $drupalParams
          */
         $drupalParams = $container->getParameter('drupal');
-        $drupalRoot = realpath($drupalParams['drupal_root']);
-        $finder = new DrupalFinder();
-        $finder->locateRoot($drupalRoot);
 
-        $drupalRoot = $finder->getDrupalRoot();
-        $drupalVendorRoot = $finder->getVendorDir();
-        if (! (bool) $drupalRoot || ! (bool) $drupalVendorRoot) {
-            throw new RuntimeException("Unable to detect Drupal at {$drupalParams['drupal_root']}");
+        if (class_exists(DrupalFinderComposerRuntime::class)) {
+            $finder = new DrupalFinderComposerRuntime();
+            $drupalRoot = $finder->getDrupalRoot() ?? '';
+            $drupalVendorRoot = $finder->getVendorDir() ?? '';
+        } else {
+            $drupalRoot = realpath($drupalParams['drupal_root']);
+            if ($drupalRoot === false) {
+                throw new RuntimeException("Unable to detect Drupal in {$drupalParams['drupal_root']}");
+            }
+            // @phpstan-ignore-next-line
+            $finder = new DrupalFinder();
+            // @phpstan-ignore-next-line
+            if (!$finder->locateRoot($drupalRoot)) {
+                throw new RuntimeException("Unable to detect Drupal in {$drupalParams['drupal_root']}");
+            }
+            $drupalRoot = $finder->getDrupalRoot();
+            $drupalVendorRoot = $finder->getVendorDir();
+        }
+        if (!(bool) $drupalRoot || !(bool) $drupalVendorRoot) {
+            throw new RuntimeException("Unable to detect Drupal in {$drupalParams['drupal_root']}");
         }
 
-        $this->drupalRoot = $drupalRoot;
+        // @phpstan-ignore-next-line
+        $this->drupalRoot = (string) $drupalRoot;
 
         $this->autoloader = include $drupalVendorRoot . '/autoload.php';
 
