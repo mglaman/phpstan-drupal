@@ -55,6 +55,9 @@ class ServiceMap
             );
             $deprecated = $serviceDefinition['deprecated'] ?? null;
             if ($deprecated) {
+                if (is_array($deprecated) && !empty($deprecated['message'])) {
+                    $deprecated = $deprecated['message'];
+                }
                 self::$services[$serviceId]->setDeprecated(true, $deprecated);
             }
         }
