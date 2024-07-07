@@ -18,16 +18,16 @@ final class IgnoreDeprecationsScope implements DeprecatedScopeResolver
             if ($class->getAttributes(IgnoreDeprecations::class) !== []) {
                 return true;
             }
-        }
 
-        $function = $scope->getFunction();
-        if ($function === null) {
-            return false;
-        }
+            $function = $scope->getFunction();
+            if ($function === null) {
+                return false;
+            }
 
-        $method = $class->getMethod($function->getName());
-        if ($method->getAttributes(IgnoreDeprecations::class) !== []) {
-            return true;
+            $method = $class->getMethod($function->getName());
+            if ($method->getAttributes(IgnoreDeprecations::class) !== []) {
+                return true;
+            }
         }
         return false;
     }
