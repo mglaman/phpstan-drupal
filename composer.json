@@ -24,7 +24,7 @@
         "drush/drush": "^13@beta",
         "phpstan/extension-installer": "^1.1",
         "phpstan/phpstan-strict-rules": "^1.0",
-        "phpunit/phpunit": "^11",
+        "phpunit/phpunit": "^10",
         "slevomat/coding-standard": "^7.1",
         "squizlabs/php_codesniffer": "^3.3"
     },
