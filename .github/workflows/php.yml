@@ -84,19 +84,11 @@ jobs:
     name: "Build Integration | PHP ${{ matrix.php-version }} | Drupal ${{ matrix.drupal }}"
     strategy:
       matrix:
-        experimental: [false]
+        experimental: [true]
         php-version:
-          - "8.1"
-          - "8.2"
+          - "8.3"
         drupal:
-          - "^10"
-        include:
-          - php-version: "8.1"
-            drupal: "^9.0"
-            experimental: false
-          - php-version: "8.3"
-            drupal: "11.x-dev"
-            experimental: true
+          - "11.x-dev"
     steps:
       - name: "Checkout"
         uses: "actions/checkout@v4"
@@ -160,19 +152,11 @@ jobs:
     name: "Build Integration (No PHPUnit) | PHP ${{ matrix.php-version }} | Drupal ${{ matrix.drupal }}"
     strategy:
       matrix:
-        experimental: [false]
+        experimental: [true]
         php-version:
-          - "8.1"
-          - "8.2"
+          - "8.3"
         drupal:
-          - "^10"
-        include:
-          - php-version: "8.1"
-            drupal: "^9.0"
-            experimental: false
-          - php-version: "8.3"
-            drupal: "11.x-dev"
-            experimental: true
+          - "11.x-dev"
     steps:
       - name: "Checkout"
         uses: "actions/checkout@v4"
