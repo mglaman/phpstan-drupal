@@ -25,7 +25,7 @@ final class IgnoreDeprecationsScope implements DeprecatedScopeResolver
             return false;
         }
 
-        $method = $scope->getClassReflection()->getNativeMethod($function->getName());
+        $method = $scope->getClassReflection()->getNativeReflection()->getMethod($function->getName());
         if ($method->getAttributes(IgnoreDeprecations::class) !== []) {
             return true;
         }
