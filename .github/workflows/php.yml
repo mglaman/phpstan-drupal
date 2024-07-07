@@ -14,9 +14,11 @@ jobs:
     strategy:
       matrix:
         php-version:
-          - "8.1"
-          - "8.2"
+#          - "8.1"
+#          - "8.2"
           - "8.3"
+        drupal:
+          - "^10"
     steps:
       - name: "Checkout"
         uses: "actions/checkout@v4"
@@ -29,6 +31,8 @@ jobs:
           extensions: dom, curl, libxml, mbstring, zip, pdo, mysql, pdo_mysql, gd
       - name: "Install dependencies"
         uses: "ramsey/composer-install@v3"
+      - name: "Set drupal/core to ${{ matrix.drupal }}"
+        run: "composer require drupal/core-recommended:${{ matrix.drupal }} --with-all-dependencies --dev --no-update"
       - name: "PHPCS"
         run: "php vendor/bin/phpcs"
       - name: "PHPStan"
