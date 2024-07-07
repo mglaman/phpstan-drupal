@@ -32,7 +32,7 @@ jobs:
       - name: "Install dependencies"
         uses: "ramsey/composer-install@v3"
       - name: "Set drupal/core to ${{ matrix.drupal }}"
-        run: "composer require drupal/core-recommended:${{ matrix.drupal }} --with-all-dependencies --dev --no-update"
+        run: "composer require drupal/core-recommended:${{ matrix.drupal }} --with-all-dependencies --dev"
       - name: "PHPCS"
         run: "php vendor/bin/phpcs"
       - name: "PHPStan"
