@@ -20,7 +20,7 @@ jobs:
       - name: "Install PHP"
         uses: "shivammathur/setup-php@v2"
         with:
-          coverage: "xdebug"
+          coverage: "none"
           php-version: 8.3
           tools: composer:v2
           extensions: dom, curl, libxml, mbstring, zip, pdo, mysql, pdo_mysql, gd
@@ -33,4 +33,4 @@ jobs:
       - name: "PHPStan"
         run: "php vendor/bin/phpstan analyze"
       - name: "PHPUnit"
-        run: "php vendor/bin/phpunit"
+        run: "php vendor/bin/phpunit --no-coverage"
