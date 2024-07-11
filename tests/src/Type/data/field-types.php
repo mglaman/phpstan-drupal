@@ -2,6 +2,7 @@
 
 namespace DrupalEntityFields;
 
+use Drupal\comment\Plugin\Field\FieldType\CommentItem;
 use Drupal\Core\Field\Plugin\Field\FieldType\BooleanItem;
 use Drupal\Core\Field\Plugin\Field\FieldType\ChangedItem;
 use Drupal\Core\Field\Plugin\Field\FieldType\CreatedItem;
@@ -28,6 +29,16 @@ use Drupal\text\Plugin\Field\FieldType\TextWithSummaryItem;
 use function PHPStan\Testing\assertType;
 
 $node = Node::create(['type' => 'page']);
+
+// CommentItem.
+$comment_field = $node->get('field_comment')->first();
+assert($comment_field instanceof CommentItem);
+assertType(CommentItem::class, $comment_field);
+assertType('int|null', $comment_field->status);
+assertType('int|null', $comment_field->cid);
+assertType('int|null', $comment_field->last_comment_timestamp);
+assertType('string|null', $comment_field->last_comment_name);
+assertType('int|null', $comment_field->comment_count);
 
 // LinkItem.
 $link_field = $node->get('field_link')->first();
