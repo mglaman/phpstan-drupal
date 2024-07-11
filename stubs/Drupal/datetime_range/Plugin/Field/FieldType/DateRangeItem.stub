@@ -1,0 +1,17 @@
+<?php
+
+namespace Drupal\datetime_range\Plugin\Field\FieldType;
+
+use Drupal\datetime\Plugin\Field\FieldType\DateTimeItem;
+
+/**
+ * @property-read null $date
+ *   Even though this extends DateTimeItem, the date property does not actually
+ *   exist. It is not possible to undo a property definition.
+ * @property-read ?\Drupal\Core\Datetime\DrupalDateTime $start_date
+ * @property ?string $end_value
+ * @property-read ?\Drupal\Core\Datetime\DrupalDateTime $end_date
+ */
+class DateRangeItem extends DateTimeItem {
+
+}
