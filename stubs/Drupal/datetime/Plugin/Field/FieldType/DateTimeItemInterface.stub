@@ -1,0 +1,6 @@
+<?php
+
+namespace Drupal\datetime\Plugin\Field\FieldType;
+
+interface DateTimeItemInterface {
+}

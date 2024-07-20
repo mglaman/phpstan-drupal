@@ -18,6 +18,8 @@ use Drupal\Core\Field\Plugin\Field\FieldType\StringLongItem;
 use Drupal\Core\Field\Plugin\Field\FieldType\TimestampItem;
 use Drupal\Core\Field\Plugin\Field\FieldType\UriItem;
 use Drupal\Core\Field\Plugin\Field\FieldType\UuidItem;
+use Drupal\datetime\Plugin\Field\FieldType\DateTimeItem;
+use Drupal\datetime_range\Plugin\Field\FieldType\DateRangeItem;
 use Drupal\file\Plugin\Field\FieldType\FileItem;
 use Drupal\file\Plugin\Field\FieldType\FileUriItem;
 use Drupal\link\Plugin\Field\FieldType\LinkItem;
@@ -136,6 +138,22 @@ $uuid_field = $node->get('field_uuid')->first();
 assert($uuid_field instanceof UuidItem);
 assertType(UuidItem::class, $uuid_field);
 assertType('string', $uuid_field->value);
+
+// DateTimeItem.
+$datetime_field = $node->get('field_datetime')->first();
+assert($datetime_field instanceof DateTimeItem);
+assertType(DateTimeItem::class, $datetime_field);
+assertType('string|null', $datetime_field->value);
+assertType('Drupal\Core\Datetime\DrupalDateTime|null', $datetime_field->date);
+
+// DateRangeItem.
+$daterange_field = $node->get('field_daterange')->first();
+assert($daterange_field instanceof DateRangeItem);
+assertType(DateRangeItem::class, $daterange_field);
+assertType('string|null', $daterange_field->value);
+assertType('Drupal\Core\Datetime\DrupalDateTime|null', $daterange_field->start_date);
+assertType('string|null', $daterange_field->end_value);
+assertType('Drupal\Core\Datetime\DrupalDateTime|null', $daterange_field->end_date);
 
 // FileItem.
 $file_field = $node->get('field_file')->first();
