@@ -6,7 +6,7 @@ use Drupal\Core\Field\FieldItemBase;
 
 /**
  * @property ?string $value
- * @property-read ?\Drupal\Core\Datetime\DrupalDateTime $date
+ * @property ?\Drupal\Core\Datetime\DrupalDateTime $date
  */
 class DateTimeItem extends FieldItemBase implements DateTimeItemInterface {
 
