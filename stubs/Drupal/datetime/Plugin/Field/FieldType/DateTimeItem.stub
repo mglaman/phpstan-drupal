@@ -1,0 +1,13 @@
+<?php
+
+namespace Drupal\datetime\Plugin\Field\FieldType;
+
+use Drupal\Core\Field\FieldItemBase;
+
+/**
+ * @property ?string $value
+ * @property ?\Drupal\Core\Datetime\DrupalDateTime $date
+ */
+class DateTimeItem extends FieldItemBase implements DateTimeItemInterface {
+
+}
