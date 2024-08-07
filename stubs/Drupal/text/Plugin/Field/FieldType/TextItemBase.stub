@@ -1,0 +1,13 @@
+<?php
+
+namespace Drupal\text\Plugin\Field\FieldType;
+
+use Drupal\Core\Field\FieldItemBase;
+
+/**
+ * @property ?string $value
+ * @property ?string $format
+ * @property-read \Drupal\Component\Render\MarkupInterface $processed
+ */
+abstract class TextItemBase extends FieldItemBase {
+}
