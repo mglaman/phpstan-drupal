@@ -84,7 +84,7 @@ class DrupalAutoloader
     public function register(Container $container): void
     {
         /**
-         * @var array{drupal_root: string, bleedingEdge: array{checkDeprecatedHooksInApiFiles: bool}} $drupalParams
+         * @var array{drupal_root: string, bleedingEdge: array{checkDeprecatedHooksInApiFiles: bool, checkCoreDeprecatedHooksInApiFiles: bool, checkContribDeprecatedHooksInApiFiles: bool}} $drupalParams
          */
         $drupalParams = $container->getParameter('drupal');
         $drupalRoot = realpath($drupalParams['drupal_root']);
@@ -127,7 +127,14 @@ class DrupalAutoloader
         $this->addThemeNamespaces();
         $this->registerPs4Namespaces($this->namespaces);
         $this->loadLegacyIncludes();
-        $checkDeprecatedHooksInApiFiles =  $drupalParams['bleedingEdge']['checkDeprecatedHooksInApiFiles'];
+
+        // Trigger deprecation error if checkDeprecatedHooksInApiFiles is enabled.
+        if ($drupalParams['bleedingEdge']['checkDeprecatedHooksInApiFiles']) {
+            trigger_error('The bleedingEdge.checkDeprecatedHooksInApiFiles parameter is deprecated and will be removed in a future release.', E_USER_DEPRECATED);
+        }
+        $checkDeprecatedHooksInApiFiles = $drupalParams['bleedingEdge']['checkDeprecatedHooksInApiFiles'];
+        $checkCoreDeprecatedHooksInApiFiles = $drupalParams['bleedingEdge']['checkCoreDeprecatedHooksInApiFiles'] || $checkDeprecatedHooksInApiFiles;
+        $checkContribDeprecatedHooksInApiFiles = $drupalParams['bleedingEdge']['checkContribDeprecatedHooksInApiFiles'] || $checkDeprecatedHooksInApiFiles;
 
         foreach ($this->moduleData as $extension) {
             $this->loadExtension($extension);
@@ -145,8 +152,13 @@ class DrupalAutoloader
             if (file_exists($module_dir . '/' . $module_name . '.post_update.php')) {
                 $this->loadAndCatchErrors($module_dir . '/' . $module_name . '.post_update.php');
             }
-            // Add .api.php
-            if ($checkDeprecatedHooksInApiFiles && file_exists($module_dir . '/' . $module_name . '.api.php')) {
+
+            // Add .api.php for core modules
+            if ($checkCoreDeprecatedHooksInApiFiles && $extension->origin === 'core' && file_exists($module_dir . '/' . $module_name . '.api.php')) {
+                $this->loadAndCatchErrors($module_dir . '/' . $module_name . '.api.php');
+            }
+            // Add .api.php for contrib modules
+            if ($checkContribDeprecatedHooksInApiFiles && $extension->origin !== 'core' && file_exists($module_dir . '/' . $module_name . '.api.php')) {
                 $this->loadAndCatchErrors($module_dir . '/' . $module_name . '.api.php');
             }
             // Add misc .inc that are magically allowed via hook_hook_info.
