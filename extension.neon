@@ -326,6 +326,10 @@ services:
 		tags:
 			- phpstan.deprecations.deprecatedScopeResolver
 	-
+		class: mglaman\PHPStanDrupal\DeprecatedScope\IgnoreDeprecationsScope
+		tags:
+			- phpstan.deprecations.deprecatedScopeResolver
+	-
 		class: mglaman\PHPStanDrupal\DeprecatedScope\DeprecationHelperScope
 		tags:
 			- phpstan.deprecations.deprecatedScopeResolver
