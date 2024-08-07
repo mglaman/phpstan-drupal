@@ -154,11 +154,11 @@ class DrupalAutoloader
             }
 
             // Add .api.php for core modules
-            if ($checkCoreDeprecatedHooksInApiFiles && str_starts_with($extension->getPath(), 'core/') && file_exists($module_dir . '/' . $module_name . '.api.php')) {
+            if ($checkCoreDeprecatedHooksInApiFiles && $extension->origin === 'core' && file_exists($module_dir . '/' . $module_name . '.api.php')) {
                 $this->loadAndCatchErrors($module_dir . '/' . $module_name . '.api.php');
             }
             // Add .api.php for contrib modules
-            if ($checkContribDeprecatedHooksInApiFiles && str_starts_with($extension->getPath(), 'core/') === false && file_exists($module_dir . '/' . $module_name . '.api.php')) {
+            if ($checkContribDeprecatedHooksInApiFiles && $extension->origin !== 'core' && file_exists($module_dir . '/' . $module_name . '.api.php')) {
                 $this->loadAndCatchErrors($module_dir . '/' . $module_name . '.api.php');
             }
             // Add misc .inc that are magically allowed via hook_hook_info.
