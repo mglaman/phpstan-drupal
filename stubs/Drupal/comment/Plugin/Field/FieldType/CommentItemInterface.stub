@@ -1,0 +1,6 @@
+<?php
+
+namespace Drupal\comment\Plugin\Field\FieldType;
+
+interface CommentItemInterface {
+}
