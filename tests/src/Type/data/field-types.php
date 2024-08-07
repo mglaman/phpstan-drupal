@@ -18,10 +18,14 @@ use Drupal\Core\Field\Plugin\Field\FieldType\StringLongItem;
 use Drupal\Core\Field\Plugin\Field\FieldType\TimestampItem;
 use Drupal\Core\Field\Plugin\Field\FieldType\UriItem;
 use Drupal\Core\Field\Plugin\Field\FieldType\UuidItem;
+use Drupal\datetime\Plugin\Field\FieldType\DateTimeItem;
 use Drupal\file\Plugin\Field\FieldType\FileItem;
 use Drupal\file\Plugin\Field\FieldType\FileUriItem;
 use Drupal\link\Plugin\Field\FieldType\LinkItem;
 use Drupal\node\Entity\Node;
+use Drupal\text\Plugin\Field\FieldType\TextItem;
+use Drupal\text\Plugin\Field\FieldType\TextLongItem;
+use Drupal\text\Plugin\Field\FieldType\TextWithSummaryItem;
 use function PHPStan\Testing\assertType;
 
 $node = Node::create(['type' => 'page']);
@@ -134,6 +138,13 @@ assert($uuid_field instanceof UuidItem);
 assertType(UuidItem::class, $uuid_field);
 assertType('string', $uuid_field->value);
 
+// DateTimeItem.
+$datetime_field = $node->get('field_datetime')->first();
+assert($datetime_field instanceof DateTimeItem);
+assertType(DateTimeItem::class, $datetime_field);
+assertType('string|null', $datetime_field->value);
+assertType('Drupal\Core\Datetime\DrupalDateTime|null', $datetime_field->date);
+
 // FileItem.
 $file_field = $node->get('field_file')->first();
 assert($file_field instanceof FileItem);
@@ -146,3 +157,28 @@ $file_uri_field = $node->get('field_file')->first();
 assert($file_uri_field instanceof FileUriItem);
 assertType(FileUriItem::class, $file_uri_field);
 assertType('string', $file_uri_field->url);
+
+// TextITem.
+$text_field = $node->get('field_text')->first();
+assert($text_field instanceof TextItem);
+assertType(TextItem::class, $text_field);
+assertType('string|null', $text_field->value);
+assertType('string|null', $text_field->format);
+assertType('Drupal\Component\Render\MarkupInterface', $text_field->processed);
+
+// TextLongITem.
+$text_long_field = $node->get('field_text_long')->first();
+assert($text_long_field instanceof TextLongItem);
+assertType(TextLongItem::class, $text_long_field);
+assertType('string|null', $text_long_field->value);
+assertType('string|null', $text_long_field->format);
+assertType('Drupal\Component\Render\MarkupInterface', $text_long_field->processed);
+
+// TextWithSummaryITem.
+$text_with_summary_field = $node->get('field_text_with_summary')->first();
+assert($text_with_summary_field instanceof TextWithSummaryItem);
+assertType(TextWithSummaryItem::class, $text_with_summary_field);
+assertType('string|null', $text_with_summary_field->value);
+assertType('string|null', $text_with_summary_field->format);
+assertType('string|null', $text_with_summary_field->summary);
+assertType('Drupal\Component\Render\MarkupInterface', $text_with_summary_field->summary_processed);

@@ -71,6 +71,7 @@ final class BrowserTestBaseDefaultThemeRule implements Rule
 
         $excludedTestTypes = TypeCombinator::union(
             new ObjectType('Drupal\\FunctionalTests\\Update\\UpdatePathTestBase'),
+            new ObjectType('Drupal\\FunctionalTests\\Installer\\InstallerConfigDirectoryTestBase'),
             new ObjectType('Drupal\\FunctionalTests\\Installer\\InstallerExistingConfigTestBase')
         );
         if ($excludedTestTypes->isSuperTypeOf($classType)->yes()) {
