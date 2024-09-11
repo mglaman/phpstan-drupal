@@ -16,7 +16,9 @@ use function array_key_exists;
 use function preg_match;
 
 /**
+ * Defines a rule for catching translated categories on field types.
  *
+ * @see https://www.drupal.org/node/3375748
  */
 final class FieldTypeCategoryRule extends DeprecatedAnnotationsRuleBase
 {
@@ -54,6 +56,12 @@ final class FieldTypeCategoryRule extends DeprecatedAnnotationsRuleBase
         return $errors;
     }
 
+    /**
+     * Helper for validating the deprecation should be applied.
+     *
+     * @return bool
+     *   True if applies, otherwise false.
+     */
     private function ruleApplies(): bool
     {
         [$major, $minor] = array_map(fn($x) => (int) $x, explode('.', Drupal::VERSION, 2));
@@ -61,6 +69,15 @@ final class FieldTypeCategoryRule extends DeprecatedAnnotationsRuleBase
         return $major > 10 || ($major === 10 && $minor >= 2);
     }
 
+    /**
+     * Checks whether a PHP doc block contains a field type annotation.
+     *
+     * @param \PHPStan\PhpDoc\ResolvedPhpDocBlock $phpDoc
+     *   The PHP doc block object.
+     *
+     * @return bool
+     *   True if it does, otherwise false.
+     */
     private function hasFieldTypeAnnotation(ResolvedPhpDocBlock $phpDoc): bool
     {
         foreach ($phpDoc->getPhpDocNodes() as $docNode) {
@@ -73,6 +90,15 @@ final class FieldTypeCategoryRule extends DeprecatedAnnotationsRuleBase
         return false;
     }
 
+    /**
+     * Checks whether a given class has a field type attribute.
+     *
+     * @param \PHPStan\Reflection\ClassReflection $reflection
+     *   The class reflection object.
+     *
+     * @return \PHPStan\BetterReflection\Reflection\Adapter\ReflectionAttribute|null
+     *   The attribute, or null.
+     */
     private function getFieldTypeAttributes(ClassReflection $reflection): ?ReflectionAttribute
     {
         $attributes = $reflection->getNativeReflection()->getAttributes(FieldType::class);
