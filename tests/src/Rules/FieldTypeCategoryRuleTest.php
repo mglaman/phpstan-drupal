@@ -2,6 +2,7 @@
 
 namespace mglaman\PHPStanDrupal\Tests\Rules;
 
+use Drupal;
 use Generator;
 use mglaman\PHPStanDrupal\Rules\Deprecations\FieldTypeCategoryRule;
 use mglaman\PHPStanDrupal\Tests\DrupalRuleTestCase;
@@ -34,34 +35,36 @@ class FieldTypeCategoryRuleTest extends DrupalRuleTestCase
 
     public static function ruleData(): Generator
     {
-        yield [
-            __DIR__ . '/../../fixtures/drupal/core/lib/Drupal/Core/Field/Plugin/Field/FieldType/FloatItem.php',
-            [],
-        ];
+        if (version_compare(Drupal::VERSION, '10.2.0', '>=')) {
+            yield [
+                __DIR__ . '/../../fixtures/drupal/core/lib/Drupal/Core/Field/Plugin/Field/FieldType/FloatItem.php',
+                [],
+            ];
 
-        yield [
-            __DIR__ . '/../../fixtures/drupal/modules/phpstan_fixtures/src/Plugin/Field/FieldType/FieldTypeWithTranslatedCategoryAnnotation.php',
-            [
+            yield [
+                __DIR__ . '/../../fixtures/drupal/modules/phpstan_fixtures/src/Plugin/Field/FieldType/FieldTypeWithTranslatedCategoryAnnotation.php',
                 [
-                    'Using a translatable string as a category for field type is deprecated in drupal:10.2.0 and is removed from drupal:11.0.0. See https://www.drupal.org/node/3375748',
-                    19,
-                ],
-            ]
-        ];
+                    [
+                        'Using a translatable string as a category for field type is deprecated in drupal:10.2.0 and is removed from drupal:11.0.0. See https://www.drupal.org/node/3375748',
+                        19,
+                    ],
+                ]
+            ];
 
-        yield [
-            __DIR__ . '/../../fixtures/drupal/modules/phpstan_fixtures/src/Plugin/Field/FieldType/FieldTypeWithStringCategoryAttribute.php',
-            []
-        ];
+            yield [
+                __DIR__ . '/../../fixtures/drupal/modules/phpstan_fixtures/src/Plugin/Field/FieldType/FieldTypeWithStringCategoryAttribute.php',
+                []
+            ];
 
-        yield [
-            __DIR__ . '/../../fixtures/drupal/modules/phpstan_fixtures/src/Plugin/Field/FieldType/FieldTypeWithTranslatedCategoryAttribute.php',
-            [
+            yield [
+                __DIR__ . '/../../fixtures/drupal/modules/phpstan_fixtures/src/Plugin/Field/FieldType/FieldTypeWithTranslatedCategoryAttribute.php',
                 [
-                    'Using a translatable string as a category for field type is deprecated in drupal:10.2.0 and is removed from drupal:11.0.0. See https://www.drupal.org/node/3375748',
-                    12,
-                ],
-            ]
-        ];
+                    [
+                        'Using a translatable string as a category for field type is deprecated in drupal:10.2.0 and is removed from drupal:11.0.0. See https://www.drupal.org/node/3375748',
+                        12,
+                    ],
+                ]
+            ];
+        }
     }
 }
