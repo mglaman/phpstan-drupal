@@ -8,10 +8,12 @@ use Drupal\Core\Field\FieldItemInterface;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
-use PHPStan\BetterReflection\Reflection\Adapter\ReflectionAttribute;
 use PHPStan\PhpDoc\ResolvedPhpDocBlock;
 use PHPStan\PhpDocParser\Ast\PhpDoc\PhpDocTagNode;
 use PHPStan\Reflection\ClassReflection;
+use ReflectionAttribute;
+use ReflectionClass;
+use ReflectionException;
 use function array_key_exists;
 use function preg_match;
 
@@ -32,7 +34,7 @@ final class FieldTypeCategoryRule extends DeprecatedAnnotationsRuleBase
 
     protected function doProcessNode(ClassReflection $reflection, Node\Stmt\Class_ $node, Scope $scope): array
     {
-        if (!$this->ruleApplies()) {
+        if (version_compare(Drupal::VERSION, '10.2.0', '<')) {
             return [];
         }
 
@@ -57,19 +59,6 @@ final class FieldTypeCategoryRule extends DeprecatedAnnotationsRuleBase
     }
 
     /**
-     * Helper for validating the deprecation should be applied.
-     *
-     * @return bool
-     *   True if applies, otherwise false.
-     */
-    private function ruleApplies(): bool
-    {
-        [$major, $minor] = array_map(fn($x) => (int) $x, explode('.', Drupal::VERSION, 2));
-
-        return $major > 10 || ($major === 10 && $minor >= 2);
-    }
-
-    /**
      * Checks whether a PHP doc block contains a field type annotation.
      *
      * @param \PHPStan\PhpDoc\ResolvedPhpDocBlock $phpDoc
@@ -87,6 +76,7 @@ final class FieldTypeCategoryRule extends DeprecatedAnnotationsRuleBase
                 }
             }
         }
+
         return false;
     }
 
@@ -96,12 +86,18 @@ final class FieldTypeCategoryRule extends DeprecatedAnnotationsRuleBase
      * @param \PHPStan\Reflection\ClassReflection $reflection
      *   The class reflection object.
      *
-     * @return \PHPStan\BetterReflection\Reflection\Adapter\ReflectionAttribute|null
+     * @return ReflectionAttribute|null
      *   The attribute, or null.
      */
     private function getFieldTypeAttributes(ClassReflection $reflection): ?ReflectionAttribute
     {
-        $attributes = $reflection->getNativeReflection()->getAttributes(FieldType::class);
-        return $attributes[0] ?? null;
+        try {
+            $nativeReflection = new ReflectionClass($reflection->getName());
+            $attribute = $nativeReflection->getAttributes(FieldType::class);
+        } catch (ReflectionException $e) {
+            return null;
+        }
+
+        return $attribute[0] ?? null;
     }
 }
