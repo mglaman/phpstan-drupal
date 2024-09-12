@@ -6,7 +6,7 @@ use Composer\Autoload\ClassLoader;
 use Drupal\Core\DependencyInjection\ContainerNotInitializedException;
 use Drupal\Core\DrupalKernelInterface;
 use Drupal\TestTools\PhpUnitCompatibility\PhpUnit8\ClassWriter;
-use DrupalFinder\DrupalFinder;
+use DrupalFinder\DrupalFinderComposerRuntime;
 use Drush\Drush;
 use PHPStan\DependencyInjection\Container;
 use PHPUnit\Framework\Test;
@@ -26,7 +26,6 @@ use function interface_exists;
 use function is_array;
 use function is_dir;
 use function is_string;
-use function realpath;
 use function str_replace;
 use function strpos;
 use function strtr;
@@ -87,18 +86,15 @@ class DrupalAutoloader
          * @var array{drupal_root: string, bleedingEdge: array{checkDeprecatedHooksInApiFiles: bool, checkCoreDeprecatedHooksInApiFiles: bool, checkContribDeprecatedHooksInApiFiles: bool}} $drupalParams
          */
         $drupalParams = $container->getParameter('drupal');
-        $drupalRoot = realpath($drupalParams['drupal_root']);
-        $finder = new DrupalFinder();
-        $finder->locateRoot($drupalRoot);
+        $finder = new DrupalFinderComposerRuntime();
 
         $drupalRoot = $finder->getDrupalRoot();
         $drupalVendorRoot = $finder->getVendorDir();
-        if (! (bool) $drupalRoot || ! (bool) $drupalVendorRoot) {
-            throw new RuntimeException("Unable to detect Drupal at {$drupalParams['drupal_root']}");
+        if (is_null($drupalRoot) || is_null($drupalVendorRoot)) {
+            throw new RuntimeException("Unable to detect Drupal root directory");
         }
 
         $this->drupalRoot = $drupalRoot;
-
         $this->autoloader = include $drupalVendorRoot . '/autoload.php';
 
         $this->serviceYamls['core'] = $drupalRoot . '/core/core.services.yml';
