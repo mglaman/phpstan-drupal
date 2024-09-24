@@ -83,7 +83,7 @@ class DrupalAutoloader
     public function register(Container $container): void
     {
         /**
-         * @var array{drupal_root: string, bleedingEdge: array{checkDeprecatedHooksInApiFiles: bool, checkCoreDeprecatedHooksInApiFiles: bool, checkContribDeprecatedHooksInApiFiles: bool}} $drupalParams
+         * @var array{bleedingEdge: array{checkDeprecatedHooksInApiFiles: bool, checkCoreDeprecatedHooksInApiFiles: bool, checkContribDeprecatedHooksInApiFiles: bool}} $drupalParams
          */
         $drupalParams = $container->getParameter('drupal');
         $finder = new DrupalFinderComposerRuntime();
