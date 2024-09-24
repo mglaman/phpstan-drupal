@@ -240,7 +240,6 @@ parameters:
 
 parametersSchema:
 	drupal: structure([
-		drupal_root: string()
 		bleedingEdge: structure([
 			checkDeprecatedHooksInApiFiles: boolean()
 			checkCoreDeprecatedHooksInApiFiles: boolean()
