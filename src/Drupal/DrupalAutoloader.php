@@ -91,7 +91,7 @@ class DrupalAutoloader
 
         $drupalRoot = $finder->getDrupalRoot();
         $drupalVendorRoot = $finder->getVendorDir();
-        if (! (bool) $drupalRoot || ! (bool) $drupalVendorRoot) {
+        if (!(is_string($drupalRoot) && is_string($drupalVendorRoot))) {
             throw new RuntimeException("Unable to detect Drupal with webflo/drupal-finder.");
         }
 
