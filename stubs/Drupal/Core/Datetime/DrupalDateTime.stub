@@ -1,0 +1,7 @@
+<?php
+
+namespace Drupal\Core\Datetime;
+
+class DrupalDateTime extends DateTimePlus {
+
+}
