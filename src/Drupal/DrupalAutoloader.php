@@ -88,7 +88,7 @@ class DrupalAutoloader
         $drupalParams = $container->getParameter('drupal');
 
         // Trigger deprecation error if drupal_root is used.
-        if (isset($drupalParams['drupal_root'])) {
+        if (isset($drupalParams['drupal_root']) && $drupalParams['drupal_root'] === null) {
             trigger_error('The drupal_root parameter is deprecated. Remove it from your configuration. Drupal Root is discoverd automatically.', E_USER_DEPRECATED);
         }
 
