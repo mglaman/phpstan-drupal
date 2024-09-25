@@ -27,7 +27,7 @@ final class AccessCheckImpossibleTypeCallRuleTest extends DrupalRuleTestCase
             true,
             false,
             false,
-            false
+            false,
         );
     }
 
