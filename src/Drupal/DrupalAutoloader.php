@@ -86,14 +86,18 @@ class DrupalAutoloader
          * @var array{bleedingEdge: array{checkDeprecatedHooksInApiFiles: bool, checkCoreDeprecatedHooksInApiFiles: bool, checkContribDeprecatedHooksInApiFiles: bool}} $drupalParams
          */
         $drupalParams = $container->getParameter('drupal');
-        $finder = new DrupalFinderComposerRuntime();
 
+        // Trigger deprecation error if drupal_root is used.
+        if ($drupalParams['drupal_root']) {
+            trigger_error('The drupal_root parameter is deprecated. Remove it from your configuration. Drupal Root is discoverd automatically.', E_USER_DEPRECATED);
+        }
+
+        $finder = new DrupalFinderComposerRuntime();
         $drupalRoot = $finder->getDrupalRoot();
         $drupalVendorRoot = $finder->getVendorDir();
         if (!(is_string($drupalRoot) && is_string($drupalVendorRoot))) {
             throw new RuntimeException("Unable to detect Drupal with webflo/drupal-finder.");
         }
-
         $this->drupalRoot = $drupalRoot;
 
         $this->autoloader = include $drupalVendorRoot . '/autoload.php';
