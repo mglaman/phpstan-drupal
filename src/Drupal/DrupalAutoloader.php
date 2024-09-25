@@ -83,12 +83,12 @@ class DrupalAutoloader
     public function register(Container $container): void
     {
         /**
-         * @var array{bleedingEdge: array{checkDeprecatedHooksInApiFiles: bool, checkCoreDeprecatedHooksInApiFiles: bool, checkContribDeprecatedHooksInApiFiles: bool}} $drupalParams
+         * @var array{drupal_root: string|null, bleedingEdge: array{checkDeprecatedHooksInApiFiles: bool, checkCoreDeprecatedHooksInApiFiles: bool, checkContribDeprecatedHooksInApiFiles: bool}} $drupalParams
          */
         $drupalParams = $container->getParameter('drupal');
 
         // Trigger deprecation error if drupal_root is used.
-        if ($drupalParams['drupal_root']) {
+        if (isset($drupalParams['drupal_root'])) {
             trigger_error('The drupal_root parameter is deprecated. Remove it from your configuration. Drupal Root is discoverd automatically.', E_USER_DEPRECATED);
         }
 
