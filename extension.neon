@@ -16,7 +16,7 @@ parameters:
 	scanFiles:
 		- stubs/Twig/functions.stub
 	drupal:
-		drupal_root: '%currentWorkingDirectory%'
+		drupal_root: ~
 		bleedingEdge:
 			checkDeprecatedHooksInApiFiles: false
 			checkCoreDeprecatedHooksInApiFiles: false
@@ -241,7 +241,7 @@ parameters:
 
 parametersSchema:
 	drupal: structure([
-		drupal_root: string()
+		drupal_root: schema(string(), nullable())
 		bleedingEdge: structure([
 			checkDeprecatedHooksInApiFiles: boolean()
 			checkCoreDeprecatedHooksInApiFiles: boolean()

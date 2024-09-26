@@ -104,26 +104,6 @@ parameters:
             classExtendsInternalClassRule: false
 ```
 
-### Specifying your Drupal project's root
-
-By default, the PHPStan Drupal extension will try to determine your Drupal project's root directory based on the working
-directory that PHPStan is checking. If this is not working properly, you can explicitly define the Drupal project's root
-directory using the `drupal.drupal_root` parameter.
-
-```
-parameters:
-	drupal:
-		drupal_root: /path/to/drupal
-```
-
-You can also use container parameters. For instance you can always set it to the current working directory.
-
-```
-parameters:
-	drupal:
-		drupal_root: %currentWorkingDirectory%
-```
-
 ### Entity storage mappings.
 
 The `EntityTypeManagerGetStorageDynamicReturnTypeExtension` service helps map dynamic return types. This inspects the
