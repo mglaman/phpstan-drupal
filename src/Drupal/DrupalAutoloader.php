@@ -83,17 +83,21 @@ class DrupalAutoloader
     public function register(Container $container): void
     {
         /**
-         * @var array{drupal_root: string, bleedingEdge: array{checkDeprecatedHooksInApiFiles: bool, checkCoreDeprecatedHooksInApiFiles: bool, checkContribDeprecatedHooksInApiFiles: bool}} $drupalParams
+         * @var array{drupal_root: string|null, bleedingEdge: array{checkDeprecatedHooksInApiFiles: bool, checkCoreDeprecatedHooksInApiFiles: bool, checkContribDeprecatedHooksInApiFiles: bool}} $drupalParams
          */
         $drupalParams = $container->getParameter('drupal');
-        $finder = new DrupalFinderComposerRuntime();
 
-        $drupalRoot = $finder->getDrupalRoot();
-        $drupalVendorRoot = $finder->getVendorDir();
-        if (is_null($drupalRoot) || is_null($drupalVendorRoot)) {
-            throw new RuntimeException("Unable to detect Drupal root directory");
+        // Trigger deprecation error if drupal_root is used.
+        if (is_string($drupalParams['drupal_root'])) {
+            trigger_error('The drupal_root parameter is deprecated. Remove it from your configuration. Drupal Root is discoverd automatically.', E_USER_DEPRECATED);
         }
 
+        $finder = new DrupalFinderComposerRuntime();
+        $drupalRoot = $finder->getDrupalRoot();
+        $drupalVendorRoot = $finder->getVendorDir();
+        if (!(is_string($drupalRoot) && is_string($drupalVendorRoot))) {
+            throw new RuntimeException("Unable to detect Drupal with webflo/drupal-finder.");
+        }
         $this->drupalRoot = $drupalRoot;
         $this->autoloader = include $drupalVendorRoot . '/autoload.php';
 
