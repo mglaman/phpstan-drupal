@@ -4,8 +4,6 @@ namespace mglaman\PHPStanDrupal\Rules\Deprecations;
 
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
-use PHPStan\PhpDoc\ResolvedPhpDocBlock;
-use PHPStan\PhpDocParser\Ast\PhpDoc\PhpDocTagNode;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\ShouldNotHappenException;
 use function preg_match;
@@ -23,7 +21,7 @@ final class ConfigEntityConfigExportRule extends DeprecatedAnnotationsRuleBase
         $phpDoc = $reflection->getResolvedPhpDoc();
         // Plugins should always be annotated, but maybe this class is missing its
         // annotation since it swaps an existing one.
-        if ($phpDoc === null || !$this->isAnnotated($phpDoc)) {
+        if ($phpDoc === null || !$this->isAnnotated($phpDoc, '@ConfigEntityType')) {
             return [];
         }
         $hasMatch = preg_match('/config_export\s?=\s?{/', $phpDoc->getPhpDocString());
@@ -36,17 +34,5 @@ final class ConfigEntityConfigExportRule extends DeprecatedAnnotationsRuleBase
             ];
         }
         return [];
-    }
-
-    private function isAnnotated(ResolvedPhpDocBlock $phpDoc): bool
-    {
-        foreach ($phpDoc->getPhpDocNodes() as $docNode) {
-            foreach ($docNode->children as $childNode) {
-                if (($childNode instanceof PhpDocTagNode) && $childNode->name === '@ConfigEntityType') {
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 }
