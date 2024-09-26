@@ -16,7 +16,7 @@ parameters:
 	scanFiles:
 		- stubs/Twig/functions.stub
 	drupal:
-		drupal_root:
+		drupal_root: ~
 		bleedingEdge:
 			checkDeprecatedHooksInApiFiles: false
 			checkCoreDeprecatedHooksInApiFiles: false
