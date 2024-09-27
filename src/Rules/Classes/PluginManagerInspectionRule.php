@@ -59,9 +59,10 @@ class PluginManagerInspectionRule implements Rule
             // @todo inspect annotated plugin managers.
         }
 
-        $alterInfoMethodNode = (new NodeFinder())->findFirst($constructorMethodNode->stmts, static function (Node $node) {
+        $alterInfoMethodNode = (new NodeFinder())->findFirst($constructorMethodNode->stmts ?? [], static function (Node $node) {
             return $node instanceof Node\Stmt\Expression
                 && $node->expr instanceof Node\Expr\MethodCall
+                && $node->expr->name instanceof Node\Identifier
                 && $node->expr->name->toString() === 'alterInfo';
         });
 
@@ -88,11 +89,12 @@ class PluginManagerInspectionRule implements Rule
             return false;
         }
 
-        $assignDiscovery = $nodeFinder->findFirstInstanceOf($getDiscoveryMethodNode->stmts, Node\Expr\Assign::class);
+        $assignDiscovery = $nodeFinder->findFirstInstanceOf($getDiscoveryMethodNode->stmts ?? [], Node\Expr\Assign::class);
         if ($assignDiscovery === null) {
             return false;
         }
         if ($assignDiscovery->expr instanceof Node\Expr\New_
+            && $assignDiscovery->expr->class instanceof Node\Name
             && $assignDiscovery->expr->class->toString() === 'Drupal\Core\Plugin\Discovery\YamlDiscovery') {
             return true;
         }
