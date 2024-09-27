@@ -44,6 +44,7 @@ final class EntityQueryHasAccessCheckRule implements Rule
         }
 
         return [
+            // @todo identifier
             RuleErrorBuilder::message(
                 'Relying on entity queries to check access by default is deprecated in drupal:9.2.0 and an error will be thrown from drupal:10.0.0. Call \Drupal\Core\Entity\Query\QueryInterface::accessCheck() with TRUE or FALSE to specify whether access should be checked.'
             )->tip('See https://www.drupal.org/node/3201242')->build(),

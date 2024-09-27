@@ -105,6 +105,7 @@ final class RenderCallbackRule implements Rule
 
             if (!$value instanceof Node\Expr\Array_) {
                 return [
+                    // @todo identifier
                     RuleErrorBuilder::message(sprintf('The "%s" expects a callable array with arguments.', $keyChecked))
                         ->line($node->getStartLine())->build()
                 ];
@@ -118,6 +119,7 @@ final class RenderCallbackRule implements Rule
 
         if (!$value instanceof Node\Expr\Array_) {
             return [
+                // @todo identifier
                 RuleErrorBuilder::message(sprintf('The "%s" render array value expects an array of callbacks.', $keyChecked))
                     ->line($node->getStartLine())->build()
             ];
@@ -150,12 +152,14 @@ final class RenderCallbackRule implements Rule
 
         foreach ($type->getConstantStrings() as $constantStringType) {
             if (!$constantStringType->isCallable()->yes()) {
+                // @todo identifier
                 $errors[] = RuleErrorBuilder::message(
                     sprintf("%s callback %s at key '%s' is not callable.", $keyChecked, $constantStringType->describe(VerbosityLevel::value()), $pos)
                 )->line($errorLine)->build();
             } elseif ($this->reflectionProvider->hasFunction(new Name($constantStringType->getValue()), null)) {
                 // We can determine if the callback is callable through the type system. However, we cannot determine
                 // if it is just a function or a static class call (MyClass::staticFunc).
+                // @todo identifier
                 $errors[] = RuleErrorBuilder::message(
                     sprintf("%s callback %s at key '%s' is not trusted.", $keyChecked, $constantStringType->describe(VerbosityLevel::value()), $pos)
                 )->line($errorLine)
@@ -165,10 +169,12 @@ final class RenderCallbackRule implements Rule
                 // @see \PHPStan\Type\Constant\ConstantStringType::isCallable
                 preg_match('#^([a-zA-Z_\\x7f-\\xff\\\\][a-zA-Z0-9_\\x7f-\\xff\\\\]*)::([a-zA-Z_\\x7f-\\xff][a-zA-Z0-9_\\x7f-\\xff]*)\\z#', $constantStringType->getValue(), $matches);
                 if (count($matches) === 0) {
+                    // @todo identifier
                     $errors[] = RuleErrorBuilder::message(
                         sprintf("%s callback %s at key '%s' is not callable.", $keyChecked, $constantStringType->describe(VerbosityLevel::value()), $pos)
                     )->line($errorLine)->build();
                 } elseif (!$trustedCallbackType->isSuperTypeOf(new ObjectType($matches[1]))->yes()) {
+                    // @todo identifier
                     $errors[] = RuleErrorBuilder::message(
                         sprintf("%s callback class %s at key '%s' does not implement Drupal\Core\Security\TrustedCallbackInterface.", $keyChecked, $constantStringType->describe(VerbosityLevel::value()), $pos)
                     )->line($errorLine)->tip('Change record: https://www.drupal.org/node/2966725.')->build();
@@ -192,6 +198,7 @@ final class RenderCallbackRule implements Rule
                         break;
                     }
                 }
+                // @todo identifier
                 $errors[] = RuleErrorBuilder::message(
                     sprintf("%s callback %s at key '%s' is not callable.", $keyChecked, $constantArrayType->describe(VerbosityLevel::value()), $pos)
                 )->line($errorLine)->build();
@@ -219,6 +226,7 @@ final class RenderCallbackRule implements Rule
                 $isTrustedCallbackInterfaceType = $trustedCallbackType->isSuperTypeOf($typeAndMethodName->getType())->yes();
                 if (!$isTrustedCallbackInterfaceType && !$isTrustedCallbackAttribute->yes()) {
                     if (class_exists(TrustedCallback::class)) {
+                        // @todo identifier
                         $errors[] =  RuleErrorBuilder::message(
                             sprintf(
                                 "%s callback method '%s' at key '%s' does not implement attribute \Drupal\Core\Security\Attribute\TrustedCallback.",
@@ -228,6 +236,7 @@ final class RenderCallbackRule implements Rule
                             )
                         )->line($errorLine)->tip('Change record: https://www.drupal.org/node/3349470')->build();
                     } else {
+                        // @todo identifier
                         $errors[] =  RuleErrorBuilder::message(
                             sprintf(
                                 "%s callback class '%s' at key '%s' does not implement Drupal\Core\Security\TrustedCallbackInterface.",
@@ -246,6 +255,7 @@ final class RenderCallbackRule implements Rule
             $classType = new ObjectType($classReflection->getName());
             $formType = new ObjectType('\Drupal\Core\Form\FormInterface');
             if ($formType->isSuperTypeOf($classType)->yes()) {
+                // @todo identifier
                 $errors[] = RuleErrorBuilder::message(
                     sprintf("%s may not contain a closure at key '%s' as forms may be serialized and serialization of closures is not allowed.", $keyChecked, $pos)
                 )->line($errorLine)->build();
@@ -253,6 +263,7 @@ final class RenderCallbackRule implements Rule
         }
 
         if (count($errors) === 0 && ($checkIsCallable && !$type->isCallable()->yes())) {
+            // @todo identifier
             $errors[] = RuleErrorBuilder::message(
                 sprintf("%s value '%s' at key '%s' is invalid.", $keyChecked, $type->describe(VerbosityLevel::value()), $pos)
             )->line($errorLine)->build();

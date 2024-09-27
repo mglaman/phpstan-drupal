@@ -58,6 +58,7 @@ final class SymfonyCmfRoutingInClassMethodSignatureRule implements Rule
             foreach ($parameter->getType()->getReferencedClasses() as $referencedClass) {
                 $referencedClassType = new ObjectType($referencedClass);
                 if ($cmfRouteObjectInterfaceType->equals($referencedClassType)) {
+                    // @todo identifier
                     $errors[] = RuleErrorBuilder::message(
                         sprintf(
                             $errorMessage,
@@ -68,6 +69,7 @@ final class SymfonyCmfRoutingInClassMethodSignatureRule implements Rule
                         )
                     )->tip('Change record: https://www.drupal.org/node/3151009')->build();
                 } elseif ($cmfRouteProviderInterfaceType->equals($referencedClassType)) {
+                    // @todo identifier
                     $errors[] = RuleErrorBuilder::message(
                         sprintf(
                             $errorMessage,
@@ -78,6 +80,7 @@ final class SymfonyCmfRoutingInClassMethodSignatureRule implements Rule
                         )
                     )->tip('Change record: https://www.drupal.org/node/3151009')->build();
                 } elseif ($cmfLazyRouteCollectionType->equals($referencedClassType)) {
+                    // @todo identifier
                     $errors[] = RuleErrorBuilder::message(
                         sprintf(
                             $errorMessage,
@@ -96,6 +99,7 @@ final class SymfonyCmfRoutingInClassMethodSignatureRule implements Rule
         foreach ($returnClasses as $returnClass) {
             $returnType = new ObjectType($returnClass);
             if ($cmfRouteObjectInterfaceType->equals($returnType)) {
+                // @todo identifier
                 $errors[] = RuleErrorBuilder::message(
                     sprintf(
                         $errorMessage,
@@ -106,6 +110,7 @@ final class SymfonyCmfRoutingInClassMethodSignatureRule implements Rule
                     )
                 )->tip('Change record: https://www.drupal.org/node/3151009')->build();
             } elseif ($cmfRouteProviderInterfaceType->equals($returnType)) {
+                // @todo identifier
                 $errors[] = RuleErrorBuilder::message(
                     sprintf(
                         $errorMessage,
@@ -116,6 +121,7 @@ final class SymfonyCmfRoutingInClassMethodSignatureRule implements Rule
                     )
                 )->tip('Change record: https://www.drupal.org/node/3151009')->build();
             } elseif ($cmfLazyRouteCollectionType->equals($returnType)) {
+                // @todo identifier
                 $errors[] = RuleErrorBuilder::message(
                     sprintf(
                         $errorMessage,

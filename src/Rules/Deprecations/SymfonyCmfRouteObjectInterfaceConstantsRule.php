@@ -60,14 +60,20 @@ final class SymfonyCmfRouteObjectInterfaceConstantsRule implements Rule
             return [
                 RuleErrorBuilder::message(
                     sprintf('The core dependency symfony-cmf/routing is deprecated and %s::%s is not supported.', $className, $constantName)
-                )->tip('Change record: https://www.drupal.org/node/3151009')->build(),
+                )
+                    ->tip('Change record: https://www.drupal.org/node/3151009')
+                    ->identifier('drupal.deprecated.dependency')
+                    ->build(),
             ];
         }
 
         return [
             RuleErrorBuilder::message(
                 sprintf('%s::%s is deprecated and removed in Drupal 10. Use \Drupal\Core\Routing\RouteObjectInterface::%2$s instead.', $className, $constantName)
-            )->tip('Change record: https://www.drupal.org/node/3151009')->build(),
+            )
+                ->tip('Change record: https://www.drupal.org/node/3151009')
+                ->identifier('drupal.deprecated.class')
+                ->build(),
         ];
     }
 }

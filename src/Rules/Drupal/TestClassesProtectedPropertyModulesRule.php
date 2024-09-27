@@ -44,6 +44,7 @@ class TestClassesProtectedPropertyModulesRule implements Rule
 
         if ($node->isPublic()) {
             return [
+                // @todo identifier
                 RuleErrorBuilder::message(
                     sprintf('Property %s::$modules property must be protected.', $scopeClassReflection->getDisplayName())
                 )->tip('Change record: https://www.drupal.org/node/2909426')->build(),

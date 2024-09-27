@@ -6,6 +6,8 @@ use PhpParser\Node;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Rules\Rule;
+use PHPStan\Rules\RuleError;
+use PHPStan\Rules\RuleErrorBuilder;
 use PHPStan\Type\ObjectType;
 use function sprintf;
 
@@ -67,7 +69,9 @@ class PluginManagerInspectionRule implements Rule
         }
 
         if (!$hasAlterInfoSet) {
-            $errors[] = 'Plugin definitions cannot be altered.';
+            $errors[] = RuleErrorBuilder::message('Plugin definitions cannot be altered.')
+                ->identifier('plugin.manager.alterInfoMissing')
+                ->build();
         }
 
         return $errors;
@@ -117,7 +121,9 @@ class PluginManagerInspectionRule implements Rule
         $constructor = $reflection->getConstructor();
 
         if ($constructor->getDeclaringClass()->getName() !== $fqn) {
-            $errors[] = sprintf('%s must override __construct if using YAML plugins.', $fqn);
+            $errors[] = RuleErrorBuilder::message(sprintf('%s must override __construct if using YAML plugins.', $fqn))
+                ->identifier('plugin.manager.yamlPluginConstructor')
+                ->build();
         } else {
             foreach ($class->stmts as $stmt) {
                 if ($stmt instanceof Node\Stmt\ClassMethod && $stmt->name->toString() === '__construct') {
@@ -130,7 +136,9 @@ class PluginManagerInspectionRule implements Rule
                             && ((string)$constructorStmt->class === 'parent')
                             && $constructorStmt->name instanceof Node\Identifier
                             && $constructorStmt->name->name === '__construct') {
-                            $errors[] = sprintf('YAML plugin managers should not invoke its parent constructor.');
+                            $errors[] = RuleErrorBuilder::message('YAML plugin managers should not invoke its parent constructor.')
+                                ->identifier('plugin.manager.yamlPluginConstructor')
+                                ->build();
                         }
                     }
                 }

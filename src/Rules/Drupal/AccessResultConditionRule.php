@@ -65,6 +65,7 @@ final class AccessResultConditionRule implements Rule
             $rightType = $this->treatPhpDocTypesAsCertain ? $scope->getType($condition->right) : $scope->getNativeType($condition->right);
 
             return [
+                // @todo identifier
                 RuleErrorBuilder::message(sprintf(
                     'Strict comparison using %s between %s and %s will always evaluate to %s.',
                     $condition->getOperatorSigil(),
