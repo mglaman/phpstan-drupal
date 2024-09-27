@@ -26,6 +26,10 @@ final class PluginManagerInspectionRuleTest extends DrupalRuleTestCase
 
     public static function pluginManagerData(): \Generator
     {
+        yield 'BreakpointManager' => [
+            __DIR__ . '/../../fixtures/drupal/core/modules/breakpoint/src/BreakpointManager.php',
+            []
+        ];
         yield 'ExamplePluginManager' => [
             __DIR__ . '/../../fixtures/drupal/modules/phpstan_fixtures/src/ExamplePluginManager.php',
             []
@@ -34,8 +38,13 @@ final class PluginManagerInspectionRuleTest extends DrupalRuleTestCase
             __DIR__ . '/data/plugin-manager-alter-info.php',
             [
                 [
-                    'Plugin manager must call alterInfo to allow plugin definitions to be altered.',
+                    'Plugin managers must call alterInfo to allow plugin definitions to be altered.',
                     9,
+                    'For example, to invoke hook_mymodule_data_alter() call alterInfo with "mymodule_data".'
+                ],
+                [
+                    'Plugin managers must call alterInfo to allow plugin definitions to be altered.',
+                    41,
                     'For example, to invoke hook_mymodule_data_alter() call alterInfo with "mymodule_data".'
                 ],
             ]

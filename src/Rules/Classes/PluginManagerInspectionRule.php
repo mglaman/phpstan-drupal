@@ -3,12 +3,14 @@
 namespace mglaman\PHPStanDrupal\Rules\Classes;
 
 use PhpParser\Node;
+use PhpParser\NodeFinder;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
 use PHPStan\Type\ObjectType;
 use function sprintf;
+use Drupal\Component\Plugin\PluginManagerInterface;
 
 /**
  * @implements \PHPStan\Rules\Rule<\PhpParser\Node\Stmt\Class_>
@@ -36,40 +38,36 @@ class PluginManagerInspectionRule implements Rule
         if ($node->extends === null) {
             return [];
         }
-        $className = (string) $node->namespacedName;
-        $pluginManagerType = new ObjectType($className);
-        $pluginManagerInterfaceType = new ObjectType('\Drupal\Component\Plugin\PluginManagerInterface');
+
+        $pluginManagerType = $scope->resolveTypeByName($node->namespacedName);
+        $pluginManagerInterfaceType = new ObjectType(PluginManagerInterface::class);
         if (!$pluginManagerInterfaceType->isSuperTypeOf($pluginManagerType)->yes()) {
+            return [];
+        }
+
+        $constructorMethodNode = (new NodeFinder())->findFirst($node->stmts, static function (Node $node) {
+            return $node instanceof Node\Stmt\ClassMethod && $node->name->toString() === '__construct';
+        });
+        if (!$constructorMethodNode instanceof Node\Stmt\ClassMethod) {
             return [];
         }
 
         $errors = [];
         if ($this->isYamlDiscovery($node)) {
-            $errors = $this->inspectYamlPluginManager($node);
+            $errors = $this->inspectYamlPluginManager($node, $constructorMethodNode);
         } else {
             // @todo inspect annotated plugin managers.
         }
 
-        $hasAlterInfoSet = false;
+        $alterInfoMethodNode = (new NodeFinder())->findFirst($constructorMethodNode->stmts, static function (Node $node) {
+            return $node instanceof Node\Stmt\Expression
+                && $node->expr instanceof Node\Expr\MethodCall
+                && $node->expr->name->toString() === 'alterInfo';
+        });
 
-        foreach ($node->stmts as $stmt) {
-            if ($stmt instanceof Node\Stmt\ClassMethod && $stmt->name->toString() === '__construct') {
-                foreach ($stmt->stmts ?? [] as $statement) {
-                    if ($statement instanceof Node\Stmt\Expression) {
-                        $statement = $statement->expr;
-                    }
-                    if ($statement instanceof Node\Expr\MethodCall
-                        && $statement->name instanceof Node\Identifier
-                        && $statement->name->name === 'alterInfo') {
-                        $hasAlterInfoSet = true;
-                    }
-                }
-            }
-        }
-
-        if (!$hasAlterInfoSet) {
+        if ($alterInfoMethodNode === null) {
             $errors[] = RuleErrorBuilder::message(
-                'Plugin manager must call alterInfo to allow plugin definitions to be altered.'
+                'Plugin managers must call alterInfo to allow plugin definitions to be altered.'
             )
                 ->identifier('plugin.manager.alterInfoMissing')
                 ->tip('For example, to invoke hook_mymodule_data_alter() call alterInfo with "mymodule_data".')
@@ -82,40 +80,27 @@ class PluginManagerInspectionRule implements Rule
 
     private function isYamlDiscovery(Node\Stmt\Class_ $class): bool
     {
-        foreach ($class->stmts as $stmt) {
-            // YAML discovery plugin managers must override getDiscovery.
-            if ($stmt instanceof Node\Stmt\ClassMethod && $stmt->name->toString() === 'getDiscovery') {
-                foreach ($stmt->stmts ?? [] as $methodStmt) {
-                    if ($methodStmt instanceof Node\Stmt\If_) {
-                        foreach ($methodStmt->stmts as $ifStmt) {
-                            if ($ifStmt instanceof Node\Stmt\Expression) {
-                                $ifStmtExpr = $ifStmt->expr;
-                                if ($ifStmtExpr instanceof Node\Expr\Assign) {
-                                    $ifStmtExprVar = $ifStmtExpr->var;
-                                    if ($ifStmtExprVar instanceof Node\Expr\PropertyFetch
-                                        && $ifStmtExprVar->var instanceof Node\Expr\Variable
-                                        && $ifStmtExprVar->name instanceof Node\Identifier
-                                        && $ifStmtExprVar->name->name === 'discovery'
-                                    ) {
-                                        $ifStmtExprExpr = $ifStmtExpr->expr;
-                                        if ($ifStmtExprExpr instanceof Node\Expr\New_
-                                            && ($ifStmtExprExpr->class instanceof Node\Name)
-                                            && $ifStmtExprExpr->class->toString() === 'Drupal\Core\Plugin\Discovery\YamlDiscovery') {
-                                            return true;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+        $nodeFinder = new NodeFinder();
+        $getDiscoveryMethodNode = $nodeFinder->findFirst($class->stmts, static function (Node $node) {
+            return $node instanceof Node\Stmt\ClassMethod && $node->name->toString() === 'getDiscovery';
+        });
+        if (!$getDiscoveryMethodNode instanceof Node\Stmt\ClassMethod) {
+            return false;
+        }
+
+        $assignDiscovery = $nodeFinder->findFirstInstanceOf($getDiscoveryMethodNode->stmts, Node\Expr\Assign::class);
+        if ($assignDiscovery === null) {
+            return false;
+        }
+        if ($assignDiscovery->expr instanceof Node\Expr\New_
+            && $assignDiscovery->expr->class->toString() === 'Drupal\Core\Plugin\Discovery\YamlDiscovery') {
+            return true;
         }
 
         return false;
     }
 
-    private function inspectYamlPluginManager(Node\Stmt\Class_ $class): array
+    private function inspectYamlPluginManager(Node\Stmt\Class_ $class, Node\Stmt\ClassMethod $constructorMethodNode): array
     {
         $errors = [];
 
@@ -126,20 +111,16 @@ class PluginManagerInspectionRule implements Rule
         if ($constructor->getDeclaringClass()->getName() !== $fqn) {
             $errors[] = sprintf('%s must override __construct if using YAML plugins.', $fqn);
         } else {
-            foreach ($class->stmts as $stmt) {
-                if ($stmt instanceof Node\Stmt\ClassMethod && $stmt->name->toString() === '__construct') {
-                    foreach ($stmt->stmts ?? [] as $constructorStmt) {
-                        if ($constructorStmt instanceof Node\Stmt\Expression) {
-                            $constructorStmt = $constructorStmt->expr;
-                        }
-                        if ($constructorStmt instanceof Node\Expr\StaticCall
-                            && $constructorStmt->class instanceof Node\Name
-                            && ((string)$constructorStmt->class === 'parent')
-                            && $constructorStmt->name instanceof Node\Identifier
-                            && $constructorStmt->name->name === '__construct') {
-                            $errors[] = sprintf('YAML plugin managers should not invoke its parent constructor.');
-                        }
-                    }
+            foreach ($constructorMethodNode->stmts ?? [] as $constructorStmt) {
+                if ($constructorStmt instanceof Node\Stmt\Expression) {
+                    $constructorStmt = $constructorStmt->expr;
+                }
+                if ($constructorStmt instanceof Node\Expr\StaticCall
+                    && $constructorStmt->class instanceof Node\Name
+                    && ((string)$constructorStmt->class === 'parent')
+                    && $constructorStmt->name instanceof Node\Identifier
+                    && $constructorStmt->name->name === '__construct') {
+                    $errors[] = sprintf('YAML plugin managers should not invoke its parent constructor.');
                 }
             }
         }

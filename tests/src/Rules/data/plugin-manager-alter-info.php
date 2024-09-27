@@ -2,7 +2,7 @@
 
 namespace PluginManagerAlterInfo;
 
-use Drupal\Core\Cache\CacheBackendInterface;
+use Drupal\Core\Plugin\Discovery\YamlDiscovery;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Plugin\DefaultPluginManager;
 
@@ -11,8 +11,6 @@ class AnnotationsMissingAlterInfo extends DefaultPluginManager {
     public function __construct(
         \Traversable $namespaces,
         ModuleHandlerInterface $module_handler,
-        CacheBackendInterface $cache_backend,
-        string $type,
     ) {
         parent::__construct(
             'Plugin/Bar',
@@ -38,4 +36,35 @@ class AnnotationsWithAlterInfo extends DefaultPluginManager {
         );
         $this->alterInfo('bar');
     }
+}
+
+class YamlWithoutAlterInfo extends DefaultPluginManager {
+
+    public function __construct(
+    ) {
+    }
+
+    protected function getDiscovery()
+    {
+        if (!$this->discovery) {
+            $this->discovery = new YamlDiscovery('foo', []);
+        }
+    }
+
+}
+
+class YamlWithAlterInfo extends DefaultPluginManager {
+
+    public function __construct(
+    ) {
+        $this->alterInfo('baz');
+    }
+
+    protected function getDiscovery()
+    {
+        if (!$this->discovery) {
+            $this->discovery = new YamlDiscovery('foo', []);
+        }
+    }
+
 }
