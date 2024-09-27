@@ -49,6 +49,7 @@ final class RequestStackGetMainRequestRule implements Rule
                 SymfonyRequestStack::class,
                 'Drupal\Core\Http\RequestStack'
             );
+            // @todo identifier
             return [
                 RuleErrorBuilder::message($message)
                 ->tip('Change record: https://www.drupal.org/node/3253744')

@@ -98,7 +98,7 @@ class DeprecatedHookImplementation implements Rule
         return [
             RuleErrorBuilder::message(
                 "Function $function_name implements $hook_name which is deprecated$deprecated_description",
-            )->build()
+            )->identifier('drupal.deprecated.hook')->build()
         ];
     }
 }

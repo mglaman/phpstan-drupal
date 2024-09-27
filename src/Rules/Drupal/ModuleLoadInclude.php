@@ -47,6 +47,7 @@ class ModuleLoadInclude extends LoadIncludeBase
             $module = $this->extensionMap->getModule($moduleName);
             if ($module === null) {
                 return [
+                    // @todo identifier
                     RuleErrorBuilder::message(sprintf(
                         'File %s could not be loaded from module_load_include because %s module is not found.',
                         $filename,
@@ -62,6 +63,7 @@ class ModuleLoadInclude extends LoadIncludeBase
                 return [];
             }
             return [
+                // @todo identifier
                 RuleErrorBuilder::message(sprintf(
                     'File %s could not be loaded from module_load_include.',
                     $module->getPath() . '/' . $filename
@@ -71,6 +73,7 @@ class ModuleLoadInclude extends LoadIncludeBase
             ];
         } catch (Throwable $e) {
             return [
+                // @todo identifier
                 RuleErrorBuilder::message('A file could not be loaded from module_load_include')
                     ->line($node->getStartLine())
                     ->build()

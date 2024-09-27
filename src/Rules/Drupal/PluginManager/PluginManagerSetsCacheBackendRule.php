@@ -88,9 +88,11 @@ class PluginManagerSetsCacheBackendRule extends AbstractPluginManagerRule
 
         $errors = [];
         if (!$hasCacheBackendSet) {
+            // @todo identifier
             $errors[] = 'Missing cache backend declaration for performance.';
         }
         foreach ($misnamedCacheTagWarnings as $cacheTagWarning) {
+            // @todo identifier
             $errors[] = sprintf('%s cache tag might be unclear and does not contain the cache key in it.', $cacheTagWarning);
         }
 

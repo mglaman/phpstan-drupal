@@ -7,6 +7,7 @@ use PHPStan\Analyser\Scope;
 use PHPStan\PhpDoc\ResolvedPhpDocBlock;
 use PHPStan\PhpDocParser\Ast\PhpDoc\PhpDocTagNode;
 use PHPStan\Reflection\ClassReflection;
+use PHPStan\Rules\RuleErrorBuilder;
 use PHPStan\ShouldNotHappenException;
 use function preg_match;
 
@@ -32,7 +33,9 @@ final class ConfigEntityConfigExportRule extends DeprecatedAnnotationsRuleBase
         }
         if ($hasMatch === 0) {
             return [
-                'Configuration entity must define a `config_export` key. See https://www.drupal.org/node/2481909',
+                RuleErrorBuilder::message('Configuration entity must define a `config_export` key. See https://www.drupal.org/node/2481909')
+                    ->identifier('drupal.deprecated.configEntityConfigExportKey')
+                    ->build(),
             ];
         }
         return [];

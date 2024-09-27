@@ -53,6 +53,7 @@ class LoadIncludes extends LoadIncludeBase
             $module = $this->extensionMap->getModule($moduleName);
             if ($module === null) {
                 return [
+                    // @todo identifier
                     RuleErrorBuilder::message(sprintf(
                         'File %s could not be loaded from %s::loadInclude because %s module is not found.',
                         $filename,
@@ -80,6 +81,7 @@ class LoadIncludes extends LoadIncludeBase
             ];
         } catch (Throwable $e) {
             return [
+                // @todo identifier
                 RuleErrorBuilder::message(sprintf(
                     'A file could not be loaded from %s::loadInclude',
                     ModuleHandlerInterface::class

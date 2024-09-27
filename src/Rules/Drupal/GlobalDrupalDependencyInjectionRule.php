@@ -71,6 +71,7 @@ class GlobalDrupalDependencyInjectionRule implements Rule
             return [];
         }
 
+        // @todo identifier
         return [
             '\Drupal calls should be avoided in classes, use dependency injection instead'
         ];

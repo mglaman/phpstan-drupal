@@ -76,6 +76,7 @@ class ClassExtendsInternalClassRule implements Rule
             '%s extends @internal class %s.',
             $currentClassName !== null ? sprintf('Class %s', $currentClassName) : 'Anonymous class',
             $extendedClassName
-        ));
+        ))
+            ->identifier('class.extendsInternalClass');
     }
 }
