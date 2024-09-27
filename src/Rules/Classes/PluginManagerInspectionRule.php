@@ -2,6 +2,7 @@
 
 namespace mglaman\PHPStanDrupal\Rules\Classes;
 
+use Drupal\Component\Plugin\PluginManagerInterface;
 use PhpParser\Node;
 use PhpParser\NodeFinder;
 use PHPStan\Analyser\Scope;
@@ -10,7 +11,6 @@ use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
 use PHPStan\Type\ObjectType;
 use function sprintf;
-use Drupal\Component\Plugin\PluginManagerInterface;
 
 /**
  * @implements \PHPStan\Rules\Rule<\PhpParser\Node\Stmt\Class_>
