@@ -58,13 +58,21 @@ class EntityStorageDynamicReturnTypeExtension implements DynamicMethodReturnType
     ): Type {
         $callerType = $scope->getType($methodCall->var);
         if (!$callerType instanceof ObjectType) {
-            return ParametersAcceptorSelector::selectSingle($methodReflection->getVariants())->getReturnType();
+            return ParametersAcceptorSelector::selectFromArgs(
+                $scope,
+                $methodCall->getArgs(),
+                $methodReflection->getVariants()
+            )->getReturnType();
         }
 
         if (!$callerType instanceof EntityStorageType) {
             $resolvedEntityType = $this->entityDataRepository->resolveFromStorage($callerType);
             if ($resolvedEntityType === null) {
-                return ParametersAcceptorSelector::selectSingle($methodReflection->getVariants())->getReturnType();
+                return ParametersAcceptorSelector::selectFromArgs(
+                    $scope,
+                    $methodCall->getArgs(),
+                    $methodReflection->getVariants()
+                )->getReturnType();
             }
             $type = $resolvedEntityType->getClassType();
         } else {
@@ -72,7 +80,11 @@ class EntityStorageDynamicReturnTypeExtension implements DynamicMethodReturnType
         }
 
         if ($type === null) {
-            return ParametersAcceptorSelector::selectSingle($methodReflection->getVariants())->getReturnType();
+            return ParametersAcceptorSelector::selectFromArgs(
+                $scope,
+                $methodCall->getArgs(),
+                $methodReflection->getVariants()
+            )->getReturnType();
         }
         if (in_array($methodReflection->getName(), ['load', 'loadUnchanged'], true)) {
             return TypeCombinator::addNull($type);
@@ -90,6 +102,10 @@ class EntityStorageDynamicReturnTypeExtension implements DynamicMethodReturnType
             return $type;
         }
 
-        return ParametersAcceptorSelector::selectSingle($methodReflection->getVariants())->getReturnType();
+        return ParametersAcceptorSelector::selectFromArgs(
+            $scope,
+            $methodCall->getArgs(),
+            $methodReflection->getVariants()
+        )->getReturnType();
     }
 }
