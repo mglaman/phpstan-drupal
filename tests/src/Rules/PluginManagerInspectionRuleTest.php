@@ -38,12 +38,12 @@ final class PluginManagerInspectionRuleTest extends DrupalRuleTestCase
             __DIR__ . '/data/plugin-manager-alter-info.php',
             [
                 [
-                    'Plugin managers must call alterInfo to allow plugin definitions to be altered.',
+                    'Plugin managers should call alterInfo to allow plugin definitions to be altered.',
                     9,
                     'For example, to invoke hook_mymodule_data_alter() call alterInfo with "mymodule_data".'
                 ],
                 [
-                    'Plugin managers must call alterInfo to allow plugin definitions to be altered.',
+                    'Plugin managers should call alterInfo to allow plugin definitions to be altered.',
                     41,
                     'For example, to invoke hook_mymodule_data_alter() call alterInfo with "mymodule_data".'
                 ],

@@ -3,6 +3,7 @@
 namespace mglaman\PHPStanDrupal\Rules\Classes;
 
 use Drupal\Component\Plugin\PluginManagerInterface;
+use Drupal\Core\Plugin\DefaultPluginManager;
 use PhpParser\Node;
 use PhpParser\NodeFinder;
 use PHPStan\Analyser\Scope;
@@ -38,10 +39,17 @@ class PluginManagerInspectionRule implements Rule
         if ($node->extends === null) {
             return [];
         }
+        if (str_contains($node->namespacedName->toLowerString(), 'test')) {
+            return [];
+        }
 
         $pluginManagerType = $scope->resolveTypeByName($node->namespacedName);
         $pluginManagerInterfaceType = new ObjectType(PluginManagerInterface::class);
         if (!$pluginManagerInterfaceType->isSuperTypeOf($pluginManagerType)->yes()) {
+            return [];
+        }
+        $defaultPluginManager = new ObjectType(DefaultPluginManager::class);
+        if ($defaultPluginManager->equals($pluginManagerType)) {
             return [];
         }
 
@@ -68,7 +76,7 @@ class PluginManagerInspectionRule implements Rule
 
         if ($alterInfoMethodNode === null) {
             $errors[] = RuleErrorBuilder::message(
-                'Plugin managers must call alterInfo to allow plugin definitions to be altered.'
+                'Plugin managers should call alterInfo to allow plugin definitions to be altered.'
             )
                 ->identifier('plugin.manager.alterInfoMissing')
                 ->tip('For example, to invoke hook_mymodule_data_alter() call alterInfo with "mymodule_data".')
@@ -122,7 +130,7 @@ class PluginManagerInspectionRule implements Rule
                     && ((string)$constructorStmt->class === 'parent')
                     && $constructorStmt->name instanceof Node\Identifier
                     && $constructorStmt->name->name === '__construct') {
-                    $errors[] = sprintf('YAML plugin managers should not invoke its parent constructor.');
+                    $errors[] = 'YAML plugin managers should not invoke its parent constructor.';
                 }
             }
         }
