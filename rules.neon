@@ -41,3 +41,5 @@ services:
 			treatPhpDocTypesAsCertain: %treatPhpDocTypesAsCertain%
 	-
 		class: mglaman\PHPStanDrupal\Rules\Classes\ClassExtendsInternalClassRule
+	-
+		class: mglaman\PHPStanDrupal\Rules\Classes\PluginManagerInspectionRule
