@@ -4,14 +4,9 @@ namespace mglaman\PHPStanDrupal\Rules\Deprecations;
 
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
-use PHPStan\PhpDoc\ResolvedPhpDocBlock;
-use PHPStan\PhpDocParser\Ast\PhpDoc\PhpDocTagNode;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Rules\Rule;
-use ReflectionAttribute;
-use ReflectionClass;
-use ReflectionException;
 
 /**
  * @implements Rule<Node\Stmt\Class_>
@@ -68,29 +63,5 @@ abstract class DeprecatedAnnotationsRuleBase implements Rule
         }
 
         return $this->doProcessNode($reflection, $node, $scope);
-    }
-
-    protected function isAnnotated(ResolvedPhpDocBlock $phpDoc, string $annotationId): bool
-    {
-        foreach ($phpDoc->getPhpDocNodes() as $docNode) {
-            foreach ($docNode->children as $childNode) {
-                if (($childNode instanceof PhpDocTagNode) && $childNode->name === $annotationId) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    protected function getPluginAttribute(ClassReflection $reflection, string $attributeName): ?ReflectionAttribute
-    {
-        try {
-            $nativeReflection = new ReflectionClass($reflection->getName());
-            $attribute = $nativeReflection->getAttributes($attributeName);
-        } catch (ReflectionException) {
-            return null;
-        }
-
-        return $attribute[0] ?? null;
     }
 }
