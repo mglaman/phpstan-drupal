@@ -6,6 +6,7 @@ use PhpParser\Node;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Rules\Rule;
+use PHPStan\Rules\RuleErrorBuilder;
 use PHPStan\Type\ObjectType;
 use function sprintf;
 
@@ -67,7 +68,13 @@ class PluginManagerInspectionRule implements Rule
         }
 
         if (!$hasAlterInfoSet) {
-            $errors[] = 'Plugin definitions cannot be altered.';
+            $errors[] = RuleErrorBuilder::message(
+                'Plugin manager must call alterInfo to allow plugin definitions to be altered.'
+            )
+                ->identifier('plugin.manager.alterInfoMissing')
+                ->tip('For example, to invoke hook_mymodule_data_alter() call alterInfo with "mymodule_data".')
+                ->line($node->getStartLine())
+                ->build();
         }
 
         return $errors;
