@@ -25,7 +25,11 @@ final class DrupalClassResolverReturnType
     ): Type {
         $arg1 = $scope->getType($methodCall->getArgs()[0]->value);
         if (count($arg1->getConstantStrings()) === 0) {
-            return ParametersAcceptorSelector::selectSingle($methodReflection->getVariants())->getReturnType();
+            return ParametersAcceptorSelector::selectFromArgs(
+                $scope,
+                $methodCall->getArgs(),
+                $methodReflection->getVariants()
+            )->getReturnType();
         }
 
         $serviceName = $arg1->getConstantStrings()[0];

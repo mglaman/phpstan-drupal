@@ -40,7 +40,11 @@ class DrupalClassResolverDynamicReturnTypeExtension implements DynamicMethodRetu
         Scope $scope
     ): Type {
         if (0 === count($methodCall->getArgs())) {
-            return ParametersAcceptorSelector::selectSingle($methodReflection->getVariants())->getReturnType();
+            return ParametersAcceptorSelector::selectFromArgs(
+                $scope,
+                $methodCall->getArgs(),
+                $methodReflection->getVariants()
+            )->getReturnType();
         }
 
         return DrupalClassResolverReturnType::getType($methodReflection, $methodCall, $scope, $this->serviceMap);
