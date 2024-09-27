@@ -32,7 +32,11 @@ class EntityQueryAccessCheckDynamicReturnTypeExtension implements DynamicMethodR
         $varType = $scope->getType($methodCall->var);
 
         if (!$varType instanceof EntityQueryType) {
-            return ParametersAcceptorSelector::selectSingle($methodReflection->getVariants())->getReturnType();
+            return ParametersAcceptorSelector::selectFromArgs(
+                $scope,
+                $methodCall->getArgs(),
+                $methodReflection->getVariants()
+            )->getReturnType();
         }
 
         return $varType->withAccessCheck();

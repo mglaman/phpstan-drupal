@@ -46,7 +46,11 @@ final class SymfonyCmfRoutingInClassMethodSignatureRule implements Rule
         // @phpstan-ignore-next-line
         $cmfLazyRouteCollectionType = new ObjectType(LazyRouteCollection::class);
 
-        $methodSignature = ParametersAcceptorSelector::selectSingle($method->getVariants());
+        $methodSignature = ParametersAcceptorSelector::selectFromArgs(
+            $scope,
+            [],
+            $method->getVariants()
+        );
 
         $errors = [];
         $errorMessage = 'Parameter $%s of method %s() uses deprecated %s and removed in Drupal 10. Use %s instead.';
