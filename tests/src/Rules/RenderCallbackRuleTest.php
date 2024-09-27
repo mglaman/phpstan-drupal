@@ -161,7 +161,18 @@ final class RenderCallbackRuleTest extends DrupalRuleTestCase {
         }
         yield [
             __DIR__ . '/data/bug-543.php',
-            []
+            [
+                [
+                    "#access_callback callback method 'accessResultForbiddenNotInTrustedCallbacks' is not present in 'trustedCallbacks' at key '0'.",
+                    58,
+                    "Change record: https://www.drupal.org/node/2966725."
+                ],
+                [
+                    "#access_callback callback method 'accessResultForbiddenNotInTrustedCallbacks' is not present in 'trustedCallbacks' at key '0'.",
+                    103,
+                    "Change record: https://www.drupal.org/node/2966725."
+                ],
+            ],
         ];
         yield [
             __DIR__ . '/data/bug-554.php',

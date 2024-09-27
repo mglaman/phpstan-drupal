@@ -272,6 +272,14 @@ class DrupalAutoloader
         $this->namespaces['Drupal\\TestSite'] = $core_tests_dir . '/TestSite';
         $this->namespaces['Drupal\\TestTools'] = $core_tests_dir . '/TestTools';
         $this->namespaces['Drupal\\Tests\\TestSuites'] = $this->drupalRoot . '/core/tests/TestSuites';
+
+        $classMap = [
+            '\\Drupal\\Tests\\Core\\Render\\BubblingTest' => $this->drupalRoot . '/core/tests/Drupal/Tests/Core/Render/RendererBubblingTest.php',
+            '\\Drupal\\Tests\\Core\\Render\\PlaceholdersTest' => $this->drupalRoot . '/core/tests/Drupal/Tests/Core/Render/RendererTestBase.php',
+            '\\Drupal\\Tests\\Core\\Render\\TestAccessClass' => $this->drupalRoot . '/core/tests/Drupal/Tests/Core/Render/RendererTest.php',
+            '\\Drupal\\Tests\\Core\\Render\\TestCallables' => $this->drupalRoot . '/core/tests/Drupal/Tests/Core/Render/RendererTest.php',
+        ];
+        $this->autoloader->addClassMap($classMap);
     }
 
     protected function addModuleNamespaces(): void

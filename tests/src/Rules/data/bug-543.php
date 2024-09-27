@@ -21,10 +21,13 @@ class TestClass {
             [TRUE],
             [AccessResult::forbidden()],
             [AccessResult::allowed()],
+            ['accessResultForbiddenNotInTrustedCallbacks'],
         ];
     }
 
     /**
+     * Tests callbacks with the method names in a variable.
+     *
      * @dataProvider providerAccessValues
      */
     public function testRenderWithAccessControllerResolved($access) {
@@ -45,6 +48,10 @@ class TestClass {
             case TRUE:
                 $method = 'accessTrue';
                 break;
+
+            case 'accessResultForbiddenNotInTrustedCallbacks':
+                $method = 'accessResultForbiddenNotInTrustedCallbacks';
+                break;
         }
 
         $build = [
@@ -52,31 +59,56 @@ class TestClass {
         ];
     }
 
+    /**
+     * Tests callback with the actual method name.
+     */
     public function bug543AccessResultAllowed(): void {
         $build = [
             '#access_callback' => TestAccessClass::class . '::accessResultAllowed',
         ];
     }
 
+    /**
+     * Tests callback with the actual method name.
+     */
     public function bug543AccessResultForbidden(): void {
         $build = [
             '#access_callback' => TestAccessClass::class . '::accessResultForbidden',
         ];
     }
 
+    /**
+     * Tests callback with the actual method name.
+     */
     public function bug543AccessFalse(): void {
         $build = [
             '#access_callback' => TestAccessClass::class . '::accessFalse',
         ];
     }
 
+    /**
+     * Tests callback with the actual method name.
+     */
     public function bug543AccessTrue(): void {
         $build = [
             '#access_callback' => TestAccessClass::class . '::accessTrue',
         ];
     }
+
+    /**
+     * Tests callback with the actual method name.
+     */
+    public function bug543AccessResultForbiddenNotInTrustedCallbacks(): void {
+        $build = [
+            '#access_callback' => TestAccessClass::class . '::accessResultForbiddenNotInTrustedCallbacks',
+        ];
+    }
+
 }
 
+/**
+ * Test class with callbacks.
+ */
 class TestAccessClass implements TrustedCallbackInterface {
 
     public static function accessTrue() {
@@ -92,6 +124,10 @@ class TestAccessClass implements TrustedCallbackInterface {
     }
 
     public static function accessResultForbidden() {
+        return AccessResult::forbidden();
+    }
+
+    public static function accessResultForbiddenNotInTrustedCallbacks() {
         return AccessResult::forbidden();
     }
 
