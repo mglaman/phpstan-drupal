@@ -26,6 +26,7 @@ parameters:
 			dependencySerializationTraitPropertyRule: false
 			accessResultConditionRule: false
 			classExtendsInternalClassRule: true
+			pluginManagerInspectionRule: false
 		entityMapping:
 			aggregator_feed:
 				class: Drupal\aggregator\Entity\Feed
@@ -252,6 +253,7 @@ parametersSchema:
 			dependencySerializationTraitPropertyRule: boolean()
 			accessResultConditionRule: boolean()
 			classExtendsInternalClassRule: boolean()
+			pluginManagerInspectionRule: boolean()
 		])
 		entityMapping: arrayOf(anyOf(
 			structure([
