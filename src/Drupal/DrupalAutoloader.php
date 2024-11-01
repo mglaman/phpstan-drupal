@@ -89,7 +89,7 @@ class DrupalAutoloader
 
         // Trigger deprecation error if drupal_root is used.
         if (is_string($drupalParams['drupal_root'])) {
-            trigger_error('The drupal_root parameter is deprecated. Remove it from your configuration. Drupal Root is discoverd automatically.', E_USER_DEPRECATED);
+            trigger_error('The drupal_root parameter is deprecated. Remove it from your configuration. Drupal Root is discovered automatically.', E_USER_DEPRECATED);
         }
 
         $finder = new DrupalFinderComposerRuntime();
