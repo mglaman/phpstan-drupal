@@ -59,8 +59,9 @@ class LoadIncludes extends LoadIncludeBase
                         ModuleHandlerInterface::class,
                         $moduleName
                     ))
-                        ->line($node->getStartLine())
-                        ->build()
+                    ->line($node->getStartLine())
+                    ->identifier('loadIncludes.moduleNotFound')
+                    ->build()
                 ];
             }
 
@@ -75,8 +76,9 @@ class LoadIncludes extends LoadIncludeBase
                     $module->getPath() . '/' . $filename,
                     ModuleHandlerInterface::class
                 ))
-                    ->line($node->getStartLine())
-                    ->build()
+                ->line($node->getStartLine())
+                ->identifier('loadIncludes.fileNotLoadable')
+                ->build()
             ];
         } catch (Throwable $e) {
             return [
@@ -84,8 +86,9 @@ class LoadIncludes extends LoadIncludeBase
                     'A file could not be loaded from %s::loadInclude',
                     ModuleHandlerInterface::class
                 ))
-                    ->line($node->getStartLine())
-                    ->build()
+                ->line($node->getStartLine())
+                ->identifier('loadIncludes.fileNotLoadable')
+                ->build()
             ];
         }
     }

@@ -5,6 +5,7 @@ namespace mglaman\PHPStanDrupal\Rules\Drupal\PluginManager;
 use PhpParser\Node;
 use PhpParser\Node\Stmt\ClassMethod;
 use PHPStan\Analyser\Scope;
+use PHPStan\Rules\RuleErrorBuilder;
 use PHPStan\ShouldNotHappenException;
 use PHPStan\Type\Type;
 use function array_map;
@@ -88,10 +89,17 @@ class PluginManagerSetsCacheBackendRule extends AbstractPluginManagerRule
 
         $errors = [];
         if (!$hasCacheBackendSet) {
-            $errors[] = 'Missing cache backend declaration for performance.';
+            $errors[] = RuleErrorBuilder::message('Missing cache backend declaration for performance.')
+            ->identifier('pluginManagerSetsCacheBackend.missingCacheBackend')
+            ->build();
         }
         foreach ($misnamedCacheTagWarnings as $cacheTagWarning) {
-            $errors[] = sprintf('%s cache tag might be unclear and does not contain the cache key in it.', $cacheTagWarning);
+            $errors[] =
+            $errors[] = RuleErrorBuilder::message(
+                sprintf('%s cache tag might be unclear and does not contain the cache key in it.', $cacheTagWarning)
+            )
+            ->identifier('pluginManagerSetsCacheBackend.unclearCacheTag')
+            ->build();
         }
 
         return $errors;
