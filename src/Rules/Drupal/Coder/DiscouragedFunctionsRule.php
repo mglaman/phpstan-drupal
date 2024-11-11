@@ -7,7 +7,6 @@ use PhpParser\Node\Expr\FuncCall;
 use PHPStan\Analyser\Scope;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
-use PHPStan\Type\VerbosityLevel;
 use function in_array;
 use function sprintf;
 use function strtolower;

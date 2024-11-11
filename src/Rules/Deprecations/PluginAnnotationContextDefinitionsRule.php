@@ -5,7 +5,6 @@ namespace mglaman\PHPStanDrupal\Rules\Deprecations;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ClassReflection;
-use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\RuleErrorBuilder;
 use PHPStan\ShouldNotHappenException;
 use function preg_match;
@@ -19,7 +18,7 @@ final class PluginAnnotationContextDefinitionsRule extends DeprecatedAnnotations
     }
 
     /**
-     * @return list<IdentifierRuleError>
+     * @return list<\PHPStan\Rules\IdentifierRuleError>
      */
     protected function doProcessNode(ClassReflection $reflection, Node\Stmt\Class_ $node, Scope $scope): array
     {

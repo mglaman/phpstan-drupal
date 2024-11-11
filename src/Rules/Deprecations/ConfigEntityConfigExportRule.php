@@ -7,7 +7,6 @@ use PHPStan\Analyser\Scope;
 use PHPStan\PhpDoc\ResolvedPhpDocBlock;
 use PHPStan\PhpDocParser\Ast\PhpDoc\PhpDocTagNode;
 use PHPStan\Reflection\ClassReflection;
-use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\RuleErrorBuilder;
 use PHPStan\ShouldNotHappenException;
 use function preg_match;
@@ -21,7 +20,7 @@ final class ConfigEntityConfigExportRule extends DeprecatedAnnotationsRuleBase
     }
 
     /**
-     * @return list<IdentifierRuleError>
+     * @return list<\PHPStan\Rules\IdentifierRuleError>
      */
     protected function doProcessNode(ClassReflection $reflection, Node\Stmt\Class_ $node, Scope $scope): array
     {

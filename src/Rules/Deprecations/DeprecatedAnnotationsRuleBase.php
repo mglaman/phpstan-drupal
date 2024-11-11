@@ -6,7 +6,6 @@ use PhpParser\Node;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\ReflectionProvider;
-use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\Rule;
 
 /**
@@ -33,7 +32,7 @@ abstract class DeprecatedAnnotationsRuleBase implements Rule
     abstract protected function getExpectedInterface(): string;
 
     /**
-     * @return list<IdentifierRuleError>
+     * @return list<\PHPStan\Rules\IdentifierRuleError>
      */
     abstract protected function doProcessNode(
         ClassReflection $reflection,

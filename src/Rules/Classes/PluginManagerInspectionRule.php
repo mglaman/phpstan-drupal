@@ -8,11 +8,9 @@ use PhpParser\Node;
 use PhpParser\NodeFinder;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ReflectionProvider;
-use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
 use PHPStan\Type\ObjectType;
-use function sprintf;
 
 /**
  * @implements \PHPStan\Rules\Rule<\PhpParser\Node\Stmt\Class_>
@@ -112,7 +110,7 @@ class PluginManagerInspectionRule implements Rule
     }
 
     /**
-     * @return list<IdentifierRuleError>
+     * @return list<\PHPStan\Rules\IdentifierRuleError>
      */
     private function inspectYamlPluginManager(Node\Stmt\Class_ $class, Node\Stmt\ClassMethod $constructorMethodNode): array
     {

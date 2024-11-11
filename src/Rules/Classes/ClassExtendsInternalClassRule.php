@@ -7,7 +7,6 @@ use PhpParser\Node;
 use PhpParser\Node\Stmt\Class_;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ReflectionProvider;
-use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
 use function sprintf;
@@ -80,7 +79,7 @@ class ClassExtendsInternalClassRule implements Rule
     }
 
     /**
-     * @return list<IdentifierRuleError>
+     * @return list<\PHPStan\Rules\IdentifierRuleError>
      */
     private function buildError(?string $currentClassName, string $extendedClassName, ?string $tip): array
     {

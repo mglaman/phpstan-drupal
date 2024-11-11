@@ -7,7 +7,6 @@ use PhpParser\Node\Name;
 use PhpParser\Node\Stmt\Function_;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ReflectionProvider;
-use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
 use function basename;
@@ -98,7 +97,7 @@ class DeprecatedHookImplementation implements Rule
     }
 
     /**
-     * @return list<IdentifierRuleError>
+     * @return list<\PHPStan\Rules\IdentifierRuleError>
      */
     private function buildError(string $function_name, string $hook_name, string $identifier, ?string $deprecated_description): array
     {
