@@ -7,6 +7,7 @@ use PhpParser\Node\Name;
 use PhpParser\Node\Stmt\Function_;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ReflectionProvider;
+use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
 use function basename;
@@ -56,12 +57,14 @@ class DeprecatedHookImplementation implements Rule
                 return $this->buildError(
                     $function_name,
                     $hook_name,
+                    'useHookFieldWidgetSingleElementFormAlter',
                     'in drupal:9.2.0 and is removed from drupal:10.0.0. Use hook_field_widget_single_element_form_alter instead.'
                 );
             }
             if (str_starts_with($hook_name, 'hook_field_widget_') && str_ends_with($hook_name, '_form_alter')) {
                 return $this->buildError(
                     $function_name,
+                    'useHookFieldWidgetWidgetTypeFormAlter',
                     'hook_field_widget_WIDGET_TYPE_form_alter',
                     'in drupal:9.2.0 and is removed from drupal:10.0.0. Use hook_field_widget_single_element_WIDGET_TYPE_form_alter instead.'
                 );
@@ -70,6 +73,7 @@ class DeprecatedHookImplementation implements Rule
                 return $this->buildError(
                     $function_name,
                     $hook_name,
+                    'useHookFieldWidgetCompleteFormAlter',
                     'in drupal:9.2.0 and is removed from drupal:10.0.0. Use hook_field_widget_complete_form_alter instead.'
                 );
             }
@@ -77,6 +81,7 @@ class DeprecatedHookImplementation implements Rule
                 return $this->buildError(
                     $function_name,
                     'hook_field_widget_multivalue_WIDGET_TYPE_form_alter',
+                    'useHookFieldWidgetMulitValueWidgetTypeFormAlter',
                     'in drupal:9.2.0 and is removed from drupal:10.0.0. Use hook_field_widget_complete_WIDGET_TYPE_form_alter instead.'
                 );
             }
@@ -89,16 +94,21 @@ class DeprecatedHookImplementation implements Rule
             return [];
         }
 
-        return $this->buildError($function_name, $hook_name, $reflection->getDeprecatedDescription());
+        return $this->buildError($function_name, $hook_name, 'other', $reflection->getDeprecatedDescription());
     }
 
-    private function buildError(string $function_name, string $hook_name, ?string $deprecated_description): array
+    /**
+     * @return list<IdentifierRuleError>
+     */
+    private function buildError(string $function_name, string $hook_name, string $identifier, ?string $deprecated_description): array
     {
         $deprecated_description = $deprecated_description !== null ? " $deprecated_description" : ".";
         return [
             RuleErrorBuilder::message(
                 "Function $function_name implements $hook_name which is deprecated$deprecated_description",
-            )->build()
+            )
+            ->identifier("DeprecatedHookImplementation.{}")
+            ->build()
         ];
     }
 }

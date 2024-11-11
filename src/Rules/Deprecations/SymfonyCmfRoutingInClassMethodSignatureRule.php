@@ -66,7 +66,9 @@ final class SymfonyCmfRoutingInClassMethodSignatureRule implements Rule
                             $referencedClass,
                             '\Drupal\Core\Routing\RouteObjectInterface'
                         )
-                    )->tip('Change record: https://www.drupal.org/node/3151009')->build();
+                    )->tip('Change record: https://www.drupal.org/node/3151009')
+                    ->identifier('symfonyCmfRoutingInClassMethodSignature.useRouteObjectInterface')
+                    ->build();
                 } elseif ($cmfRouteProviderInterfaceType->equals($referencedClassType)) {
                     $errors[] = RuleErrorBuilder::message(
                         sprintf(
@@ -76,7 +78,9 @@ final class SymfonyCmfRoutingInClassMethodSignatureRule implements Rule
                             $referencedClass,
                             '\Drupal\Core\Routing\RouteProviderInterface'
                         )
-                    )->tip('Change record: https://www.drupal.org/node/3151009')->build();
+                    )->tip('Change record: https://www.drupal.org/node/3151009')
+                    ->identifier('symfonyCmfRoutingInClassMethodSignature.useRouteProviderInterface')
+                    ->build();
                 } elseif ($cmfLazyRouteCollectionType->equals($referencedClassType)) {
                     $errors[] = RuleErrorBuilder::message(
                         sprintf(
@@ -86,7 +90,9 @@ final class SymfonyCmfRoutingInClassMethodSignatureRule implements Rule
                             $referencedClass,
                             '\Drupal\Core\Routing\LazyRouteCollection'
                         )
-                    )->tip('Change record: https://www.drupal.org/node/3151009')->build();
+                    )->tip('Change record: https://www.drupal.org/node/3151009')
+                    ->identifier('symfonyCmfRoutingInClassMethodSignature.useLazyRouteCollection')
+                    ->build();
                 }
             }
         }
@@ -104,7 +110,9 @@ final class SymfonyCmfRoutingInClassMethodSignatureRule implements Rule
                         $returnClass,
                         '\Drupal\Core\Routing\RouteObjectInterface'
                     )
-                )->tip('Change record: https://www.drupal.org/node/3151009')->build();
+                )->tip('Change record: https://www.drupal.org/node/3151009')
+                ->identifier('symfonyCmfRoutingInClassMethodSignature.typehintUseRouteObjectInterface')
+                ->build();
             } elseif ($cmfRouteProviderInterfaceType->equals($returnType)) {
                 $errors[] = RuleErrorBuilder::message(
                     sprintf(
@@ -114,7 +122,9 @@ final class SymfonyCmfRoutingInClassMethodSignatureRule implements Rule
                         $returnClass,
                         '\Drupal\Core\Routing\RouteProviderInterface'
                     )
-                )->tip('Change record: https://www.drupal.org/node/3151009')->build();
+                )->tip('Change record: https://www.drupal.org/node/3151009')
+                ->identifier('symfonyCmfRoutingInClassMethodSignature.typehintUseRouteProviderInterface')
+                ->build();
             } elseif ($cmfLazyRouteCollectionType->equals($returnType)) {
                 $errors[] = RuleErrorBuilder::message(
                     sprintf(
@@ -124,7 +134,9 @@ final class SymfonyCmfRoutingInClassMethodSignatureRule implements Rule
                         $returnClass,
                         '\Drupal\Core\Routing\LazyRouteCollection'
                     )
-                )->tip('Change record: https://www.drupal.org/node/3151009')->build();
+                )->tip('Change record: https://www.drupal.org/node/3151009')
+                ->identifier('symfonyCmfRoutingInClassMethodSignature.typehintUseLazyRouteCollection')
+                ->build();
             }
         }
         return $errors;
