@@ -7,6 +7,7 @@ use PhpParser\Node;
 use PhpParser\Node\Stmt\Class_;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ReflectionProvider;
+use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
 use function sprintf;
@@ -48,34 +49,50 @@ class ClassExtendsInternalClassRule implements Rule
         }
 
         if (!isset($node->namespacedName)) {
-            return [$this->buildError(null, $extendedClassName)->build()];
+            return $this->buildError(null, $extendedClassName, null);
         }
 
         $currentClassName = $node->namespacedName->toString();
 
         if (!NamespaceCheck::isDrupalNamespace($node)) {
-            return [$this->buildError($currentClassName, $extendedClassName)->build()];
+            return $this->buildError($currentClassName, $extendedClassName, null);
         }
 
         if (NamespaceCheck::isSharedNamespace($node)) {
             return [];
         }
 
-        $errorBuilder = $this->buildError($currentClassName, $extendedClassName);
+        $errorBuilder = [];
         if ($extendedClassName === 'Drupal\Core\Entity\ContentEntityDeleteForm') {
-            $errorBuilder->tip('Extend \Drupal\Core\Entity\ContentEntityConfirmFormBase. See https://www.drupal.org/node/2491057');
+            $errorBuilder = $this->buildError(
+                $currentClassName,
+                $extendedClassName,
+                'Extend \Drupal\Core\Entity\ContentEntityConfirmFormBase. See https://www.drupal.org/node/2491057'
+            );
         } elseif ((string) $node->extends->slice(0, 2) === 'Drupal\Core') {
-            $errorBuilder->tip('Read the Drupal core backwards compatibility and internal API policy: https://www.drupal.org/about/core/policies/core-change-policies/drupal-8-and-9-backwards-compatibility-and-internal-api#internal');
+            $errorBuilder = $this->buildError(
+                $currentClassName,
+                $extendedClassName,
+                'Read the Drupal core backwards compatibility and internal API policy: https://www.drupal.org/about/core/policies/core-change-policies/drupal-8-and-9-backwards-compatibility-and-internal-api#internal'
+            );
         }
-        return [$errorBuilder->build()];
+        return $errorBuilder;
     }
 
-    private function buildError(?string $currentClassName, string $extendedClassName): RuleErrorBuilder
+    /**
+     * @return list<IdentifierRuleError>
+     */
+    private function buildError(?string $currentClassName, string $extendedClassName, ?string $tip): array
     {
-        return RuleErrorBuilder::message(sprintf(
+        $ruleErrorBuilder = RuleErrorBuilder::message(sprintf(
             '%s extends @internal class %s.',
             $currentClassName !== null ? sprintf('Class %s', $currentClassName) : 'Anonymous class',
             $extendedClassName
-        ));
+        ))->identifier('classExtendsInternalClass.classExtendsInternalClass');
+        if ($tip !== null) {
+            $ruleErrorBuilder->tip($tip);
+        }
+
+        return [$ruleErrorBuilder->build()];
     }
 }
