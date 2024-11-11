@@ -193,7 +193,6 @@ class DrupalAutoloader
                     $levels = 3;
                 }
                 $drushDir = dirname($reflect->getFileName(), $levels);
-                /** @var \SplFileInfo $file */
                 foreach (Finder::create()->files()->name('*.inc')->in($drushDir . '/includes') as $file) {
                     require_once $file->getPathname();
                 }
@@ -254,7 +253,6 @@ class DrupalAutoloader
 
     protected function loadLegacyIncludes(): void
     {
-        /** @var \SplFileInfo $file */
         foreach (Finder::create()->files()->name('*.inc')->in($this->drupalRoot . '/core/includes') as $file) {
             require_once $file->getPathname();
         }

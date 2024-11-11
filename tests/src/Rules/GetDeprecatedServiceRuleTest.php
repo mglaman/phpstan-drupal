@@ -17,6 +17,8 @@ final class GetDeprecatedServiceRuleTest extends DrupalRuleTestCase {
 
     /**
      * @dataProvider drupal8Data
+     *
+     * @param list<array{0: string, 1: int, 2?: string|null}> $errorMessages
      */
     public function testRuleDrupal8(string $path, array $errorMessages): void
     {
@@ -28,6 +30,8 @@ final class GetDeprecatedServiceRuleTest extends DrupalRuleTestCase {
 
     /**
      * @dataProvider drupal9Data
+     *
+     * @param list<array{0: string, 1: int, 2?: string|null}> $errorMessages
      */
     public function testRuleDrupal9(string $path, array $errorMessages): void
     {

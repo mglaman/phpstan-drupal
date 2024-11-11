@@ -17,6 +17,7 @@ final class RevisionableStorageInterfaceStubTest extends DrupalRuleTestCase
         // @phpstan-ignore-next-line
         return new CallToDeprecatedMethodRule(
             self::createReflectionProvider(),
+            /** @phpstan-ignore phpstanApi.classConstant */
             self::getContainer()->getByType(DeprecatedScopeHelper::class)
         );
     }
