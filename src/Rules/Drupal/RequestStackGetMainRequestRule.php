@@ -52,6 +52,7 @@ final class RequestStackGetMainRequestRule implements Rule
             return [
                 RuleErrorBuilder::message($message)
                 ->tip('Change record: https://www.drupal.org/node/3253744')
+                ->identifier('deprecated.getMasterRequest')
                 ->build(),
             ];
         }

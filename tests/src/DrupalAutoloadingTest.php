@@ -14,6 +14,8 @@ final class DrupalAutoloadingTest extends DrupalRuleTestCase
 
     /**
      * @dataProvider dataFixtures
+     *
+     * @param list<array{0: string, 1: int, 2?: string|null}> $errorMessages
      */
     public function testAnalyze(array $paths, array $errorMessages): void
     {

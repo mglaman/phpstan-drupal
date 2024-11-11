@@ -53,7 +53,7 @@ final class AccessCheckTypeSpecifyingExtension implements MethodTypeSpecifyingEx
             $expr,
             $returnType->withAccessCheck(),
             TypeSpecifierContext::createTruthy(),
-            true
+            $scope
         );
     }
 }
