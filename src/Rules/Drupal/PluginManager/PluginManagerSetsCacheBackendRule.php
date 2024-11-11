@@ -94,7 +94,6 @@ class PluginManagerSetsCacheBackendRule extends AbstractPluginManagerRule
             ->build();
         }
         foreach ($misnamedCacheTagWarnings as $cacheTagWarning) {
-            $errors[] =
             $errors[] = RuleErrorBuilder::message(
                 sprintf('%s cache tag might be unclear and does not contain the cache key in it.', $cacheTagWarning)
             )
