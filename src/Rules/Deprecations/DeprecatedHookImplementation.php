@@ -107,7 +107,7 @@ class DeprecatedHookImplementation implements Rule
             RuleErrorBuilder::message(
                 "Function $function_name implements $hook_name which is deprecated$deprecated_description",
             )
-            ->identifier("deprecatedHookImplementation.{}")
+            ->identifier("deprecatedHookImplementation.{$identifier}")
             ->build()
         ];
     }
