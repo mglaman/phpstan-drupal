@@ -11,6 +11,7 @@ use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
 use PHPStan\Type\ObjectType;
+use function sprintf;
 
 /**
  * @implements \PHPStan\Rules\Rule<\PhpParser\Node\Stmt\Class_>
@@ -79,7 +80,7 @@ class PluginManagerInspectionRule implements Rule
             )
                 ->tip('For example, to invoke hook_mymodule_data_alter() call alterInfo with "mymodule_data".')
                 ->line($node->getStartLine())
-                ->identifier('pluginManagerInspection.callAlterInfo')
+                ->identifier('pluginManagerInspection.alterInfoMissing')
                 ->build();
         }
 
@@ -122,7 +123,7 @@ class PluginManagerInspectionRule implements Rule
 
         if ($constructor->getDeclaringClass()->getName() !== $fqn) {
             $errors[] = RuleErrorBuilder::message(
-                'Plugin managers should call alterInfo to allow plugin definitions to be altered.'
+                $errors[] = sprintf('%s must override __construct if using YAML plugins.', $fqn)
             )
                 ->identifier('pluginManagerInspection.callAlterInfo')
                 ->build();
