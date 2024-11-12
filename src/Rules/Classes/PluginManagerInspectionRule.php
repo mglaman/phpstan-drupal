@@ -123,7 +123,7 @@ class PluginManagerInspectionRule implements Rule
 
         if ($constructor->getDeclaringClass()->getName() !== $fqn) {
             $errors[] = RuleErrorBuilder::message(
-                $errors[] = sprintf('%s must override __construct if using YAML plugins.', $fqn)
+                sprintf('%s must override __construct if using YAML plugins.', $fqn)
             )
                 ->identifier('pluginManagerInspection.callAlterInfo')
                 ->build();
