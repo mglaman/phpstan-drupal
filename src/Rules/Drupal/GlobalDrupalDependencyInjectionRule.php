@@ -74,7 +74,7 @@ class GlobalDrupalDependencyInjectionRule implements Rule
 
         return
             [RuleErrorBuilder::message('\Drupal calls should be avoided in classes, use dependency injection instead')
-             ->identifier('globalDrupalDependencyInjectio.useDependencyInjection')
+             ->identifier('globalDrupalDependencyInjection.useDependencyInjection')
              ->build()];
     }
 }
