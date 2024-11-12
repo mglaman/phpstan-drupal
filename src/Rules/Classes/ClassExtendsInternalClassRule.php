@@ -61,21 +61,18 @@ class ClassExtendsInternalClassRule implements Rule
             return [];
         }
 
-        $errorBuilder = [];
+        $tip = null;
         if ($extendedClassName === 'Drupal\Core\Entity\ContentEntityDeleteForm') {
-            $errorBuilder = $this->buildError(
-                $currentClassName,
-                $extendedClassName,
-                'Extend \Drupal\Core\Entity\ContentEntityConfirmFormBase. See https://www.drupal.org/node/2491057'
-            );
+            $tip = 'Extend \Drupal\Core\Entity\ContentEntityConfirmFormBase. See https://www.drupal.org/node/2491057';
         } elseif ((string) $node->extends->slice(0, 2) === 'Drupal\Core') {
-            $errorBuilder = $this->buildError(
-                $currentClassName,
-                $extendedClassName,
-                'Read the Drupal core backwards compatibility and internal API policy: https://www.drupal.org/about/core/policies/core-change-policies/drupal-8-and-9-backwards-compatibility-and-internal-api#internal'
-            );
+            $tip = 'Read the Drupal core backwards compatibility and internal API policy: https://www.drupal.org/about/core/policies/core-change-policies/drupal-8-and-9-backwards-compatibility-and-internal-api#internal';
         }
-        return $errorBuilder;
+
+        return $this->buildError(
+            $currentClassName,
+            $extendedClassName,
+            $tip
+        );
     }
 
     /**
