@@ -122,8 +122,8 @@ jobs:
         run: |
           cd ~/drupal
           echo "Temporary here until drupal core is also on phpstan/*:^2.0"
-          composer require "phpstan/phpstan:^2.0"
-          composer require "phpstan/phpstan-phpunit:^2.0"
+          composer require "phpstan/phpstan:^2.0" -W
+          composer require "phpstan/phpstan-phpunit:^2.0" -W
           COMPOSER_MEMORY_LIMIT=-1 composer require mglaman/phpstan-drupal "${{ steps.branch_alias.outputs.VERSION_ALIAS }} as 1.2.99" phpstan/extension-installer --with-all-dependencies
           cp $GITHUB_WORKSPACE/tests/fixtures/config/drupal-phpstan.neon phpstan.neon
       - name: "Test core/install.php"
