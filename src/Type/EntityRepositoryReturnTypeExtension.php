@@ -58,7 +58,7 @@ final class EntityRepositoryReturnTypeExtension implements DynamicMethodReturnTy
         MethodReflection $methodReflection,
         MethodCall $methodCall,
         Scope $scope
-    ): ?Type {
+    ): Type {
         $methodName = $methodReflection->getName();
         $methodArgs = $methodCall->getArgs();
         $returnType = ParametersAcceptorSelector::selectFromArgs(

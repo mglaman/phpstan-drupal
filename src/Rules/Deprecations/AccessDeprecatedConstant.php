@@ -8,6 +8,7 @@ use PhpParser\Node;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Rules\Rule;
+use PHPStan\Rules\RuleErrorBuilder;
 use function array_merge;
 use function explode;
 use function sprintf;
@@ -124,7 +125,11 @@ class AccessDeprecatedConstant implements Rule
         $constantName = $this->reflectionProvider->resolveConstantName($node->name, $scope);
         if (isset($deprecatedConstants[$constantName])) {
             return [
-                sprintf('Call to deprecated constant %s: %s', $constantName, $deprecatedConstants[$constantName])
+                RuleErrorBuilder::message(
+                    sprintf('Call to deprecated constant %s: %s', $constantName, $deprecatedConstants[$constantName])
+                )
+                    ->identifier("accessDeprecatedConstant.deprecatedConstantCalled")
+                    ->build()
             ];
         }
         return [];

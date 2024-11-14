@@ -16,6 +16,8 @@ final class PluginAnnotationContextDefinitionsRuleTest extends DrupalRuleTestCas
 
     /**
      * @dataProvider pluginData
+     *
+     * @param list<array{0: string, 1: int, 2?: string|null}> $errorMessages
      */
     public function testContextAnnotationRuleCheck(string $path, array $errorMessages): void
     {

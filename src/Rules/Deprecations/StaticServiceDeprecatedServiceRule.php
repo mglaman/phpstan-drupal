@@ -7,6 +7,7 @@ use mglaman\PHPStanDrupal\Drupal\ServiceMap;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
 use PHPStan\Rules\Rule;
+use PHPStan\Rules\RuleErrorBuilder;
 
 /**
  * @implements Rule<Node\Expr\StaticCall>
@@ -66,7 +67,11 @@ final class StaticServiceDeprecatedServiceRule implements Rule
 
         $service = $this->serviceMap->getService($serviceName->value);
         if (($service instanceof DrupalServiceDefinition) && $service->isDeprecated()) {
-            return [$service->getDeprecatedDescription()];
+            return [
+                RuleErrorBuilder::message($service->getDeprecatedDescription())
+                    ->identifier('staticServiceDeprecatedService.deprecated')
+                    ->build(),
+            ];
         }
 
         return [];

@@ -18,6 +18,8 @@ class TestClassesProtectedPropertyModulesRuleTest extends DrupalRuleTestCase
 
     /**
      * @dataProvider cases
+     *
+     * @param list<array{0: string, 1: int, 2?: string|null}> $errors
      */
     public function test(array $files, array $errors): void
     {
