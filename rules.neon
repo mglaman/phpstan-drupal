@@ -13,7 +13,6 @@ rules:
 	- mglaman\PHPStanDrupal\Rules\Drupal\EntityQuery\EntityQueryHasAccessCheckRule
 	- mglaman\PHPStanDrupal\Rules\Deprecations\SymfonyCmfRouteObjectInterfaceConstantsRule
 	- mglaman\PHPStanDrupal\Rules\Deprecations\SymfonyCmfRoutingInClassMethodSignatureRule
-	- mglaman\PHPStanDrupal\Rules\Drupal\RequestStackGetMainRequestRule
 	- mglaman\PHPStanDrupal\Rules\Drupal\TestClassesProtectedPropertyModulesRule
 
 conditionalTags:
