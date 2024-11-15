@@ -14,11 +14,6 @@ function phpstan_fixtures_MissingReturnRule(): string {
 
 }
 
-function phpstan_fixtures_get_app_root(): string {
-    $app_root = \Drupal::getContainer()->get('app.root');
-    return $app_root . '/core/includes/install.inc';
-}
-
 function phpstan_fixtures_module_load_includes_test(): array {
     $module_handler = \Drupal::moduleHandler();
     $module_handler->loadInclude('locale', 'fetch.inc');
