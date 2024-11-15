@@ -50,6 +50,8 @@ final class SymfonyCmfRouteObjectInterfaceConstantsRule implements Rule
         }
 
         // The next line is intentionally not using [at]phpstan-ignore [identifier].
+        // The identifier would be 'class.notFound', which would not be true in
+        // case of a D9 scan and thus would fail the 'phpstan analyze' phase.
         // @phpstan-ignore-next-line
         $cmfRouteObjectInterfaceType = new ObjectType(SymfonyRouteObjectInterface::class);
         if (!$classType->isSuperTypeOf($cmfRouteObjectInterfaceType)->yes()) {
