@@ -4,7 +4,6 @@ namespace mglaman\PHPStanDrupal\Drupal;
 
 use function array_combine;
 use function array_map;
-use function is_array;
 
 final class ExtensionMap
 {
