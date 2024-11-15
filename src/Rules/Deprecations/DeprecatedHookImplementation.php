@@ -52,22 +52,6 @@ class DeprecatedHookImplementation implements Rule
         $hook_name_node = new Name($hook_name);
         if (!$this->reflectionProvider->hasFunction($hook_name_node, $scope)) {
             // @todo replace this hardcoded logic with something more intelligent and extensible.
-            if ($hook_name === 'hook_field_widget_form_alter') {
-                return $this->buildError(
-                    $function_name,
-                    $hook_name,
-                    'useHookFieldWidgetSingleElementFormAlter',
-                    'in drupal:9.2.0 and is removed from drupal:10.0.0. Use hook_field_widget_single_element_form_alter instead.'
-                );
-            }
-            if (str_starts_with($hook_name, 'hook_field_widget_') && str_ends_with($hook_name, '_form_alter')) {
-                return $this->buildError(
-                    $function_name,
-                    'hook_field_widget_WIDGET_TYPE_form_alter',
-                    'useHookFieldWidgetWidgetTypeFormAlter',
-                    'in drupal:9.2.0 and is removed from drupal:10.0.0. Use hook_field_widget_single_element_WIDGET_TYPE_form_alter instead.'
-                );
-            }
             if ($hook_name === 'hook_field_widget_multivalue_form_alter') {
                 return $this->buildError(
                     $function_name,
