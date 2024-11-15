@@ -39,6 +39,7 @@ final class SymfonyCmfRoutingInClassMethodSignatureRule implements Rule
         }
         $method = $node->getMethodReflection();
 
+        // The next lines are intentionally not using [at]phpstan-ignore [identifier].
         // @phpstan-ignore-next-line
         $cmfRouteObjectInterfaceType = new ObjectType(RouteObjectInterface::class);
         // @phpstan-ignore-next-line

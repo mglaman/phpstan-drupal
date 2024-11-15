@@ -49,6 +49,7 @@ final class SymfonyCmfRouteObjectInterfaceConstantsRule implements Rule
             return [];
         }
 
+        // The next line is intentionally not using [at]phpstan-ignore [identifier].
         // @phpstan-ignore-next-line
         $cmfRouteObjectInterfaceType = new ObjectType(SymfonyRouteObjectInterface::class);
         if (!$classType->isSuperTypeOf($cmfRouteObjectInterfaceType)->yes()) {
