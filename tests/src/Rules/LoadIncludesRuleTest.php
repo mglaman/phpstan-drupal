@@ -31,7 +31,7 @@ final class LoadIncludesRuleTest extends DrupalRuleTestCase
             [
                 [
                     'File modules/phpstan_fixtures/phpstan_fixtures.fetch.inc could not be loaded from Drupal\Core\Extension\ModuleHandlerInterface::loadInclude',
-                    30
+                    25,
                 ]
             ],
         ];
