@@ -12,7 +12,6 @@ use PHPUnit\Framework\Test;
 use function count;
 use function in_array;
 use function interface_exists;
-use function method_exists;
 use function substr_compare;
 
 /**
