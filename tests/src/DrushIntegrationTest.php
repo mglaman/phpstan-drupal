@@ -9,7 +9,7 @@ final class DrushIntegrationTest extends DrupalRuleTestCase
 
     protected function getRule(): \PHPStan\Rules\Rule
     {
-        // @phpstan-ignore-next-line
+        // @phpstan-ignore phpstanApi.constructor
         return new CallToNonExistentFunctionRule(
             $this->createReflectionProvider(),
             true
