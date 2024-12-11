@@ -266,6 +266,8 @@ parametersSchema:
 		))
 	])
 services:
+	errorFormatter.identifier_baseline:
+		class: mglaman\PHPStanDrupal\Command\ErrorFormatter\IdentifierIgnoreErrorFormatter
 	-
 		class: mglaman\PHPStanDrupal\Drupal\ServiceMap
 	-
