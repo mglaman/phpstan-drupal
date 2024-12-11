@@ -51,9 +51,6 @@
         ]
     },
     "extra": {
-        "branch-alias": {
-            "dev-main": "1.0-dev"
-        },
         "installer-paths": {
             "tests/fixtures/drupal/core": ["type:drupal-core"],
             "tests/fixtures/drupal/libraries/{$name}": ["type:drupal-library"],
