@@ -6,10 +6,9 @@ use Drupal\Core\Access\AccessibleInterface;
 use Drupal\Core\TypedData\ListInterface;
 
 /**
- * @template T of FieldItemInterface
- * @extends ListInterface<T>
+ * @extends ListInterface<FieldItemInterface>
  * @property mixed $value
  */
-interface FieldItemListInterface extends ListInterface {
+interface FieldItemListInterface extends ListInterface, AccessibleInterface {
 
 }
