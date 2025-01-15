@@ -41,7 +41,7 @@ class ServiceMap
 
             // @todo support factories
             if (!isset($serviceDefinition['class'])) {
-                if (class_exists($serviceId)) {
+                if (class_exists($serviceId) || interface_exists($serviceId)) {
                     $serviceDefinition['class'] = $serviceId;
                 } else {
                     continue;
