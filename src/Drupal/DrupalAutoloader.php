@@ -226,6 +226,16 @@ class DrupalAutoloader
                         }
                     });
                 }
+                // Handle shorthand syntax for service definition:
+                // @code
+                //   Drupal\foo\FooService: {}
+                //   Drupal\foo\BarService:
+                //     tags:
+                //       - { name: foo_bar }
+                // @endcode
+                if (!isset($serviceDefinition['class']) && class_exists($serviceId)) {
+                    $serviceDefinition['class'] = $serviceId;
+                }
                 // @todo sanitize "calls" and "configurator" and "factory"
                 /**
                 jsonapi.params.enhancer:
