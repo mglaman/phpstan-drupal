@@ -12,6 +12,7 @@ use PHPStan\DependencyInjection\Container;
 use PHPUnit\Framework\Test;
 use ReflectionClass;
 use RuntimeException;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Yaml\Yaml;
 use Throwable;
@@ -108,7 +109,10 @@ class DrupalAutoloader
         // Attach synthetic services
         // @see \Drupal\Core\DrupalKernel::attachSynthetic
         $this->serviceMap['kernel'] = ['class' => DrupalKernelInterface::class];
+        $this->serviceMap[DrupalKernelInterface::class] = ['alias' => 'kernel'];
         $this->serviceMap['class_loader'] = ['class' => ClassLoader::class];
+        $this->serviceMap['service_container'] = ['class' => \Drupal\Component\DependencyInjection\Container::class];
+        $this->serviceMap[ContainerInterface::class] = ['alias' => 'service_container'];
 
         $extensionDiscovery = new ExtensionDiscovery($this->drupalRoot);
         $extensionDiscovery->setProfileDirectories([]);
