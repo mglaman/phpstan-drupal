@@ -3,6 +3,7 @@
 namespace mglaman\PHPStanDrupal\Drupal;
 
 use Composer\Autoload\ClassLoader;
+use Drupal\Component\DependencyInjection\Container as DrupalContainer;
 use Drupal\Core\DependencyInjection\ContainerNotInitializedException;
 use Drupal\Core\DrupalKernelInterface;
 use Drupal\TestTools\PhpUnitCompatibility\PhpUnit8\ClassWriter;
@@ -111,7 +112,7 @@ class DrupalAutoloader
         $this->serviceMap['kernel'] = ['class' => DrupalKernelInterface::class];
         $this->serviceMap[DrupalKernelInterface::class] = ['alias' => 'kernel'];
         $this->serviceMap['class_loader'] = ['class' => ClassLoader::class];
-        $this->serviceMap['service_container'] = ['class' => \Drupal\Component\DependencyInjection\Container::class];
+        $this->serviceMap['service_container'] = ['class' => DrupalContainer::class];
         $this->serviceMap[ContainerInterface::class] = ['alias' => 'service_container'];
 
         $extensionDiscovery = new ExtensionDiscovery($this->drupalRoot);
