@@ -4,91 +4,56 @@ use Drupal\Component\Assertion\Inspector;
 
 use function PHPStan\Testing\assertType;
 
-// Inspector::assertAllStrings()
-function mixed_all_strings(): mixed {
-  return ['foo', 'bar'];
+function mixed_function(): mixed {
+  return NULL;
 }
 
-$input = [];
-assert(Inspector::assertAllStrings($input));
-assertType('array{}', $input);
-
-$input = mixed_all_strings();
+// Inspector::assertAllStrings()
+$input = mixed_function();
 assert(Inspector::assertAllStrings($input));
 assertType('iterable<string>', $input);
-assertType('string', iterator_to_array($input, FALSE)[0]);
 
 // Inspector::assertAllStringable()
-class StringableClass implements \Stringable {
-    public function __toString(): string {
-      return 'foo';
-    }
-}
-
-function mixed_string_and_stringable(): mixed {
-  return ['foo', new StringableClass()];
-}
-
-$input = [];
-assert(Inspector::assertAllStringable($input));
-assertType('array{}', $input);
-
-$input = mixed_string_and_stringable();
+$input = mixed_function();
 assert(Inspector::assertAllStringable($input));
 assertType('iterable<string|Stringable>', $input);
-assertType('string|Stringable', iterator_to_array($input, FALSE)[0]);
 
 // Inspector::assertAllArrays()
-function mixed_array(): mixed {
-  return [[], []];
-}
-
-$input = [];
-assert(Inspector::assertAllArrays($input));
-assertType('array{}', $input);
-
-$input = mixed_array();
-$result = Inspector::assertAllArrays($input);
+$input = mixed_function();
 \assert(Inspector::assertAllArrays($input));
 assertType('iterable<array<mixed, mixed>>', $input);
 
 // Inspector::assertStrictArray()
-function mixed_strict_array(): mixed {
-  return ['foo', 'bar'];
-}
-
-$input = [];
-assert(Inspector::assertStrictArray($input));
-assertType('array{}', $input);
-
-$input = mixed_strict_array();
+$input = mixed_function();
 assert(Inspector::assertStrictArray($input));
 assertType('array<int<0, max>, mixed>', $input);
-assertType('mixed', $input[0]);
 
 // Inspector::assertAllStrictArrays()
-function mixed_all_strict_arrays(): mixed {
-  return [['foo', 'bar'], ['foo', 'bar']];
-}
-
-$input = [];
-assert(Inspector::assertStrictArray($input));
-assertType('array{}', $input);
-
-$input = mixed_all_strict_arrays();
+$input = mixed_function();
 assert(Inspector::assertAllStrictArrays($input));
 assertType('iterable<array<int<0, max>, mixed>>', $input);
-assertType('array<int<0, max>, mixed>', iterator_to_array($input, FALSE)[0]);
 
 // Inspector::assertAllHaveKey()
-function mixed_keyed_arrays(): mixed {
-  return [['foo' => 'bar'], ['baz' => 'bar']];
-}
-
-$input = [];
-assert(Inspector::assertAllHaveKey($input));
-assertType('array{}', $input);
-
-$input = mixed_keyed_arrays();
+$input = mixed_function();
 assert(Inspector::assertAllHaveKey($input, 'foo', 'baz'));
-assertType('array{}', $input);
+assertType("array<mixed, array<hasOffset('baz')&hasOffset('foo'), mixed>>", $input);
+
+// Inspector::assertAllIntegers()
+$input = mixed_function();
+assert(Inspector::assertAllIntegers($input));
+assertType('iterable<int>', $input);
+
+// Inspector::assertAllFloat()
+$input = mixed_function();
+assert(Inspector::assertAllFloat($input));
+assertType('iterable<float>', $input);
+
+// Inspector::assertAllCallable()
+$input = mixed_function();
+assert(Inspector::assertAllCallable($input));
+assertType('iterable<callable(): mixed>', $input);
+
+// Inspector::assertAllNotEmpty()
+$input = mixed_function();
+assert(Inspector::assertAllNotEmpty($input));
+assertType('iterable<float|int<min, -1>|int<1, max>|object|resource|non-empty-string|non-empty-array>', $input);
