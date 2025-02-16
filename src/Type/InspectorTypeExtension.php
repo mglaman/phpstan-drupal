@@ -373,7 +373,7 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
 
         return $this->typeSpecifier->create(
             $node->getArgs()[0]->value,
-            new IterableType(new MixedType(true), new UnionType($objectTypes)),
+            new IterableType(new MixedType(true), TypeCombinator::union(...$objectTypes)),
             TypeSpecifierContext::createTruthy(),
             $scope,
         );

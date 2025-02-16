@@ -100,5 +100,5 @@ assertType('iterable<string>', $input);
 
 // Inspector::assertAllObjects()
 $input = mixed_function();
-assert(Inspector::assertAllObjects($input, TranslatableMarkup::class, '\\Stringable'));
-assertType('iterable<Drupal\Core\StringTranslation\TranslatableMarkup|\Stringable>', $input);
+assert(Inspector::assertAllObjects($input, TranslatableMarkup::class, '\\Stringable', '\\Drupal\\jsonapi\\JsonApiResource\\ResourceIdentifier'));
+assertType('iterable<\Drupal\jsonapi\JsonApiResource\ResourceIdentifier|\Stringable>', $input);
