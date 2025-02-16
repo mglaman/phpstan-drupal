@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace mglaman\PHPStanDrupal\Type;
 
 use Drupal\Component\Assertion\Inspector;
-use InvalidArgumentException;
 use PhpParser\Node\Expr\StaticCall;
 use PHPStan\Analyser\Scope;
 use PHPStan\Analyser\SpecifiedTypes;
@@ -18,6 +17,7 @@ use PHPStan\Type\Accessory\HasOffsetType;
 use PHPStan\Type\Accessory\NonEmptyArrayType;
 use PHPStan\Type\ArrayType;
 use PHPStan\Type\CallableType;
+use PHPStan\Type\ClosureType;
 use PHPStan\Type\Constant\ConstantStringType;
 use PHPStan\Type\FloatType;
 use PHPStan\Type\IntegerRangeType;
@@ -32,7 +32,8 @@ use PHPStan\Type\StringType;
 use PHPStan\Type\TypeCombinator;
 use PHPStan\Type\UnionType;
 use Stringable;
-use function in_array;
+use function class_exists;
+use function interface_exists;
 
 final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtension, TypeSpecifierAwareExtension
 {
@@ -52,8 +53,8 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
     public function isStaticMethodSupported(MethodReflection $staticMethodReflection, StaticCall $node, TypeSpecifierContext $context): bool
     {
         $implemented_methods = [
-          // assertTraverasble
-          // assertAll - looks like better to return iterable<mixed>
+          // 'assertTraverasble' is deprecated.
+          'assertAll',
           'assertAllStrings',
           'assertAllStringable',
           'assertAllArrays',
@@ -64,10 +65,10 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
           'assertAllFloat',
           'assertAllCallable',
           'assertAllNotEmpty',
-          // assertAllNumeric
-          // assertAllMatch
-          // assertAllRegularExpressionMatch
-          // assertAllObjects
+          'assertAllNumeric',
+          'assertAllMatch',
+          'assertAllRegularExpressionMatch',
+          'assertAllObjects',
         ];
 
         return in_array($staticMethodReflection->getName(), $implemented_methods);
@@ -76,7 +77,8 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
     public function specifyTypes(MethodReflection $staticMethodReflection, StaticCall $node, Scope $scope, TypeSpecifierContext $context): SpecifiedTypes
     {
         return match ($staticMethodReflection->getName()) {
-            default => throw new InvalidArgumentException(sprintf('Method %s is not yet implemented.', $staticMethodReflection->getName())),
+            default => new SpecifiedTypes(),
+            'assertAll' => $this->specifyAssertAll($staticMethodReflection, $node, $scope, $context),
             'assertAllStrings' => $this->specifyAssertAllStrings($staticMethodReflection, $node, $scope, $context),
             'assertAllStringable' => $this->specifyAssertAllStringable($staticMethodReflection, $node, $scope, $context),
             'assertAllArrays' => $this->specifyAssertAllArrays($staticMethodReflection, $node, $scope, $context),
@@ -87,7 +89,31 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
             'assertAllFloat' => $this->specifyAssertAllFloat($staticMethodReflection, $node, $scope, $context),
             'assertAllCallable' => $this->specifyAssertAllCallable($staticMethodReflection, $node, $scope, $context),
             'assertAllNotEmpty' => $this->specifyAssertAllNotEmpty($staticMethodReflection, $node, $scope, $context),
+            'assertAllNumeric' => $this->specifyAssertAllNumeric($staticMethodReflection, $node, $scope, $context),
+            'assertAllMatch' => $this->specifyAssertAllMatch($staticMethodReflection, $node, $scope, $context),
+            'assertAllRegularExpressionMatch' => $this->specifyAssertAllRegularExpressionMatch($staticMethodReflection, $node, $scope, $context),
+            'assertAllObjects' => $this->specifyAssertAllObjects($staticMethodReflection, $node, $scope, $context),
         };
+    }
+
+    /**
+     * @see Drupal\Component\Assertion\Inspector::assertAll()
+     */
+    private function specifyAssertAll(MethodReflection $staticMethodReflection, StaticCall $node, Scope $scope, TypeSpecifierContext $context): SpecifiedTypes
+    {
+        $callable = $node->getArgs()[0]->value;
+        $callableInfo = $scope->getType($callable);
+
+        if (!$callableInfo instanceof ClosureType) {
+            return new SpecifiedTypes();
+        }
+
+        return $this->typeSpecifier->create(
+            $node->getArgs()[1]->value,
+            new IterableType(new MixedType(true), $callableInfo->getReturnType()),
+            TypeSpecifierContext::createTruthy(),
+            $scope,
+        );
     }
 
     /**
@@ -95,9 +121,12 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
      */
     private function specifyAssertAllStrings(MethodReflection $staticMethodReflection, StaticCall $node, Scope $scope, TypeSpecifierContext $context): SpecifiedTypes
     {
-        $newType = new IterableType(new MixedType(true), new StringType());
-
-        return $this->typeSpecifier->create($node->getArgs()[0]->value, $newType, TypeSpecifierContext::createTruthy(), $scope);
+        return $this->typeSpecifier->create(
+            $node->getArgs()[0]->value,
+            new IterableType(new MixedType(true), new StringType()),
+            TypeSpecifierContext::createTruthy(),
+            $scope,
+        );
     }
 
     /**
@@ -105,13 +134,16 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
      */
     private function specifyAssertAllStringable(MethodReflection $staticMethodReflection, StaticCall $node, Scope $scope, TypeSpecifierContext $context): SpecifiedTypes
     {
-        $arg = $node->getArgs()[0]->value;
-
         // Drupal considers string as part of "stringable" as well.
         $stringable = TypeCombinator::union(new ObjectType(Stringable::class), new StringType());
         $newType = new IterableType(new MixedType(true), $stringable);
 
-        return $this->typeSpecifier->create($arg, $newType, TypeSpecifierContext::createTruthy(), $scope);
+        return $this->typeSpecifier->create(
+            $node->getArgs()[0]->value,
+            $newType,
+            TypeSpecifierContext::createTruthy(),
+            $scope,
+        );
     }
 
     /**
@@ -119,11 +151,15 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
      */
     private function specifyAssertAllArrays(MethodReflection $staticMethodReflection, StaticCall $node, Scope $scope, TypeSpecifierContext $context): SpecifiedTypes
     {
-        $arg = $node->getArgs()[0]->value;
         $arrayType = new ArrayType(new MixedType(true), new MixedType(true));
         $newType = new IterableType(new MixedType(true), $arrayType);
 
-        return $this->typeSpecifier->create($arg, $newType, TypeSpecifierContext::createTruthy(), $scope);
+        return $this->typeSpecifier->create(
+            $node->getArgs()[0]->value,
+            $newType,
+            TypeSpecifierContext::createTruthy(),
+            $scope,
+        );
     }
 
     /**
@@ -131,7 +167,6 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
      */
     private function specifyAssertStrictArray(MethodReflection $staticMethodReflection, StaticCall $node, Scope $scope, TypeSpecifierContext $context): SpecifiedTypes
     {
-        $arg = $node->getArgs()[0]->value;
         $newType = new ArrayType(
             // In Drupal, 'strict arrays' are defined as arrays whose indexes
             // consist of integers that are equal to or greater than 0.
@@ -139,7 +174,12 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
             new MixedType(true),
         );
 
-        return $this->typeSpecifier->create($arg, $newType, TypeSpecifierContext::createTruthy(), $scope);
+        return $this->typeSpecifier->create(
+            $node->getArgs()[0]->value,
+            $newType,
+            TypeSpecifierContext::createTruthy(),
+            $scope,
+        );
     }
 
     /**
@@ -147,7 +187,6 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
      */
     private function specifyAssertAllStrictArrays(MethodReflection $staticMethodReflection, StaticCall $node, Scope $scope, TypeSpecifierContext $context): SpecifiedTypes
     {
-        $arg = $node->getArgs()[0]->value;
         $newType = new IterableType(
             new MixedType(true),
             new ArrayType(
@@ -156,7 +195,12 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
             ),
         );
 
-        return $this->typeSpecifier->create($arg, $newType, TypeSpecifierContext::createTruthy(), $scope);
+        return $this->typeSpecifier->create(
+            $node->getArgs()[0]->value,
+            $newType,
+            TypeSpecifierContext::createTruthy(),
+            $scope,
+        );
     }
 
     /**
@@ -187,10 +231,6 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
             $keys[] = $argType->getValue();
         }
 
-        if (empty($keys)) {
-            return new SpecifiedTypes();
-        }
-
         $keyTypes = [];
         foreach ($keys as $key) {
             $keyTypes[] = new HasOffsetType(new ConstantStringType($key));
@@ -209,10 +249,12 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
      */
     private function specifyAssertAllIntegers(MethodReflection $staticMethodReflection, StaticCall $node, Scope $scope, TypeSpecifierContext $context): SpecifiedTypes
     {
-        $arg = $node->getArgs()[0]->value;
-        $newType = new IterableType(new MixedType(true), new IntegerType());
-
-        return $this->typeSpecifier->create($arg, $newType, TypeSpecifierContext::createTruthy(), $scope);
+        return $this->typeSpecifier->create(
+            $node->getArgs()[0]->value,
+            new IterableType(new MixedType(true), new IntegerType()),
+            TypeSpecifierContext::createTruthy(),
+            $scope,
+        );
     }
 
     /**
@@ -220,10 +262,12 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
      */
     private function specifyAssertAllFloat(MethodReflection $staticMethodReflection, StaticCall $node, Scope $scope, TypeSpecifierContext $context): SpecifiedTypes
     {
-        $arg = $node->getArgs()[0]->value;
-        $newType = new IterableType(new MixedType(true), new FloatType());
-
-        return $this->typeSpecifier->create($arg, $newType, TypeSpecifierContext::createTruthy(), $scope);
+        return $this->typeSpecifier->create(
+            $node->getArgs()[0]->value,
+            new IterableType(new MixedType(true), new FloatType()),
+            TypeSpecifierContext::createTruthy(),
+            $scope,
+        );
     }
 
     /**
@@ -231,10 +275,12 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
      */
     private function specifyAssertAllCallable(MethodReflection $staticMethodReflection, StaticCall $node, Scope $scope, TypeSpecifierContext $context): SpecifiedTypes
     {
-        $arg = $node->getArgs()[0]->value;
-        $newType = new IterableType(new MixedType(true), new CallableType());
-
-        return $this->typeSpecifier->create($arg, $newType, TypeSpecifierContext::createTruthy(), $scope);
+        return $this->typeSpecifier->create(
+            $node->getArgs()[0]->value,
+            new IterableType(new MixedType(true), new CallableType()),
+            TypeSpecifierContext::createTruthy(),
+            $scope,
+        );
     }
 
     /**
@@ -242,8 +288,6 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
      */
     private function specifyAssertAllNotEmpty(MethodReflection $staticMethodReflection, StaticCall $node, Scope $scope, TypeSpecifierContext $context): SpecifiedTypes
     {
-        $arg = $node->getArgs()[0]->value;
-
         $non_empty_types = [
             new NonEmptyArrayType(),
             new ObjectType('object'),
@@ -255,6 +299,87 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
         ];
         $newType = new IterableType(new MixedType(true), new UnionType($non_empty_types));
 
-        return $this->typeSpecifier->create($arg, $newType, TypeSpecifierContext::createTruthy(), $scope);
+        return $this->typeSpecifier->create(
+            $node->getArgs()[0]->value,
+            $newType,
+            TypeSpecifierContext::createTruthy(),
+            $scope,
+        );
+    }
+
+    /**
+     * @see Drupal\Component\Assertion\Inspector::assertAllNumeric()
+     */
+    private function specifyAssertAllNumeric(MethodReflection $staticMethodReflection, StaticCall $node, Scope $scope, TypeSpecifierContext $context): SpecifiedTypes
+    {
+        return $this->typeSpecifier->create(
+            $node->getArgs()[0]->value,
+            new IterableType(new MixedType(true), new UnionType([new IntegerType(), new FloatType()])),
+            TypeSpecifierContext::createTruthy(),
+            $scope,
+        );
+    }
+
+    /**
+     * @see Drupal\Component\Assertion\Inspector::assertAllMatch()
+     */
+    private function specifyAssertAllMatch(MethodReflection $staticMethodReflection, StaticCall $node, Scope $scope, TypeSpecifierContext $context): SpecifiedTypes
+    {
+        return $this->typeSpecifier->create(
+            $node->getArgs()[1]->value,
+            new IterableType(new MixedType(true), new StringType()),
+            TypeSpecifierContext::createTruthy(),
+            $scope,
+        );
+    }
+
+    /**
+     * @see Drupal\Component\Assertion\Inspector::assertAllRegularExpressionMatch()
+     */
+    private function specifyAssertAllRegularExpressionMatch(MethodReflection $staticMethodReflection, StaticCall $node, Scope $scope, TypeSpecifierContext $context): SpecifiedTypes
+    {
+        return $this->typeSpecifier->create(
+            $node->getArgs()[1]->value,
+            // Drupal treats any non-string input in traversable as invalid
+            // value, so it is possible to narrow type here.
+            new IterableType(new MixedType(true), new StringType()),
+            TypeSpecifierContext::createTruthy(),
+            $scope,
+        );
+    }
+
+    /**
+     * @see Drupal\Component\Assertion\Inspector::assertAllObjects()
+     */
+    private function specifyAssertAllObjects(MethodReflection $staticMethodReflection, StaticCall $node, Scope $scope, TypeSpecifierContext $context): SpecifiedTypes
+    {
+        $args = $node->getArgs();
+        $objectTypes = [];
+        foreach ($args as $delta => $arg) {
+            if ($delta === 0) {
+                continue;
+            }
+
+            $argType = $scope->getType($arg->value);
+            if (!$argType instanceof ConstantStringType) {
+                continue;
+            }
+
+            $classString = $argType->getValue();
+            // PHPStan does not recognize a string argument like '\\Stringable'
+            // as a class string, so we need to explicitly check it.
+            if (!class_exists($classString) && !interface_exists($classString)) {
+                continue;
+            }
+
+            $objectTypes[] = new ObjectType($classString);
+        }
+
+        return $this->typeSpecifier->create(
+            $node->getArgs()[0]->value,
+            new IterableType(new MixedType(true), new UnionType($objectTypes)),
+            TypeSpecifierContext::createTruthy(),
+            $scope,
+        );
     }
 }
