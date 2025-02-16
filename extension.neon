@@ -335,3 +335,7 @@ services:
 		class: mglaman\PHPStanDrupal\DeprecatedScope\DeprecationHelperScope
 		tags:
 			- phpstan.deprecations.deprecatedScopeResolver
+	-
+		class: mglaman\PHPStanDrupal\Type\InspectorTypeExtension
+		tags:
+			- phpstan.typeSpecifier.staticMethodTypeSpecifyingExtension
