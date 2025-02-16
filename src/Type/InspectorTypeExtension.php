@@ -71,7 +71,7 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
           'assertAllObjects',
         ];
 
-        return in_array($staticMethodReflection->getName(), $implemented_methods);
+        return in_array($staticMethodReflection->getName(), $implemented_methods, true);
     }
 
     public function specifyTypes(MethodReflection $staticMethodReflection, StaticCall $node, Scope $scope, TypeSpecifierContext $context): SpecifiedTypes
@@ -224,11 +224,9 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
             }
 
             $argType = $scope->getType($arg->value);
-            if (!$argType instanceof ConstantStringType) {
-                continue;
+            foreach ($argType->getConstantStrings() as $stringType) {
+                $keys[] = $stringType->getValue();
             }
-
-            $keys[] = $argType->getValue();
         }
 
         $keyTypes = [];
@@ -361,18 +359,16 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
             }
 
             $argType = $scope->getType($arg->value);
-            if (!$argType instanceof ConstantStringType) {
-                continue;
-            }
+            foreach ($argType->getConstantStrings() as $stringType) {
+                $classString = $stringType->getValue();
+                // PHPStan does not recognize a string argument like '\\Stringable'
+                // as a class string, so we need to explicitly check it.
+                if (!class_exists($classString) && !interface_exists($classString)) {
+                    continue;
+                }
 
-            $classString = $argType->getValue();
-            // PHPStan does not recognize a string argument like '\\Stringable'
-            // as a class string, so we need to explicitly check it.
-            if (!class_exists($classString) && !interface_exists($classString)) {
-                continue;
+                $objectTypes[] = new ObjectType($classString);
             }
-
-            $objectTypes[] = new ObjectType($classString);
         }
 
         return $this->typeSpecifier->create(
