@@ -10,4 +10,9 @@ interface EntityStorageInterface {
    */
   public function loadMultiple(?array $ids = NULL);
 
+  /**
+   * @param array<int|string>|null $ids
+   */
+  public function resetCache(?array $ids = NULL);
+
 }
