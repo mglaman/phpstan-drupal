@@ -245,15 +245,14 @@ jobs:
          cd drupal
          composer config repositories.0 composer https://packages.drupal.org/8
          composer config repositories.1 path $GITHUB_WORKSPACE
-
+      - name: "require phpstan-drupal"
+        run: |
+          cd ${{ runner.temp }}/drupal
+          composer require --dev mglaman/phpstan-drupal "${{ steps.branch_alias.outputs.VERSION_ALIAS }} as 1.99.99" --no-install
       - name: "Install Drupal core dependencies"
         uses: "ramsey/composer-install@v3"
         with:
           working-directory: "${{ runner.temp }}/drupal"
-      - name: "require phpstan-drupal"
-        run: |
-          cd ${{ runner.temp }}/drupal
-          composer require --dev mglaman/phpstan-drupal "${{ steps.branch_alias.outputs.VERSION_ALIAS }} as 1.99.99" phpstan/phpstan --with-all-dependencies
       - name: "Check baseline"
         run: |
           cd ${{ runner.temp }}/drupal
