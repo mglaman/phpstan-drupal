@@ -45,7 +45,7 @@ assertType('iterable<string|Stringable>', $input);
 // Inspector::assertAllArrays()
 $input = mixed_function();
 \assert(Inspector::assertAllArrays($input));
-assertType('iterable<array<mixed, mixed>>', $input);
+assertType('iterable<array>', $input);
 
 // Inspector::assertStrictArray()
 $input = mixed_function();
@@ -60,7 +60,7 @@ assertType('iterable<array<int<0, max>, mixed>>', $input);
 // Inspector::assertAllHaveKey()
 $input = mixed_function();
 assert(Inspector::assertAllHaveKey($input, 'foo', 'baz'));
-assertType("array<mixed, array<hasOffset('baz')&hasOffset('foo'), mixed>>", $input);
+assertType("array<array<hasOffset('baz')&hasOffset('foo'), mixed>>", $input);
 
 // Inspector::assertAllIntegers()
 $input = mixed_function();
