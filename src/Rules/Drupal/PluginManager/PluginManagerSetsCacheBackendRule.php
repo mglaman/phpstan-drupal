@@ -44,7 +44,6 @@ class PluginManagerSetsCacheBackendRule extends AbstractPluginManagerRule
         }
 
         $hasCacheBackendSet = false;
-        $misnamedCacheTagWarnings = [];
 
         foreach ($node->stmts ?? [] as $statement) {
             if ($statement instanceof Node\Stmt\Expression) {
@@ -68,21 +67,6 @@ class PluginManagerSetsCacheBackendRule extends AbstractPluginManagerRule
                     continue;
                 }
 
-                if (isset($setCacheBackendArgs[2])) {
-                    $cacheTagsType = $scope->getType($setCacheBackendArgs[2]->value);
-                    foreach ($cacheTagsType->getConstantArrays() as $constantArray) {
-                        foreach ($constantArray->getValueTypes() as $valueType) {
-                            foreach ($valueType->getConstantStrings() as $cacheTagConstantString) {
-                                foreach ($cacheKey as $cacheKeyValue) {
-                                    if (strpos($cacheTagConstantString->getValue(), $cacheKeyValue) === false) {
-                                        $misnamedCacheTagWarnings[] = $cacheTagConstantString->getValue();
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-
                 break;
             }
         }
@@ -91,13 +75,6 @@ class PluginManagerSetsCacheBackendRule extends AbstractPluginManagerRule
         if (!$hasCacheBackendSet) {
             $errors[] = RuleErrorBuilder::message('Missing cache backend declaration for performance.')
             ->identifier('pluginManagerSetsCacheBackend.missingCacheBackend')
-            ->build();
-        }
-        foreach ($misnamedCacheTagWarnings as $cacheTagWarning) {
-            $errors[] = RuleErrorBuilder::message(
-                sprintf('%s cache tag might be unclear and does not contain the cache key in it.', $cacheTagWarning)
-            )
-            ->identifier('pluginManagerSetsCacheBackend.unclearCacheTag')
             ->build();
         }
 
