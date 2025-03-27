@@ -4,19 +4,22 @@ namespace mglaman\PHPStanDrupal\Tests\Rules;
 
 use mglaman\PHPStanDrupal\Rules\Classes\PluginManagerInspectionRule;
 use mglaman\PHPStanDrupal\Tests\DrupalRuleTestCase;
+use PHPStan\Rules\Rule;
 
 final class PluginManagerInspectionRuleTest extends DrupalRuleTestCase
 {
 
-    protected function getRule(): \PHPStan\Rules\Rule
+    protected function getRule(): Rule
     {
         return new PluginManagerInspectionRule(
-            $this->createReflectionProvider()
+            self::createReflectionProvider()
         );
     }
 
     /**
      * @dataProvider pluginManagerData
+     *
+     * @param list<array{0: string, 1: int, 2?: string|null}> $errorMessages
      */
     public function testRule(string $path, array $errorMessages): void
     {
@@ -32,6 +35,21 @@ final class PluginManagerInspectionRuleTest extends DrupalRuleTestCase
         yield 'ExamplePluginManager' => [
             __DIR__ . '/../../fixtures/drupal/modules/phpstan_fixtures/src/ExamplePluginManager.php',
             []
+        ];
+        yield [
+            __DIR__ . '/data/plugin-manager-alter-info.php',
+            [
+                [
+                    'Plugin managers should call alterInfo to allow plugin definitions to be altered.',
+                    9,
+                    'For example, to invoke hook_mymodule_data_alter() call alterInfo with "mymodule_data".'
+                ],
+                [
+                    'Plugin managers should call alterInfo to allow plugin definitions to be altered.',
+                    41,
+                    'For example, to invoke hook_mymodule_data_alter() call alterInfo with "mymodule_data".'
+                ],
+            ]
         ];
     }
 

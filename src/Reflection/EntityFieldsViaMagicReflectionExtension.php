@@ -6,7 +6,8 @@ use LogicException;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\PropertiesClassReflectionExtension;
 use PHPStan\Reflection\PropertyReflection;
-use PHPStan\TrinaryLogic;
+use PHPStan\Reflection\ReflectionProvider;
+use PHPStan\Type\IsSuperTypeOfResult;
 use PHPStan\Type\ObjectType;
 use function array_key_exists;
 
@@ -19,6 +20,13 @@ use function array_key_exists;
  */
 class EntityFieldsViaMagicReflectionExtension implements PropertiesClassReflectionExtension
 {
+
+    private ReflectionProvider $reflectionProvider;
+
+    public function __construct(ReflectionProvider $reflectionProvider)
+    {
+        $this->reflectionProvider = $reflectionProvider;
+    }
 
     public function hasProperty(ClassReflection $classReflection, string $propertyName): bool
     {
@@ -54,7 +62,7 @@ class EntityFieldsViaMagicReflectionExtension implements PropertiesClassReflecti
     public function getProperty(ClassReflection $classReflection, string $propertyName): PropertyReflection
     {
         if ($classReflection->implementsInterface('Drupal\Core\Entity\EntityInterface')) {
-            return new EntityFieldReflection($classReflection, $propertyName);
+            return new EntityFieldReflection($classReflection, $propertyName, $this->reflectionProvider);
         }
         if (self::classObjectIsSuperOfInterface($classReflection->getName(), self::getFieldItemListInterfaceObject())->yes()) {
             return new FieldItemListPropertyReflection($classReflection, $propertyName);
@@ -63,7 +71,7 @@ class EntityFieldsViaMagicReflectionExtension implements PropertiesClassReflecti
         throw new LogicException($classReflection->getName() . "::$propertyName should be handled earlier.");
     }
 
-    public static function classObjectIsSuperOfInterface(string $name, ObjectType $interfaceObject) : TrinaryLogic
+    public static function classObjectIsSuperOfInterface(string $name, ObjectType $interfaceObject) : IsSuperTypeOfResult
     {
         return $interfaceObject->isSuperTypeOf(new ObjectType($name));
     }

@@ -14,9 +14,10 @@ final class IgnoreDeprecationsScopeTest extends DrupalRuleTestCase {
 
     protected function getRule(): Rule
     {
-        // @phpstan-ignore-next-line
+        /** @phpstan-ignore phpstanApi.constructor */
         return new CallToDeprecatedFunctionRule(
             self::createReflectionProvider(),
+            /** @phpstan-ignore phpstanApi.classConstant */
             self::getContainer()->getByType(DeprecatedScopeHelper::class)
         );
     }

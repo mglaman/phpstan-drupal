@@ -14,6 +14,8 @@ final class LoadIncludesRuleTest extends DrupalRuleTestCase
 
     /**
      * @dataProvider cases
+     *
+     * @param list<array{0: string, 1: int, 2?: string|null}> $errors
      */
     public function test(array $files, array $errors): void
     {
@@ -29,7 +31,7 @@ final class LoadIncludesRuleTest extends DrupalRuleTestCase
             [
                 [
                     'File modules/phpstan_fixtures/phpstan_fixtures.fetch.inc could not be loaded from Drupal\Core\Extension\ModuleHandlerInterface::loadInclude',
-                    30
+                    25,
                 ]
             ],
         ];

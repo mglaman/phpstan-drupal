@@ -4,4 +4,15 @@ namespace Drupal\Core\Entity;
 
 interface EntityStorageInterface {
 
+  /**
+   * @param array<int|string>|null $ids
+   * @return \Drupal\Core\Entity\EntityInterface[]
+   */
+  public function loadMultiple(?array $ids = NULL): array;
+
+  /**
+   * @param array<int|string>|null $ids
+   */
+  public function resetCache(?array $ids = NULL): void;
+
 }

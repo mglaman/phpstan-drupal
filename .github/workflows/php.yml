@@ -47,9 +47,6 @@ jobs:
         drupal:
           - "^10"
         include:
-          - php-version: "8.1"
-            drupal: "^9.0"
-            experimental: false
           - php-version: "8.3"
             drupal: "11.x-dev"
             experimental: true
@@ -65,9 +62,6 @@ jobs:
           extensions: dom, curl, libxml, mbstring, zip, pdo, mysql, pdo_mysql, gd
       - name: "Set drupal/core to ${{ matrix.drupal }}"
         run: "composer require drupal/core-recommended:${{ matrix.drupal }} --with-all-dependencies --dev --no-update"
-      - name: "Add phpspec/prophecy-phpunit"
-        run: "composer require phpspec/prophecy-phpunit:^2 --dev --no-update"
-        if: ${{ matrix.drupal == '^9.0' }}
       - name: "Install dependencies"
         uses: "ramsey/composer-install@v3"
       - name: "PHPUnit"
@@ -89,9 +83,6 @@ jobs:
         drupal:
           - "^10"
         include:
-          - php-version: "8.1"
-            drupal: "^9.0"
-            experimental: false
           - php-version: "8.3"
             drupal: "11.x-dev"
             experimental: true
@@ -121,7 +112,7 @@ jobs:
       - name: "require phpstan-drupal"
         run: |
           cd ~/drupal
-          COMPOSER_MEMORY_LIMIT=-1 composer require mglaman/phpstan-drupal "${{ steps.branch_alias.outputs.VERSION_ALIAS }} as 1.2.99" phpstan/extension-installer --with-all-dependencies
+          COMPOSER_MEMORY_LIMIT=-1 composer require drupal/core-dev "phpstan/phpstan:^2.0" "phpstan/phpstan-phpunit:^2.0" mglaman/phpstan-drupal "${{ steps.branch_alias.outputs.VERSION_ALIAS }} as 2.99.99" phpstan/extension-installer --with-all-dependencies
           cp $GITHUB_WORKSPACE/tests/fixtures/config/drupal-phpstan.neon phpstan.neon
       - name: "Test core/install.php"
         run: |
@@ -165,9 +156,6 @@ jobs:
         drupal:
           - "^10"
         include:
-          - php-version: "8.1"
-            drupal: "^9.0"
-            experimental: false
           - php-version: "8.3"
             drupal: "11.x-dev"
             experimental: true
@@ -245,7 +233,6 @@ jobs:
          cd drupal
          composer config repositories.0 composer https://packages.drupal.org/8
          composer config repositories.1 path $GITHUB_WORKSPACE
-
       - name: "Install Drupal core dependencies"
         uses: "ramsey/composer-install@v3"
         with:
@@ -253,7 +240,7 @@ jobs:
       - name: "require phpstan-drupal"
         run: |
           cd ${{ runner.temp }}/drupal
-          composer require --dev mglaman/phpstan-drupal "${{ steps.branch_alias.outputs.VERSION_ALIAS }} as 1.1.99" --with-all-dependencies
+          composer require drupal/core-dev "phpstan/phpstan:^2.0" "phpstan/phpstan-phpunit:^2.0" mglaman/phpstan-drupal "${{ steps.branch_alias.outputs.VERSION_ALIAS }} as 2.99.99" phpstan/extension-installer --with-all-dependencies
       - name: "Check baseline"
         run: |
           cd ${{ runner.temp }}/drupal

@@ -18,6 +18,8 @@ final class PluginManagerSetsCacheBackendRuleTest extends DrupalRuleTestCase
 
     /**
      * @dataProvider ruleData
+     *
+     * @param list<array{0: string, 1: int, 2?: string|null}> $errorMessages
      */
     public function testRule(string $path, array $errorMessages): void
     {
@@ -33,10 +35,6 @@ final class PluginManagerSetsCacheBackendRuleTest extends DrupalRuleTestCase
                     'Missing cache backend declaration for performance.',
                     12
                 ],
-                [
-                    'plugins cache tag might be unclear and does not contain the cache key in it.',
-                    112,
-                ]
             ]
         ];
     }

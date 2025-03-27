@@ -2,9 +2,6 @@ rules:
 	- mglaman\PHPStanDrupal\Rules\Drupal\Coder\DiscouragedFunctionsRule
 	- mglaman\PHPStanDrupal\Rules\Drupal\GlobalDrupalDependencyInjectionRule
 	- mglaman\PHPStanDrupal\Rules\Drupal\PluginManager\PluginManagerSetsCacheBackendRule
-	- mglaman\PHPStanDrupal\Rules\Deprecations\AccessDeprecatedConstant
-	- mglaman\PHPStanDrupal\Rules\Classes\PluginManagerInspectionRule
-	- mglaman\PHPStanDrupal\Rules\Deprecations\ConditionManagerCreateInstanceContextConfigurationRule
 	- mglaman\PHPStanDrupal\Rules\Drupal\RenderCallbackRule
 	- mglaman\PHPStanDrupal\Rules\Deprecations\StaticServiceDeprecatedServiceRule
 	- mglaman\PHPStanDrupal\Rules\Deprecations\GetDeprecatedServiceRule
@@ -14,9 +11,6 @@ rules:
 	- mglaman\PHPStanDrupal\Rules\Drupal\ModuleLoadInclude
 	- mglaman\PHPStanDrupal\Rules\Drupal\LoadIncludes
 	- mglaman\PHPStanDrupal\Rules\Drupal\EntityQuery\EntityQueryHasAccessCheckRule
-	- mglaman\PHPStanDrupal\Rules\Deprecations\SymfonyCmfRouteObjectInterfaceConstantsRule
-	- mglaman\PHPStanDrupal\Rules\Deprecations\SymfonyCmfRoutingInClassMethodSignatureRule
-	- mglaman\PHPStanDrupal\Rules\Drupal\RequestStackGetMainRequestRule
 	- mglaman\PHPStanDrupal\Rules\Drupal\TestClassesProtectedPropertyModulesRule
 
 conditionalTags:
@@ -28,6 +22,8 @@ conditionalTags:
 		phpstan.rules.rule: %drupal.rules.accessResultConditionRule%
 	mglaman\PHPStanDrupal\Rules\Classes\ClassExtendsInternalClassRule:
 		phpstan.rules.rule: %drupal.rules.classExtendsInternalClassRule%
+	mglaman\PHPStanDrupal\Rules\Classes\PluginManagerInspectionRule:
+		phpstan.rules.rule: %drupal.rules.pluginManagerInspectionRule%
 
 services:
 	-
@@ -40,3 +36,5 @@ services:
 			treatPhpDocTypesAsCertain: %treatPhpDocTypesAsCertain%
 	-
 		class: mglaman\PHPStanDrupal\Rules\Classes\ClassExtendsInternalClassRule
+	-
+		class: mglaman\PHPStanDrupal\Rules\Classes\PluginManagerInspectionRule

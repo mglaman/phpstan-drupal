@@ -31,6 +31,9 @@ abstract class DeprecatedAnnotationsRuleBase implements Rule
 
     abstract protected function getExpectedInterface(): string;
 
+    /**
+     * @return list<\PHPStan\Rules\IdentifierRuleError>
+     */
     abstract protected function doProcessNode(
         ClassReflection $reflection,
         Node\Stmt\Class_ $node,
