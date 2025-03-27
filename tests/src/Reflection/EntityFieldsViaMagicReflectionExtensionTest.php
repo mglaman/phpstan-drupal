@@ -26,7 +26,7 @@ final class EntityFieldsViaMagicReflectionExtensionTest extends PHPStanTestCase 
     protected function setUp(): void
     {
         parent::setUp();
-        $this->extension = new EntityFieldsViaMagicReflectionExtension();
+        $this->extension = new EntityFieldsViaMagicReflectionExtension(self::createReflectionProvider());
     }
 
     /**
