@@ -1,0 +1,15 @@
+<?php
+
+namespace Drupal\Core\Field;
+
+interface FormatterInterface {
+
+  /**
+   * @param \Drupal\Core\Field\FieldItemListInterface<\Drupal\Core\Field\FieldItemInterface> $items
+   * @param string $langcode
+   *
+   * @return array<int, array<int|string, mixed>>
+   */
+  public function viewElements(FieldItemListInterface $items, $langcode): array;
+
+}
