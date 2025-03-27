@@ -88,10 +88,12 @@ jobs:
           - "8.2"
         drupal:
           - "^10"
-          - "~11.1"
         include:
           - php-version: "8.1"
             drupal: "^9.0"
+            experimental: false
+          - php-version: "8.3"
+            drupal: "~11.1"
             experimental: false
     steps:
       - name: "Checkout"
