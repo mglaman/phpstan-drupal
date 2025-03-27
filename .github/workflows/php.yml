@@ -118,10 +118,14 @@ jobs:
             echo "VERSION_ALIAS=dev-main" >> $GITHUB_OUTPUT
           fi
         id: branch_alias
+      - name: "downgrade phpstan"
+        run: |
+          cd ~/drupal
+          COMPOSER_MEMORY_LIMIT=-1 composer require --dev phpstan/phpstan:"^1.0"
       - name: "require phpstan-drupal"
         run: |
           cd ~/drupal
-          COMPOSER_MEMORY_LIMIT=-1 composer require mglaman/phpstan-drupal "${{ steps.branch_alias.outputs.VERSION_ALIAS }} as 1.99.99" phpstan/extension-installer phpstan/phpstan --with-all-dependencies
+          COMPOSER_MEMORY_LIMIT=-1 composer require mglaman/phpstan-drupal "${{ steps.branch_alias.outputs.VERSION_ALIAS }} as 1.99.99" --with-all-dependencies
           cp $GITHUB_WORKSPACE/tests/fixtures/config/drupal-phpstan.neon phpstan.neon
       - name: "Test core/install.php"
         run: |
@@ -245,10 +249,14 @@ jobs:
          cd drupal
          composer config repositories.0 composer https://packages.drupal.org/8
          composer config repositories.1 path $GITHUB_WORKSPACE
+      - name: "downgrade phpstan"
+        run: |
+          cd ~/drupal
+          COMPOSER_MEMORY_LIMIT=-1 composer require --dev phpstan/phpstan:"^1.0" --no-install
       - name: "require phpstan-drupal"
         run: |
           cd ${{ runner.temp }}/drupal
-          composer require --dev mglaman/phpstan-drupal "${{ steps.branch_alias.outputs.VERSION_ALIAS }} as 1.99.99" --no-install
+          composer require --dev mglaman/phpstan-drupal "${{ steps.branch_alias.outputs.VERSION_ALIAS }} as 1.99.99" --no-install --with-all-dependencies
       - name: "Install Drupal core dependencies"
         uses: "ramsey/composer-install@v3"
         with:
