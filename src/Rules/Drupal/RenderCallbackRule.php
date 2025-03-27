@@ -302,7 +302,7 @@ final class RenderCallbackRule implements Rule
             }
             // @see \PHPStan\Type\Constant\ConstantStringType::isCallable
             preg_match('#^([a-zA-Z_\\x7f-\\xff\\\\][a-zA-Z0-9_\\x7f-\\xff\\\\]*)::([a-zA-Z_\\x7f-\\xff][a-zA-Z0-9_\\x7f-\\xff]*)\\z#', $type->getValue(), $matches);
-            if (count($matches) > 0) {
+            if (count($matches) === 3) {
                 return new ConstantArrayType(
                     [new ConstantIntegerType(0), new ConstantIntegerType(1)],
                     [
