@@ -2,8 +2,13 @@
 
 namespace mglaman\PHPStanDrupal\Reflection;
 
+use Drupal\Core\Config\Entity\ConfigEntityInterface;
+use Drupal\Core\Entity\ContentEntityInterface;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Field\FieldItemListInterface;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\PropertyReflection;
+use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\TrinaryLogic;
 use PHPStan\Type\MixedType;
 use PHPStan\Type\ObjectType;
@@ -23,50 +28,63 @@ class EntityFieldReflection implements PropertyReflection
   /** @var string */
     private $propertyName;
 
-    public function __construct(ClassReflection $declaringClass, string $propertyName)
+    private ReflectionProvider $reflectionProvider;
+
+    public function __construct(ClassReflection $declaringClass, string $propertyName, ReflectionProvider $reflectionProvider)
     {
         $this->declaringClass = $declaringClass;
         $this->propertyName = $propertyName;
+        $this->reflectionProvider = $reflectionProvider;
     }
 
     public function getReadableType(): Type
     {
         if ($this->propertyName === 'original') {
-            if ($this->declaringClass->isSubclassOf('Drupal\Core\Entity\ContentEntityInterface')) {
-                $objectType = 'Drupal\Core\Entity\ContentEntityInterface';
-            } elseif ($this->declaringClass->isSubclassOf('Drupal\Core\Config\Entity\ConfigEntityInterface')) {
-                $objectType = 'Drupal\Core\Config\Entity\ConfigEntityInterface';
+            if ($this->isContentEntityType()) {
+                $objectType = ContentEntityInterface::class;
+            } elseif ($this->isConfigEntityType()) {
+                $objectType = ConfigEntityInterface::class;
             } else {
-                $objectType = 'Drupal\Core\Entity\EntityInterface';
+                $objectType = EntityInterface::class;
             }
             return new ObjectType($objectType);
         }
 
-        if ($this->declaringClass->isSubclassOf('Drupal\Core\Entity\ContentEntityInterface')) {
+        if ($this->isContentEntityType()) {
             // Assume the property is a field.
-            return new ObjectType('Drupal\Core\Field\FieldItemListInterface');
+            return new ObjectType(FieldItemListInterface::class);
         }
 
         return new MixedType();
     }
 
+    private function isContentEntityType(): bool
+    {
+        return $this->declaringClass->isSubclassOfClass($this->reflectionProvider->getClass(ContentEntityInterface::class));
+    }
+
+    private function isConfigEntityType(): bool
+    {
+        return $this->declaringClass->isSubclassOfClass($this->reflectionProvider->getClass(ConfigEntityInterface::class));
+    }
+
     public function getWritableType(): Type
     {
         if ($this->propertyName === 'original') {
-            if ($this->declaringClass->isSubclassOf('Drupal\Core\Entity\ContentEntityInterface')) {
-                $objectType = 'Drupal\Core\Entity\ContentEntityInterface';
-            } elseif ($this->declaringClass->isSubclassOf('Drupal\Core\Config\Entity\ConfigEntityInterface')) {
-                $objectType = 'Drupal\Core\Config\Entity\ConfigEntityInterface';
+            if ($this->isContentEntityType()) {
+                $objectType = ContentEntityInterface::class;
+            } elseif ($this->isConfigEntityType()) {
+                $objectType = ConfigEntityInterface::class;
             } else {
-                $objectType = 'Drupal\Core\Entity\EntityInterface';
+                $objectType = EntityInterface::class;
             }
             return new ObjectType($objectType);
         }
 
         // @todo Drupal allows $entity->field_myfield = 'string'; does this break that?
-        if ($this->declaringClass->isSubclassOf('Drupal\Core\Entity\ContentEntityInterface')) {
+        if ($this->isContentEntityType()) {
             // Assume the property is a field.
-            return new ObjectType('Drupal\Core\Field\FieldItemListInterface');
+            return new ObjectType(FieldItemListInterface::class);
         }
 
         return new MixedType();
