@@ -22,10 +22,12 @@ final class AccessCheckImpossibleTypeCallRuleTest extends DrupalRuleTestCase
                 $this->getTypeSpecifier(),
                 [],
                 false,
+                false
             ),
             true,
             false,
             false,
+            false
         );
     }
 
