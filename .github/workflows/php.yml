@@ -118,10 +118,6 @@ jobs:
             echo "VERSION_ALIAS=dev-main" >> $GITHUB_OUTPUT
           fi
         id: branch_alias
-      - name: "downgrade phpstan"
-        run: |
-          cd ~/drupal
-          COMPOSER_MEMORY_LIMIT=-1 composer require --dev phpstan/phpstan:"^1.0"
       - name: "require phpstan-drupal"
         run: |
           cd ~/drupal
@@ -255,7 +251,7 @@ jobs:
           working-directory: "${{ runner.temp }}/drupal"
       - name: "downgrade phpstan"
         run: |
-          cd ~/drupal
+          cd ${{ runner.temp }}/drupal
           COMPOSER_MEMORY_LIMIT=-1 composer require --dev phpstan/phpstan:"^1.0" --no-install
       - name: "require phpstan-drupal"
         run: |
