@@ -10,8 +10,6 @@ use PHPStan\ShouldNotHappenException;
 use PHPStan\Type\Type;
 use function array_map;
 use function count;
-use function sprintf;
-use function strpos;
 
 /**
  * @extends AbstractPluginManagerRule<ClassMethod>

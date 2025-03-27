@@ -35,10 +35,6 @@ final class PluginManagerSetsCacheBackendRuleTest extends DrupalRuleTestCase
                     'Missing cache backend declaration for performance.',
                     12
                 ],
-                [
-                    'plugins cache tag might be unclear and does not contain the cache key in it.',
-                    112,
-                ]
             ]
         ];
     }
