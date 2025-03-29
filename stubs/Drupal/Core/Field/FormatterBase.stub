@@ -1,0 +1,15 @@
+<?php
+
+namespace Drupal\Core\Field;
+
+use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\Core\Field\FormatterInterface;
+use Drupal\Core\Field\PluginSettingsBase;
+
+/**
+ * @template TFieldItemList of \Drupal\Core\Field\FieldItemListInterface
+ * @implements FormatterInterface<TFieldItemList>
+ */
+abstract class FormatterBase extends PluginSettingsBase implements FormatterInterface, ContainerFactoryPluginInterface {
+
+}
