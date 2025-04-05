@@ -1,0 +1,33 @@
+<?php
+
+namespace Drupal\Core\Field;
+
+use Drupal\Core\Form\FormStateInterface;
+
+/**
+ * @template T of FieldItemInterface
+ */
+interface FormatterInterface extends PluginSettingsInterface {
+
+  /**
+   * @param array<\Drupal\Core\Field\FieldItemListInterface<T>> $entities_items
+   */
+  public function prepareView(array $entities_items): void;
+
+  /**
+   * @param \Drupal\Core\Field\FieldItemListInterface<T> $items
+   * @param string|null $langcode
+   *
+   * @return array<int|string, mixed>
+   */
+  public function view(FieldItemListInterface $items, $langcode = NULL);
+
+  /**
+   * @param \Drupal\Core\Field\FieldItemListInterface<T> $items
+   * @param string $langcode
+   *
+   * @return array<int, array<int|string, mixed>>
+   */
+  public function viewElements(FieldItemListInterface $items, $langcode);
+
+}
