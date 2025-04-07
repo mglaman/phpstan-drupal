@@ -10,7 +10,7 @@ those namespaces so that PHPStan can properly discover symbols in your Drupal co
 
 > [!NOTE]
 > With Drupal 11.2, Drupal core is now using PHPStan 2.0. The 1.x branch of phpstan-drupal will be supported until 
-> 11.1 loses security support when 11.3 is released.
+> Drupal 10 loses security support when Drupal 12 is released.
 
 ## Sponsors
 
