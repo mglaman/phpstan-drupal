@@ -2,20 +2,18 @@
 
 namespace Drupal\Core\Field;
 
-use Drupal\Core\Form\FormStateInterface;
-
 /**
- * @template T of FieldItemInterface
+ * @template TFieldItemList of \Drupal\Core\Field\FieldItemListInterface
  */
 interface FormatterInterface extends PluginSettingsInterface {
 
   /**
-   * @param array<\Drupal\Core\Field\FieldItemListInterface<T>> $entities_items
+   * @param array<TFieldItemList> $entities_items
    */
   public function prepareView(array $entities_items): void;
 
   /**
-   * @param \Drupal\Core\Field\FieldItemListInterface<T> $items
+   * @param TFieldItemList $items
    * @param string|null $langcode
    *
    * @return array<int|string, mixed>
@@ -23,7 +21,7 @@ interface FormatterInterface extends PluginSettingsInterface {
   public function view(FieldItemListInterface $items, $langcode = NULL);
 
   /**
-   * @param \Drupal\Core\Field\FieldItemListInterface<T> $items
+   * @param TFieldItemList $items
    * @param string $langcode
    *
    * @return array<int, array<int|string, mixed>>
