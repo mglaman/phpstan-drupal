@@ -2,236 +2,286 @@
 
 namespace DrupalFormatterInterface;
 
-use Drupal\Core\Field\FieldDefinitionInterface;
+use Drupal\Core\Field\FieldItemList;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Field\FormatterBase;
 use Drupal\Core\Field\FormatterInterface;
+use Drupal\Core\Field\Plugin\Field\FieldType\BooleanItem;
 use Drupal\Core\Field\Plugin\Field\FieldType\StringItem;
-use Drupal\Core\Form\FormStateInterface;
 use function PHPStan\Testing\assertType;
 
-/**
- * @implements \Drupal\Core\Field\FormatterInterface<\Drupal\Core\Field\Plugin\Field\FieldType\StringItem>
- */
-class StringFormatter implements FormatterInterface {
+class EmptyFormatter implements FormatterInterface {
 
-    public function settingsForm(array $form, FormStateInterface $form_state) {
-        return [];
-    }
-
-    public function settingsSummary() {
-        return [];
-    }
-
-    public function prepareView(array $entities_items) {
-        $first_item = $entities_items[0]->first();
-        // Assert that the first item in the list is a StringItem
-        assertType('Drupal\Core\Field\Plugin\Field\FieldType\StringItem|null', $first_item);
+    public function prepareView(array $entities_items): void {
+        assertType('array<Drupal\Core\Field\FieldItemListInterface>', $entities_items);
+        $items = $entities_items[0];
+        assertType('Drupal\Core\Field\FieldItemListInterface', $items);
+        assertType('Drupal\Core\TypedData\TypedDataInterface|null', $items->first());
+        assertType('Drupal\Core\TypedData\TypedDataInterface|null', $items->get(0));
+        assertType('Drupal\Core\TypedData\TypedDataInterface|null', $items->offsetGet(0));
+        foreach ($items as $item) {
+            assertType('mixed', $item);
+        }
     }
 
     public function view(FieldItemListInterface $items, $langcode = NULL) {
-        assertType('Drupal\Core\Field\FieldItemListInterface<Drupal\Core\Field\Plugin\Field\FieldType\StringItem>', $items);
-        $first_item = $items->first();
-        // Assert that the first item in the list is a StringItem
-        assertType('Drupal\Core\Field\Plugin\Field\FieldType\StringItem|null', $first_item);
-        return [];
+        assertType('Drupal\Core\Field\FieldItemListInterface', $items);
+        assertType('Drupal\Core\TypedData\TypedDataInterface|null', $items->first());
+        assertType('Drupal\Core\TypedData\TypedDataInterface|null', $items->get(0));
+        assertType('Drupal\Core\TypedData\TypedDataInterface|null', $items->offsetGet(0));
+        foreach ($items as $item) {
+            assertType('mixed', $item);
+        }
     }
 
     public function viewElements(FieldItemListInterface $items, $langcode) {
-        $first_item = $items->first();
-        // Assert that the first item in the list is a StringItem
-        assertType('Drupal\Core\Field\Plugin\Field\FieldType\StringItem|null', $first_item);
-        return [];
+        assertType('Drupal\Core\Field\FieldItemListInterface', $items);
+        assertType('Drupal\Core\TypedData\TypedDataInterface|null', $items->first());
+        assertType('Drupal\Core\TypedData\TypedDataInterface|null', $items->get(0));
+        assertType('Drupal\Core\TypedData\TypedDataInterface|null', $items->offsetGet(0));
+        foreach ($items as $item) {
+            assertType('mixed', $item);
+        }
     }
 
-    public static function isApplicable(FieldDefinitionInterface $field_definition) {
-        return true;
-    }
-
-    public function getSettings() {
-        return [];
-    }
-
-    public function getSetting($key) {
-        return null;
-    }
-
-    public function setSetting($key, $value) {
-        return $this;
-    }
-
-    public function setSettings(array $settings) {
-        return $this;
-    }
-
-    public function getDefaultSettings() {
-        return [];
-    }
-
-    public function getPluginId() {
-        return 'string_formatter';
-    }
-
-    public function getPluginDefinition() {
-        return [];
-    }
-
-    public function getThirdPartySettings($provider = NULL) {
-        return [];
-    }
-
-    public function getThirdPartySetting($provider, $key, $default = NULL) {
-        return $default;
-    }
-
-    public function setThirdPartySetting($provider, $key, $value) {
-        return $this;
-    }
-
-    public function unsetThirdPartySetting($provider, $key) {
-        return $this;
-    }
-
-    public function getThirdPartyProviders() {
-        return [];
-    }
 }
 
 /**
- * @template T of \Drupal\Core\Field\FieldItemInterface
- * @extends \Drupal\Core\Field\FormatterBase<T>
+ * @implements FormatterInterface<FieldItemList>
  */
-class GenericExtendsFormatterBase extends FormatterBase {
-    /**
-     * @param \Drupal\Core\Field\FieldItemListInterface<T> $items
-     */
-    public function viewElements(FieldItemListInterface $items, $langcode) {
-        $first = $items->first();
-        assertType('T of Drupal\Core\Field\FieldItemInterface (class DrupalFormatterInterface\GenericExtendsFormatterBase, argument)|null', $first);
-        return [];
+class FieldItemListFormatter implements FormatterInterface {
+
+    public function prepareView(array $entities_items): void {
+        assertType('array<Drupal\Core\Field\FieldItemList>', $entities_items);
+        $items = $entities_items[0];
+        assertType('Drupal\Core\Field\FieldItemList', $items);
+        assertType('Drupal\Core\Field\FieldItemInterface|null', $items->first());
+        assertType('Drupal\Core\Field\FieldItemInterface|null', $items->get(0));
+        assertType('Drupal\Core\Field\FieldItemInterface|null', $items->offsetGet(0));
+        foreach ($items as $item) {
+            assertType('Drupal\Core\Field\FieldItemInterface', $item);
+        }
     }
 
-    public static function isApplicable(FieldDefinitionInterface $field_definition) {
-        return true;
-    }
-}
-
-/**
- * @template T of \Drupal\Core\Field\FieldItemInterface
- */
-class GenericFormatter implements FormatterInterface {
-    public function settingsForm(array $form, FormStateInterface $form_state) {
-        return [];
-    }
-
-    public function settingsSummary() {
-        return [];
-    }
-
-    public function prepareView(array $entities_items) {}
-
-    /**
-     * @param \Drupal\Core\Field\FieldItemListInterface<T> $items
-     */
     public function view(FieldItemListInterface $items, $langcode = NULL) {
-        $first = $items->first();
-        assertType('T of Drupal\Core\Field\FieldItemInterface (class DrupalFormatterInterface\GenericFormatter, argument)|null', $first);
-        return [];
+        assertType('Drupal\Core\Field\FieldItemList', $items);
+        assertType('Drupal\Core\Field\FieldItemInterface|null', $items->first());
+        assertType('Drupal\Core\Field\FieldItemInterface|null', $items->get(0));
+        assertType('Drupal\Core\Field\FieldItemInterface|null', $items->offsetGet(0));
+        foreach ($items as $item) {
+            assertType('Drupal\Core\Field\FieldItemInterface', $item);
+        }
     }
 
-    /**
-     * @param \Drupal\Core\Field\FieldItemListInterface<T> $items
-     */
     public function viewElements(FieldItemListInterface $items, $langcode) {
-        $first = $items->first();
-        assertType('T of Drupal\Core\Field\FieldItemInterface (class DrupalFormatterInterface\GenericFormatter, argument)|null', $first);
-        return [];
+        assertType('Drupal\Core\Field\FieldItemList', $items);
+        assertType('Drupal\Core\Field\FieldItemInterface|null', $items->first());
+        assertType('Drupal\Core\Field\FieldItemInterface|null', $items->get(0));
+        assertType('Drupal\Core\Field\FieldItemInterface|null', $items->offsetGet(0));
+        foreach ($items as $item) {
+            assertType('Drupal\Core\Field\FieldItemInterface', $item);
+        }
     }
 
-    public static function isApplicable(FieldDefinitionInterface $field_definition) {
-        return true;
-    }
-
-    public function getSettings() {
-        return [];
-    }
-
-    public function getSetting($key) {
-        return null;
-    }
-
-    public function setSetting($key, $value) {
-        return $this;
-    }
-
-    public function setSettings(array $settings) {
-        return $this;
-    }
-
-    public function getDefaultSettings() {
-        return [];
-    }
-
-    public function getPluginId() {
-        return 'generic_formatter';
-    }
-
-    public function getPluginDefinition() {
-        return [];
-    }
-
-    public function getThirdPartySettings($provider = NULL) {
-        return [];
-    }
-
-    public function getThirdPartySetting($provider, $key, $default = NULL) {
-        return $default;
-    }
-
-    public function setThirdPartySetting($provider, $key, $value) {
-        return $this;
-    }
-
-    public function unsetThirdPartySetting($provider, $key) {
-        return $this;
-    }
-
-    public function getThirdPartyProviders() {
-        return [];
-    }
 }
 
 /**
- * Test usage of the formatter through a function.
- *
- * @param \Drupal\Core\Field\FormatterInterface<\Drupal\Core\Field\Plugin\Field\FieldType\StringItem> $formatter
- * @param \Drupal\Core\Field\FieldItemListInterface<\Drupal\Core\Field\Plugin\Field\FieldType\StringItem> $items
+ * @implements FormatterInterface<FieldItemList<StringItem>>
  */
-function testFormatterWithStringItems(FormatterInterface $formatter, FieldItemListInterface $items): void {
-    $elements = $formatter->viewElements($items, 'en');
-    assertType('array<int, array<int|string, mixed>>', $elements);
+class StringItemFormatter implements FormatterInterface {
 
-    // Test with implementation
-    $stringFormatter = new StringFormatter();
-    $elements = $stringFormatter->viewElements($items, 'en');
-    assertType('array<int, array<int|string, mixed>>', $elements);
+    public function prepareView(array $entities_items): void {
+        assertType('array<Drupal\Core\Field\FieldItemList<Drupal\Core\Field\Plugin\Field\FieldType\StringItem>>', $entities_items);
+        $items = $entities_items[0];
+        assertType('Drupal\Core\Field\FieldItemList<Drupal\Core\Field\Plugin\Field\FieldType\StringItem>', $items);
+        assertType('Drupal\Core\Field\Plugin\Field\FieldType\StringItem|null', $items->first());
+        assertType('Drupal\Core\Field\Plugin\Field\FieldType\StringItem|null', $items->get(0));
+        assertType('Drupal\Core\Field\Plugin\Field\FieldType\StringItem|null', $items->offsetGet(0));
+        foreach ($items as $item) {
+            assertType('Drupal\Core\Field\Plugin\Field\FieldType\StringItem', $item);
+        }
+    }
 
-    $item = $items->first();
-    // The generic type from FormatterInterface should flow to $item
-    assertType('Drupal\Core\Field\Plugin\Field\FieldType\StringItem|null', $item);
+    public function view(FieldItemListInterface $items, $langcode = NULL) {
+        assertType('Drupal\Core\Field\FieldItemList<Drupal\Core\Field\Plugin\Field\FieldType\StringItem>', $items);
+        assertType('Drupal\Core\Field\Plugin\Field\FieldType\StringItem|null', $items->first());
+        assertType('Drupal\Core\Field\Plugin\Field\FieldType\StringItem|null', $items->get(0));
+        assertType('Drupal\Core\Field\Plugin\Field\FieldType\StringItem|null', $items->offsetGet(0));
+        foreach ($items as $item) {
+            assertType('Drupal\Core\Field\Plugin\Field\FieldType\StringItem', $item);
+        }
+    }
+
+    public function viewElements(FieldItemListInterface $items, $langcode) {
+        assertType('Drupal\Core\Field\FieldItemList<Drupal\Core\Field\Plugin\Field\FieldType\StringItem>', $items);
+        assertType('Drupal\Core\Field\Plugin\Field\FieldType\StringItem|null', $items->first());
+        assertType('Drupal\Core\Field\Plugin\Field\FieldType\StringItem|null', $items->get(0));
+        assertType('Drupal\Core\Field\Plugin\Field\FieldType\StringItem|null', $items->offsetGet(0));
+        foreach ($items as $item) {
+            assertType('Drupal\Core\Field\Plugin\Field\FieldType\StringItem', $item);
+        }
+    }
+
 }
 
 /**
- * Test that FormatterBase correctly implements FormatterInterface with generics.
- *
- * @param \Drupal\Core\Field\FormatterBase<\Drupal\Core\Field\Plugin\Field\FieldType\StringItem> $formatter
- * @param \Drupal\Core\Field\FieldItemListInterface<\Drupal\Core\Field\Plugin\Field\FieldType\StringItem> $items
+ * @implements FormatterInterface<FieldItemList<StringItem|BooleanItem>>
  */
-function testFormatterBaseWithStringItems(FormatterBase $formatter, FieldItemListInterface $items): void {
-    $output = $formatter->view($items, 'en');
-    assertType('array<int|string, mixed>', $output);
+class UnionTypeFormatter implements FormatterInterface {
 
-    $item = $items->first();
-    // The generic type from FormatterBase should flow to $item
-    assertType('Drupal\Core\Field\Plugin\Field\FieldType\StringItem|null', $item);
+    public function prepareView(array $entities_items): void {
+        assertType('array<Drupal\Core\Field\FieldItemList<Drupal\Core\Field\Plugin\Field\FieldType\BooleanItem|Drupal\Core\Field\Plugin\Field\FieldType\StringItem>>', $entities_items);
+        $items = $entities_items[0];
+        assertType('Drupal\Core\Field\FieldItemList<Drupal\Core\Field\Plugin\Field\FieldType\BooleanItem|Drupal\Core\Field\Plugin\Field\FieldType\StringItem>', $items);
+        assertType('Drupal\Core\Field\Plugin\Field\FieldType\BooleanItem|Drupal\Core\Field\Plugin\Field\FieldType\StringItem|null', $items->first());
+        assertType('Drupal\Core\Field\Plugin\Field\FieldType\BooleanItem|Drupal\Core\Field\Plugin\Field\FieldType\StringItem|null', $items->get(0));
+        assertType('Drupal\Core\Field\Plugin\Field\FieldType\BooleanItem|Drupal\Core\Field\Plugin\Field\FieldType\StringItem|null', $items->offsetGet(0));
+        foreach ($items as $item) {
+            assertType('Drupal\Core\Field\Plugin\Field\FieldType\BooleanItem|Drupal\Core\Field\Plugin\Field\FieldType\StringItem', $item);
+        }
+    }
+
+    public function view(FieldItemListInterface $items, $langcode = NULL) {
+        assertType('Drupal\Core\Field\FieldItemList<Drupal\Core\Field\Plugin\Field\FieldType\BooleanItem|Drupal\Core\Field\Plugin\Field\FieldType\StringItem>', $items);
+        assertType('Drupal\Core\Field\Plugin\Field\FieldType\BooleanItem|Drupal\Core\Field\Plugin\Field\FieldType\StringItem|null', $items->first());
+        assertType('Drupal\Core\Field\Plugin\Field\FieldType\BooleanItem|Drupal\Core\Field\Plugin\Field\FieldType\StringItem|null', $items->get(0));
+        assertType('Drupal\Core\Field\Plugin\Field\FieldType\BooleanItem|Drupal\Core\Field\Plugin\Field\FieldType\StringItem|null', $items->offsetGet(0));
+        foreach ($items as $item) {
+            assertType('Drupal\Core\Field\Plugin\Field\FieldType\BooleanItem|Drupal\Core\Field\Plugin\Field\FieldType\StringItem', $item);
+        }
+    }
+
+    public function viewElements(FieldItemListInterface $items, $langcode) {
+        assertType('Drupal\Core\Field\FieldItemList<Drupal\Core\Field\Plugin\Field\FieldType\BooleanItem|Drupal\Core\Field\Plugin\Field\FieldType\StringItem>', $items);
+        assertType('Drupal\Core\Field\Plugin\Field\FieldType\BooleanItem|Drupal\Core\Field\Plugin\Field\FieldType\StringItem|null', $items->first());
+        assertType('Drupal\Core\Field\Plugin\Field\FieldType\BooleanItem|Drupal\Core\Field\Plugin\Field\FieldType\StringItem|null', $items->get(0));
+        assertType('Drupal\Core\Field\Plugin\Field\FieldType\BooleanItem|Drupal\Core\Field\Plugin\Field\FieldType\StringItem|null', $items->offsetGet(0));
+        foreach ($items as $item) {
+            assertType('Drupal\Core\Field\Plugin\Field\FieldType\BooleanItem|Drupal\Core\Field\Plugin\Field\FieldType\StringItem', $item);
+        }
+    }
+
+}
+
+/**
+ * @implements FieldItemListInterface<BooleanItem>
+ */
+class FakeBooleanFieldItemList implements FieldItemListInterface {
+}
+
+/**
+ * @implements FormatterInterface<FakeBooleanFieldItemList>
+ */
+class BooleanItemFormatter implements FormatterInterface {
+
+    public function prepareView(array $entities_items): void {
+        assertType('array<DrupalFormatterInterface\FakeBooleanFieldItemList>', $entities_items);
+        $items = $entities_items[0];
+        assertType('DrupalFormatterInterface\FakeBooleanFieldItemList', $items);
+        assertType('Drupal\Core\Field\Plugin\Field\FieldType\BooleanItem|null', $items->first());
+        assertType('Drupal\Core\Field\Plugin\Field\FieldType\BooleanItem|null', $items->get(0));
+        assertType('Drupal\Core\Field\Plugin\Field\FieldType\BooleanItem|null', $items->offsetGet(0));
+        foreach ($items as $item) {
+            assertType('Drupal\Core\Field\Plugin\Field\FieldType\BooleanItem', $item);
+        }
+    }
+
+    public function view(FieldItemListInterface $items, $langcode = NULL) {
+        assertType('DrupalFormatterInterface\FakeBooleanFieldItemList', $items);
+        assertType('Drupal\Core\Field\Plugin\Field\FieldType\BooleanItem|null', $items->first());
+        assertType('Drupal\Core\Field\Plugin\Field\FieldType\BooleanItem|null', $items->get(0));
+        assertType('Drupal\Core\Field\Plugin\Field\FieldType\BooleanItem|null', $items->offsetGet(0));
+        foreach ($items as $item) {
+            assertType('Drupal\Core\Field\Plugin\Field\FieldType\BooleanItem', $item);
+        }
+    }
+
+    public function viewElements(FieldItemListInterface $items, $langcode) {
+        assertType('DrupalFormatterInterface\FakeBooleanFieldItemList', $items);
+        assertType('Drupal\Core\Field\Plugin\Field\FieldType\BooleanItem|null', $items->first());
+        assertType('Drupal\Core\Field\Plugin\Field\FieldType\BooleanItem|null', $items->get(0));
+        assertType('Drupal\Core\Field\Plugin\Field\FieldType\BooleanItem|null', $items->offsetGet(0));
+        foreach ($items as $item) {
+            assertType('Drupal\Core\Field\Plugin\Field\FieldType\BooleanItem', $item);
+        }
+    }
+
+}
+
+/**
+ * @extends FormatterBase<FakeBooleanFieldItemList>
+ */
+class ExtendsBooleanItemFormatter extends FormatterBase {
+
+    public function prepareView(array $entities_items): void {
+        assertType('array<DrupalFormatterInterface\FakeBooleanFieldItemList>', $entities_items);
+        $items = $entities_items[0];
+        assertType('DrupalFormatterInterface\FakeBooleanFieldItemList', $items);
+        assertType('Drupal\Core\Field\Plugin\Field\FieldType\BooleanItem|null', $items->first());
+        assertType('Drupal\Core\Field\Plugin\Field\FieldType\BooleanItem|null', $items->get(0));
+        assertType('Drupal\Core\Field\Plugin\Field\FieldType\BooleanItem|null', $items->offsetGet(0));
+        foreach ($items as $item) {
+            assertType('Drupal\Core\Field\Plugin\Field\FieldType\BooleanItem', $item);
+        }
+    }
+
+    public function view(FieldItemListInterface $items, $langcode = NULL) {
+        assertType('DrupalFormatterInterface\FakeBooleanFieldItemList', $items);
+        assertType('Drupal\Core\Field\Plugin\Field\FieldType\BooleanItem|null', $items->first());
+        assertType('Drupal\Core\Field\Plugin\Field\FieldType\BooleanItem|null', $items->get(0));
+        assertType('Drupal\Core\Field\Plugin\Field\FieldType\BooleanItem|null', $items->offsetGet(0));
+        foreach ($items as $item) {
+            assertType('Drupal\Core\Field\Plugin\Field\FieldType\BooleanItem', $item);
+        }
+    }
+
+    public function viewElements(FieldItemListInterface $items, $langcode) {
+        assertType('DrupalFormatterInterface\FakeBooleanFieldItemList', $items);
+        assertType('Drupal\Core\Field\Plugin\Field\FieldType\BooleanItem|null', $items->first());
+        assertType('Drupal\Core\Field\Plugin\Field\FieldType\BooleanItem|null', $items->get(0));
+        assertType('Drupal\Core\Field\Plugin\Field\FieldType\BooleanItem|null', $items->offsetGet(0));
+        foreach ($items as $item) {
+            assertType('Drupal\Core\Field\Plugin\Field\FieldType\BooleanItem', $item);
+        }
+    }
+
+}
+
+/**
+ * @extends FormatterBase<FieldItemList<StringItem>>
+ */
+class ExtendedDeepFormatter extends FormatterBase {
+
+    public function prepareView(array $entities_items): void {
+        assertType('array<Drupal\Core\Field\FieldItemList<Drupal\Core\Field\Plugin\Field\FieldType\StringItem>>', $entities_items);
+        $items = $entities_items[0];
+        assertType('Drupal\Core\Field\FieldItemList<Drupal\Core\Field\Plugin\Field\FieldType\StringItem>', $items);
+        assertType('Drupal\Core\Field\Plugin\Field\FieldType\StringItem|null', $items->first());
+        assertType('Drupal\Core\Field\Plugin\Field\FieldType\StringItem|null', $items->get(0));
+        assertType('Drupal\Core\Field\Plugin\Field\FieldType\StringItem|null', $items->offsetGet(0));
+        foreach ($items as $item) {
+            assertType('Drupal\Core\Field\Plugin\Field\FieldType\StringItem', $item);
+        }
+    }
+
+    public function view(FieldItemListInterface $items, $langcode = NULL) {
+        assertType('Drupal\Core\Field\FieldItemList<Drupal\Core\Field\Plugin\Field\FieldType\StringItem>', $items);
+        assertType('Drupal\Core\Field\Plugin\Field\FieldType\StringItem|null', $items->first());
+        assertType('Drupal\Core\Field\Plugin\Field\FieldType\StringItem|null', $items->get(0));
+        assertType('Drupal\Core\Field\Plugin\Field\FieldType\StringItem|null', $items->offsetGet(0));
+        foreach ($items as $item) {
+            assertType('Drupal\Core\Field\Plugin\Field\FieldType\StringItem', $item);
+        }
+    }
+
+    public function viewElements(FieldItemListInterface $items, $langcode) {
+        assertType('Drupal\Core\Field\FieldItemList<Drupal\Core\Field\Plugin\Field\FieldType\StringItem>', $items);
+        assertType('Drupal\Core\Field\Plugin\Field\FieldType\StringItem|null', $items->first());
+        assertType('Drupal\Core\Field\Plugin\Field\FieldType\StringItem|null', $items->get(0));
+        assertType('Drupal\Core\Field\Plugin\Field\FieldType\StringItem|null', $items->offsetGet(0));
+        foreach ($items as $item) {
+            assertType('Drupal\Core\Field\Plugin\Field\FieldType\StringItem', $item);
+        }
+    }
+
 }
