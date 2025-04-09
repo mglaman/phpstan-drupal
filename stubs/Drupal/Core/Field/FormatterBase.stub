@@ -5,8 +5,8 @@ namespace Drupal\Core\Field;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 
 /**
- * @template TFieldItemList of FieldItemListInterface
- * @implements FormatterInterface<TFieldItemList>
+ * @template T of FieldItemListInterface
+ * @implements FormatterInterface<T>
  */
 abstract class FormatterBase extends PluginSettingsBase implements FormatterInterface, ContainerFactoryPluginInterface {
 
