@@ -17,7 +17,6 @@ use PHPStan\Type\Accessory\HasOffsetType;
 use PHPStan\Type\Accessory\NonEmptyArrayType;
 use PHPStan\Type\ArrayType;
 use PHPStan\Type\CallableType;
-use PHPStan\Type\ClosureType;
 use PHPStan\Type\Constant\ConstantStringType;
 use PHPStan\Type\FloatType;
 use PHPStan\Type\IntegerRangeType;
@@ -104,13 +103,13 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
         $callable = $node->getArgs()[0]->value;
         $callableInfo = $scope->getType($callable);
 
-        if (!$callableInfo instanceof ClosureType) {
+        if (!$callableInfo->isCallable()->yes()) {
             return new SpecifiedTypes();
         }
 
         return $this->typeSpecifier->create(
             $node->getArgs()[1]->value,
-            new IterableType(new MixedType(true), $callableInfo->getReturnType()),
+            new IterableType(new MixedType(true), new MixedType()),
             TypeSpecifierContext::createTruthy(),
             $scope,
         );
@@ -234,9 +233,9 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
             $keyTypes[] = new HasOffsetType(new ConstantStringType($key));
         }
 
-        $newArrayType = new ArrayType(
+        $newArrayType = new IterableType(
             new MixedType(true),
-            new ArrayType(TypeCombinator::intersect(new MixedType(), ...$keyTypes), new MixedType(true)),
+            new ArrayType(TypeCombinator::union(new MixedType(), ...$keyTypes), new MixedType(true)),
         );
 
         return $this->typeSpecifier->create($traversableArg, $newArrayType, TypeSpecifierContext::createTruthy(), $scope);
