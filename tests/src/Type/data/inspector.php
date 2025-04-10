@@ -10,27 +10,16 @@ function mixed_function(): mixed {
 }
 
 // Inspector::assertAll()
-$callable = fn (): string => 'foo';
+$callable = fn (string $value): bool => $value === 'foo';
 $input = mixed_function();
 assert(Inspector::assertAll($callable, $input));
-assertType("iterable<'foo'>", $input);
+assertType("iterable", $input);
 
 $input = mixed_function();
-$callable = static function (): int {
-  return rand(0, 1000);
-};
+$callable = is_string(...);
 assert(Inspector::assertAll($callable, $input));
-assertType('iterable<int<0, 1000>>', $input);
+assertType('iterable', $input);
 
-$input = mixed_function();
-$callable = Closure::fromCallable('is_string');
-assert(Inspector::assertAll($callable, $input));
-assertType('iterable<bool>', $input);
-
-$callable = fn(mixed $arg): string => (string) $arg;
-$input = mixed_function();
-assert(Inspector::assertAll($callable, $input));
-assertType('iterable<string>', $input);
 
 // Inspector::assertAllStrings()
 $input = mixed_function();
@@ -60,7 +49,7 @@ assertType('iterable<array<int<0, max>, mixed>>', $input);
 // Inspector::assertAllHaveKey()
 $input = mixed_function();
 assert(Inspector::assertAllHaveKey($input, 'foo', 'baz'));
-assertType("array<array<hasOffset('baz')&hasOffset('foo'), mixed>>", $input);
+assertType("iterable<non-empty-array&hasOffset('baz')&hasOffset('foo')>", $input);
 
 // Inspector::assertAllIntegers()
 $input = mixed_function();
