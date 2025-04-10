@@ -21,3 +21,19 @@ function bar(array $zed): void {
     assertType('array<mixed, mixed>', $zed);
 
 }
+
+/**
+ * @param array $images
+ *   Images of the project. Each item needs to be an array with two elements:
+ *   `file`, which is a \Drupal\Core\Url object pointing to the image, and
+ *   `alt`, which is the alt text.
+ */
+function project_browser_example(array $images) {
+    assert(
+        Inspector::assertAllArrays($images) &&
+        Inspector::assertAllHaveKey($images, 'file') &&
+        Inspector::assertAll(fn (array $i): bool => $i['file'] instanceof Url, $images) &&
+        Inspector::assertAllHaveKey($images, 'alt')
+    ) or throw new \InvalidArgumentException('The project images must be arrays with `file` and `alt` elements.');
+    assertType("array<mixed, non-empty-array&hasOffset('alt')&hasOffset('file')>", $images);
+}
