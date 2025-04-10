@@ -1,0 +1,10 @@
+<?php
+
+namespace Drupal\Core\Field;
+
+use Drupal\Component\Plugin\DependentPluginInterface;
+use Drupal\Core\Plugin\PluginBase;
+
+abstract class PluginSettingsBase extends PluginBase implements PluginSettingsInterface, DependentPluginInterface {
+
+}

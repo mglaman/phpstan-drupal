@@ -1,0 +1,9 @@
+<?php
+
+namespace Drupal\Core\Plugin;
+
+use Drupal\Component\Plugin\PluginBase as ComponentPluginBase;
+
+abstract class PluginBase extends ComponentPluginBase {
+
+}
