@@ -34,7 +34,7 @@ assertType('iterable<string|Stringable>', $input);
 // Inspector::assertAllArrays()
 $input = mixed_function();
 \assert(Inspector::assertAllArrays($input));
-assertType('iterable<array<mixed, mixed>>', $input);
+assertType('iterable<array>', $input);
 
 // Inspector::assertStrictArray()
 $input = mixed_function();

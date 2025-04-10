@@ -7,18 +7,18 @@ use function PHPStan\Testing\assertType;
 
 function foo(array $baz): void {
     assert(Inspector::assertAllArrays($baz));
-    assertType('array<mixed, array<mixed, mixed>>', $baz);
+    assertType('array<array>', $baz);
 
     assert(Inspector::assertAll(fn (array $i): bool => $i['file'] instanceof Url, $baz));
-    assertType('array<mixed, array<mixed, mixed>>', $baz);
+    assertType('array<array>', $baz);
 
     assert(Inspector::assertAllHaveKey($baz, 'alt'));
-    assertType("array<mixed, non-empty-array&hasOffset('alt')>", $baz);
+    assertType("array<non-empty-array&hasOffset('alt')>", $baz);
 }
 
 function bar(array $zed): void {
     assert(Inspector::assertAll(fn (string $value) => $value === 'foo', $zed));
-    assertType('array<mixed, mixed>', $zed);
+    assertType('array', $zed);
 
 }
 
@@ -35,5 +35,5 @@ function project_browser_example(array $images) {
         Inspector::assertAll(fn (array $i): bool => $i['file'] instanceof Url, $images) &&
         Inspector::assertAllHaveKey($images, 'alt')
     ) or throw new \InvalidArgumentException('The project images must be arrays with `file` and `alt` elements.');
-    assertType("array<mixed, non-empty-array&hasOffset('alt')&hasOffset('file')>", $images);
+    assertType("array<non-empty-array&hasOffset('alt')&hasOffset('file')>", $images);
 }

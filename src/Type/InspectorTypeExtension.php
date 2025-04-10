@@ -109,7 +109,7 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
 
         return $this->typeSpecifier->create(
             $node->getArgs()[1]->value,
-            new IterableType(new MixedType(true), new MixedType(true)),
+            new IterableType(new MixedType(), new MixedType()),
             TypeSpecifierContext::createTruthy(),
             $scope,
         );
@@ -122,7 +122,7 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
     {
         return $this->typeSpecifier->create(
             $node->getArgs()[0]->value,
-            new IterableType(new MixedType(true), new StringType()),
+            new IterableType(new MixedType(), new StringType()),
             TypeSpecifierContext::createTruthy(),
             $scope,
         );
@@ -135,7 +135,7 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
     {
         // Drupal considers string as part of "stringable" as well.
         $stringable = TypeCombinator::union(new ObjectType(Stringable::class), new StringType());
-        $newType = new IterableType(new MixedType(true), $stringable);
+        $newType = new IterableType(new MixedType(), $stringable);
 
         return $this->typeSpecifier->create(
             $node->getArgs()[0]->value,
@@ -150,8 +150,8 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
      */
     private function specifyAssertAllArrays(MethodReflection $staticMethodReflection, StaticCall $node, Scope $scope, TypeSpecifierContext $context): SpecifiedTypes
     {
-        $arrayType = new ArrayType(new MixedType(true), new MixedType(true));
-        $newType = new IterableType(new MixedType(true), $arrayType);
+        $arrayType = new ArrayType(new MixedType(), new MixedType());
+        $newType = new IterableType(new MixedType(), $arrayType);
 
         return $this->typeSpecifier->create(
             $node->getArgs()[0]->value,
@@ -170,7 +170,7 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
             // In Drupal, 'strict arrays' are defined as arrays whose indexes
             // consist of integers that are equal to or greater than 0.
             IntegerRangeType::createAllGreaterThanOrEqualTo(0),
-            new MixedType(true),
+            new MixedType(),
         );
 
         return $this->typeSpecifier->create(
@@ -187,10 +187,10 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
     private function specifyAssertAllStrictArrays(MethodReflection $staticMethodReflection, StaticCall $node, Scope $scope, TypeSpecifierContext $context): SpecifiedTypes
     {
         $newType = new IterableType(
-            new MixedType(true),
+            new MixedType(),
             new ArrayType(
                 IntegerRangeType::createAllGreaterThanOrEqualTo(0),
-                new MixedType(true),
+                new MixedType(),
             ),
         );
 
@@ -237,7 +237,7 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
         }
 
         $newType = new IterableType(
-            new MixedType(true),
+            new MixedType(),
             TypeCombinator::intersect(...$possibleTypes),
         );
 
@@ -251,7 +251,7 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
     {
         return $this->typeSpecifier->create(
             $node->getArgs()[0]->value,
-            new IterableType(new MixedType(true), new IntegerType()),
+            new IterableType(new MixedType(), new IntegerType()),
             TypeSpecifierContext::createTruthy(),
             $scope,
         );
@@ -264,7 +264,7 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
     {
         return $this->typeSpecifier->create(
             $node->getArgs()[0]->value,
-            new IterableType(new MixedType(true), new FloatType()),
+            new IterableType(new MixedType(), new FloatType()),
             TypeSpecifierContext::createTruthy(),
             $scope,
         );
@@ -277,7 +277,7 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
     {
         return $this->typeSpecifier->create(
             $node->getArgs()[0]->value,
-            new IterableType(new MixedType(true), new CallableType()),
+            new IterableType(new MixedType(), new CallableType()),
             TypeSpecifierContext::createTruthy(),
             $scope,
         );
@@ -297,7 +297,7 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
             new FloatType(),
             new ResourceType(),
         ];
-        $newType = new IterableType(new MixedType(true), new UnionType($non_empty_types));
+        $newType = new IterableType(new MixedType(), new UnionType($non_empty_types));
 
         return $this->typeSpecifier->create(
             $node->getArgs()[0]->value,
@@ -314,7 +314,7 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
     {
         return $this->typeSpecifier->create(
             $node->getArgs()[0]->value,
-            new IterableType(new MixedType(true), new UnionType([new IntegerType(), new FloatType()])),
+            new IterableType(new MixedType(), new UnionType([new IntegerType(), new FloatType()])),
             TypeSpecifierContext::createTruthy(),
             $scope,
         );
@@ -327,7 +327,7 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
     {
         return $this->typeSpecifier->create(
             $node->getArgs()[1]->value,
-            new IterableType(new MixedType(true), new StringType()),
+            new IterableType(new MixedType(), new StringType()),
             TypeSpecifierContext::createTruthy(),
             $scope,
         );
@@ -342,7 +342,7 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
             $node->getArgs()[1]->value,
             // Drupal treats any non-string input in traversable as invalid
             // value, so it is possible to narrow type here.
-            new IterableType(new MixedType(true), new StringType()),
+            new IterableType(new MixedType(), new StringType()),
             TypeSpecifierContext::createTruthy(),
             $scope,
         );
@@ -375,7 +375,7 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
 
         return $this->typeSpecifier->create(
             $node->getArgs()[0]->value,
-            new IterableType(new MixedType(true), TypeCombinator::union(...$objectTypes)),
+            new IterableType(new MixedType(), TypeCombinator::union(...$objectTypes)),
             TypeSpecifierContext::createTruthy(),
             $scope,
         );
