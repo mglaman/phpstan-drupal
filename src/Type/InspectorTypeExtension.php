@@ -247,7 +247,7 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
             TypeCombinator::intersect(...$possibleTypes),
         );
 
-        return $this->typeSpecifier->create($traversableArg, $newType, TypeSpecifierContext::createTruthy(), $scope);
+        return $this->typeSpecifier->create($traversableArg, $newType, TypeSpecifierContext::createTruthy(), false, $scope);
     }
 
     /**
