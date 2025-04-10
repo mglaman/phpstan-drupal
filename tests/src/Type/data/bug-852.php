@@ -13,11 +13,11 @@ function foo(array $baz): void {
     assertType('array<mixed, array<mixed, mixed>>', $baz);
 
     assert(Inspector::assertAllHaveKey($baz, 'alt'));
-    assertType('array<mixed, array<mixed, mixed>>', $baz);
+    assertType("array<mixed, non-empty-array&hasOffset('alt')>", $baz);
 }
 
 function bar(array $zed): void {
     assert(Inspector::assertAll(fn (string $value) => $value === 'foo', $zed));
-    assertType('array<mixed, string>', $zed);
+    assertType('array<mixed, mixed>', $zed);
 
 }

@@ -109,7 +109,7 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
 
         return $this->typeSpecifier->create(
             $node->getArgs()[1]->value,
-            new IterableType(new MixedType(true), new MixedType()),
+            new IterableType(new MixedType(true), new MixedType(true)),
             TypeSpecifierContext::createTruthy(),
             $scope,
         );
@@ -228,17 +228,20 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
             }
         }
 
-        $keyTypes = [];
+        // @see ArrayKeyExistsFunctionTypeSpecifyingExtension.
+        $possibleTypes = [
+            new ArrayType(new MixedType(), new MixedType())
+        ];
         foreach ($keys as $key) {
-            $keyTypes[] = new HasOffsetType(new ConstantStringType($key));
+            $possibleTypes[] = new HasOffsetType(new ConstantStringType($key));
         }
 
-        $newArrayType = new IterableType(
+        $newType = new IterableType(
             new MixedType(true),
-            new ArrayType(TypeCombinator::union(new MixedType(), ...$keyTypes), new MixedType(true)),
+            TypeCombinator::intersect(...$possibleTypes),
         );
 
-        return $this->typeSpecifier->create($traversableArg, $newArrayType, TypeSpecifierContext::createTruthy(), $scope);
+        return $this->typeSpecifier->create($traversableArg, $newType, TypeSpecifierContext::createTruthy(), $scope);
     }
 
     /**

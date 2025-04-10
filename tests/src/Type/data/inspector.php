@@ -49,7 +49,7 @@ assertType('iterable<array<int<0, max>, mixed>>', $input);
 // Inspector::assertAllHaveKey()
 $input = mixed_function();
 assert(Inspector::assertAllHaveKey($input, 'foo', 'baz'));
-assertType('iterable<array<mixed>>', $input);
+assertType("iterable<non-empty-array&hasOffset('baz')&hasOffset('foo')>", $input);
 
 // Inspector::assertAllIntegers()
 $input = mixed_function();
