@@ -107,6 +107,16 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
             return new SpecifiedTypes();
         }
 
+        $traversable = $node->getArgs()[1]->value;
+        $traversableInfo = $scope->getType($traversable);
+
+        // If it is already not mixed (narrowed by other code, like
+        // '::assertAllArray()'), we could not provide any additional
+        // information. We can only narrow this method to 'array<mixed, mixed>'.
+        if (!$traversableInfo instanceof MixedType) {
+            return new SpecifiedTypes();
+        }
+
         return $this->typeSpecifier->create(
             $node->getArgs()[1]->value,
             new IterableType(new MixedType(), new MixedType()),

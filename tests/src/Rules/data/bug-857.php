@@ -8,5 +8,4 @@ function foo(array $images) {
     // 'array<array>'.
     Inspector::assertAllArrays($images);
     Inspector::assertAll(fn (array $i): bool => $i['file'] instanceof Url, $images);
-    \PHPStan\Testing\assertType('', $images);
 }
