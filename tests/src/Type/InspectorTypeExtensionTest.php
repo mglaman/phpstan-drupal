@@ -14,6 +14,7 @@ final class InspectorTypeExtensionTest extends TypeInferenceTestCase {
   public static function dataFileAsserts(): iterable {
     yield from self::gatherAssertTypes(__DIR__ . '/data/inspector.php');
     yield from self::gatherAssertTypes(__DIR__ . '/data/bug-852.php');
+    yield from self::gatherAssertTypes(__DIR__ . '/data/bug-857.php');
   }
 
   /**
