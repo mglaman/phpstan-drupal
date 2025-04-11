@@ -19,7 +19,9 @@ class ImpossibleCheckTypeStaticMethodCallRuleTest extends DrupalRuleTestCase
 
     protected function getRule(): Rule
     {
+        /** @phpstan-ignore phpstanApi.constructor */
         return new ImpossibleCheckTypeStaticMethodCallRule(
+            /** @phpstan-ignore phpstanApi.constructor */
             new ImpossibleCheckTypeHelper(
                 $this->createReflectionProvider(),
                 $this->getTypeSpecifier(),
