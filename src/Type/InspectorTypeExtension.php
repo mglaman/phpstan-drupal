@@ -110,8 +110,7 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
         return $this->typeSpecifier->create(
             $node->getArgs()[1]->value,
             new IterableType(new MixedType(), new MixedType()),
-            TypeSpecifierContext::createTruthy(),
-            false,
+            $context,
             $scope,
         );
     }
@@ -124,8 +123,7 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
         return $this->typeSpecifier->create(
             $node->getArgs()[0]->value,
             new IterableType(new MixedType(), new StringType()),
-            TypeSpecifierContext::createTruthy(),
-            false,
+            $context,
             $scope,
         );
     }
@@ -142,8 +140,7 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
         return $this->typeSpecifier->create(
             $node->getArgs()[0]->value,
             $newType,
-            TypeSpecifierContext::createTruthy(),
-            false,
+            $context,
             $scope,
         );
     }
@@ -159,8 +156,7 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
         return $this->typeSpecifier->create(
             $node->getArgs()[0]->value,
             $newType,
-            TypeSpecifierContext::createTruthy(),
-            false,
+            $context,
             $scope,
         );
     }
@@ -180,8 +176,7 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
         return $this->typeSpecifier->create(
             $node->getArgs()[0]->value,
             $newType,
-            TypeSpecifierContext::createTruthy(),
-            false,
+            $context,
             $scope,
         );
     }
@@ -202,8 +197,7 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
         return $this->typeSpecifier->create(
             $node->getArgs()[0]->value,
             $newType,
-            TypeSpecifierContext::createTruthy(),
-            false,
+            $context,
             $scope,
         );
     }
@@ -247,7 +241,7 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
             TypeCombinator::intersect(...$possibleTypes),
         );
 
-        return $this->typeSpecifier->create($traversableArg, $newType, TypeSpecifierContext::createTruthy(), false, $scope);
+        return $this->typeSpecifier->create($traversableArg, $newType, $context, $scope);
     }
 
     /**
@@ -258,8 +252,7 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
         return $this->typeSpecifier->create(
             $node->getArgs()[0]->value,
             new IterableType(new MixedType(), new IntegerType()),
-            TypeSpecifierContext::createTruthy(),
-            false,
+            $context,
             $scope,
         );
     }
@@ -272,8 +265,7 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
         return $this->typeSpecifier->create(
             $node->getArgs()[0]->value,
             new IterableType(new MixedType(), new FloatType()),
-            TypeSpecifierContext::createTruthy(),
-            false,
+            $context,
             $scope,
         );
     }
@@ -286,8 +278,7 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
         return $this->typeSpecifier->create(
             $node->getArgs()[0]->value,
             new IterableType(new MixedType(), new CallableType()),
-            TypeSpecifierContext::createTruthy(),
-            false,
+            $context,
             $scope,
         );
     }
@@ -311,8 +302,7 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
         return $this->typeSpecifier->create(
             $node->getArgs()[0]->value,
             $newType,
-            TypeSpecifierContext::createTruthy(),
-            false,
+            $context,
             $scope,
         );
     }
@@ -325,8 +315,7 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
         return $this->typeSpecifier->create(
             $node->getArgs()[0]->value,
             new IterableType(new MixedType(), new UnionType([new IntegerType(), new FloatType()])),
-            TypeSpecifierContext::createTruthy(),
-            false,
+            $context,
             $scope,
         );
     }
@@ -339,8 +328,7 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
         return $this->typeSpecifier->create(
             $node->getArgs()[1]->value,
             new IterableType(new MixedType(), new StringType()),
-            TypeSpecifierContext::createTruthy(),
-            false,
+            $context,
             $scope,
         );
     }
@@ -355,8 +343,7 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
             // Drupal treats any non-string input in traversable as invalid
             // value, so it is possible to narrow type here.
             new IterableType(new MixedType(), new StringType()),
-            TypeSpecifierContext::createTruthy(),
-            false,
+            $context,
             $scope,
         );
     }
@@ -389,8 +376,7 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
         return $this->typeSpecifier->create(
             $node->getArgs()[0]->value,
             new IterableType(new MixedType(), TypeCombinator::union(...$objectTypes)),
-            TypeSpecifierContext::createTruthy(),
-            false,
+            $context,
             $scope,
         );
     }

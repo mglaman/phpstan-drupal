@@ -13,7 +13,7 @@ function foo(array $baz): void {
     assertType('array<array>', $baz);
 
     assert(Inspector::assertAllHaveKey($baz, 'alt'));
-    assertType("array<array&hasOffset('alt')>", $baz);
+    assertType("array<non-empty-array&hasOffset('alt')>", $baz);
 }
 
 function bar(array $zed): void {
@@ -35,5 +35,5 @@ function project_browser_example(array $images) {
         Inspector::assertAll(fn (array $i): bool => $i['file'] instanceof Url, $images) &&
         Inspector::assertAllHaveKey($images, 'alt')
     ) or throw new \InvalidArgumentException('The project images must be arrays with `file` and `alt` elements.');
-    assertType("array<array&hasOffset('alt')&hasOffset('file')>", $images);
+    assertType("array<non-empty-array&hasOffset('alt')&hasOffset('file')>", $images);
 }
