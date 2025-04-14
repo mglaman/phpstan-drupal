@@ -111,6 +111,7 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
             $node->getArgs()[1]->value,
             new IterableType(new MixedType(), new MixedType()),
             $context,
+            false,
             $scope,
         );
     }
@@ -124,6 +125,7 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
             $node->getArgs()[0]->value,
             new IterableType(new MixedType(), new StringType()),
             $context,
+            false,
             $scope,
         );
     }
@@ -141,6 +143,7 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
             $node->getArgs()[0]->value,
             $newType,
             $context,
+            false,
             $scope,
         );
     }
@@ -157,6 +160,7 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
             $node->getArgs()[0]->value,
             $newType,
             $context,
+            false,
             $scope,
         );
     }
@@ -177,6 +181,7 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
             $node->getArgs()[0]->value,
             $newType,
             $context,
+            false,
             $scope,
         );
     }
@@ -198,6 +203,7 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
             $node->getArgs()[0]->value,
             $newType,
             $context,
+            false,
             $scope,
         );
     }
@@ -241,7 +247,7 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
             TypeCombinator::intersect(...$possibleTypes),
         );
 
-        return $this->typeSpecifier->create($traversableArg, $newType, $context, $scope);
+        return $this->typeSpecifier->create($traversableArg, $newType, $context, false, $scope);
     }
 
     /**
@@ -253,6 +259,7 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
             $node->getArgs()[0]->value,
             new IterableType(new MixedType(), new IntegerType()),
             $context,
+            false,
             $scope,
         );
     }
@@ -266,6 +273,7 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
             $node->getArgs()[0]->value,
             new IterableType(new MixedType(), new FloatType()),
             $context,
+            false,
             $scope,
         );
     }
@@ -279,6 +287,7 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
             $node->getArgs()[0]->value,
             new IterableType(new MixedType(), new CallableType()),
             $context,
+            false,
             $scope,
         );
     }
@@ -303,6 +312,7 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
             $node->getArgs()[0]->value,
             $newType,
             $context,
+            false,
             $scope,
         );
     }
@@ -316,6 +326,7 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
             $node->getArgs()[0]->value,
             new IterableType(new MixedType(), new UnionType([new IntegerType(), new FloatType()])),
             $context,
+            false,
             $scope,
         );
     }
@@ -329,6 +340,7 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
             $node->getArgs()[1]->value,
             new IterableType(new MixedType(), new StringType()),
             $context,
+            false,
             $scope,
         );
     }
@@ -344,6 +356,7 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
             // value, so it is possible to narrow type here.
             new IterableType(new MixedType(), new StringType()),
             $context,
+            false,
             $scope,
         );
     }
@@ -377,6 +390,7 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
             $node->getArgs()[0]->value,
             new IterableType(new MixedType(), TypeCombinator::union(...$objectTypes)),
             $context,
+            false,
             $scope,
         );
     }

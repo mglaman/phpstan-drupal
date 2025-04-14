@@ -77,10 +77,10 @@ else {
 // Inspector::assertAllHaveKey()
 $input = mixed_function();
 if (Inspector::assertAllHaveKey($input, 'foo', 'baz')) {
-    assertType("iterable<non-empty-array&hasOffset('baz')&hasOffset('foo')>", $input);
+    assertType("iterable<array&hasOffset('baz')&hasOffset('foo')>", $input);
 }
 else {
-    assertType("mixed~iterable<non-empty-array&hasOffset('baz')&hasOffset('foo')>", $input);
+    assertType("mixed~iterable<array&hasOffset('baz')&hasOffset('foo')>", $input);
 }
 
 // Inspector::assertAllIntegers()
