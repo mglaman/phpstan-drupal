@@ -107,6 +107,16 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
             return new SpecifiedTypes();
         }
 
+        $traversable = $node->getArgs()[1]->value;
+        $traversableInfo = $scope->getType($traversable);
+
+        // If it is already not mixed (narrowed by other code, like
+        // '::assertAllArray()'), we could not provide any additional
+        // information. We can only narrow this method to 'array<mixed, mixed>'.
+        if (!$traversableInfo->equals(new MixedType())) {
+            return new SpecifiedTypes();
+        }
+
         // In a negation context, we cannot precisely narrow types because we do
         // not know the exact logic of the callable function. This means we
         // cannot safely return 'mixed~iterable' since the value might still be
