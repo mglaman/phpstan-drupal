@@ -107,6 +107,19 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
             return new SpecifiedTypes();
         }
 
+        // In a negation context, we cannot precisely narrow types because we do
+        // not know the exact logic of the callable function. This means we
+        // cannot safely return 'mixed~iterable' since the value might still be
+        // a valid iterable.
+        //
+        // For example, a negation context with an 'is_string(...)' callable
+        // does not necessarily mean that the value cannot be an
+        // 'iterable<int>'. In such cases, it is safer to skip type narrowing
+        // altogether to prevent introducing new bugs into the code.
+        if ($context->false()) {
+            return new SpecifiedTypes();
+        }
+
         return $this->typeSpecifier->create(
             $node->getArgs()[1]->value,
             new IterableType(new MixedType(), new MixedType()),

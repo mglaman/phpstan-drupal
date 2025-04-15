@@ -16,7 +16,7 @@ if (Inspector::assertAll($callable, $input)) {
     assertType("iterable", $input);
 }
 else {
-    assertType('mixed~iterable', $input);
+    assertType('mixed', $input);
 }
 
 $input = mixed_function();
@@ -25,7 +25,7 @@ if (Inspector::assertAll($callable, $input)) {
     assertType('iterable', $input);
 }
 else {
-    assertType('mixed~iterable', $input);
+    assertType('mixed', $input);
 }
 
 
