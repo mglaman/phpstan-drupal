@@ -107,10 +107,23 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
             return new SpecifiedTypes();
         }
 
+        // In a negation context, we cannot precisely narrow types because we do
+        // not know the exact logic of the callable function. This means we
+        // cannot safely return 'mixed~iterable' since the value might still be
+        // a valid iterable.
+        //
+        // For example, a negation context with an 'is_string(...)' callable
+        // does not necessarily mean that the value cannot be an
+        // 'iterable<int>'. In such cases, it is safer to skip type narrowing
+        // altogether to prevent introducing new bugs into the code.
+        if ($context->false()) {
+            return new SpecifiedTypes();
+        }
+
         return $this->typeSpecifier->create(
             $node->getArgs()[1]->value,
             new IterableType(new MixedType(), new MixedType()),
-            TypeSpecifierContext::createTruthy(),
+            $context,
             $scope,
         );
     }
@@ -123,7 +136,7 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
         return $this->typeSpecifier->create(
             $node->getArgs()[0]->value,
             new IterableType(new MixedType(), new StringType()),
-            TypeSpecifierContext::createTruthy(),
+            $context,
             $scope,
         );
     }
@@ -140,7 +153,7 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
         return $this->typeSpecifier->create(
             $node->getArgs()[0]->value,
             $newType,
-            TypeSpecifierContext::createTruthy(),
+            $context,
             $scope,
         );
     }
@@ -156,7 +169,7 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
         return $this->typeSpecifier->create(
             $node->getArgs()[0]->value,
             $newType,
-            TypeSpecifierContext::createTruthy(),
+            $context,
             $scope,
         );
     }
@@ -176,7 +189,7 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
         return $this->typeSpecifier->create(
             $node->getArgs()[0]->value,
             $newType,
-            TypeSpecifierContext::createTruthy(),
+            $context,
             $scope,
         );
     }
@@ -197,7 +210,7 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
         return $this->typeSpecifier->create(
             $node->getArgs()[0]->value,
             $newType,
-            TypeSpecifierContext::createTruthy(),
+            $context,
             $scope,
         );
     }
@@ -241,7 +254,7 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
             TypeCombinator::intersect(...$possibleTypes),
         );
 
-        return $this->typeSpecifier->create($traversableArg, $newType, TypeSpecifierContext::createTruthy(), $scope);
+        return $this->typeSpecifier->create($traversableArg, $newType, $context, $scope);
     }
 
     /**
@@ -252,7 +265,7 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
         return $this->typeSpecifier->create(
             $node->getArgs()[0]->value,
             new IterableType(new MixedType(), new IntegerType()),
-            TypeSpecifierContext::createTruthy(),
+            $context,
             $scope,
         );
     }
@@ -265,7 +278,7 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
         return $this->typeSpecifier->create(
             $node->getArgs()[0]->value,
             new IterableType(new MixedType(), new FloatType()),
-            TypeSpecifierContext::createTruthy(),
+            $context,
             $scope,
         );
     }
@@ -278,7 +291,7 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
         return $this->typeSpecifier->create(
             $node->getArgs()[0]->value,
             new IterableType(new MixedType(), new CallableType()),
-            TypeSpecifierContext::createTruthy(),
+            $context,
             $scope,
         );
     }
@@ -302,7 +315,7 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
         return $this->typeSpecifier->create(
             $node->getArgs()[0]->value,
             $newType,
-            TypeSpecifierContext::createTruthy(),
+            $context,
             $scope,
         );
     }
@@ -315,7 +328,7 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
         return $this->typeSpecifier->create(
             $node->getArgs()[0]->value,
             new IterableType(new MixedType(), new UnionType([new IntegerType(), new FloatType()])),
-            TypeSpecifierContext::createTruthy(),
+            $context,
             $scope,
         );
     }
@@ -328,7 +341,7 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
         return $this->typeSpecifier->create(
             $node->getArgs()[1]->value,
             new IterableType(new MixedType(), new StringType()),
-            TypeSpecifierContext::createTruthy(),
+            $context,
             $scope,
         );
     }
@@ -343,7 +356,7 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
             // Drupal treats any non-string input in traversable as invalid
             // value, so it is possible to narrow type here.
             new IterableType(new MixedType(), new StringType()),
-            TypeSpecifierContext::createTruthy(),
+            $context,
             $scope,
         );
     }
@@ -376,7 +389,7 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
         return $this->typeSpecifier->create(
             $node->getArgs()[0]->value,
             new IterableType(new MixedType(), TypeCombinator::union(...$objectTypes)),
-            TypeSpecifierContext::createTruthy(),
+            $context,
             $scope,
         );
     }
