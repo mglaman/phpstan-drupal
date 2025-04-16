@@ -22,9 +22,9 @@ class BooleanFieldItemList extends FieldItemList {}
 class ExtendsBooleanItemFormatter extends FormatterBase {
 
     public function prepareView(array $entities_items): void {
-        assertType('array<DrupalFormatterInterfaceGeneric\BooleanFieldItemList>', $entities_items);
+        assertType('array<DrupalFormatterBaseGeneric\BooleanFieldItemList>', $entities_items);
         $items = $entities_items[0];
-        assertType('DrupalFormatterInterfaceGeneric\BooleanFieldItemList', $items);
+        assertType('DrupalFormatterBaseGeneric\BooleanFieldItemList', $items);
         assertType('Drupal\Core\Field\Plugin\Field\FieldType\BooleanItem|null', $items->first());
         assertType('Drupal\Core\Field\Plugin\Field\FieldType\BooleanItem|null', $items->get(0));
         assertType('Drupal\Core\Field\Plugin\Field\FieldType\BooleanItem|null', $items->offsetGet(0));
@@ -34,7 +34,7 @@ class ExtendsBooleanItemFormatter extends FormatterBase {
     }
 
     public function view(FieldItemListInterface $items, $langcode = NULL) {
-        assertType('DrupalFormatterInterfaceGeneric\BooleanFieldItemList', $items);
+        assertType('DrupalFormatterBaseGeneric\BooleanFieldItemList', $items);
         assertType('Drupal\Core\Field\Plugin\Field\FieldType\BooleanItem|null', $items->first());
         assertType('Drupal\Core\Field\Plugin\Field\FieldType\BooleanItem|null', $items->get(0));
         assertType('Drupal\Core\Field\Plugin\Field\FieldType\BooleanItem|null', $items->offsetGet(0));
@@ -44,7 +44,7 @@ class ExtendsBooleanItemFormatter extends FormatterBase {
     }
 
     public function viewElements(FieldItemListInterface $items, $langcode) {
-        assertType('DrupalFormatterInterfaceGeneric\BooleanFieldItemList', $items);
+        assertType('DrupalFormatterBaseGeneric\BooleanFieldItemList', $items);
         assertType('Drupal\Core\Field\Plugin\Field\FieldType\BooleanItem|null', $items->first());
         assertType('Drupal\Core\Field\Plugin\Field\FieldType\BooleanItem|null', $items->get(0));
         assertType('Drupal\Core\Field\Plugin\Field\FieldType\BooleanItem|null', $items->offsetGet(0));
