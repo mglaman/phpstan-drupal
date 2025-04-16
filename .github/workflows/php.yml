@@ -44,11 +44,12 @@ jobs:
         php-version:
           - "8.3"
         drupal:
-          - "^~11.0.0"
-          - "^~11.1.0"
+          - "~11.0.0"
+          - "~11.1.0"
         include:
           - php-version: "8.1"
             drupal: "^10.4"
+            experimental: false
           - php-version: "8.3"
             drupal: "11.x-dev"
             experimental: true
@@ -82,11 +83,12 @@ jobs:
         php-version:
           - "8.3"
         drupal:
-          - "^~11.0.0"
-          - "^~11.1.0"
+          - "~11.0.0"
+          - "~11.1.0"
         include:
           - php-version: "8.1"
             drupal: "^10.4"
+            experimental: false
           - php-version: "8.3"
             drupal: "11.x-dev"
             experimental: true
@@ -157,11 +159,12 @@ jobs:
         php-version:
           - "8.3"
         drupal:
-          - "^~11.0.0"
-          - "^~11.1.0"
+          - "~11.0.0"
+          - "~11.1.0"
         include:
           - php-version: "8.1"
             drupal: "^10.4"
+            experimental: false
           - php-version: "8.3"
             drupal: "11.x-dev"
             experimental: true
