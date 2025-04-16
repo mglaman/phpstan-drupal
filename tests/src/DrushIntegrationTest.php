@@ -12,7 +12,8 @@ final class DrushIntegrationTest extends DrupalRuleTestCase
         // @phpstan-ignore phpstanApi.constructor
         return new CallToNonExistentFunctionRule(
             $this->createReflectionProvider(),
-            true
+            true,
+            true,
         );
     }
 
