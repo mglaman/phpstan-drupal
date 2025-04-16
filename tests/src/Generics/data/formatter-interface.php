@@ -178,8 +178,7 @@ class UnionTypeFormatter implements FormatterInterface {
  *
  * @extends FieldItemList<BooleanItem>
  */
-class BooleanFieldItemList extends FieldItemList {
-}
+class BooleanFieldItemList extends FieldItemList {}
 
 /**
  * @implements FormatterInterface<BooleanFieldItemList>
@@ -191,31 +190,31 @@ class BooleanItemFormatter implements FormatterInterface {
         $items = $entities_items[0];
         assertType('DrupalFormatterInterfaceGeneric\BooleanFieldItemList', $items);
         assertType('Drupal\Core\Field\Plugin\Field\FieldType\BooleanItem|null', $items->first());
-//        assertType('Drupal\Core\Field\Plugin\Field\FieldType\BooleanItem|null', $items->get(0));
-//        assertType('Drupal\Core\Field\Plugin\Field\FieldType\BooleanItem|null', $items->offsetGet(0));
-//        foreach ($items as $item) {
-//            assertType('Drupal\Core\Field\Plugin\Field\FieldType\BooleanItem', $item);
-//        }
+        assertType('Drupal\Core\Field\Plugin\Field\FieldType\BooleanItem|null', $items->get(0));
+        assertType('Drupal\Core\Field\Plugin\Field\FieldType\BooleanItem|null', $items->offsetGet(0));
+        foreach ($items as $item) {
+            assertType('Drupal\Core\Field\Plugin\Field\FieldType\BooleanItem', $item);
+        }
     }
-//
-//    public function view(FieldItemListInterface $items, $langcode = NULL) {
-//        assertType('DrupalFormatterInterfaceGeneric\FakeBooleanFieldItemList', $items);
-//        assertType('Drupal\Core\Field\Plugin\Field\FieldType\BooleanItem|null', $items->first());
-//        assertType('Drupal\Core\Field\Plugin\Field\FieldType\BooleanItem|null', $items->get(0));
-//        assertType('Drupal\Core\Field\Plugin\Field\FieldType\BooleanItem|null', $items->offsetGet(0));
-//        foreach ($items as $item) {
-//            assertType('Drupal\Core\Field\Plugin\Field\FieldType\BooleanItem', $item);
-//        }
-//    }
-//
-//    public function viewElements(FieldItemListInterface $items, $langcode) {
-//        assertType('DrupalFormatterInterfaceGeneric\FakeBooleanFieldItemList', $items);
-//        assertType('Drupal\Core\Field\Plugin\Field\FieldType\BooleanItem|null', $items->first());
-//        assertType('Drupal\Core\Field\Plugin\Field\FieldType\BooleanItem|null', $items->get(0));
-//        assertType('Drupal\Core\Field\Plugin\Field\FieldType\BooleanItem|null', $items->offsetGet(0));
-//        foreach ($items as $item) {
-//            assertType('Drupal\Core\Field\Plugin\Field\FieldType\BooleanItem', $item);
-//        }
-//    }
+
+    public function view(FieldItemListInterface $items, $langcode = NULL) {
+        assertType('DrupalFormatterInterfaceGeneric\BooleanFieldItemList', $items);
+        assertType('Drupal\Core\Field\Plugin\Field\FieldType\BooleanItem|null', $items->first());
+        assertType('Drupal\Core\Field\Plugin\Field\FieldType\BooleanItem|null', $items->get(0));
+        assertType('Drupal\Core\Field\Plugin\Field\FieldType\BooleanItem|null', $items->offsetGet(0));
+        foreach ($items as $item) {
+            assertType('Drupal\Core\Field\Plugin\Field\FieldType\BooleanItem', $item);
+        }
+    }
+
+    public function viewElements(FieldItemListInterface $items, $langcode) {
+        assertType('DrupalFormatterInterfaceGeneric\BooleanFieldItemList', $items);
+        assertType('Drupal\Core\Field\Plugin\Field\FieldType\BooleanItem|null', $items->first());
+        assertType('Drupal\Core\Field\Plugin\Field\FieldType\BooleanItem|null', $items->get(0));
+        assertType('Drupal\Core\Field\Plugin\Field\FieldType\BooleanItem|null', $items->offsetGet(0));
+        foreach ($items as $item) {
+            assertType('Drupal\Core\Field\Plugin\Field\FieldType\BooleanItem', $item);
+        }
+    }
 
 }
