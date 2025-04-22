@@ -176,9 +176,9 @@ class UnionTypeFormatter implements FormatterInterface {
 /**
  * Provides a custom field item list with concrete FieldItemListInterface<T>.
  *
- * @extends FieldItemList<BooleanItem>
+ * @implements FieldItemListInterface<BooleanItem>
  */
-class BooleanFieldItemList extends FieldItemList {}
+class BooleanFieldItemList implements FieldItemListInterface {}
 
 /**
  * @implements FormatterInterface<BooleanFieldItemList>
