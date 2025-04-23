@@ -47,7 +47,8 @@
         },
         "classmap": [
             "tests/src/Type/data",
-            "tests/src/Rules/data"
+            "tests/src/Rules/data",
+            "tests/src/Generics/data"
         ]
     },
     "extra": {

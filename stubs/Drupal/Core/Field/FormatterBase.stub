@@ -5,9 +5,30 @@ namespace Drupal\Core\Field;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 
 /**
- * @template TFieldItemList of \Drupal\Core\Field\FieldItemListInterface
- * @implements FormatterInterface<TFieldItemList>
+ * @template T of FieldItemListInterface
+ * @implements FormatterInterface<T>
  */
 abstract class FormatterBase extends PluginSettingsBase implements FormatterInterface, ContainerFactoryPluginInterface {
+
+  /**
+   * @param array<T> $entities_items
+   */
+  public function prepareView(array $entities_items): void {}
+
+  /**
+   * @param T $items
+   * @param string|null $langcode
+   *
+   * @return array<int|string, mixed>
+   */
+  public function view(FieldItemListInterface $items, $langcode = NULL) {}
+
+  /**
+   * @param T $items
+   * @param string $langcode
+   *
+   * @return array<int, array<int|string, mixed>>
+   */
+  public function viewElements(FieldItemListInterface $items, $langcode) {}
 
 }
