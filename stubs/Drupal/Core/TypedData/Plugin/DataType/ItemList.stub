@@ -13,4 +13,10 @@ use Drupal\Core\TypedData\TypedDataInterface;
  * @implements ListInterface<T>
  */
 class ItemList extends TypedData implements \IteratorAggregate, ListInterface {
+
+  /**
+   * @return \ArrayIterator<int, T>
+   */
+  public function getIterator(): \ArrayIterator {}
+
 }
