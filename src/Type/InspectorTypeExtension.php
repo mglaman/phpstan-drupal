@@ -100,20 +100,20 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
      */
     private function specifyAssertAll(MethodReflection $staticMethodReflection, StaticCall $node, Scope $scope, TypeSpecifierContext $context): SpecifiedTypes
     {
-        $callable = $node->getArgs()[0]->value;
-        $callableInfo = $scope->getType($callable);
+        $callableArg = $node->getArgs()[0]->value;
+        $callableInfo = $scope->getType($callableArg);
 
         if (!$callableInfo->isCallable()->yes()) {
             return new SpecifiedTypes();
         }
 
-        $traversable = $node->getArgs()[1]->value;
-        $traversableInfo = $scope->getType($traversable);
+        $traversableArg = $node->getArgs()[1]->value;
+        $traversableType = $scope->getType($traversableArg);
 
         // If it is already not mixed (narrowed by other code, like
         // '::assertAllArray()'), we could not provide any additional
         // information. We can only narrow this method to 'array<mixed, mixed>'.
-        if (!$traversableInfo->equals(new MixedType())) {
+        if (!$traversableType->equals(new MixedType())) {
             return new SpecifiedTypes();
         }
 
@@ -130,12 +130,9 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
             return new SpecifiedTypes();
         }
 
-        return $this->typeSpecifier->create(
-            $node->getArgs()[1]->value,
-            new IterableType(new MixedType(), new MixedType()),
-            $context,
-            $scope,
-        );
+        $newType = new IterableType(new MixedType(), new MixedType());
+
+        return $this->typeSpecifier->create($traversableArg, $newType, $context, $scope);
     }
 
     /**
@@ -143,12 +140,10 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
      */
     private function specifyAssertAllStrings(MethodReflection $staticMethodReflection, StaticCall $node, Scope $scope, TypeSpecifierContext $context): SpecifiedTypes
     {
-        return $this->typeSpecifier->create(
-            $node->getArgs()[0]->value,
-            new IterableType(new MixedType(), new StringType()),
-            $context,
-            $scope,
-        );
+        $traversableArg = $node->getArgs()[0]->value;
+        $newType = new IterableType(new MixedType(), new StringType());
+
+        return $this->typeSpecifier->create($traversableArg, $newType, $context, $scope);
     }
 
     /**
@@ -156,16 +151,12 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
      */
     private function specifyAssertAllStringable(MethodReflection $staticMethodReflection, StaticCall $node, Scope $scope, TypeSpecifierContext $context): SpecifiedTypes
     {
+        $traversableArg = $node->getArgs()[0]->value;
         // Drupal considers string as part of "stringable" as well.
-        $stringable = TypeCombinator::union(new ObjectType(Stringable::class), new StringType());
-        $newType = new IterableType(new MixedType(), $stringable);
+        $stringableType = TypeCombinator::union(new ObjectType(Stringable::class), new StringType());
+        $newType = new IterableType(new MixedType(), $stringableType);
 
-        return $this->typeSpecifier->create(
-            $node->getArgs()[0]->value,
-            $newType,
-            $context,
-            $scope,
-        );
+        return $this->typeSpecifier->create($traversableArg, $newType, $context, $scope);
     }
 
     /**
@@ -173,15 +164,11 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
      */
     private function specifyAssertAllArrays(MethodReflection $staticMethodReflection, StaticCall $node, Scope $scope, TypeSpecifierContext $context): SpecifiedTypes
     {
+        $traversableArg = $node->getArgs()[0]->value;
         $arrayType = new ArrayType(new MixedType(), new MixedType());
         $newType = new IterableType(new MixedType(), $arrayType);
 
-        return $this->typeSpecifier->create(
-            $node->getArgs()[0]->value,
-            $newType,
-            $context,
-            $scope,
-        );
+        return $this->typeSpecifier->create($traversableArg, $newType, $context, $scope);
     }
 
     /**
@@ -189,19 +176,16 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
      */
     private function specifyAssertStrictArray(MethodReflection $staticMethodReflection, StaticCall $node, Scope $scope, TypeSpecifierContext $context): SpecifiedTypes
     {
+        $traversableArg = $node->getArgs()[0]->value;
         $newType = new ArrayType(
-            // In Drupal, 'strict arrays' are defined as arrays whose indexes
-            // consist of integers that are equal to or greater than 0.
+            // In Drupal, 'strict arrays' are defined as arrays whose
+            // indexes consist of integers that are equal to or greater
+            // than 0.
             IntegerRangeType::createAllGreaterThanOrEqualTo(0),
             new MixedType(),
         );
 
-        return $this->typeSpecifier->create(
-            $node->getArgs()[0]->value,
-            $newType,
-            $context,
-            $scope,
-        );
+        return $this->typeSpecifier->create($traversableArg, $newType, $context, $scope);
     }
 
     /**
@@ -209,6 +193,7 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
      */
     private function specifyAssertAllStrictArrays(MethodReflection $staticMethodReflection, StaticCall $node, Scope $scope, TypeSpecifierContext $context): SpecifiedTypes
     {
+        $traversableArg = $node->getArgs()[0]->value;
         $newType = new IterableType(
             new MixedType(),
             new ArrayType(
@@ -217,12 +202,7 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
             ),
         );
 
-        return $this->typeSpecifier->create(
-            $node->getArgs()[0]->value,
-            $newType,
-            $context,
-            $scope,
-        );
+        return $this->typeSpecifier->create($traversableArg, $newType, $context, $scope);
     }
 
     /**
@@ -272,12 +252,10 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
      */
     private function specifyAssertAllIntegers(MethodReflection $staticMethodReflection, StaticCall $node, Scope $scope, TypeSpecifierContext $context): SpecifiedTypes
     {
-        return $this->typeSpecifier->create(
-            $node->getArgs()[0]->value,
-            new IterableType(new MixedType(), new IntegerType()),
-            $context,
-            $scope,
-        );
+        $traversableArg = $node->getArgs()[0]->value;
+        $newType = new IterableType(new MixedType(), new IntegerType());
+
+        return $this->typeSpecifier->create($traversableArg, $newType, $context, $scope);
     }
 
     /**
@@ -285,12 +263,10 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
      */
     private function specifyAssertAllFloat(MethodReflection $staticMethodReflection, StaticCall $node, Scope $scope, TypeSpecifierContext $context): SpecifiedTypes
     {
-        return $this->typeSpecifier->create(
-            $node->getArgs()[0]->value,
-            new IterableType(new MixedType(), new FloatType()),
-            $context,
-            $scope,
-        );
+        $traversableArg = $node->getArgs()[0]->value;
+        $newType = new IterableType(new MixedType(), new FloatType());
+
+        return $this->typeSpecifier->create($traversableArg, $newType, $context, $scope);
     }
 
     /**
@@ -298,12 +274,10 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
      */
     private function specifyAssertAllCallable(MethodReflection $staticMethodReflection, StaticCall $node, Scope $scope, TypeSpecifierContext $context): SpecifiedTypes
     {
-        return $this->typeSpecifier->create(
-            $node->getArgs()[0]->value,
-            new IterableType(new MixedType(), new CallableType()),
-            $context,
-            $scope,
-        );
+        $traversableArg = $node->getArgs()[0]->value;
+        $newType = new IterableType(new MixedType(), new CallableType());
+
+        return $this->typeSpecifier->create($traversableArg, $newType, $context, $scope);
     }
 
     /**
@@ -311,7 +285,8 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
      */
     private function specifyAssertAllNotEmpty(MethodReflection $staticMethodReflection, StaticCall $node, Scope $scope, TypeSpecifierContext $context): SpecifiedTypes
     {
-        $non_empty_types = [
+        $traversableArg = $node->getArgs()[0]->value;
+        $nonEmptyTypes = [
             new NonEmptyArrayType(),
             new ObjectType('object'),
             new IntersectionType([new StringType(), new AccessoryNonEmptyStringType()]),
@@ -320,14 +295,9 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
             new FloatType(),
             new ResourceType(),
         ];
-        $newType = new IterableType(new MixedType(), new UnionType($non_empty_types));
+        $newType = new IterableType(new MixedType(), new UnionType($nonEmptyTypes));
 
-        return $this->typeSpecifier->create(
-            $node->getArgs()[0]->value,
-            $newType,
-            $context,
-            $scope,
-        );
+        return $this->typeSpecifier->create($traversableArg, $newType, $context, $scope);
     }
 
     /**
@@ -335,12 +305,10 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
      */
     private function specifyAssertAllNumeric(MethodReflection $staticMethodReflection, StaticCall $node, Scope $scope, TypeSpecifierContext $context): SpecifiedTypes
     {
-        return $this->typeSpecifier->create(
-            $node->getArgs()[0]->value,
-            new IterableType(new MixedType(), new UnionType([new IntegerType(), new FloatType()])),
-            $context,
-            $scope,
-        );
+        $traversableArg = $node->getArgs()[0]->value;
+        $newType = new IterableType(new MixedType(), new UnionType([new IntegerType(), new FloatType()]));
+
+        return $this->typeSpecifier->create($traversableArg, $newType, $context, $scope);
     }
 
     /**
@@ -348,12 +316,10 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
      */
     private function specifyAssertAllMatch(MethodReflection $staticMethodReflection, StaticCall $node, Scope $scope, TypeSpecifierContext $context): SpecifiedTypes
     {
-        return $this->typeSpecifier->create(
-            $node->getArgs()[1]->value,
-            new IterableType(new MixedType(), new StringType()),
-            $context,
-            $scope,
-        );
+        $traversableArg = $node->getArgs()[1]->value;
+        $newType = new IterableType(new MixedType(), new StringType());
+
+        return $this->typeSpecifier->create($traversableArg, $newType, $context, $scope);
     }
 
     /**
@@ -361,14 +327,12 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
      */
     private function specifyAssertAllRegularExpressionMatch(MethodReflection $staticMethodReflection, StaticCall $node, Scope $scope, TypeSpecifierContext $context): SpecifiedTypes
     {
-        return $this->typeSpecifier->create(
-            $node->getArgs()[1]->value,
-            // Drupal treats any non-string input in traversable as invalid
-            // value, so it is possible to narrow type here.
-            new IterableType(new MixedType(), new StringType()),
-            $context,
-            $scope,
-        );
+        $traversableArg = $node->getArgs()[1]->value;
+        // Drupal treats any non-string input in traversable as invalid
+        // value, so it is possible to narrow type here.
+        $newType = new IterableType(new MixedType(), new StringType());
+
+        return $this->typeSpecifier->create($traversableArg, $newType, $context, $scope);
     }
 
     /**
@@ -385,22 +349,15 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
 
             $argType = $scope->getType($arg->value);
             foreach ($argType->getConstantStrings() as $stringType) {
-                $classString = $stringType->getValue();
-                // PHPStan does not recognize a string argument like '\\Stringable'
-                // as a class string, so we need to explicitly check it.
-                if (!class_exists($classString) && !interface_exists($classString)) {
-                    continue;
+                if ($stringType->isClassString()->yes()) {
+                    $objectTypes[] = new ObjectType($stringType->getValue());
                 }
-
-                $objectTypes[] = new ObjectType($classString);
             }
         }
 
-        return $this->typeSpecifier->create(
-            $node->getArgs()[0]->value,
-            new IterableType(new MixedType(), TypeCombinator::union(...$objectTypes)),
-            $context,
-            $scope,
-        );
+        $traversableArg = $node->getArgs()[0]->value;
+        $newType = new IterableType(new MixedType(), TypeCombinator::union(...$objectTypes));
+
+        return $this->typeSpecifier->create($traversableArg, $newType, $context, $scope);
     }
 }
