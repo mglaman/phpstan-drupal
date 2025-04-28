@@ -31,8 +31,6 @@ use PHPStan\Type\StringType;
 use PHPStan\Type\TypeCombinator;
 use PHPStan\Type\UnionType;
 use Stringable;
-use function class_exists;
-use function interface_exists;
 
 final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtension, TypeSpecifierAwareExtension
 {
