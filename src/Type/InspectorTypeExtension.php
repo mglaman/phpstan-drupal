@@ -101,9 +101,9 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
     private function specifyAssertAll(MethodReflection $staticMethodReflection, StaticCall $node, Scope $scope, TypeSpecifierContext $context): SpecifiedTypes
     {
         $callableArg = $node->getArgs()[0]->value;
-        $callableInfo = $scope->getType($callableArg);
+        $callableType = $scope->getType($callableArg);
 
-        if (!$callableInfo->isCallable()->yes()) {
+        if (!$callableType->isCallable()->yes()) {
             return new SpecifiedTypes();
         }
 
