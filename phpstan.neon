@@ -12,6 +12,7 @@ parameters:
 		- tests/src
 	excludePaths:
 		-  tests/src/data/*.php
+		-  tests/src/Generics/data/*.php
 		-  tests/src/Type/data/*.php
 		-  tests/src/Rules/data/*.php
 		-  tests/src/DeprecatedScope/data/*.php
