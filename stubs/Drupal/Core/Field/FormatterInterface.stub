@@ -2,14 +2,30 @@
 
 namespace Drupal\Core\Field;
 
-interface FormatterInterface {
+/**
+ * @template T of FieldItemListInterface
+ */
+interface FormatterInterface extends PluginSettingsInterface {
 
   /**
-   * @param \Drupal\Core\Field\FieldItemListInterface<\Drupal\Core\Field\FieldItemInterface> $items
+   * @param array<T> $entities_items
+   */
+  public function prepareView(array $entities_items): void;
+
+  /**
+   * @param T $items
+   * @param string|null $langcode
+   *
+   * @return array<int|string, mixed>
+   */
+  public function view(FieldItemListInterface $items, $langcode = NULL);
+
+  /**
+   * @param T $items
    * @param string $langcode
    *
    * @return array<int, array<int|string, mixed>>
    */
-  public function viewElements(FieldItemListInterface $items, $langcode): array;
+  public function viewElements(FieldItemListInterface $items, $langcode);
 
 }

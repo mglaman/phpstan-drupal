@@ -5,20 +5,14 @@ declare(strict_types=1);
 namespace mglaman\PHPStanDrupal\Tests\DeprecatedScope;
 
 use mglaman\PHPStanDrupal\Tests\DrupalRuleTestCase;
-use PHPStan\Rules\Deprecations\CallToDeprecatedFunctionRule;
-use PHPStan\Rules\Deprecations\DeprecatedScopeHelper;
+use PHPStan\Rules\RestrictedUsage\RestrictedFunctionUsageRule;
 use PHPStan\Rules\Rule;
 
 final class GlobalLegacyScopeTest extends DrupalRuleTestCase {
 
     protected function getRule(): Rule
     {
-        /** @phpstan-ignore phpstanApi.constructor */
-        return new CallToDeprecatedFunctionRule(
-            self::createReflectionProvider(),
-            /** @phpstan-ignore phpstanApi.classConstant */
-            self::getContainer()->getByType(DeprecatedScopeHelper::class)
-        );
+        return self::getContainer()->getByType(RestrictedFunctionUsageRule::class);
     }
 
     public function testCustomScope(): void
