@@ -5,8 +5,7 @@ declare(strict_types=1);
 namespace mglaman\PHPStanDrupal\Tests\Rules;
 
 use mglaman\PHPStanDrupal\Tests\DrupalRuleTestCase;
-use PHPStan\Rules\Deprecations\CallToDeprecatedMethodRule;
-use PHPStan\Rules\RestrictedUsage\RestrictedFunctionUsageRule;
+use PHPStan\Rules\RestrictedUsage\RestrictedMethodUsageRule;
 use PHPStan\Rules\Rule;
 
 final class RevisionableStorageInterfaceStubTest extends DrupalRuleTestCase
@@ -15,7 +14,7 @@ final class RevisionableStorageInterfaceStubTest extends DrupalRuleTestCase
     protected function getRule(): Rule
     {
         /** @phpstan-ignore phpstanApi.constructor */
-        return self::getContainer()->getByType(RestrictedFunctionUsageRule::class);
+        return self::getContainer()->getByType(RestrictedMethodUsageRule::class);
     }
 
     public function testRule(): void
