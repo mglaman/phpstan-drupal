@@ -47,7 +47,7 @@ final class EntityFieldMethodsViaMagicReflectionExtensionTest extends PHPStanTes
 
         // A content entity for sure does not have this method.
         yield 'Content entity: referencedEntities' => [
-            // @phpstan-ignore-next-line
+            // @phpstan-ignore class.notFound
             EntityTest::class,
             'referencedEntities',
             false,

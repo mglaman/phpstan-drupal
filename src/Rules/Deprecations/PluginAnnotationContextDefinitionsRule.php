@@ -5,6 +5,7 @@ namespace mglaman\PHPStanDrupal\Rules\Deprecations;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ClassReflection;
+use PHPStan\Rules\RuleErrorBuilder;
 use PHPStan\ShouldNotHappenException;
 use function preg_match;
 
@@ -16,6 +17,9 @@ final class PluginAnnotationContextDefinitionsRule extends DeprecatedAnnotations
         return 'Drupal\Component\Plugin\ContextAwarePluginInterface';
     }
 
+    /**
+     * @return list<\PHPStan\Rules\IdentifierRuleError>
+     */
     protected function doProcessNode(ClassReflection $reflection, Node\Stmt\Class_ $node, Scope $scope): array
     {
         $annotation = $reflection->getResolvedPhpDoc();
@@ -30,7 +34,11 @@ final class PluginAnnotationContextDefinitionsRule extends DeprecatedAnnotations
         }
         if ($hasMatch === 1) {
             return [
-                'Providing context definitions via the "context" key is deprecated in Drupal 8.7.x and will be removed before Drupal 9.0.0. Use the "context_definitions" key instead.',
+                RuleErrorBuilder::message(
+                    'Providing context definitions via the "context" key is deprecated in Drupal 8.7.x and will be removed before Drupal 9.0.0. Use the "context_definitions" key instead.',
+                )
+                    ->identifier('pluginAnnotationContextDefinitions.useContextDefinitionsKey')
+                    ->build()
             ];
         }
         return [];

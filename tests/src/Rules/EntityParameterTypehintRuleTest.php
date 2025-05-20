@@ -11,17 +11,13 @@ final class EntityParameterTypehintRuleTest extends DrupalRuleTestCase
 {
     protected function getRule(): Rule
     {
-        // @phpstan-ignore-next-line
+        /** @phpstan-ignore phpstanApi.constructor */
         return new MissingFunctionParameterTypehintRule(
-            // @phpstan-ignore-next-line
-            new MissingTypehintCheck(
-                true,
-                true,
-                true,
+        /** @phpstan-ignore phpstanApi.constructor */
+        new MissingTypehintCheck(
                 true,
                 []
-            ),
-            true
+            )
         );
     }
 

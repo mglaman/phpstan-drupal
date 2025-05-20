@@ -1,6 +1,5 @@
 parameters:
 	drupal:
-		drupal_root: tests/fixtures/drupal
 		entityMapping:
 			content_entity_using_custom_storage:
 				class: Drupal\phpstan_fixtures\Entity\ContentEntityUsingCustomStorage

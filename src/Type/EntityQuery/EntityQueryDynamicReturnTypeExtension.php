@@ -36,7 +36,11 @@ class EntityQueryDynamicReturnTypeExtension implements DynamicMethodReturnTypeEx
         MethodCall $methodCall,
         Scope $scope
     ): Type {
-        $defaultReturnType = ParametersAcceptorSelector::selectSingle($methodReflection->getVariants())->getReturnType();
+        $defaultReturnType = ParametersAcceptorSelector::selectFromArgs(
+            $scope,
+            $methodCall->getArgs(),
+            $methodReflection->getVariants()
+        )->getReturnType();
         $varType = $scope->getType($methodCall->var);
         $methodName = $methodReflection->getName();
 

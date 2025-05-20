@@ -14,15 +14,14 @@ final class AccessCheckImpossibleTypeCallRuleTest extends DrupalRuleTestCase
 
     protected function getRule(): Rule
     {
-        // @phpstan-ignore-next-line
+        // @phpstan-ignore phpstanApi.constructor
         return new ImpossibleCheckTypeMethodCallRule(
-        // @phpstan-ignore-next-line
+        // @phpstan-ignore phpstanApi.constructor
             new ImpossibleCheckTypeHelper(
                 $this->createReflectionProvider(),
                 $this->getTypeSpecifier(),
                 [],
                 false,
-                true,
             ),
             true,
             false,

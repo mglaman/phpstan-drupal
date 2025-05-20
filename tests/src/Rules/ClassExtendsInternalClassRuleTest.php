@@ -38,14 +38,11 @@ final class ClassExtendsInternalClassRuleTest extends DrupalRuleTestCase
 
     /**
      * @dataProvider pluginData
+     *
+     * @param list<array{0: string, 1: int, 2?: string|null}> $errorMessages
      */
     public function testRule(string $path, array $errorMessages): void
     {
-        [$version, $minor] = explode('.', \Drupal::VERSION, 3);
-        if (($version >= '10' || ($version === '9' && (int) $minor >= 4))
-            && $path === __DIR__ . '/../../fixtures/drupal/modules/phpstan_fixtures/src/Form/ExtendsContentEntityDeleteForm.php') {
-                self::markTestSkipped('@internal was removed in 10.0.x and 9.4.x');
-        }
         $this->analyse([$path], $errorMessages);
     }
 
@@ -125,16 +122,6 @@ final class ClassExtendsInternalClassRuleTest extends DrupalRuleTestCase
         yield 'does not extend an internal class: phpstan_fixtures extends an external class from module module_with_internal_classes.' => [
             __DIR__ . '/../../fixtures/drupal/modules/phpstan_fixtures/src/Internal/ExtendsPHPStanDrupalModuleWithInternalClassesExternalClass.php',
             [],
-        ];
-        yield 'tip for ContentEntityDeleteForm' => [
-            __DIR__ . '/../../fixtures/drupal/modules/phpstan_fixtures/src/Form/ExtendsContentEntityDeleteForm.php',
-            [
-                [
-                    'Class Drupal\phpstan_fixtures\Form\ExtendsContentEntityDeleteForm extends @internal class Drupal\Core\Entity\ContentEntityDeleteForm.',
-                    7,
-                    'Extend \Drupal\Core\Entity\ContentEntityConfirmFormBase. See https://www.drupal.org/node/2491057'
-                ]
-            ],
         ];
     }
 

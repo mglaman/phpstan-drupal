@@ -48,7 +48,11 @@ class EntityTypeManagerGetStorageDynamicReturnTypeExtension implements DynamicMe
         MethodCall $methodCall,
         Scope $scope
     ): Type {
-        $returnType = ParametersAcceptorSelector::selectSingle($methodReflection->getVariants())->getReturnType();
+        $returnType = ParametersAcceptorSelector::selectFromArgs(
+            $scope,
+            $methodCall->getArgs(),
+            $methodReflection->getVariants()
+        )->getReturnType();
         if (!isset($methodCall->args[0])) {
             // Parameter is required.
             throw new ShouldNotHappenException();

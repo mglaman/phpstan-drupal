@@ -14,6 +14,8 @@ final class GlobalDrupalDependencyInjectionRuleTest extends DrupalRuleTestCase {
 
     /**
      * @dataProvider resultData
+     *
+     * @param list<array{0: string, 1: int, 2?: string|null}> $errorMessages
      */
     public function testRule(string $path, array $errorMessages): void
     {
@@ -63,12 +65,10 @@ final class GlobalDrupalDependencyInjectionRuleTest extends DrupalRuleTestCase {
             [],
         ];
 
-        if (PHP_VERSION_ID >= 80100) {
-            yield [
-                __DIR__ . '/data/bug-500.php',
-                [],
-            ];
-        }
+        yield [
+            __DIR__ . '/data/bug-500.php',
+            [],
+        ];
 
     }
 

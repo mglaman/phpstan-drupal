@@ -9,6 +9,7 @@ use Drupal\Core\Security\Attribute\TrustedCallback;
 use Drupal\Core\Security\TrustedCallbackInterface;
 use mglaman\PHPStanDrupal\Drupal\ServiceMap;
 use PhpParser\Node;
+use PhpParser\Node\ArrayItem;
 use PhpParser\Node\Name;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ClassReflection;
@@ -63,7 +64,7 @@ final class RenderCallbackRule implements Rule
 
     public function getNodeType(): string
     {
-        return Node\Expr\ArrayItem::class;
+        return ArrayItem::class;
     }
 
     public function processNode(Node $node, Scope $scope): array
@@ -106,7 +107,9 @@ final class RenderCallbackRule implements Rule
             if (!$value instanceof Node\Expr\Array_) {
                 return [
                     RuleErrorBuilder::message(sprintf('The "%s" expects a callable array with arguments.', $keyChecked))
-                        ->line($node->getStartLine())->build()
+                        ->line($node->getStartLine())
+                        ->identifier('renderCallback.expectsCallableArrayWithArguments')
+                        ->build()
                 ];
             }
             if (count($value->items) === 0) {
@@ -119,7 +122,9 @@ final class RenderCallbackRule implements Rule
         if (!$value instanceof Node\Expr\Array_) {
             return [
                 RuleErrorBuilder::message(sprintf('The "%s" render array value expects an array of callbacks.', $keyChecked))
-                    ->line($node->getStartLine())->build()
+                    ->line($node->getStartLine())
+                    ->identifier('renderCallback.expectsArrayOfCallbacks')
+                    ->build()
             ];
         }
         if (count($value->items) === 0) {
@@ -133,7 +138,7 @@ final class RenderCallbackRule implements Rule
     }
 
     /**
-    @return (string|\PHPStan\Rules\RuleError)[] errors
+     * @return list<\PHPStan\Rules\IdentifierRuleError> errors
      */
     private function doProcessNode(Node\Expr $node, Scope $scope, string $keyChecked, int $pos): array
     {
@@ -152,26 +157,33 @@ final class RenderCallbackRule implements Rule
             if (!$constantStringType->isCallable()->yes()) {
                 $errors[] = RuleErrorBuilder::message(
                     sprintf("%s callback %s at key '%s' is not callable.", $keyChecked, $constantStringType->describe(VerbosityLevel::value()), $pos)
-                )->line($errorLine)->build();
+                )->line($errorLine)
+                ->identifier('renderCallback.nonCallableCallback')
+                ->build();
             } elseif ($this->reflectionProvider->hasFunction(new Name($constantStringType->getValue()), null)) {
                 // We can determine if the callback is callable through the type system. However, we cannot determine
                 // if it is just a function or a static class call (MyClass::staticFunc).
                 $errors[] = RuleErrorBuilder::message(
                     sprintf("%s callback %s at key '%s' is not trusted.", $keyChecked, $constantStringType->describe(VerbosityLevel::value()), $pos)
                 )->line($errorLine)
-                    ->tip('Change record: https://www.drupal.org/node/2966725.')
-                    ->build();
+                ->tip('Change record: https://www.drupal.org/node/2966725.')
+                ->identifier('renderCallback.nonTrustedCallback')
+                ->build();
             } else {
                 // @see \PHPStan\Type\Constant\ConstantStringType::isCallable
                 preg_match('#^([a-zA-Z_\\x7f-\\xff\\\\][a-zA-Z0-9_\\x7f-\\xff\\\\]*)::([a-zA-Z_\\x7f-\\xff][a-zA-Z0-9_\\x7f-\\xff]*)\\z#', $constantStringType->getValue(), $matches);
                 if (count($matches) === 0) {
                     $errors[] = RuleErrorBuilder::message(
                         sprintf("%s callback %s at key '%s' is not callable.", $keyChecked, $constantStringType->describe(VerbosityLevel::value()), $pos)
-                    )->line($errorLine)->build();
+                    )->line($errorLine)
+                    ->identifier('renderCallback.nonCallableCallback')
+                    ->build();
                 } elseif (!$trustedCallbackType->isSuperTypeOf(new ObjectType($matches[1]))->yes()) {
                     $errors[] = RuleErrorBuilder::message(
                         sprintf("%s callback class %s at key '%s' does not implement Drupal\Core\Security\TrustedCallbackInterface.", $keyChecked, $constantStringType->describe(VerbosityLevel::value()), $pos)
-                    )->line($errorLine)->tip('Change record: https://www.drupal.org/node/2966725.')->build();
+                    )->line($errorLine)->tip('Change record: https://www.drupal.org/node/2966725.')
+                    ->identifier('renderCallback.callbackNotImplementsTrustedCallbackInterface')
+                    ->build();
                 }
             }
         }
@@ -194,7 +206,9 @@ final class RenderCallbackRule implements Rule
                 }
                 $errors[] = RuleErrorBuilder::message(
                     sprintf("%s callback %s at key '%s' is not callable.", $keyChecked, $constantArrayType->describe(VerbosityLevel::value()), $pos)
-                )->line($errorLine)->build();
+                )->line($errorLine)
+                ->identifier('renderCallback.nonCallableCallback')
+                ->build();
                 continue;
             }
             $typeAndMethodNames = $constantArrayType->findTypeAndMethodNames();
@@ -226,7 +240,9 @@ final class RenderCallbackRule implements Rule
                                 $constantArrayType->describe(VerbosityLevel::value()),
                                 $pos
                             )
-                        )->line($errorLine)->tip('Change record: https://www.drupal.org/node/3349470')->build();
+                        )->line($errorLine)->tip('Change record: https://www.drupal.org/node/3349470')
+                        ->identifier('renderCallback.callbackNotImplementsTrustedCallback')
+                        ->build();
                     } else {
                         $errors[] =  RuleErrorBuilder::message(
                             sprintf(
@@ -235,7 +251,9 @@ final class RenderCallbackRule implements Rule
                                 $typeAndMethodName->getType()->describe(VerbosityLevel::value()),
                                 $pos
                             )
-                        )->line($errorLine)->tip('Change record: https://www.drupal.org/node/2966725.')->build();
+                        )->line($errorLine)->tip('Change record: https://www.drupal.org/node/2966725.')
+                        ->identifier('renderCallback.callbackNotImplementsTrustedCallbackInterface')
+                        ->build();
                     }
                 }
             }
@@ -248,14 +266,18 @@ final class RenderCallbackRule implements Rule
             if ($formType->isSuperTypeOf($classType)->yes()) {
                 $errors[] = RuleErrorBuilder::message(
                     sprintf("%s may not contain a closure at key '%s' as forms may be serialized and serialization of closures is not allowed.", $keyChecked, $pos)
-                )->line($errorLine)->build();
+                )->line($errorLine)
+                ->identifier('renderCallback.containsClosure')
+                ->build();
             }
         }
 
         if (count($errors) === 0 && ($checkIsCallable && !$type->isCallable()->yes())) {
             $errors[] = RuleErrorBuilder::message(
                 sprintf("%s value '%s' at key '%s' is invalid.", $keyChecked, $type->describe(VerbosityLevel::value()), $pos)
-            )->line($errorLine)->build();
+            )->line($errorLine)
+            ->identifier('renderCallback.invalidKeyValue')
+            ->build();
         }
 
         return $errors;
@@ -281,7 +303,7 @@ final class RenderCallbackRule implements Rule
                 }
             }
         } elseif ($type instanceof ConstantStringType) {
-            if ($type->isClassStringType()->yes()) {
+            if ($type->isClassString()->yes()) {
                 return $type;
             }
             // Covers \Drupal\Core\Controller\ControllerResolver::createController.
@@ -302,7 +324,7 @@ final class RenderCallbackRule implements Rule
             }
             // @see \PHPStan\Type\Constant\ConstantStringType::isCallable
             preg_match('#^([a-zA-Z_\\x7f-\\xff\\\\][a-zA-Z0-9_\\x7f-\\xff\\\\]*)::([a-zA-Z_\\x7f-\\xff][a-zA-Z0-9_\\x7f-\\xff]*)\\z#', $type->getValue(), $matches);
-            if (count($matches) > 0) {
+            if (count($matches) === 3) {
                 return new ConstantArrayType(
                     [new ConstantIntegerType(0), new ConstantIntegerType(1)],
                     [

@@ -4,7 +4,6 @@ namespace mglaman\PHPStanDrupal\Drupal;
 
 use function array_combine;
 use function array_map;
-use function is_array;
 
 final class ExtensionMap
 {
@@ -74,14 +73,8 @@ final class ExtensionMap
      */
     private static function keyByExtensionName(array $extensions): array
     {
-        // PHP 7.4 returns array|false, PHP 8.0 only returns an array.
-        // Make PHPStan happy. When PHP 7.4 is dropped, reduce to a single
-        // return.
-        $combined = array_combine(array_map(static function (Extension $extension) {
+        return array_combine(array_map(static function (Extension $extension) {
             return $extension->getName();
         }, $extensions), $extensions);
-        // @phpstan-ignore-next-line
-        assert(is_array($combined));
-        return $combined;
     }
 }

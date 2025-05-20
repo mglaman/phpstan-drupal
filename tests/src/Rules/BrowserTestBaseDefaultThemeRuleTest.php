@@ -17,6 +17,8 @@ final class BrowserTestBaseDefaultThemeRuleTest extends DrupalRuleTestCase {
 
     /**
      * @dataProvider fileData
+     *
+     * @param list<array{0: string, 1: int, 2?: string|null}> $errorMessages
      */
     public function testRule(string $path, array $errorMessages): void
     {
