@@ -294,11 +294,19 @@ services:
 		class: mglaman\PHPStanDrupal\Type\EntityStorage\EntityStorageDynamicReturnTypeExtension
 		tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
 	-
+		class: mglaman\PHPStanDrupal\Type\EntityRepositoryReturnTypeExtension
+	-
+		class: mglaman\PHPStanDrupal\Type\EntityStorage\GetQueryReturnTypeExtension
+	-
 		class: mglaman\PHPStanDrupal\Type\ContainerDynamicReturnTypeExtension
 		tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
 	-
 		class: mglaman\PHPStanDrupal\Type\DrupalClassResolverDynamicReturnTypeExtension
 		tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
+	-
+		class: mglaman\PHPStanDrupal\Type\EntityQuery\EntityQueryDynamicReturnTypeExtension
+	-
+		class: mglaman\PHPStanDrupal\Type\EntityQuery\EntityQueryAccessCheckDynamicReturnTypeExtension
 	-
 		class: mglaman\PHPStanDrupal\Type\EntityAccessControlHandlerReturnTypeExtension
 		tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
@@ -311,6 +319,14 @@ services:
 	-
 		class: mglaman\PHPStanDrupal\Type\DrupalStaticEntityQueryDynamicReturnTypeExtension
 		tags: [phpstan.broker.dynamicStaticMethodReturnTypeExtension]
+	-
+		class: mglaman\PHPStanDrupal\Reflection\EntityFieldsViaMagicReflectionExtension
+	-
+		class: mglaman\PHPStanDrupal\Reflection\EntityFieldMethodsViaMagicReflectionExtension
+	-
+		class: mglaman\PHPStanDrupal\Drupal\DrupalStubFilesExtension
+	-
+		class: mglaman\PHPStanDrupal\Type\EntityQuery\AccessCheckTypeSpecifyingExtension
 	-
 		class: mglaman\PHPStanDrupal\DeprecatedScope\GroupLegacyScope
 		tags:
