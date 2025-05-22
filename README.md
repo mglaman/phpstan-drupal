@@ -108,16 +108,19 @@ parameters:
             classExtendsInternalClassRule: false
 ```
 
-#### Disabling reflection extensions
+#### Disabling  extensions
 
-You can disable the magic property and method access extensions that provide Drupal-specific type information. This is useful when trying to move these fixes into Drupal core or when you want to use your own extensions.
+You can disable various extensions. This is useful when contributing to Drupal Core to improve its types.
 
 ```neon
 parameters:
     drupal:
         extensions:
-            entityFieldsViaMagicReflection: false
-            entityFieldMethodsViaMagicReflection: false
+            entityFieldsViaMagicReflection: true
+            entityFieldMethodsViaMagicReflection: true
+            entityQuery: true
+            entityRepository: true
+            stubFiles: true
 ```
 
 Both options are enabled by default.
