@@ -12,4 +12,9 @@ use Drupal\Core\Field\Plugin\Field\FieldType\EntityReferenceItem;
  */
 class EntityReferenceFieldItemList extends FieldItemList implements EntityReferenceFieldItemListInterface {
 
+  /**
+   * @return array<int, T>
+   */
+  public function referencedEntities();
+
 }
