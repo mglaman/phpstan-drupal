@@ -13,9 +13,9 @@ use function array_key_exists;
  */
 class EntityFieldMethodsViaMagicReflectionExtension implements MethodsClassReflectionExtension
 {
-
     public function hasMethod(ClassReflection $classReflection, string $methodName): bool
     {
+        
         if ($classReflection->hasNativeMethod($methodName) || array_key_exists($methodName, $classReflection->getMethodTags())) {
             // Let other parts of PHPStan handle this.
             return false;

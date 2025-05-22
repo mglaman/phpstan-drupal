@@ -108,6 +108,20 @@ parameters:
             classExtendsInternalClassRule: false
 ```
 
+#### Disabling reflection extensions
+
+You can disable the magic property and method access extensions that provide Drupal-specific type information. This is useful when trying to move these fixes into Drupal core or when you want to use your own extensions.
+
+```neon
+parameters:
+    drupal:
+        extensions:
+            entityFieldsViaMagicReflection: false
+            entityFieldMethodsViaMagicReflection: false
+```
+
+Both options are enabled by default.
+
 ### Entity storage mappings.
 
 The `EntityTypeManagerGetStorageDynamicReturnTypeExtension` service helps map dynamic return types. This inspects the

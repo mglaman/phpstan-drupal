@@ -123,7 +123,7 @@ final class EntityFieldsViaMagicReflectionExtensionTest extends PHPStanTestCase 
         $propertyReflection = $this->extension->getProperty($classReflection, 'format');
         $readableType = $propertyReflection->getReadableType();
         self::assertInstanceOf(NullType::class, $readableType);
-
     }
+    
 
 }
