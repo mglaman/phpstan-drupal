@@ -108,6 +108,23 @@ parameters:
             classExtendsInternalClassRule: false
 ```
 
+#### Disabling  extensions
+
+You can disable various extensions. This is useful when contributing to Drupal Core to improve its types.
+
+```neon
+parameters:
+    drupal:
+        extensions:
+            entityFieldsViaMagicReflection: true
+            entityFieldMethodsViaMagicReflection: true
+            entityQuery: true
+            entityRepository: true
+            stubFiles: true
+```
+
+Both options are enabled by default.
+
 ### Entity storage mappings.
 
 The `EntityTypeManagerGetStorageDynamicReturnTypeExtension` service helps map dynamic return types. This inspects the

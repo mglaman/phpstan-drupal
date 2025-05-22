@@ -21,6 +21,12 @@ parameters:
 			checkDeprecatedHooksInApiFiles: false
 			checkCoreDeprecatedHooksInApiFiles: false
 			checkContribDeprecatedHooksInApiFiles: false
+		extensions:
+			entityFieldsViaMagicReflection: true
+			entityFieldMethodsViaMagicReflection: true
+			entityQuery: true
+			entityRepository: true
+			stubFiles: true
 		rules:
 			testClassSuffixNameRule: false
 			dependencySerializationTraitPropertyRule: false
@@ -248,6 +254,13 @@ parametersSchema:
 			checkCoreDeprecatedHooksInApiFiles: boolean()
 			checkContribDeprecatedHooksInApiFiles: boolean()
 		])
+		extensions: structure([
+			entityFieldsViaMagicReflection: boolean()
+			entityFieldMethodsViaMagicReflection: boolean()
+			entityQuery: boolean()
+			entityRepository: boolean()
+			stubFiles: boolean()
+		])
 		rules: structure([
 			testClassSuffixNameRule: boolean()
 			dependencySerializationTraitPropertyRule: boolean()
@@ -282,10 +295,8 @@ services:
 		tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
 	-
 		class: mglaman\PHPStanDrupal\Type\EntityRepositoryReturnTypeExtension
-		tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
 	-
 		class: mglaman\PHPStanDrupal\Type\EntityStorage\GetQueryReturnTypeExtension
-		tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
 	-
 		class: mglaman\PHPStanDrupal\Type\ContainerDynamicReturnTypeExtension
 		tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
@@ -294,10 +305,8 @@ services:
 		tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
 	-
 		class: mglaman\PHPStanDrupal\Type\EntityQuery\EntityQueryDynamicReturnTypeExtension
-		tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
 	-
 		class: mglaman\PHPStanDrupal\Type\EntityQuery\EntityQueryAccessCheckDynamicReturnTypeExtension
-		tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
 	-
 		class: mglaman\PHPStanDrupal\Type\EntityAccessControlHandlerReturnTypeExtension
 		tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
@@ -312,17 +321,12 @@ services:
 		tags: [phpstan.broker.dynamicStaticMethodReturnTypeExtension]
 	-
 		class: mglaman\PHPStanDrupal\Reflection\EntityFieldsViaMagicReflectionExtension
-		tags: [phpstan.broker.propertiesClassReflectionExtension]
 	-
 		class: mglaman\PHPStanDrupal\Reflection\EntityFieldMethodsViaMagicReflectionExtension
-		tags: [phpstan.broker.methodsClassReflectionExtension]
 	-
 		class: mglaman\PHPStanDrupal\Drupal\DrupalStubFilesExtension
-		tags: [phpstan.stubFilesExtension]
 	-
 		class: mglaman\PHPStanDrupal\Type\EntityQuery\AccessCheckTypeSpecifyingExtension
-		tags:
-			- phpstan.typeSpecifier.methodTypeSpecifyingExtension
 	-
 		class: mglaman\PHPStanDrupal\DeprecatedScope\GroupLegacyScope
 		tags:
@@ -339,3 +343,21 @@ services:
 		class: mglaman\PHPStanDrupal\Type\InspectorTypeExtension
 		tags:
 			- phpstan.typeSpecifier.staticMethodTypeSpecifyingExtension
+
+conditionalTags:
+	mglaman\PHPStanDrupal\Reflection\EntityFieldsViaMagicReflectionExtension:
+		phpstan.broker.propertiesClassReflectionExtension: %drupal.extensions.entityFieldsViaMagicReflection%
+	mglaman\PHPStanDrupal\Reflection\EntityFieldMethodsViaMagicReflectionExtension:
+		phpstan.broker.methodsClassReflectionExtension: %drupal.extensions.entityFieldMethodsViaMagicReflection%
+	mglaman\PHPStanDrupal\Type\EntityQuery\EntityQueryDynamicReturnTypeExtension:
+		phpstan.broker.dynamicMethodReturnTypeExtension: %drupal.extensions.entityQuery%
+	mglaman\PHPStanDrupal\Type\EntityQuery\EntityQueryAccessCheckDynamicReturnTypeExtension:
+		phpstan.broker.dynamicMethodReturnTypeExtension: %drupal.extensions.entityQuery%
+	mglaman\PHPStanDrupal\Type\EntityQuery\AccessCheckTypeSpecifyingExtension:
+		phpstan.typeSpecifier.methodTypeSpecifyingExtension: %drupal.extensions.entityQuery%
+	mglaman\PHPStanDrupal\Type\EntityStorage\GetQueryReturnTypeExtension:
+		phpstan.broker.dynamicMethodReturnTypeExtension: %drupal.extensions.entityQuery%
+	mglaman\PHPStanDrupal\Type\EntityRepositoryReturnTypeExtension:
+		phpstan.broker.dynamicMethodReturnTypeExtension: %drupal.extensions.entityRepository%
+	mglaman\PHPStanDrupal\Drupal\DrupalStubFilesExtension:
+		phpstan.stubFilesExtension: %drupal.extensions.stubFiles%
