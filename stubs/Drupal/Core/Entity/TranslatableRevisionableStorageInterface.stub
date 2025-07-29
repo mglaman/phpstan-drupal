@@ -9,4 +9,11 @@ namespace Drupal\Core\Entity;
 // This is fragile and relies on `ContentEntityStorageInterface` only implementing this interface.
 interface TranslatableRevisionableStorageInterface extends RevisionableStorageInterface, TranslatableStorageInterface {
 
+  /**
+   * @param R $entity
+   * @return R
+   * @template R of \Drupal\Core\Entity\RevisionableInterface
+   */
+  public function createRevision(RevisionableInterface $entity, bool $default = TRUE, ?bool $keep_untranslatable_fields = NULL);
+  
 }
