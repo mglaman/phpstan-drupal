@@ -14,5 +14,12 @@ interface RevisionableStorageInterface extends EntityStorageInterface {
    * @param int|numeric-string $revision_id
    */
   public function deleteRevision($revision_id): void;
+  
+  /**
+   * @param R $entity
+   * @return R
+   * @template R of \Drupal\Core\Entity\RevisionableInterface
+   */
+  public function createRevision(RevisionableInterface $entity, $default = TRUE);
 
 }
