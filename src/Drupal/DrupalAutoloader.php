@@ -95,8 +95,8 @@ class DrupalAutoloader
         }
 
         $finder = new DrupalFinderComposerRuntime();
-        $drupalRoot = $finder->getDrupalRoot();
-        $drupalVendorRoot = $finder->getVendorDir();
+        $drupalRoot = getenv('DRUPAL_ROOT') ?: $finder->getDrupalRoot();
+        $drupalVendorRoot = getenv('DRUPAL_VENDOR_ROOT') ?: $finder->getVendorDir();
         if (!(is_string($drupalRoot) && is_string($drupalVendorRoot))) {
             throw new RuntimeException("Unable to detect Drupal with webflo/drupal-finder.");
         }
