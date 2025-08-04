@@ -13,7 +13,7 @@ class Url implements TrustedCallbackInterface {
     }
     
     /**
-     * @return ($return_as_object ? \Drupal\Core\Access\AccessResultInterface : bool)
+     * @return ($return_as_object is true ? \Drupal\Core\Access\AccessResultInterface : bool)
      */
     public function access(?\Drupal\Core\Session\AccountInterface $account = NULL, bool $return_as_object = FALSE): \Drupal\Core\Access\AccessResultInterface|bool {
     }
