@@ -15,7 +15,6 @@ use PHPStan\Type\StringType;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
 
-
 /**
  * @author Daniel Phin <pro@danielph.in>
  */
@@ -37,13 +36,8 @@ class EntityIdNarrowedByNew implements DynamicMethodReturnTypeExtension
         MethodCall $methodCall,
         Scope $scope
     ): ?Type {
-        $isNewCall = new MethodCall(
-            $methodCall->var,
-            new Identifier('isNew')
-        );
-        $isNewType = $scope->getType($isNewCall);
-
-        if ($isNewType instanceof ConstantBooleanType && $isNewType->getValue() === false) {
+        $isNewMethodCall = new MethodCall($methodCall->var, new Identifier('isNew'));
+        if ($scope->getType($isNewMethodCall)->isFalse()->yes()) {
             return TypeCombinator::union(new IntegerType(), new StringType());
         }
 
