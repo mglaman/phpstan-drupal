@@ -67,6 +67,10 @@ jobs:
         run: "composer require drupal/core-recommended:${{ matrix.drupal }} --with-all-dependencies --dev --no-update"
       - name: "Install dependencies"
         uses: "ramsey/composer-install@v3"
+      - name: "Migrate PHPUnit configuration across PHPUnit major versions"
+        run: |
+          php vendor/bin/phpunit --migrate-configuration || true
+          [ -f "phpunit.xml.bak" ] && diff -u phpunit.xml phpunit.xml.bak || true
       - name: "PHPUnit"
         run: "php vendor/bin/phpunit"
 
