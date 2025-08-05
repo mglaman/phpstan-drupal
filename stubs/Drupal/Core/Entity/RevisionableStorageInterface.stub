@@ -11,7 +11,7 @@ interface RevisionableStorageInterface extends EntityStorageInterface {
   public function loadRevision($revision_id);
 
   /**
-   * @param int|numeric-string $revision_id
+   * @param int|numeric-string|string $revision_id
    */
   public function deleteRevision($revision_id): void;
   
