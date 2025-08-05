@@ -291,6 +291,9 @@ services:
 		class: mglaman\PHPStanDrupal\Type\EntityIdNarrowedByNew
 		tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
 	-
+		class: mglaman\PHPStanDrupal\Type\EntityTypeLinkTemplateByExistence
+		tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
+	-
 		class: mglaman\PHPStanDrupal\Type\EntityTypeManagerGetStorageDynamicReturnTypeExtension
 		tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
 	-
