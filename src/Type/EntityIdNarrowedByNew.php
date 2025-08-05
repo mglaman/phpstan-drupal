@@ -8,11 +8,8 @@ use PhpParser\Node\Identifier;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
-use PHPStan\Type\IntegerType;
 use PHPStan\Type\NullType;
-use PHPStan\Type\StringType;
 use PHPStan\Type\Type;
-use PHPStan\Type\TypeCombinator;
 
 /**
  * @author Daniel Phin <pro@danielph.in>
@@ -35,15 +32,15 @@ class EntityIdNarrowedByNew implements DynamicMethodReturnTypeExtension
         MethodCall $methodCall,
         Scope $scope
     ): ?Type {
+        // Usually contains a UnionType with IntegerType, StringType, NullType,
+        // unless it was narrowed by a child.
+        $originalReturnType = $methodReflection->getVariants()[0]->getReturnType();
         $isNewMethodCall = new MethodCall($methodCall->var, new Identifier('isNew'));
         if ($scope->getType($isNewMethodCall)->isFalse()->yes()) {
-            return TypeCombinator::union(new IntegerType(), new StringType());
+            // Remove NULL.
+            return $originalReturnType->tryRemove(new NullType());
         }
 
-        return TypeCombinator::union(
-            new IntegerType(),
-            new StringType(),
-            new NullType()
-        );
+        return $originalReturnType;
     }
 }
