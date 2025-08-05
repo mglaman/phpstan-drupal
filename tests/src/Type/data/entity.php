@@ -29,11 +29,21 @@ assert($id3 instanceof NodeInterface);
 assert($id3->isNew() === FALSE);
 assertType('int|string', $id3->id());
 
-class NarrowingId extends NodeInterface {
+final class NarrowingIdString extends NodeInterface {
     public function id(): ?string {}
 }
-assert($idNarrowed1 instanceof NarrowingId);
-assertType('string|null', $idNarrowed1->id());
-assert($idNarrowed2 instanceof NarrowingId);
-assert($idNarrowed2->isNew() === FALSE);
-assertType('string', $idNarrowed2->id());
+assert($idNarrowedString1 instanceof NarrowingIdString);
+assertType('string|null', $idNarrowedString1->id());
+assert($idNarrowedString2 instanceof NarrowingIdString);
+assert($idNarrowedString2->isNew() === FALSE);
+assertType('string', $idNarrowedString2->id());
+
+final class NarrowingIdInt extends NodeInterface {
+    public function id(): ?int {}
+}
+assert($idNarrowedInt1 instanceof NarrowingIdInt);
+assertType('int|null', $idNarrowedInt1->id());
+assert($idNarrowedInt2 instanceof NarrowingIdInt);
+assert($idNarrowedInt2->isNew() === FALSE);
+assertType('int', $idNarrowedInt2->id());
+
