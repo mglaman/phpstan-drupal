@@ -28,3 +28,12 @@ assertType('int|string|null', $id2->id());
 assert($id3 instanceof NodeInterface);
 assert($id3->isNew() === FALSE);
 assertType('int|string', $id3->id());
+
+class NarrowingId extends NodeInterface {
+    public function id(): ?string {}
+}
+assert($idNarrowed1 instanceof NarrowingId);
+assertType('string|null', $idNarrowed1->id());
+assert($idNarrowed2 instanceof NarrowingId);
+assert($idNarrowed2->isNew() === FALSE);
+assertType('string', $idNarrowed2->id());
