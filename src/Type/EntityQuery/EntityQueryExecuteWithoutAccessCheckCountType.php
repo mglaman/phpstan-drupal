@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace mglaman\PHPStanDrupal\Type\EntityQuery;
 
-use PHPStan\Type\IntegerRangeType;
+use PHPStan\Type\IntegerType;
+use PHPStan\Type\VerbosityLevel;
 
-final class EntityQueryExecuteWithoutAccessCheckCountType extends IntegerRangeType
+final class EntityQueryExecuteWithoutAccessCheckCountType extends IntegerType
 {
-    public function __construct()
+
+    public function describe(VerbosityLevel $level = null): string
     {
-        parent::__construct(0, null);
+        return 'int<0, max>';
     }
 }

@@ -9,3 +9,6 @@
 /tests/fixtures/drupal/sites/simpletest/
 .phpunit.result.cache
 .idea/
+
+# Temporary files
+phpstan.phar
