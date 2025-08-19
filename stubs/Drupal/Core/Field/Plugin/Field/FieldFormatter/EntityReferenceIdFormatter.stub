@@ -7,7 +7,7 @@ use Drupal\Core\Field\FieldItemListInterface;
 class EntityReferenceIdFormatter extends EntityReferenceFormatterBase {
 
   /**
-   * @param \Drupal\Core\Field\EntityReferenceFieldItemListInterface $items
+   * @param \Drupal\Core\Field\EntityReferenceFieldItemListInterface<\Drupal\Core\Field\Plugin\Field\FieldType\EntityReferenceItemInterface> $items
    */
   public function viewElements(FieldItemListInterface $items, $langcode) {
   }
