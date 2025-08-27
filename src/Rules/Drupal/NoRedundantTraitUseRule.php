@@ -2,6 +2,7 @@
 
 namespace mglaman\PHPStanDrupal\Rules\Drupal;
 
+use Exception;
 use PhpParser\Node;
 use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\TraitUse;
@@ -64,7 +65,7 @@ class NoRedundantTraitUseRule implements Rule
                         $traitDependencies[$traitName] = $this->getAllTraitsUsedByTrait($traitName, []);
                     }
                 }
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 // Skip traits that can't be reflected.
                 continue;
             }
@@ -135,7 +136,7 @@ class NoRedundantTraitUseRule implements Rule
             }
 
             return array_unique($allTraits);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return [];
         }
     }
