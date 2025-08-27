@@ -79,7 +79,7 @@ class NoRedundantTraitUseRule implements Rule
                 }
 
                 // Check if traitA uses traitB (directly or transitively).
-                if (isset($traitDependencies[$traitA]) && in_array($traitB, $traitDependencies[$traitA])) {
+                if (isset($traitDependencies[$traitA]) && in_array($traitB, $traitDependencies[$traitA], true)) {
                     $shortNameA = basename(str_replace('\\', '/', $traitA));
                     $shortNameB = basename(str_replace('\\', '/', $traitB));
 
@@ -108,7 +108,7 @@ class NoRedundantTraitUseRule implements Rule
     private function getAllTraitsUsedByTrait(string $traitName, array $visited = []): array
     {
         // Prevent infinite loops.
-        if (in_array($traitName, $visited)) {
+        if (in_array($traitName, $visited, true)) {
             return [];
         }
         $visited[] = $traitName;
