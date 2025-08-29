@@ -12,6 +12,7 @@ rules:
 	- mglaman\PHPStanDrupal\Rules\Drupal\LoadIncludes
 	- mglaman\PHPStanDrupal\Rules\Drupal\EntityQuery\EntityQueryHasAccessCheckRule
 	- mglaman\PHPStanDrupal\Rules\Drupal\TestClassesProtectedPropertyModulesRule
+	- mglaman\PHPStanDrupal\Rules\Drupal\CacheableDependencyRule
 
 conditionalTags:
 	mglaman\PHPStanDrupal\Rules\Drupal\Tests\TestClassSuffixNameRule:
