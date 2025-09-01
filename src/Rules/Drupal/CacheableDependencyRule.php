@@ -16,7 +16,8 @@ use PHPStan\Rules\Rule;
 class CacheableDependencyRule implements Rule
 {
 
-    public function getNodeType(): string {
+    public function getNodeType(): string
+    {
         return MethodCall::class;
     }
 
