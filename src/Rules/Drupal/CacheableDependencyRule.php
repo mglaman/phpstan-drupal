@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace mglaman\PHPStanDrupal\Rules\Drupal;
 
 use PhpParser\Node;
+use PhpParser\NodeFinder;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Identifier;
 use PHPStan\Analyser\Scope;
@@ -18,19 +19,22 @@ class CacheableDependencyRule implements Rule
 
     public function getNodeType(): string
     {
-        return MethodCall::class;
+        return Node\Expr\MethodCall::class;
     }
 
     public function processNode(Node $node, Scope $scope): array
     {
-        if (!$node instanceof MethodCall ||
-            !$node->name instanceof Identifier ||
-            $node->name->toString() !== 'addCacheableDependency'
-        ) {
+        $nodeFinder = new NodeFinder();
+        $method = $nodeFinder->findFirst($class->stmts, static function (Node $node) {
+            return $node instanceof Node\Stmt\ClassMethod && $node->name->toString() === 'addCacheableDependency';
+        });
+        if (!$method instanceof Node\Stmt\ClassMethod) {
             return [];
         }
 
-        $object = $scope->getType($node->args[0]->value);
+        $args = $node->getArgs();
+        $traversableArg = $args[0]->value;
+        $object = $scope->getType($traversableArg);
 
         // We need to check if isInstanceOf method exists as phpstan returns
         // MixedType for unknown objects.
