@@ -4,16 +4,17 @@ declare(strict_types=1);
 
 namespace mglaman\PHPStanDrupal\Rules\Drupal;
 
+use Drupal\Core\Cache\CacheableDependencyInterface;
+use Drupal\Core\Cache\CacheableResponseInterface;
+use Drupal\Core\Cache\RefinableCacheableDependencyInterface;
+use Drupal\Core\Plugin\Context\ContextInterface;
+use Drupal\Core\Render\RendererInterface;
 use PhpParser\Node;
 use PhpParser\Node\Identifier;
 use PHPStan\Analyser\Scope;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
 use PHPStan\Type\ObjectType;
-use Drupal\Core\Cache\RefinableCacheableDependencyInterface;
-use Drupal\Core\Cache\CacheableResponseInterface;
-use Drupal\Core\Plugin\Context\ContextInterface;
-use Drupal\Core\Render\RendererInterface;
 
 /**
  * @implements Rule<Node\Expr\MethodCall>
@@ -42,10 +43,9 @@ class CacheableDependencyRule implements Rule
         ];
 
         $argumentIndex = null;
-
         foreach ($allowedInterfaces as $interfaceName => $argPosition) {
             $interfaceType = new ObjectType($interfaceName);
-            if (!$interfaceType->isSuperTypeOf($receiverType)->no()) {
+            if ($interfaceType->isSuperTypeOf($receiverType)->yes()) {
                 $argumentIndex = $argPosition;
                 break;
             }
@@ -63,7 +63,7 @@ class CacheableDependencyRule implements Rule
         $dependencyArg = $args[$argumentIndex]->value;
         $object = $scope->getType($dependencyArg);
 
-        $interfaceType = new ObjectType('Drupal\Core\Cache\CacheableDependencyInterface');
+        $interfaceType = new ObjectType(CacheableDependencyInterface::class);
         $implementsInterface = $interfaceType->isSuperTypeOf($object);
 
         if (!$implementsInterface->no()) {
