@@ -20,7 +20,7 @@ jobs:
           - "8.4"
     steps:
       - name: "Checkout"
-        uses: "actions/checkout@v4"
+        uses: "actions/checkout@v5"
       - name: "Install PHP"
         uses: "shivammathur/setup-php@v2"
         with:
@@ -55,7 +55,7 @@ jobs:
             experimental: true
     steps:
       - name: "Checkout"
-        uses: "actions/checkout@v4"
+        uses: "actions/checkout@v5"
       - name: "Install PHP"
         uses: "shivammathur/setup-php@v2"
         with:
@@ -63,6 +63,8 @@ jobs:
           php-version: "${{ matrix.php-version }}"
           tools: composer:v2
           extensions: dom, curl, libxml, mbstring, zip, pdo, mysql, pdo_mysql, gd
+      - run: composer config --no-plugins 'allow-plugins.drupal/core-composer-scaffold' true
+      - run: composer config --no-plugins 'allow-plugins.drupal/core-project-message' true
       - name: "Set drupal/core to ${{ matrix.drupal }}"
         run: "composer require drupal/core-recommended:${{ matrix.drupal }} --with-all-dependencies --dev --no-update"
       - name: "Install dependencies"
@@ -98,7 +100,7 @@ jobs:
             experimental: true
     steps:
       - name: "Checkout"
-        uses: "actions/checkout@v4"
+        uses: "actions/checkout@v5"
       - name: "Install PHP"
         uses: "shivammathur/setup-php@v2"
         with:
@@ -174,7 +176,7 @@ jobs:
             experimental: true
     steps:
       - name: "Checkout"
-        uses: "actions/checkout@v4"
+        uses: "actions/checkout@v5"
       - name: "Install PHP"
         uses: "shivammathur/setup-php@v2"
         with:
@@ -214,7 +216,7 @@ jobs:
     name: "Drupal core HEAD baseline check"
     steps:
       - name: "Checkout"
-        uses: "actions/checkout@v4"
+        uses: "actions/checkout@v5"
       - name: "set the version alias for self"
         run: |
           if [ "${{ github.event_name }}" == 'pull_request' ]; then
