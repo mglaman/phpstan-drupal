@@ -59,13 +59,13 @@ assertType('int', $boolean_field->value);
 $changed_field = $node->get('field_changed')->first();
 assert($changed_field instanceof ChangedItem);
 assertType(ChangedItem::class, $changed_field);
-assertType('string', $changed_field->value);
+assertType('int', $changed_field->value);
 
 // CreatedItem.
 $created_field = $node->get('field_created')->first();
 assert($created_field instanceof CreatedItem);
 assertType(CreatedItem::class, $created_field);
-assertType('string', $created_field->value);
+assertType('int', $created_field->value);
 
 // DecimalItem.
 $decimal_field = $node->get('field_decimal')->first();
@@ -135,7 +135,7 @@ assertType('string', $string_long_field->value);
 $timestamp_field = $node->get('field_timestamp')->first();
 assert($timestamp_field instanceof TimestampItem);
 assertType(TimestampItem::class, $timestamp_field);
-assertType('string', $timestamp_field->value);
+assertType('int', $timestamp_field->value);
 
 // UriItem.
 $uri_field = $node->get('field_uri')->first();
