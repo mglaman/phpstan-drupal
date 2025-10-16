@@ -7,7 +7,7 @@ use Drupal\Core\TypedData\ListInterface;
 
 /**
  * @template T of FieldItemInterface
- * @extends ListInterface<T>
+ * @extends ListInterface<int, T>
  * @property mixed $value
  */
 interface FieldItemListInterface extends ListInterface {
