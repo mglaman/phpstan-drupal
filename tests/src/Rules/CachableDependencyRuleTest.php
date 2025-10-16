@@ -33,11 +33,19 @@ final class CachableDependencyRuleTest extends DrupalRuleTestCase {
                 ],
                 [
                     'Calling addCacheableDependency($object) when $object does not implement CacheableDependencyInterface effectively disables caching and should be avoided.',
+                    36
+                ],
+                [
+                    'Calling addCacheableDependency($object) when $object does not implement CacheableDependencyInterface effectively disables caching and should be avoided.',
                     39
                 ],
                 [
                     'Calling addCacheableDependency($object) when $object does not implement CacheableDependencyInterface effectively disables caching and should be avoided.',
-                    43
+                    48
+                ],
+                [
+                    'Calling addCacheableDependency($object) when $object does not implement CacheableDependencyInterface effectively disables caching and should be avoided.',
+                    55
                 ],
             ]
         ];

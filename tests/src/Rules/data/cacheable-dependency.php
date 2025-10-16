@@ -19,7 +19,6 @@ class UsesCorrectCacheableDependency {
         $element = [];
         $cacheable_metadata = CacheableMetadata::createFromRenderArray($element);
 
-        // This should NOT trigger an error - CacheableMetadata implements CacheableDependencyInterface
         $correct_dependency = new CacheableMetadata();
         $cacheable_metadata->addCacheableDependency($correct_dependency);
     }
@@ -30,17 +29,31 @@ class MultipleCacheableDependencyCalls {
         $element = [];
         $cacheable_metadata = CacheableMetadata::createFromRenderArray($element);
 
-        // Correct usage
         $correct_dependency = new CacheableMetadata();
         $cacheable_metadata->addCacheableDependency($correct_dependency);
 
-        // Incorrect usage - should trigger error
         $object = new \StdClass;
         $cacheable_metadata->addCacheableDependency($object);
 
-        // Another incorrect usage - should trigger error
         $another_object = new \DateTime();
         $cacheable_metadata->addCacheableDependency($another_object);
     }
 }
+
+class RendererInterfaceTestCase {
+    public function testCorrectUsage(\Drupal\Core\Render\RendererInterface $renderer) {
+        $elements = [];
+
+        $correct_dependency = new CacheableMetadata();
+        $renderer->addCacheableDependency($elements, $correct_dependency);
+    }
+
+    public function testIncorrectUsage(\Drupal\Core\Render\RendererInterface $renderer) {
+        $elements = [];
+
+        $object = new \StdClass;
+        $renderer->addCacheableDependency($elements, $object);
+    }
+}
+
 
