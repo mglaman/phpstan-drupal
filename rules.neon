@@ -24,6 +24,8 @@ conditionalTags:
 		phpstan.rules.rule: %drupal.rules.classExtendsInternalClassRule%
 	mglaman\PHPStanDrupal\Rules\Classes\PluginManagerInspectionRule:
 		phpstan.rules.rule: %drupal.rules.pluginManagerInspectionRule%
+	mglaman\PHPStanDrupal\Rules\Drupal\CacheableDependencyRule:
+		phpstan.rules.rule: %drupal.rules.cacheableDependencyRule%
 
 services:
 	-
@@ -38,3 +40,5 @@ services:
 		class: mglaman\PHPStanDrupal\Rules\Classes\ClassExtendsInternalClassRule
 	-
 		class: mglaman\PHPStanDrupal\Rules\Classes\PluginManagerInspectionRule
+	-
+		class: mglaman\PHPStanDrupal\Rules\Drupal\CacheableDependencyRule
