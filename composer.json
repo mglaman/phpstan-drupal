@@ -11,23 +11,23 @@
     ],
     "require": {
         "php": "^8.1",
-        "phpstan/phpstan": "^1.10.56",
-        "phpstan/phpstan-deprecation-rules": "^1.1.4",
-        "symfony/finder": "^4.2 || ^5.0 || ^6.0 || ^7.0",
-        "symfony/yaml": "^4.2|| ^5.0 || ^6.0 || ^7.0",
-        "webflo/drupal-finder": "^1.2"
+        "phpstan/phpstan": "^2.1",
+        "phpstan/phpstan-deprecation-rules": "^2.0",
+        "symfony/finder": "^6.2 || ^7.0",
+        "symfony/yaml": "^6.2 || ^7.0",
+        "webflo/drupal-finder": "^1.3.1"
     },
     "require-dev": {
-        "behat/mink": "^1.8",
-        "composer/installers": "^1.9",
+        "behat/mink": "^1.10",
+        "composer/installers": "^1.9 || ^2",
         "drupal/core-recommended": "^10",
-        "drush/drush": "^10.0 || ^11 || ^12 || ^13@beta",
-        "phpstan/extension-installer": "^1.1",
-        "phpstan/phpstan-strict-rules": "^1.0",
-        "phpunit/phpunit": "^8.5 || ^9 || ^10 || ^11",
-        "slevomat/coding-standard": "^7.1",
-        "squizlabs/php_codesniffer": "^3.3",
-        "symfony/phpunit-bridge": "^4.4 || ^5.4 || ^6.0 || ^7.0"
+        "drush/drush": "^11 || ^12 || ^13",
+        "phpstan/extension-installer": "^1.4.3",
+        "phpstan/phpstan-strict-rules": "^2.0",
+        "phpunit/phpunit": "^9 || ^10 || ^11",
+        "slevomat/coding-standard": "^8.6",
+        "squizlabs/php_codesniffer": "^3.7",
+        "symfony/phpunit-bridge": "^6.2 || ^7.0"
     },
     "minimum-stability": "dev",
     "prefer-stable": true,
@@ -47,13 +47,11 @@
         },
         "classmap": [
             "tests/src/Type/data",
-            "tests/src/Rules/data"
+            "tests/src/Rules/data",
+            "tests/src/Generics/data"
         ]
     },
     "extra": {
-        "branch-alias": {
-            "dev-main": "1.0-dev"
-        },
         "installer-paths": {
             "tests/fixtures/drupal/core": ["type:drupal-core"],
             "tests/fixtures/drupal/libraries/{$name}": ["type:drupal-library"],

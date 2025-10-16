@@ -2,6 +2,7 @@
 
 namespace DrupalEntityFields;
 
+use Drupal\comment\Plugin\Field\FieldType\CommentItem;
 use Drupal\Core\Field\Plugin\Field\FieldType\BooleanItem;
 use Drupal\Core\Field\Plugin\Field\FieldType\ChangedItem;
 use Drupal\Core\Field\Plugin\Field\FieldType\CreatedItem;
@@ -31,6 +32,16 @@ use function PHPStan\Testing\assertType;
 
 $node = Node::create(['type' => 'page']);
 
+// CommentItem.
+$comment_field = $node->get('field_comment')->first();
+assert($comment_field instanceof CommentItem);
+assertType(CommentItem::class, $comment_field);
+assertType('int|null', $comment_field->status);
+assertType('int|null', $comment_field->cid);
+assertType('int|null', $comment_field->last_comment_timestamp);
+assertType('string|null', $comment_field->last_comment_name);
+assertType('int|null', $comment_field->comment_count);
+
 // LinkItem.
 $link_field = $node->get('field_link')->first();
 assert($link_field instanceof LinkItem);
@@ -49,13 +60,13 @@ assertType('int', $boolean_field->value);
 $changed_field = $node->get('field_changed')->first();
 assert($changed_field instanceof ChangedItem);
 assertType(ChangedItem::class, $changed_field);
-assertType('string', $changed_field->value);
+assertType('int', $changed_field->value);
 
 // CreatedItem.
 $created_field = $node->get('field_created')->first();
 assert($created_field instanceof CreatedItem);
 assertType(CreatedItem::class, $created_field);
-assertType('string', $created_field->value);
+assertType('int', $created_field->value);
 
 // DecimalItem.
 $decimal_field = $node->get('field_decimal')->first();
@@ -125,7 +136,7 @@ assertType('string', $string_long_field->value);
 $timestamp_field = $node->get('field_timestamp')->first();
 assert($timestamp_field instanceof TimestampItem);
 assertType(TimestampItem::class, $timestamp_field);
-assertType('string', $timestamp_field->value);
+assertType('int', $timestamp_field->value);
 
 // UriItem.
 $uri_field = $node->get('field_uri')->first();

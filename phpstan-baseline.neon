@@ -35,16 +35,6 @@ parameters:
 			path: src/Drupal/DrupalAutoloader.php
 
 		-
-			message: "#^Doing instanceof PHPStan\\\\Type\\\\Constant\\\\ConstantArrayType is error\\-prone and deprecated\\. Use Type\\:\\:getConstantArrays\\(\\) instead\\.$#"
-			count: 1
-			path: src/Rules/Deprecations/ConditionManagerCreateInstanceContextConfigurationRule.php
-
-		-
-			message: "#^Doing instanceof PHPStan\\\\Type\\\\Constant\\\\ConstantStringType is error\\-prone and deprecated\\. Use Type\\:\\:getConstantStrings\\(\\) instead\\.$#"
-			count: 1
-			path: src/Rules/Deprecations/ConditionManagerCreateInstanceContextConfigurationRule.php
-
-		-
 			message: "#^Doing instanceof PHPStan\\\\Type\\\\Constant\\\\ConstantStringType is error\\-prone and deprecated\\. Use Type\\:\\:getConstantStrings\\(\\) instead\\.$#"
 			count: 2
 			path: src/Rules/Drupal/RenderCallbackRule.php

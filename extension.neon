@@ -16,14 +16,24 @@ parameters:
 	scanFiles:
 		- stubs/Twig/functions.stub
 	drupal:
-		drupal_root: '%currentWorkingDirectory%'
+		drupal_root:
 		bleedingEdge:
 			checkDeprecatedHooksInApiFiles: false
+			checkCoreDeprecatedHooksInApiFiles: false
+			checkContribDeprecatedHooksInApiFiles: false
+		extensions:
+			entityFieldsViaMagicReflection: true
+			entityFieldMethodsViaMagicReflection: true
+			entityQuery: true
+			entityRepository: true
+			stubFiles: true
 		rules:
 			testClassSuffixNameRule: false
 			dependencySerializationTraitPropertyRule: false
 			accessResultConditionRule: false
 			classExtendsInternalClassRule: true
+			pluginManagerInspectionRule: false
+			cacheableDependencyRule: false
 		entityMapping:
 			aggregator_feed:
 				class: Drupal\aggregator\Entity\Feed
@@ -239,15 +249,26 @@ parameters:
 
 parametersSchema:
 	drupal: structure([
-		drupal_root: string()
+		drupal_root: schema(string(), nullable())
 		bleedingEdge: structure([
 			checkDeprecatedHooksInApiFiles: boolean()
+			checkCoreDeprecatedHooksInApiFiles: boolean()
+			checkContribDeprecatedHooksInApiFiles: boolean()
+		])
+		extensions: structure([
+			entityFieldsViaMagicReflection: boolean()
+			entityFieldMethodsViaMagicReflection: boolean()
+			entityQuery: boolean()
+			entityRepository: boolean()
+			stubFiles: boolean()
 		])
 		rules: structure([
 			testClassSuffixNameRule: boolean()
 			dependencySerializationTraitPropertyRule: boolean()
 			accessResultConditionRule: boolean()
 			classExtendsInternalClassRule: boolean()
+			pluginManagerInspectionRule: boolean()
+			cacheableDependencyRule: boolean()
 		])
 		entityMapping: arrayOf(anyOf(
 			structure([
@@ -269,6 +290,15 @@ services:
 		arguments:
 			entityMapping: %drupal.entityMapping%
 	-
+		class: mglaman\PHPStanDrupal\Type\EntityIdNarrowedByNew
+		tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
+	-
+		class: mglaman\PHPStanDrupal\Type\EntityTypeKeyByExistence
+		tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
+	-
+		class: mglaman\PHPStanDrupal\Type\EntityTypeLinkTemplateByExistence
+		tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
+	-
 		class: mglaman\PHPStanDrupal\Type\EntityTypeManagerGetStorageDynamicReturnTypeExtension
 		tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
 	-
@@ -276,10 +306,8 @@ services:
 		tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
 	-
 		class: mglaman\PHPStanDrupal\Type\EntityRepositoryReturnTypeExtension
-		tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
 	-
 		class: mglaman\PHPStanDrupal\Type\EntityStorage\GetQueryReturnTypeExtension
-		tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
 	-
 		class: mglaman\PHPStanDrupal\Type\ContainerDynamicReturnTypeExtension
 		tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
@@ -288,10 +316,8 @@ services:
 		tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
 	-
 		class: mglaman\PHPStanDrupal\Type\EntityQuery\EntityQueryDynamicReturnTypeExtension
-		tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
 	-
 		class: mglaman\PHPStanDrupal\Type\EntityQuery\EntityQueryAccessCheckDynamicReturnTypeExtension
-		tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
 	-
 		class: mglaman\PHPStanDrupal\Type\EntityAccessControlHandlerReturnTypeExtension
 		tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
@@ -306,22 +332,43 @@ services:
 		tags: [phpstan.broker.dynamicStaticMethodReturnTypeExtension]
 	-
 		class: mglaman\PHPStanDrupal\Reflection\EntityFieldsViaMagicReflectionExtension
-		tags: [phpstan.broker.propertiesClassReflectionExtension]
 	-
 		class: mglaman\PHPStanDrupal\Reflection\EntityFieldMethodsViaMagicReflectionExtension
-		tags: [phpstan.broker.methodsClassReflectionExtension]
 	-
 		class: mglaman\PHPStanDrupal\Drupal\DrupalStubFilesExtension
-		tags: [phpstan.stubFilesExtension]
 	-
 		class: mglaman\PHPStanDrupal\Type\EntityQuery\AccessCheckTypeSpecifyingExtension
-		tags:
-			- phpstan.typeSpecifier.methodTypeSpecifyingExtension
 	-
 		class: mglaman\PHPStanDrupal\DeprecatedScope\GroupLegacyScope
+		tags:
+			- phpstan.deprecations.deprecatedScopeResolver
+	-
+		class: mglaman\PHPStanDrupal\DeprecatedScope\IgnoreDeprecationsScope
 		tags:
 			- phpstan.deprecations.deprecatedScopeResolver
 	-
 		class: mglaman\PHPStanDrupal\DeprecatedScope\DeprecationHelperScope
 		tags:
 			- phpstan.deprecations.deprecatedScopeResolver
+	-
+		class: mglaman\PHPStanDrupal\Type\InspectorTypeExtension
+		tags:
+			- phpstan.typeSpecifier.staticMethodTypeSpecifyingExtension
+
+conditionalTags:
+	mglaman\PHPStanDrupal\Reflection\EntityFieldsViaMagicReflectionExtension:
+		phpstan.broker.propertiesClassReflectionExtension: %drupal.extensions.entityFieldsViaMagicReflection%
+	mglaman\PHPStanDrupal\Reflection\EntityFieldMethodsViaMagicReflectionExtension:
+		phpstan.broker.methodsClassReflectionExtension: %drupal.extensions.entityFieldMethodsViaMagicReflection%
+	mglaman\PHPStanDrupal\Type\EntityQuery\EntityQueryDynamicReturnTypeExtension:
+		phpstan.broker.dynamicMethodReturnTypeExtension: %drupal.extensions.entityQuery%
+	mglaman\PHPStanDrupal\Type\EntityQuery\EntityQueryAccessCheckDynamicReturnTypeExtension:
+		phpstan.broker.dynamicMethodReturnTypeExtension: %drupal.extensions.entityQuery%
+	mglaman\PHPStanDrupal\Type\EntityQuery\AccessCheckTypeSpecifyingExtension:
+		phpstan.typeSpecifier.methodTypeSpecifyingExtension: %drupal.extensions.entityQuery%
+	mglaman\PHPStanDrupal\Type\EntityStorage\GetQueryReturnTypeExtension:
+		phpstan.broker.dynamicMethodReturnTypeExtension: %drupal.extensions.entityQuery%
+	mglaman\PHPStanDrupal\Type\EntityRepositoryReturnTypeExtension:
+		phpstan.broker.dynamicMethodReturnTypeExtension: %drupal.extensions.entityRepository%
+	mglaman\PHPStanDrupal\Drupal\DrupalStubFilesExtension:
+		phpstan.stubFilesExtension: %drupal.extensions.stubFiles%

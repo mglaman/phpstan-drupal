@@ -1,0 +1,10 @@
+<?php
+
+namespace Drupal\Core\Field;
+
+use Drupal\Component\Plugin\PluginInspectionInterface;
+use Drupal\Core\Config\Entity\ThirdPartySettingsInterface;
+
+interface PluginSettingsInterface extends PluginInspectionInterface, ThirdPartySettingsInterface {
+
+}

@@ -8,6 +8,10 @@ PHPStan is able to [discover symbols](https://phpstan.org/user-guide/discovering
 by Composer. However, Drupal does not provide autoloading information for modules and themes. This project registers 
 those namespaces so that PHPStan can properly discover symbols in your Drupal code base automatically.
 
+> [!NOTE]
+> With Drupal 11.2, Drupal core is now using PHPStan 2.0. The 1.x branch of phpstan-drupal will be supported until 
+> Drupal 10 loses security support when Drupal 12 is released.
+
 ## Sponsors
 
 <a href="https://www.undpaul.de/"><img src="https://www.undpaul.de/themes/custom/undpaul3/logo.svg" alt="undpaul" width="250" /></a> <a href="https://www.optasy.com/"><img src="https://optasy.com/themes/custom/optasy/img/logo_optasy.png" alt="Optasy" width="250"></a> <a href="https://www.fame.fi/"><img src="https://www.fame.fi/assets/images/fame-logo.png" alt="Fame Helsinki" width="250" ></a>
@@ -104,25 +108,22 @@ parameters:
             classExtendsInternalClassRule: false
 ```
 
-### Specifying your Drupal project's root
+#### Disabling  extensions
 
-By default, the PHPStan Drupal extension will try to determine your Drupal project's root directory based on the working
-directory that PHPStan is checking. If this is not working properly, you can explicitly define the Drupal project's root
-directory using the `drupal.drupal_root` parameter.
+You can disable various extensions. This is useful when contributing to Drupal Core to improve its types.
 
-```
+```neon
 parameters:
-	drupal:
-		drupal_root: /path/to/drupal
+    drupal:
+        extensions:
+            entityFieldsViaMagicReflection: true
+            entityFieldMethodsViaMagicReflection: true
+            entityQuery: true
+            entityRepository: true
+            stubFiles: true
 ```
 
-You can also use container parameters. For instance you can always set it to the current working directory.
-
-```
-parameters:
-	drupal:
-		drupal_root: %currentWorkingDirectory%
-```
+Both options are enabled by default.
 
 ### Entity storage mappings.
 

@@ -26,7 +26,7 @@ final class EntityFieldsViaMagicReflectionExtensionTest extends PHPStanTestCase 
     protected function setUp(): void
     {
         parent::setUp();
-        $this->extension = new EntityFieldsViaMagicReflectionExtension();
+        $this->extension = new EntityFieldsViaMagicReflectionExtension(self::createReflectionProvider());
     }
 
     /**
@@ -43,19 +43,19 @@ final class EntityFieldsViaMagicReflectionExtensionTest extends PHPStanTestCase 
     public static function dataHasProperty(): \Generator
     {
         yield 'content entity supported' => [
-            // @phpstan-ignore-next-line
+            // @phpstan-ignore class.notFound
             EntityTest::class,
             'foobar',
             true
         ];
         yield 'config entity not supported' => [
-            // @phpstan-ignore-next-line
+            // @phpstan-ignore class.notFound
             TestConfigType::class,
             'foobar',
             false
         ];
         yield 'annotated properties are skipped on content entities' => [
-            // @phpstan-ignore-next-line
+            // @phpstan-ignore class.notFound
             ReflectionEntityTest::class,
             'user_id',
             false
@@ -92,7 +92,7 @@ final class EntityFieldsViaMagicReflectionExtensionTest extends PHPStanTestCase 
 
     public function testGetPropertyEntity(): void
     {
-        // @phpstan-ignore-next-line
+        // @phpstan-ignore class.notFound
         $classReflection = $this->createReflectionProvider()->getClass(EntityTest::class);
         $propertyReflection = $this->extension->getProperty($classReflection, 'field_myfield');
         $readableType = $propertyReflection->getReadableType();
@@ -123,7 +123,7 @@ final class EntityFieldsViaMagicReflectionExtensionTest extends PHPStanTestCase 
         $propertyReflection = $this->extension->getProperty($classReflection, 'format');
         $readableType = $propertyReflection->getReadableType();
         self::assertInstanceOf(NullType::class, $readableType);
-
     }
+    
 
 }

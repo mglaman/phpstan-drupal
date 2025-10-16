@@ -1,0 +1,20 @@
+<?php
+
+namespace Drupal\Core\Field;
+
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Field\Plugin\Field\FieldType\EntityReferenceItem;
+
+/**
+ * @template T of EntityInterface
+ * @extends FieldItemList<EntityReferenceItem<T>>
+ * @implements EntityReferenceFieldItemListInterface<T>
+ */
+class EntityReferenceFieldItemList extends FieldItemList implements EntityReferenceFieldItemListInterface {
+
+  /**
+   * @return array<int, T>
+   */
+  public function referencedEntities();
+
+}

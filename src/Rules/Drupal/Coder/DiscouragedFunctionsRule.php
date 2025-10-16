@@ -6,6 +6,7 @@ use PhpParser\Node;
 use PhpParser\Node\Expr\FuncCall;
 use PHPStan\Analyser\Scope;
 use PHPStan\Rules\Rule;
+use PHPStan\Rules\RuleErrorBuilder;
 use function in_array;
 use function sprintf;
 use function strtolower;
@@ -56,7 +57,13 @@ class DiscouragedFunctionsRule implements Rule
         ];
 
         if (in_array($name, $discouragedFunctions, true)) {
-            return [sprintf('Calls to function %s should not exist.', $name)];
+            return [
+                RuleErrorBuilder::message(
+                    sprintf('Calls to function %s should not exist.', $name)
+                )
+                ->identifier('discouragedFunctions.discouragedFunctionCalled')
+                ->build()
+            ];
         }
         return [];
     }
