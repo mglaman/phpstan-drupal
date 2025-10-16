@@ -33,6 +33,7 @@ parameters:
 			accessResultConditionRule: false
 			classExtendsInternalClassRule: true
 			pluginManagerInspectionRule: false
+			cacheableDependencyRule: false
 		entityMapping:
 			aggregator_feed:
 				class: Drupal\aggregator\Entity\Feed
@@ -267,6 +268,7 @@ parametersSchema:
 			accessResultConditionRule: boolean()
 			classExtendsInternalClassRule: boolean()
 			pluginManagerInspectionRule: boolean()
+			cacheableDependencyRule: boolean()
 		])
 		entityMapping: arrayOf(anyOf(
 			structure([

@@ -12,7 +12,6 @@ rules:
 	- mglaman\PHPStanDrupal\Rules\Drupal\LoadIncludes
 	- mglaman\PHPStanDrupal\Rules\Drupal\EntityQuery\EntityQueryHasAccessCheckRule
 	- mglaman\PHPStanDrupal\Rules\Drupal\TestClassesProtectedPropertyModulesRule
-	- mglaman\PHPStanDrupal\Rules\Drupal\CacheableDependencyRule
 
 conditionalTags:
 	mglaman\PHPStanDrupal\Rules\Drupal\Tests\TestClassSuffixNameRule:
@@ -25,6 +24,8 @@ conditionalTags:
 		phpstan.rules.rule: %drupal.rules.classExtendsInternalClassRule%
 	mglaman\PHPStanDrupal\Rules\Classes\PluginManagerInspectionRule:
 		phpstan.rules.rule: %drupal.rules.pluginManagerInspectionRule%
+	mglaman\PHPStanDrupal\Rules\Drupal\CacheableDependencyRule:
+		phpstan.rules.rule: %drupal.rules.cacheableDependencyRule%
 
 services:
 	-
@@ -39,3 +40,5 @@ services:
 		class: mglaman\PHPStanDrupal\Rules\Classes\ClassExtendsInternalClassRule
 	-
 		class: mglaman\PHPStanDrupal\Rules\Classes\PluginManagerInspectionRule
+	-
+		class: mglaman\PHPStanDrupal\Rules\Drupal\CacheableDependencyRule
