@@ -24,16 +24,23 @@ final class CachableDependencyRuleTest extends DrupalRuleTestCase {
 
     public static function resultData(): \Generator
     {
-        yield [
-            __DIR__ . '/../../fixtures/drupal/modules/phpstan_fixtures/src/UsesIncorrectCacheableDependency.php',
+        yield 'all test cases' => [
+            __DIR__ . '/data/cacheable-dependency.php',
             [
                 [
                     'Calling addCacheableDependency($object) when $object does not implement CacheableDependencyInterface effectively disables caching and should be avoided.',
                     13
                 ],
+                [
+                    'Calling addCacheableDependency($object) when $object does not implement CacheableDependencyInterface effectively disables caching and should be avoided.',
+                    39
+                ],
+                [
+                    'Calling addCacheableDependency($object) when $object does not implement CacheableDependencyInterface effectively disables caching and should be avoided.',
+                    43
+                ],
             ]
         ];
-
     }
 
 

@@ -5,12 +5,11 @@ declare(strict_types=1);
 namespace mglaman\PHPStanDrupal\Rules\Drupal;
 
 use PhpParser\Node;
-use PhpParser\NodeFinder;
-use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Identifier;
 use PHPStan\Analyser\Scope;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
+use PHPStan\Type\ObjectType;
 
 /**
  * @implements Rule<Node\Expr\MethodCall>
@@ -34,12 +33,13 @@ class CacheableDependencyRule implements Rule
             return [];
         }
 
-        $traversableArg = $args[0]->value;
-        $object = $scope->getType($traversableArg);
+        $dependencyArg = $args[0]->value;
+        $object = $scope->getType($dependencyArg);
 
-        // We need to check if isInstanceOf method exists as phpstan returns
-        // MixedType for unknown objects.
-        if (method_exists($object, 'isInstanceOf') && $object->isInstanceOf('Drupal\Core\Cache\CacheableDependencyInterface')->yes()) {
+        $interfaceType = new ObjectType('Drupal\Core\Cache\CacheableDependencyInterface');
+        $implementsInterface = $interfaceType->isSuperTypeOf($object);
+
+        if (!$implementsInterface->no()) {
             return [];
         }
 
