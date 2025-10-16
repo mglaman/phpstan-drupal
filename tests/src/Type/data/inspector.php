@@ -31,7 +31,7 @@ function assertAllStrings(mixed $mixed_arg, array $array_arg): void {
 
     Inspector::assertAllStrings($array_arg)
         ? assertType('array<string>', $array_arg)
-        : assertType('array', $array_arg);
+        : assertType('non-empty-array', $array_arg);
 }
 
 /**
@@ -44,7 +44,7 @@ function assertAllStringable(mixed $mixed_arg, array $array_arg): void {
 
     Inspector::assertAllStringable($array_arg)
         ? assertType('array<string|Stringable>', $array_arg)
-        : assertType('array', $array_arg);
+        : assertType('non-empty-array', $array_arg);
 }
 
 /**
@@ -57,7 +57,7 @@ function assertAllArrays(mixed $mixed_arg, array $array_arg): void {
 
     Inspector::assertAllArrays($array_arg)
         ? assertType('array<array>', $array_arg)
-        : assertType('array', $array_arg);
+        : assertType('non-empty-array', $array_arg);
 }
 
 /**
@@ -70,7 +70,7 @@ function assertStrictArray(mixed $mixed_arg, array $array_arg): void {
 
     Inspector::assertStrictArray($array_arg)
         ? assertType('array<int<0, max>, mixed>', $array_arg)
-        : assertType('array', $array_arg);
+        : assertType('non-empty-array', $array_arg);
 }
 
 /**
@@ -83,7 +83,7 @@ function assertAllStrictArrays(mixed $mixed_arg, array $array_arg): void {
 
     Inspector::assertAllStrictArrays($array_arg)
         ? assertType('array<array<int<0, max>, mixed>>', $array_arg)
-        : assertType('array', $array_arg);
+        : assertType('non-empty-array', $array_arg);
 }
 
 /**
@@ -96,7 +96,7 @@ function assertAllHaveKey(mixed $mixed_arg, array $array_arg): void {
 
     Inspector::assertAllHaveKey($array_arg, 'foo', 'baz')
         ? assertType("array<non-empty-array&hasOffset('baz')&hasOffset('foo')>", $array_arg)
-        : assertType('array', $array_arg);
+        : assertType('non-empty-array', $array_arg);
 }
 
 /**
@@ -109,7 +109,7 @@ function assertAllIntegers(mixed $mixed_arg, array $array_arg): void {
 
     Inspector::assertAllIntegers($array_arg)
         ? assertType('array<int>', $array_arg)
-        : assertType('array', $array_arg);
+        : assertType('non-empty-array', $array_arg);
 }
 
 /**
@@ -122,7 +122,7 @@ function assertAllFloat(mixed $mixed_arg, array $array_arg): void {
 
     Inspector::assertAllFloat($array_arg)
         ? assertType('array<float>', $array_arg)
-        : assertType('array', $array_arg);
+        : assertType('non-empty-array', $array_arg);
 }
 
 /**
@@ -135,7 +135,7 @@ function assertAllCallable(mixed $mixed_arg, array $array_arg): void {
 
     Inspector::assertAllCallable($array_arg)
         ? assertType('array<callable(): mixed>', $array_arg)
-        : assertType('array', $array_arg);
+        : assertType('non-empty-array', $array_arg);
 }
 
 /**
@@ -148,7 +148,7 @@ function assertAllNotEmpty(mixed $mixed_arg, array $array_arg): void {
 
     Inspector::assertAllNotEmpty($array_arg)
         ? assertType('array<float|int<min, -1>|int<1, max>|object|resource|non-empty-string|non-empty-array>', $array_arg)
-        : assertType('array', $array_arg);
+        : assertType('non-empty-array', $array_arg);
 }
 
 /**
@@ -161,7 +161,7 @@ function assertAllNumeric(mixed $mixed_arg, array $array_arg): void {
 
     Inspector::assertAllNumeric($array_arg)
         ? assertType('array<float|int>', $array_arg)
-        : assertType('array', $array_arg);
+        : assertType('non-empty-array', $array_arg);
 }
 
 /**
@@ -175,7 +175,7 @@ function assertAllMatch(mixed $mixed_arg, array $array_arg): void {
 
     Inspector::assertAllMatch($pattern, $array_arg, false)
         ? assertType('array<string>', $array_arg)
-        : assertType('array', $array_arg);
+        : assertType('non-empty-array', $array_arg);
 }
 
 /**
@@ -189,7 +189,7 @@ function assertAllRegularExpressionMatch(mixed $mixed_arg, array $array_arg): vo
 
     Inspector::assertAllRegularExpressionMatch($pattern, $array_arg)
         ? assertType('array<string>', $array_arg)
-        : assertType('array', $array_arg);
+        : assertType('non-empty-array', $array_arg);
 }
 
 /**
@@ -204,5 +204,5 @@ function assertAllObjects(mixed $mixed_arg, array $array_arg): void {
 
     Inspector::assertAllObjects($array_arg, Node::class, TranslatableMarkup::class, '\\Stringable', '\\Drupal\\jsonapi\\JsonApiResource\\ResourceIdentifier')
         ? assertType('array<\Drupal\jsonapi\JsonApiResource\ResourceIdentifier|Drupal\node\Entity\Node|\Stringable>', $array_arg)
-        : assertType('array', $array_arg);
+        : assertType('non-empty-array', $array_arg);
 }
