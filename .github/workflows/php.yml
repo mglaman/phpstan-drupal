@@ -63,6 +63,8 @@ jobs:
           php-version: "${{ matrix.php-version }}"
           tools: composer:v2
           extensions: dom, curl, libxml, mbstring, zip, pdo, mysql, pdo_mysql, gd
+      - run: composer config --no-plugins 'allow-plugins.drupal/core-composer-scaffold' true
+      - run: composer config --no-plugins 'allow-plugins.drupal/core-project-message' true
       - name: "Set drupal/core to ${{ matrix.drupal }}"
         run: "composer require drupal/core-recommended:${{ matrix.drupal }} --with-all-dependencies --dev --no-update"
       - name: "Install dependencies"
