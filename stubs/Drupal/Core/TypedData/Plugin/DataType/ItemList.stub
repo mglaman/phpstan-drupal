@@ -10,7 +10,7 @@ use Drupal\Core\TypedData\TypedDataInterface;
 /**
  * @template T of TypedDataInterface
  * @implements \IteratorAggregate<int, T>
- * @implements ListInterface<T>
+ * @implements ListInterface<int, T>
  */
 class ItemList extends TypedData implements \IteratorAggregate, ListInterface {
 

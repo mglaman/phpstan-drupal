@@ -5,7 +5,7 @@ namespace Drupal\Core\TypedData;
 /**
  * @template TKey of int
  * @template T of TypedDataInterface
- * @extends TraversableTypedDataInterface<int, T>
+ * @extends TraversableTypedDataInterface<TKey, T>
  * @extends \ArrayAccess<TKey,T>
  */
 interface ListInterface extends TraversableTypedDataInterface, \ArrayAccess, \Countable {
