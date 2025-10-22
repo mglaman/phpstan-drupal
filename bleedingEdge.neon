@@ -9,3 +9,4 @@ parameters:
 			dependencySerializationTraitPropertyRule: true
 			accessResultConditionRule: true
 			cacheableDependencyRule: true
+			hookRules: true
