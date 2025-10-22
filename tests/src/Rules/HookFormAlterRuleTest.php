@@ -2,6 +2,7 @@
 
 namespace mglaman\PHPStanDrupal\Tests\Rules;
 
+use Drupal;
 use mglaman\PHPStanDrupal\Rules\Drupal\HookFormAlterRule;
 use mglaman\PHPStanDrupal\Tests\DrupalRuleTestCase;
 use PHPStan\Rules\Rule;
@@ -22,6 +23,9 @@ class HookFormAlterRuleTest extends DrupalRuleTestCase {
      * Test valid form alter hook implementations.
      */
     public function testValidImplementations(): void {
+        if (version_compare(Drupal::VERSION, '11.1', '<')) {
+            self::markTestSkipped();
+        }
         $this->analyse([
             __DIR__ . '/data/hook-form-alter-valid.php',
         ], [
@@ -33,6 +37,9 @@ class HookFormAlterRuleTest extends DrupalRuleTestCase {
      * Test invalid method-based hook implementations.
      */
     public function testInvalidMethodImplementations(): void {
+        if (version_compare(Drupal::VERSION, '11.1', '<')) {
+            self::markTestSkipped();
+        }
         $this->analyse([
             __DIR__ . '/data/hook-form-alter-invalid.php',
         ], [
