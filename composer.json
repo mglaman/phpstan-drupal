@@ -20,7 +20,7 @@
     "require-dev": {
         "behat/mink": "^1.10",
         "composer/installers": "^1.9 || ^2",
-        "drupal/core-recommended": "^10",
+        "drupal/core-recommended": "^11",
         "drush/drush": "^11 || ^12 || ^13",
         "phpstan/extension-installer": "^1.4.3",
         "phpstan/phpstan-strict-rules": "^2.0",
