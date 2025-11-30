@@ -19,7 +19,9 @@ final class IgnoreDeprecationsScope implements DeprecatedScopeResolver
 
         if ($scope->isInClass()) {
             $class = $scope->getClassReflection()->getNativeReflection();
-            if ($class->getAttributes(IgnoreDeprecations::class) !== []) {
+            $classIgnoreDeprecationAttributes = $class->getAttributes(IgnoreDeprecations::class);
+            $classIgnoreDeprecationAttribute = $classIgnoreDeprecationAttributes ? $classIgnoreDeprecationAttributes[0] : null;
+            if ($classIgnoreDeprecationAttribute && count($classIgnoreDeprecationAttribute->getArguments()) === 0) {
                 return true;
             }
 
