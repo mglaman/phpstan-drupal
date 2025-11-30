@@ -29,7 +29,9 @@ final class IgnoreDeprecationsScope implements DeprecatedScopeResolver
             }
 
             $method = $class->getMethod($function->getName());
-            if ($method->getAttributes(IgnoreDeprecations::class) !== []) {
+            $methodIgnoreDeprecationAttributes = $method->getAttributes(IgnoreDeprecations::class);
+            $methodIgnoreDeprecationAttribute = $methodIgnoreDeprecationAttributes ? $methodIgnoreDeprecationAttributes[0] : null;
+            if ($methodIgnoreDeprecationAttribute && count($methodIgnoreDeprecationAttribute->getArgumentTypes()) === 0) {
                 return true;
             }
         }
