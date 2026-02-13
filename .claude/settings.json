@@ -1,0 +1,26 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "filepath=\"$CLAUDE_FILE_PATHS\"; if echo \"$filepath\" | grep -qE '\\.php$'; then php vendor/bin/phpcbf --standard=phpcs.xml \"$filepath\" 2>/dev/null; exit 0; fi"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo \"$CLAUDE_FILE_PATHS\" | grep -qE '(composer\\.lock|vendor/)' && echo 'BLOCK: Do not edit lock files or vendor directory' && exit 1 || exit 0"
+          }
+        ]
+      }
+    ]
+  }
+}
