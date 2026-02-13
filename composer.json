@@ -9,6 +9,9 @@
             "email": "nmd.matt@gmail.com"
         }
     ],
+    "conflict": {
+        "phpstan/phpstan": ">2.1.37"
+    },
     "require": {
         "php": "^8.1",
         "phpstan/phpstan": "^2.1",
