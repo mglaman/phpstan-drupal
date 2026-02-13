@@ -147,7 +147,12 @@ final class RenderCallbackRuleTest extends DrupalRuleTestCase {
         ];
         yield [
             __DIR__ . '/../../fixtures/drupal/core/modules/filter/src/FilterProcessResult.php',
-            []
+            [
+                [
+                    "#lazy_builder value 'string' at key '0' is invalid.",
+                    148,
+                ]
+            ]
         ];
         if (version_compare(\Drupal::VERSION, '10.1', '>=')) {
             yield [
