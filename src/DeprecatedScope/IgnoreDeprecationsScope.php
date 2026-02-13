@@ -29,6 +29,9 @@ final class IgnoreDeprecationsScope implements DeprecatedScopeResolver
             if ($function === null) {
                 return false;
             }
+            if (method_exists($function, 'isPropertyHook') && $function->isPropertyHook()) {
+                return false;
+            }
 
             $method = $class->getMethod($function->getName());
             $methodIgnoreDeprecationAttributes = $method->getAttributes(IgnoreDeprecations::class);

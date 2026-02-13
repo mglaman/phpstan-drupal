@@ -18,7 +18,7 @@ jobs:
           - "8.4"
     steps:
       - name: "Checkout"
-        uses: "actions/checkout@v5"
+        uses: "actions/checkout@v6"
       - name: "Install PHP"
         uses: "shivammathur/setup-php@v2"
         with:
@@ -53,7 +53,7 @@ jobs:
             experimental: true
     steps:
       - name: "Checkout"
-        uses: "actions/checkout@v5"
+        uses: "actions/checkout@v6"
       - name: "Install PHP"
         uses: "shivammathur/setup-php@v2"
         with:
@@ -98,7 +98,7 @@ jobs:
             experimental: true
     steps:
       - name: "Checkout"
-        uses: "actions/checkout@v5"
+        uses: "actions/checkout@v6"
       - name: "Install PHP"
         uses: "shivammathur/setup-php@v2"
         with:
@@ -107,7 +107,7 @@ jobs:
           tools: composer:v2
           extensions: dom, curl, libxml, mbstring, zip, pdo, mysql, pdo_mysql, bcmath, gd, exif, iconv
       - name: Setup Drupal
-        uses: bluehorndigital/setup-drupal@v1.1.0
+        uses: bluehorndigital/setup-drupal@v1.2.0
         with:
           version: ${{ matrix.drupal }}
           path: ~/drupal
@@ -174,7 +174,7 @@ jobs:
             experimental: true
     steps:
       - name: "Checkout"
-        uses: "actions/checkout@v5"
+        uses: "actions/checkout@v6"
       - name: "Install PHP"
         uses: "shivammathur/setup-php@v2"
         with:
@@ -183,7 +183,7 @@ jobs:
           tools: composer:v2
           extensions: dom, curl, libxml, mbstring, zip, pdo, mysql, pdo_mysql, bcmath, gd, exif, iconv
       - name: Setup Drupal
-        uses: bluehorndigital/setup-drupal@v1.1.0
+        uses: bluehorndigital/setup-drupal@v1.2.0
         with:
           version: ${{ matrix.drupal }}
           path: ~/drupal
@@ -214,7 +214,7 @@ jobs:
     name: "Drupal core HEAD baseline check"
     steps:
       - name: "Checkout"
-        uses: "actions/checkout@v5"
+        uses: "actions/checkout@v6"
       - name: "set the version alias for self"
         run: |
           if [ "${{ github.event_name }}" == 'pull_request' ]; then
@@ -227,7 +227,7 @@ jobs:
         run: echo PHPSTAN_TMP_DIR=$(php -r "print sys_get_temp_dir() . '/phpstan';") >> $GITHUB_OUTPUT
         id: phpstan_tmp_dir
       - name: cache phpstan
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ${{ steps.phpstan_tmp_dir.outputs.PHPSTAN_TMP_DIR }}
           key: ${{ runner.os }}-phpstan-core-baseline
