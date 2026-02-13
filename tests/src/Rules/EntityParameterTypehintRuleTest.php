@@ -16,7 +16,8 @@ final class EntityParameterTypehintRuleTest extends DrupalRuleTestCase
         /** @phpstan-ignore phpstanApi.constructor */
         new MissingTypehintCheck(
                 true,
-                []
+                [],
+                true
             )
         );
     }
