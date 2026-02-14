@@ -17,7 +17,6 @@ final class EntityParameterTypehintRuleTest extends DrupalRuleTestCase
         new MissingTypehintCheck(
                 true,
                 [],
-                true
             )
         );
     }
