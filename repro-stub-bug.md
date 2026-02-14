@@ -132,28 +132,175 @@ via `findMethodPhpDocIncludingAncestors()`, which is why external callers
 see the stub types. But `NodeScopeResolver::getPhpDocs()` (used for method
 body scope) bypasses this entirely.
 
-### Suggested fix
+---
 
-`NodeScopeResolver::getPhpDocs()` should consult `StubPhpDocProvider` before
-falling back to the source file's doc comment:
+## Fix for phpstan-src
+
+### Files to change
+
+#### 1. `src/Analyser/NodeScopeResolver.php`
+
+**Add import:**
 
 ```php
-// In getPhpDocs(), for ClassMethod nodes:
-$currentResolvedPhpDoc = null;
+use PHPStan\PhpDoc\StubPhpDocProvider;
+```
 
-// Check stubs first (NEW)
+**Add property** (after `private ReflectionProvider $reflectionProvider;`):
+
+```php
+private StubPhpDocProvider $stubPhpDocProvider;
+```
+
+**Add constructor parameter** (after `InitializerExprTypeResolver $initializerExprTypeResolver,`):
+
+```php
+StubPhpDocProvider $stubPhpDocProvider,
+```
+
+**Add constructor assignment** (after `$this->initializerExprTypeResolver = $initializerExprTypeResolver;`):
+
+```php
+$this->stubPhpDocProvider = $stubPhpDocProvider;
+```
+
+**Fix `getPhpDocs()` method** — replace the `ClassMethod` phpDoc resolution block:
+
+```php
+// BEFORE (broken):
+$currentResolvedPhpDoc = null;
+if ($docComment !== null) {
+    $currentResolvedPhpDoc = $this->fileTypeMapper->getResolvedPhpDoc(
+        $file, $class, $trait, $node->name->name, $docComment
+    );
+}
+
+// AFTER (fixed):
+$currentResolvedPhpDoc = null;
 if ($class !== null) {
     $currentResolvedPhpDoc = $this->stubPhpDocProvider->findMethodPhpDoc(
         $class, $class, $functionName, $positionalParameterNames
     );
 }
-
-// Fall back to source file doc comment
 if ($currentResolvedPhpDoc === null && $docComment !== null) {
     $currentResolvedPhpDoc = $this->fileTypeMapper->getResolvedPhpDoc(
-        $file, $class, $trait, $node->name->name, $docComment
+        $file, $class, $trait, $functionName, $docComment
     );
 }
 ```
 
-This would require injecting `StubPhpDocProvider` into `NodeScopeResolver`.
+### Test files to add
+
+#### 2. `tests/PHPStan/Analyser/data/stub-method-body-types.stub`
+
+```php
+<?php
+
+class StubMethodBodyTypes
+{
+    /**
+     * @param callable-string $callback
+     * @return non-empty-string
+     */
+    public function process($callback): string
+    {
+    }
+}
+```
+
+#### 3. `tests/PHPStan/Analyser/data/stub-method-body-types.php`
+
+```php
+<?php
+
+namespace StubMethodBodyTypes;
+
+use function PHPStan\Testing\assertType;
+
+class StubMethodBodyTypes
+{
+    /**
+     * Source declares @param string — stub overrides to @param callable-string
+     * @param string $callback
+     * @return string
+     */
+    public function process($callback): string
+    {
+        // Stub should override the source file's @param type inside the method body
+        assertType('callable-string', $callback);
+
+        return $callback;
+    }
+}
+
+class ExternalCaller
+{
+    public function test(StubMethodBodyTypes $obj): void
+    {
+        // Stub should also work for external callers (this already works)
+        assertType('non-empty-string', $obj->process('strlen'));
+    }
+}
+```
+
+#### 4. `tests/PHPStan/Analyser/data/stub-method-body-types.neon`
+
+```neon
+parameters:
+    stubFiles:
+        - stub-method-body-types.stub
+```
+
+#### 5. `tests/PHPStan/Analyser/StubMethodBodyTypesTest.php`
+
+```php
+<?php declare(strict_types=1);
+
+namespace PHPStan\Analyser;
+
+use PHPStan\Testing\TypeInferenceTestCase;
+
+class StubMethodBodyTypesTest extends TypeInferenceTestCase
+{
+
+    public static function dataFileAsserts(): iterable
+    {
+        yield from self::gatherAssertTypes(__DIR__ . '/data/stub-method-body-types.php');
+    }
+
+    /**
+     * @dataProvider dataFileAsserts
+     */
+    public function testFileAsserts(
+        string $assertType,
+        string $file,
+        mixed ...$args,
+    ): void
+    {
+        $this->assertFileAsserts($assertType, $file, ...$args);
+    }
+
+    public static function getAdditionalConfigFiles(): array
+    {
+        return [
+            __DIR__ . '/data/stub-method-body-types.neon',
+        ];
+    }
+
+}
+```
+
+### Why this works
+
+The fix restores the behavior from 2.1.37 where `StubPhpDocProvider` is consulted
+before falling back to the source file's doc comment. The check is placed before
+the `fileTypeMapper` call, so stubs take priority (matching the old
+`docBlockToResolvedDocBlock()` behavior). If no stub exists for the method,
+it falls through to the original source file resolution as before.
+
+The `$class !== null` guard ensures we only look up stubs when inside a class
+(which is always true for ClassMethod nodes, but the guard is defensive).
+
+`StubPhpDocProvider` is already `#[AutowiredService]` so adding it to the
+constructor is all that's needed for dependency injection — no neon config changes
+required.
