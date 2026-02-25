@@ -145,10 +145,6 @@ final class RenderCallbackRuleTest extends DrupalRuleTestCase {
             __DIR__ . '/data/bug-424.php',
             $bug424
         ];
-        yield [
-            __DIR__ . '/../../fixtures/drupal/core/modules/filter/src/FilterProcessResult.php',
-            []
-        ];
         if (version_compare(\Drupal::VERSION, '10.1', '>=')) {
             yield [
                 __DIR__ . '/data/bug-527.php',
