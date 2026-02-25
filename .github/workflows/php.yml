@@ -42,8 +42,8 @@ jobs:
         php-version:
           - "8.3"
         drupal:
-          - "~11.0.0"
           - "~11.2.0"
+          - "~11.3.0"
         include:
           - php-version: "8.1"
             drupal: "^10.4"
@@ -87,8 +87,8 @@ jobs:
         php-version:
           - "8.3"
         drupal:
-          - "~11.0.0"
           - "~11.2.0"
+          - "~11.3.0"
         include:
           - php-version: "8.1"
             drupal: "^10.4"
@@ -163,8 +163,8 @@ jobs:
         php-version:
           - "8.3"
         drupal:
-          - "~11.0.0"
           - "~11.2.0"
+          - "~11.3.0"
         include:
           - php-version: "8.1"
             drupal: "^10.4"
@@ -236,7 +236,7 @@ jobs:
         uses: "shivammathur/setup-php@v2"
         with:
           coverage: "none"
-          php-version: "8.3"
+          php-version: "8.5"
           tools: composer:v2
           extensions: dom, curl, libxml, mbstring, zip, pdo, mysql, pdo_mysql, gd, apcu
       - name: "Checkout Drupal core"
