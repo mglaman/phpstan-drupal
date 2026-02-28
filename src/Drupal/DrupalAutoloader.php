@@ -211,13 +211,6 @@ class DrupalAutoloader
                 continue;
             }
             foreach ($yaml['services'] as $serviceId => $serviceDefinition) {
-                // Check if this is an alias shortcut.
-                // @link https://symfony.com/doc/4.4/service_container/alias_private.html#aliasing
-                if (is_string($serviceDefinition)) {
-                    $serviceDefinition = [
-                        'alias' => str_replace('@', '', $serviceDefinition),
-                    ];
-                }
                 // Prevent \Nette\DI\ContainerBuilder::completeStatement from array_walk_recursive into the arguments
                 // and thinking these are real services for PHPStan's container.
                 if (isset($serviceDefinition['arguments']) && is_array($serviceDefinition['arguments'])) {
