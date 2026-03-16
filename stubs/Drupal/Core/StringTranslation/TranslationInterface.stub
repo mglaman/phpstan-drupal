@@ -1,0 +1,31 @@
+<?php
+
+namespace Drupal\Core\StringTranslation;
+
+interface TranslationInterface {
+
+  /**
+   * @param string $string
+   * @param array<non-empty-string, string|\Stringable> $args
+   * @param array<string, mixed> $options
+   * @return TranslatableMarkup
+   */
+  public function translate($string, array $args = [], array $options = []);
+
+  /**
+   * @param TranslatableMarkup $translated_string
+   * @return string
+   */
+  public function translateString(TranslatableMarkup $translated_string);
+
+  /**
+   * @param int $count
+   * @param string $singular
+   * @param string $plural
+   * @param array<non-empty-string, string|\Stringable> $args
+   * @param array<string, mixed> $options
+   * @return PluralTranslatableMarkup
+   */
+  public function formatPlural($count, $singular, $plural, array $args = [], array $options = []);
+
+}

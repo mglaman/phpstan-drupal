@@ -1,0 +1,18 @@
+<?php
+
+namespace Drupal\Core\StringTranslation;
+
+class PluralTranslatableMarkup extends TranslatableMarkup {
+
+  /**
+   * @param int $count
+   * @param string $singular
+   * @param string $plural
+   * @param array<non-empty-string, string|\Stringable> $args
+   * @param array<string, mixed> $options
+   * @param TranslationInterface|null $string_translation
+   */
+  public function __construct($count, $singular, $plural, array $args = [], array $options = [], $string_translation = NULL) {
+  }
+
+}
