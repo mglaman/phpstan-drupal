@@ -27,7 +27,7 @@ jobs:
           tools: composer:v2
           extensions: dom, curl, libxml, mbstring, zip, pdo, mysql, pdo_mysql, gd
       - name: "Install dependencies"
-        uses: "ramsey/composer-install@v3"
+        uses: "ramsey/composer-install@v4"
       - name: "PHPCS"
         run: "php vendor/bin/phpcs"
       - name: "PHPStan"
@@ -66,7 +66,7 @@ jobs:
       - name: "Set drupal/core to ${{ matrix.drupal }}"
         run: "composer require drupal/core-recommended:${{ matrix.drupal }} --with-all-dependencies --dev --no-update"
       - name: "Install dependencies"
-        uses: "ramsey/composer-install@v3"
+        uses: "ramsey/composer-install@v4"
       - name: "Migrate PHPUnit configuration across PHPUnit major versions"
         run: |
           php vendor/bin/phpunit --migrate-configuration || true
@@ -247,7 +247,7 @@ jobs:
          composer config repositories.0 composer https://packages.drupal.org/8
          composer config repositories.1 path $GITHUB_WORKSPACE
       - name: "Install Drupal core dependencies"
-        uses: "ramsey/composer-install@v3"
+        uses: "ramsey/composer-install@v4"
         with:
           working-directory: "${{ runner.temp }}/drupal"
       - name: "require phpstan-drupal"
