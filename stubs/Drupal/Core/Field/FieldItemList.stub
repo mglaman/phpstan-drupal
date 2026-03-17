@@ -12,6 +12,11 @@ use Drupal\Core\TypedData\Plugin\DataType\ItemList;
 class FieldItemList extends ItemList implements FieldItemListInterface {
 
   /**
+   * @var T[]
+   */
+  protected $list = [];
+
+  /**
    * @return T
    */
   protected function createItem(int $offset = 0, mixed $value = NULL): FieldItemInterface {}
