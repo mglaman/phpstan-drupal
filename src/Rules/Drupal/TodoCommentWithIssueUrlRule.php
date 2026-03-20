@@ -125,7 +125,7 @@ final class TodoCommentWithIssueUrlRule implements Rule
         foreach ($matches[1] as $nid) {
             if ((int) $nid === $this->issueId) {
                 return RuleErrorBuilder::message(sprintf(
-                    '@todo references the current issue #%d on drupal.org and must be resolved before merging.',
+                    '@todo references the current issue #%d.',
                     $this->issueId
                 ))
                     ->line($line)

@@ -22,15 +22,15 @@ final class TodoCommentWithIssueUrlRuleTest extends DrupalRuleTestCase
             [__DIR__ . '/data/todo-comment-with-issue-url.php'],
             [
                 [
-                    '@todo references the current issue #3456789 on drupal.org and must be resolved before merging.',
+                    '@todo references the current issue #3456789.',
                     5,
                 ],
                 [
-                    '@todo references the current issue #3456789 on drupal.org and must be resolved before merging.',
+                    '@todo references the current issue #3456789.',
                     11,
                 ],
                 [
-                    '@todo references the current issue #3456789 on drupal.org and must be resolved before merging.',
+                    '@todo references the current issue #3456789.',
                     23,
                 ],
             ]
