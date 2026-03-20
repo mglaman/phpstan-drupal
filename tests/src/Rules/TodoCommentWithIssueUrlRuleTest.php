@@ -23,19 +23,18 @@ final class TodoCommentWithIssueUrlRuleTest extends DrupalRuleTestCase
             [
                 [
                     '@todo references the current issue #3456789.',
-                    5,
+                    5
                 ],
                 [
                     '@todo references the current issue #3456789.',
-                    11,
+                    11
                 ],
                 [
                     '@todo references the current issue #3456789.',
-                    23,
+                    23
                 ],
             ]
         );
     }
-
 
 }

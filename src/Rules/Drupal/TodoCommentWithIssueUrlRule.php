@@ -78,13 +78,16 @@ final class TodoCommentWithIssueUrlRule implements Rule
     }
 
     /**
-     * @param Node[] $nodes
+     * @param array<mixed> $nodes
      * @param array<array{Comment, int}> $collected
      * @param array<int, true> $seen
      */
     private function traverseNodes(array $nodes, array &$collected, array &$seen): void
     {
         foreach ($nodes as $node) {
+            if (!$node instanceof Node) {
+                continue;
+            }
             foreach ($node->getComments() as $comment) {
                 $line = $comment->getStartLine();
                 if (isset($seen[$line])) {
