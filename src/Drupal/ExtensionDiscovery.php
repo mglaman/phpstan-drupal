@@ -11,6 +11,7 @@ use function array_flip;
 use function array_multisort;
 use function dirname;
 use function file_exists;
+use function glob;
 use function is_dir;
 use function preg_match;
 use function strpos;
@@ -72,11 +73,11 @@ class ExtensionDiscovery
     protected $root;
 
     /**
-     * The site path.
+     * The site paths.
      *
-     * @var string
+     * @var string[]
      */
-    protected $sitePath;
+    protected $sitePaths;
 
     /**
      * Constructs a new ExtensionDiscovery object.
@@ -90,7 +91,30 @@ class ExtensionDiscovery
         $this->profileDirectories = [
             $root . '/core/profiles/standard'
         ];
-        $this->sitePath = 'sites/default';
+        $this->sitePaths = $this->discoverSitePaths();
+    }
+
+    /**
+     * Discovers all site-specific directories under sites/.
+     *
+     * @return string[]
+     *   An array of site paths relative to the root (e.g. 'sites/default').
+     */
+    private function discoverSitePaths(): array
+    {
+        $paths = [];
+        foreach (glob($this->root . '/sites/*', GLOB_ONLYDIR) as $dir) {
+            $basename = basename($dir);
+            // Skip 'all' and 'simpletest' as they are handled separately or irrelevant.
+            if ($basename === 'all' || $basename === 'simpletest') {
+                continue;
+            }
+            $paths[] = 'sites/' . $basename;
+        }
+        if ($paths === []) {
+            $paths[] = 'sites/default';
+        }
+        return $paths;
     }
 
     /**
@@ -152,8 +176,6 @@ class ExtensionDiscovery
         // type specific directory names only.
         $searchdirs[self::ORIGIN_ROOT] = '';
 
-        $searchdirs[self::ORIGIN_SITE] = $this->sitePath;
-
         $files = [];
         foreach ($searchdirs as $dir) {
             // Discover all extensions in the directory, unless we did already.
@@ -166,11 +188,24 @@ class ExtensionDiscovery
             }
         }
 
+        // Scan all site-specific directories.
+        foreach ($this->sitePaths as $sitePath) {
+            if (!isset(static::$files[$this->root][$sitePath])) {
+                static::$files[$this->root][$sitePath] = $this->scanDirectory($sitePath);
+            }
+            if (isset(static::$files[$this->root][$sitePath][$type])) {
+                $files += static::$files[$this->root][$sitePath][$type];
+            }
+        }
+
         // If applicable, filter out extensions that do not belong to the current
         // installation profiles.
         $files = $this->filterByProfileDirectories($files);
         // Sort the discovered extensions by their originating directories.
         $origin_weights = array_flip($searchdirs);
+        foreach ($this->sitePaths as $sitePath) {
+            $origin_weights[$sitePath] = self::ORIGIN_SITE;
+        }
         $files = $this->sort($files, $origin_weights);
 
         // Process and return the list of extensions keyed by extension name.
