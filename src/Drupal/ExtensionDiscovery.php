@@ -103,7 +103,8 @@ class ExtensionDiscovery
     private function discoverSitePaths(): array
     {
         $paths = [];
-        foreach (glob($this->root . '/sites/*', GLOB_ONLYDIR) ?: [] as $dir) {
+        $siteDirs = glob($this->root . '/sites/*', GLOB_ONLYDIR);
+        foreach ($siteDirs !== false ? $siteDirs : [] as $dir) {
             $basename = basename($dir);
             // Skip 'all' and 'simpletest' as they are handled separately or irrelevant.
             if ($basename === 'all' || $basename === 'simpletest') {
