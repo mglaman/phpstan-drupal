@@ -57,3 +57,63 @@ function extendedItemList(ExtendedEntityReferenceFieldItemList $items): void {
         assertType('Drupal\node\NodeInterface', $entity);
     }
 }
+
+/**
+ * Test that the protected $list property preserves generic type information.
+ */
+class ListPropertyAccessor extends EntityReferenceFieldItemList {
+    public function testListProperty(): void {
+        // Direct access to $list property should preserve generic type
+        assertType('array<int, Drupal\Core\Field\Plugin\Field\FieldType\EntityReferenceItem<Drupal\Core\Entity\EntityInterface>>', $this->list);
+        
+        // Iteration over $list should preserve generic type
+        foreach ($this->list as $item) {
+            assertType('Drupal\Core\Field\Plugin\Field\FieldType\EntityReferenceItem<Drupal\Core\Entity\EntityInterface>', $item);
+        }
+        
+        // Array access with positive integer offset
+        assertType('Drupal\Core\Field\Plugin\Field\FieldType\EntityReferenceItem<Drupal\Core\Entity\EntityInterface>', $this->list[0]);
+        assertType('Drupal\Core\Field\Plugin\Field\FieldType\EntityReferenceItem<Drupal\Core\Entity\EntityInterface>', $this->list[5]);
+    }
+}
+
+/**
+ * Test with specialized generic type.
+ */
+class ListPropertyAccessorWithGeneric extends EntityReferenceFieldItemList {
+    /**
+     * @var array<int, EntityReferenceItem<NodeInterface>>
+     */
+    protected $list = [];
+
+    public function testSpecializedListProperty(): void {
+        // Access to specialized $list property
+        assertType('array<int, Drupal\Core\Field\Plugin\Field\FieldType\EntityReferenceItem<Drupal\node\NodeInterface>>', $this->list);
+        
+        // Iteration preserves specialized generic type
+        foreach ($this->list as $item) {
+            assertType('Drupal\Core\Field\Plugin\Field\FieldType\EntityReferenceItem<Drupal\node\NodeInterface>', $item);
+        }
+        
+        // Item access preserves specialized generic type
+        assertType('Drupal\Core\Field\Plugin\Field\FieldType\EntityReferenceItem<Drupal\node\NodeInterface>', $this->list[0]);
+    }
+}
+
+/**
+ * @extends EntityReferenceFieldItemList<NodeInterface>
+ */
+class ExtendedListPropertyAccessor extends EntityReferenceFieldItemList {
+    public function testExtendedListProperty(): void {
+        // Access to $list property should use extended generic type
+        assertType('array<int, Drupal\Core\Field\Plugin\Field\FieldType\EntityReferenceItem<Drupal\node\NodeInterface>>', $this->list);
+        
+        // Iteration preserves extended generic type
+        foreach ($this->list as $item) {
+            assertType('Drupal\Core\Field\Plugin\Field\FieldType\EntityReferenceItem<Drupal\node\NodeInterface>', $item);
+        }
+        
+        // Array access with extended generic type
+        assertType('Drupal\Core\Field\Plugin\Field\FieldType\EntityReferenceItem<Drupal\node\NodeInterface>', $this->list[0]);
+    }
+}
