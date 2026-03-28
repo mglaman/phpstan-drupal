@@ -1,0 +1,14 @@
+<?php
+
+namespace Drupal\Component\Render;
+
+class FormattableMarkup implements MarkupInterface {
+
+  /**
+   * @param string $string
+   * @param array<non-empty-string, string|\Stringable> $arguments
+   */
+  public function __construct($string, array $arguments) {
+  }
+
+}
