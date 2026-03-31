@@ -13,6 +13,7 @@ use PHPStan\Testing\PHPStanTestCase;
 use PHPStan\Type\NullType;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\StringType;
+use PHPStan\Type\VerbosityLevel;
 
 final class EntityFieldsViaMagicReflectionExtensionTest extends PHPStanTestCase {
 
@@ -119,7 +120,7 @@ final class EntityFieldsViaMagicReflectionExtensionTest extends PHPStanTestCase 
         self::assertInstanceOf(StringType::class, $readableType);
         $propertyReflection = $this->extension->getProperty($classReflection, 'entity');
         $readableType = $propertyReflection->getReadableType();
-        self::assertInstanceOf(ObjectType::class, $readableType);
+        self::assertSame('Drupal\Core\Entity\EntityInterface|null', $readableType->describe(VerbosityLevel::typeOnly()));
         $propertyReflection = $this->extension->getProperty($classReflection, 'format');
         $readableType = $propertyReflection->getReadableType();
         self::assertInstanceOf(NullType::class, $readableType);

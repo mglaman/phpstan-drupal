@@ -71,7 +71,7 @@
             "composer/installers": true,
             "phpstan/extension-installer": true,
             "dealerdirect/phpcodesniffer-composer-installer": true,
-            "drupal/core-composer-scaffold": true
+            "drupal/core-composer-scaffold": false
         }
     }
 }

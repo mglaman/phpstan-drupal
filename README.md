@@ -125,6 +125,37 @@ parameters:
 
 Both options are enabled by default.
 
+#### Detecting @todo comments referencing the current Drupal.org issue (contrib CI)
+
+`TodoCommentWithIssueUrlRule` is an opt-in rule for Drupal contrib CI pipelines. When running PHPStan as part of a GitLab merge request, it reports an error for any `@todo` comment that contains a drupal.org issue URL matching the current issue — for example:
+
+```php
+// @todo Remove once https://drupal.org/i/3456789 is resolved.
+```
+
+This prevents issue-specific TODOs from being accidentally merged without resolution.
+
+The rule auto-detects the current issue NID from standard GitLab CI environment variables:
+
+- `CI_MERGE_REQUEST_SOURCE_BRANCH_NAME` (e.g. `3456789-my-feature`)
+- `CI_MERGE_REQUEST_SOURCE_PROJECT_PATH` (e.g. `issue/mymodule-3456789`)
+
+It is silent when neither variable is set, so it is safe to include in a shared config.
+
+The rule is **not registered by default**. To enable it, add it to your project's `phpstan.neon`:
+
+```neon
+rules:
+    - mglaman\PHPStanDrupal\Rules\Drupal\TodoCommentWithIssueUrlRule
+```
+
+> [!NOTE]
+> When using the [Drupal GitLab CI templates](https://project.pages.drupalcode.org/gitlab_templates/jobs/phpstan/),
+> adding extra rules requires a custom `phpstan.neon` that includes the default configuration, since adding additional
+> rules is not supported directly through the template variables.
+
+Both `drupal.org/i/{nid}` and `drupal.org/project/{project}/issues/{nid}` URL formats are recognized.
+
 ### Entity storage mappings.
 
 The `EntityTypeManagerGetStorageDynamicReturnTypeExtension` service helps map dynamic return types. This inspects the

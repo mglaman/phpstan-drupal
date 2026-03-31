@@ -9,6 +9,7 @@ use PHPStan\Type\NullType;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\StringType;
 use PHPStan\Type\Type;
+use PHPStan\Type\UnionType;
 use function in_array;
 
 /**
@@ -42,7 +43,7 @@ class FieldItemListPropertyReflection implements PropertyReflection
     public function getReadableType(): Type
     {
         if ($this->propertyName === 'entity') {
-            return new ObjectType('Drupal\Core\Entity\EntityInterface');
+            return new UnionType([new ObjectType('Drupal\Core\Entity\EntityInterface'), new NullType()]);
         }
         if ($this->propertyName === 'target_id') {
             // @todo needs to be union type.
@@ -60,7 +61,7 @@ class FieldItemListPropertyReflection implements PropertyReflection
     public function getWritableType(): Type
     {
         if ($this->propertyName === 'entity') {
-            return new ObjectType('Drupal\Core\Entity\EntityInterface');
+            return new UnionType([new ObjectType('Drupal\Core\Entity\EntityInterface'), new NullType()]);
         }
         if ($this->propertyName === 'target_id') {
             return new StringType();
