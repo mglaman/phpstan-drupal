@@ -5,12 +5,12 @@ namespace mglaman\PHPStanDrupal\Reflection;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\PropertyReflection;
 use PHPStan\TrinaryLogic;
+use PHPStan\Type\MixedType;
 use PHPStan\Type\NullType;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\StringType;
 use PHPStan\Type\Type;
 use PHPStan\Type\UnionType;
-use function in_array;
 
 /**
  * Allows field access via magic methods
@@ -34,10 +34,9 @@ class FieldItemListPropertyReflection implements PropertyReflection
 
     public static function canHandleProperty(ClassReflection $classReflection, string $propertyName): bool
     {
-        // @todo use the class reflection and be more specific about handled properties.
-        // Currently \PHPStan\Reflection\EntityFieldReflection::getType always passes FieldItemListInterface.
-        $names = ['entity', 'value', 'target_id'];
-        return in_array($propertyName, $names, true);
+        // FieldItemList::__get() delegates to the first item, so any property
+        // on the underlying FieldItem is potentially valid.
+        return true;
     }
 
     public function getReadableType(): Type
@@ -54,8 +53,8 @@ class FieldItemListPropertyReflection implements PropertyReflection
             return new StringType();
         }
 
-        // Fallback.
-        return new NullType();
+        // Fallback: unknown properties delegated via __get could be any type.
+        return new MixedType();
     }
 
     public function getWritableType(): Type
@@ -70,8 +69,8 @@ class FieldItemListPropertyReflection implements PropertyReflection
             return new StringType();
         }
 
-        // Fallback.
-        return new NullType();
+        // Fallback: unknown properties delegated via __set could be any type.
+        return new MixedType();
     }
 
     public function canChangeTypeAfterAssignment(): bool
