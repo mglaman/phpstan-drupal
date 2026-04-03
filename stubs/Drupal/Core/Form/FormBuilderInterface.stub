@@ -1,0 +1,12 @@
+<?php
+
+namespace Drupal\Core\Form;
+
+interface FormBuilderInterface {
+
+  /**
+   * @return array<string, mixed>
+   */
+  public function getForm(string $form_arg, mixed ...$args): array;
+
+}
