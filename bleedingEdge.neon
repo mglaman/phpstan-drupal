@@ -8,3 +8,5 @@ parameters:
 			testClassSuffixNameRule: true
 			dependencySerializationTraitPropertyRule: true
 			accessResultConditionRule: true
+			cacheableDependencyRule: true
+			hookRules: true

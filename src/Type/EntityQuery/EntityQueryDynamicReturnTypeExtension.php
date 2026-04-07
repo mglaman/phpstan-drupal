@@ -9,6 +9,7 @@ use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\ParametersAcceptorSelector;
 use PHPStan\Type\ArrayType;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
+use PHPStan\Type\IntegerRangeType;
 use PHPStan\Type\IntegerType;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\StringType;
@@ -63,7 +64,7 @@ class EntityQueryDynamicReturnTypeExtension implements DynamicMethodReturnTypeEx
             }
             if ($varType->isCount()) {
                 return $varType->hasAccessCheck()
-                    ? new IntegerType()
+                    ? IntegerRangeType::createAllGreaterThanOrEqualTo(0)
                     : new EntityQueryExecuteWithoutAccessCheckCountType();
             }
             if ($varType instanceof ConfigEntityQueryType) {
