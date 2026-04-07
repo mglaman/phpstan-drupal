@@ -19,4 +19,9 @@ class ItemList extends TypedData implements \IteratorAggregate, ListInterface {
    */
   public function getIterator(): \ArrayIterator {}
 
+  /**
+   * @param int $offset
+   */
+  public function offsetExists(mixed $offset): bool {}
+
 }
