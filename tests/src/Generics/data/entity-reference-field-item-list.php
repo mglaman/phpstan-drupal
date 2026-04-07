@@ -82,19 +82,19 @@ class ListPropertyAccessor extends EntityReferenceFieldItemList {
  */
 class ListPropertyAccessorWithGeneric extends EntityReferenceFieldItemList {
     /**
-     * @var array<int, EntityReferenceItem<NodeInterface>>
+     * @var array<int, \Drupal\Core\Field\Plugin\Field\FieldType\EntityReferenceItem<NodeInterface>>
      */
     protected $list = [];
 
     public function testSpecializedListProperty(): void {
         // Access to specialized $list property
         assertType('array<int, Drupal\Core\Field\Plugin\Field\FieldType\EntityReferenceItem<Drupal\node\NodeInterface>>', $this->list);
-        
+
         // Iteration preserves specialized generic type
         foreach ($this->list as $item) {
             assertType('Drupal\Core\Field\Plugin\Field\FieldType\EntityReferenceItem<Drupal\node\NodeInterface>', $item);
         }
-        
+
         // Item access preserves specialized generic type
         assertType('Drupal\Core\Field\Plugin\Field\FieldType\EntityReferenceItem<Drupal\node\NodeInterface>', $this->list[0]);
     }
