@@ -6,12 +6,12 @@ use FilesystemIterator;
 use mglaman\PHPStanDrupal\Drupal\Extension;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
+use Symfony\Component\Finder\Finder;
 use function array_filter;
 use function array_flip;
 use function array_multisort;
 use function dirname;
 use function file_exists;
-use function glob;
 use function is_dir;
 use function preg_match;
 use function strpos;
@@ -102,18 +102,14 @@ class ExtensionDiscovery
      */
     private function discoverSitePaths(): array
     {
-        $paths = [];
-        $siteDirs = glob($this->root . '/sites/*', GLOB_ONLYDIR);
-        foreach ($siteDirs !== false ? $siteDirs : [] as $dir) {
-            $basename = basename($dir);
-            // Skip 'all' and 'simpletest' as they are handled separately or irrelevant.
-            if ($basename === 'all' || $basename === 'simpletest') {
-                continue;
-            }
-            $paths[] = 'sites/' . $basename;
+        $sitesDir = $this->root . '/sites';
+        if (!is_dir($sitesDir)) {
+            return [];
         }
-        if ($paths === []) {
-            $paths[] = 'sites/default';
+        $finder = Finder::create()->directories()->in($sitesDir)->depth(0)->exclude(['all', 'default', 'simpletest']);
+        $paths = [];
+        foreach ($finder as $dir) {
+            $paths[] = 'sites/' . $dir->getFilename();
         }
         return $paths;
     }
@@ -177,6 +173,13 @@ class ExtensionDiscovery
         // type specific directory names only.
         $searchdirs[self::ORIGIN_ROOT] = '';
 
+        // Search the default site-specific directory, plus any additional site
+        // directories discovered for multisite setups.
+        $searchdirs[self::ORIGIN_SITE] = 'sites/default';
+        foreach ($this->sitePaths as $sitePath) {
+            $searchdirs[] = $sitePath;
+        }
+
         $files = [];
         foreach ($searchdirs as $dir) {
             // Discover all extensions in the directory, unless we did already.
@@ -189,24 +192,11 @@ class ExtensionDiscovery
             }
         }
 
-        // Scan all site-specific directories.
-        foreach ($this->sitePaths as $sitePath) {
-            if (!isset(static::$files[$this->root][$sitePath])) {
-                static::$files[$this->root][$sitePath] = $this->scanDirectory($sitePath);
-            }
-            if (isset(static::$files[$this->root][$sitePath][$type])) {
-                $files += static::$files[$this->root][$sitePath][$type];
-            }
-        }
-
         // If applicable, filter out extensions that do not belong to the current
         // installation profiles.
         $files = $this->filterByProfileDirectories($files);
         // Sort the discovered extensions by their originating directories.
         $origin_weights = array_flip($searchdirs);
-        foreach ($this->sitePaths as $sitePath) {
-            $origin_weights[$sitePath] = self::ORIGIN_SITE;
-        }
         $files = $this->sort($files, $origin_weights);
 
         // Process and return the list of extensions keyed by extension name.
