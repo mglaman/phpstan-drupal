@@ -18,31 +18,31 @@ class EmptyFormatter implements FormatterInterface {
         assertType('array<Drupal\Core\Field\FieldItemListInterface>', $entities_items);
         $items = $entities_items[0];
         assertType('Drupal\Core\Field\FieldItemListInterface', $items);
-        assertType('Drupal\Core\TypedData\TypedDataInterface|null', $items->first());
-        assertType('Drupal\Core\TypedData\TypedDataInterface|null', $items->get(0));
-        assertType('Drupal\Core\TypedData\TypedDataInterface|null', $items->offsetGet(0));
+        assertType('Drupal\Core\Field\FieldItemInterface|null', $items->first());
+        assertType('Drupal\Core\Field\FieldItemInterface|null', $items->get(0));
+        assertType('Drupal\Core\Field\FieldItemInterface|null', $items->offsetGet(0));
         foreach ($items as $item) {
-            assertType('mixed', $item);
+            assertType('Drupal\Core\Field\FieldItemInterface', $item);
         }
     }
 
     public function view(FieldItemListInterface $items, $langcode = NULL) {
         assertType('Drupal\Core\Field\FieldItemListInterface', $items);
-        assertType('Drupal\Core\TypedData\TypedDataInterface|null', $items->first());
-        assertType('Drupal\Core\TypedData\TypedDataInterface|null', $items->get(0));
-        assertType('Drupal\Core\TypedData\TypedDataInterface|null', $items->offsetGet(0));
+        assertType('Drupal\Core\Field\FieldItemInterface|null', $items->first());
+        assertType('Drupal\Core\Field\FieldItemInterface|null', $items->get(0));
+        assertType('Drupal\Core\Field\FieldItemInterface|null', $items->offsetGet(0));
         foreach ($items as $item) {
-            assertType('mixed', $item);
+            assertType('Drupal\Core\Field\FieldItemInterface', $item);
         }
     }
 
     public function viewElements(FieldItemListInterface $items, $langcode) {
         assertType('Drupal\Core\Field\FieldItemListInterface', $items);
-        assertType('Drupal\Core\TypedData\TypedDataInterface|null', $items->first());
-        assertType('Drupal\Core\TypedData\TypedDataInterface|null', $items->get(0));
-        assertType('Drupal\Core\TypedData\TypedDataInterface|null', $items->offsetGet(0));
+        assertType('Drupal\Core\Field\FieldItemInterface|null', $items->first());
+        assertType('Drupal\Core\Field\FieldItemInterface|null', $items->get(0));
+        assertType('Drupal\Core\Field\FieldItemInterface|null', $items->offsetGet(0));
         foreach ($items as $item) {
-            assertType('mixed', $item);
+            assertType('Drupal\Core\Field\FieldItemInterface', $item);
         }
     }
 

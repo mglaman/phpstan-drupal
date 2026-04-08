@@ -10,6 +10,7 @@ use Drupal\phpstan_fixtures\Entity\ReflectionEntityTest;
 use mglaman\PHPStanDrupal\Reflection\EntityFieldsViaMagicReflectionExtension;
 use mglaman\PHPStanDrupal\Tests\AdditionalConfigFilesTrait;
 use PHPStan\Testing\PHPStanTestCase;
+use PHPStan\Type\MixedType;
 use PHPStan\Type\NullType;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\StringType;
@@ -83,11 +84,10 @@ final class EntityFieldsViaMagicReflectionExtensionTest extends PHPStanTestCase 
             'value',
             false,
         ];
-        // @todo support more proeprties.
         yield 'field item list: format' => [
             \Drupal\Core\Field\FieldItemList::class,
             'format',
-            false,
+            true,
         ];
     }
 
@@ -123,7 +123,7 @@ final class EntityFieldsViaMagicReflectionExtensionTest extends PHPStanTestCase 
         self::assertSame('Drupal\Core\Entity\EntityInterface|null', $readableType->describe(VerbosityLevel::typeOnly()));
         $propertyReflection = $this->extension->getProperty($classReflection, 'format');
         $readableType = $propertyReflection->getReadableType();
-        self::assertInstanceOf(NullType::class, $readableType);
+        self::assertInstanceOf(MixedType::class, $readableType);
     }
     
 

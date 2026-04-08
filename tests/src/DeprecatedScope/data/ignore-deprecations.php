@@ -26,3 +26,25 @@ final class BarTest {
     }
 
 }
+
+#[IgnoreDeprecations('baz')]
+final class FooBazTest {
+
+    public function foo(): void {
+        deprecated_function();
+    }
+
+}
+
+final class BarBazTest {
+
+    public function bar(): void {
+        deprecated_function();
+    }
+
+    #[IgnoreDeprecations('baz')]
+    public function barNot(): void {
+        deprecated_function();
+    }
+
+}
