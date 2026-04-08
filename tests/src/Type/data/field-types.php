@@ -162,6 +162,7 @@ $daterange_field = $node->get('field_daterange')->first();
 assert($daterange_field instanceof DateRangeItem);
 assertType(DateRangeItem::class, $daterange_field);
 assertType('string|null', $daterange_field->value);
+assertType('never', $daterange_field->date);
 assertType('Drupal\Core\Datetime\DrupalDateTime|null', $daterange_field->start_date);
 assertType('string|null', $daterange_field->end_value);
 assertType('Drupal\Core\Datetime\DrupalDateTime|null', $daterange_field->end_date);
