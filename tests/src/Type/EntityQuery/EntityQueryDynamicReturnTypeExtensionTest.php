@@ -16,6 +16,7 @@ final class EntityQueryDynamicReturnTypeExtensionTest extends TypeInferenceTestC
         yield from self::gatherAssertTypes(__DIR__ . '/../data/entity-query-execute.php');
         yield from self::gatherAssertTypes(__DIR__ . '/../data/bug-355-entity-query.php');
         yield from self::gatherAssertTypes(__DIR__ . '/../data/bug-522.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/../data/bug-909.php');
 
     }
 

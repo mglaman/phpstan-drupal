@@ -66,6 +66,11 @@ final class LoadIncludesRuleTest extends DrupalRuleTestCase
                 ],
             ]
         ];
+
+        yield 'multisite module in sites/acme/' => [
+            [__DIR__.'/data/multisite-load-include.php'],
+            []
+        ];
     }
 
 }
