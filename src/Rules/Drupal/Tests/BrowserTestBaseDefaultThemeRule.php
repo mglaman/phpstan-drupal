@@ -60,7 +60,6 @@ final class BrowserTestBaseDefaultThemeRule implements Rule
 
 
         $classType = $scope->resolveTypeByName($node->namespacedName);
-        assert($classType instanceof ObjectType);
 
         $browserTestBaseType = new ObjectType('Drupal\\Tests\\BrowserTestBase');
         if (!$browserTestBaseType->isSuperTypeOf($classType)->yes()) {
@@ -76,8 +75,11 @@ final class BrowserTestBaseDefaultThemeRule implements Rule
             return [];
         }
 
-        $reflection = $classType->getClassReflection();
-        assert($reflection !== null);
+        $classReflections = $classType->getObjectClassReflections();
+        if (count($classReflections) !== 1) {
+            return [];
+        }
+        $reflection = $classReflections[0];
         if ($reflection->isAbstract()) {
             return [];
         }

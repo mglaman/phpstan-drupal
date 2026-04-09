@@ -11,7 +11,6 @@ use PHPStan\Type\ArrayType;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
 use PHPStan\Type\IntegerRangeType;
 use PHPStan\Type\IntegerType;
-use PHPStan\Type\ObjectType;
 use PHPStan\Type\StringType;
 use PHPStan\Type\Type;
 use function in_array;
@@ -45,7 +44,7 @@ class EntityQueryDynamicReturnTypeExtension implements DynamicMethodReturnTypeEx
         $varType = $scope->getType($methodCall->var);
         $methodName = $methodReflection->getName();
 
-        if (!$varType instanceof ObjectType) {
+        if (!$varType->isObject()->yes()) {
             return $defaultReturnType;
         }
 

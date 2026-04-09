@@ -12,7 +12,6 @@ use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\ParametersAcceptorSelector;
 use PHPStan\ShouldNotHappenException;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
-use PHPStan\Type\ObjectType;
 use PHPStan\Type\Type;
 
 class EntityTypeManagerGetStorageDynamicReturnTypeExtension implements DynamicMethodReturnTypeExtension
@@ -85,8 +84,9 @@ class EntityTypeManagerGetStorageDynamicReturnTypeExtension implements DynamicMe
             return $storageType;
         }
 
-        if ($returnType instanceof ObjectType) {
-            return new EntityStorageType($entityTypeId, $returnType->getClassName());
+        $classNames = $returnType->getObjectClassNames();
+        if (count($classNames) === 1) {
+            return new EntityStorageType($entityTypeId, $classNames[0]);
         }
         return $returnType;
     }

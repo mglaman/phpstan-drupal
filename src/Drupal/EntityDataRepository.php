@@ -6,6 +6,7 @@ use Drupal\Core\Config\Entity\ConfigEntityStorageInterface;
 use Drupal\Core\Entity\ContentEntityStorageInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use PHPStan\Type\ObjectType;
+use PHPStan\Type\Type;
 
 final class EntityDataRepository
 {
@@ -35,7 +36,7 @@ final class EntityDataRepository
         return $this->entityData[$entityTypeId];
     }
 
-    public function resolveFromStorage(ObjectType $callerType): ?EntityData
+    public function resolveFromStorage(Type $callerType): ?EntityData
     {
         if ($callerType->equals(new ObjectType(EntityStorageInterface::class))) {
             return null;
