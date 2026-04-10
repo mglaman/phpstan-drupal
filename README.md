@@ -99,7 +99,7 @@ See the `extension-installer` documentation for more information: https://github
 
 #### Opt-in rules
 
-Several rules are disabled by default to avoid breaking existing projects in a patch release. They may be enabled by default in a future minor version. Most of them are enabled together via [bleedingEdge.neon](#bleeding-edge-checks); the list below lets you enable them individually.
+Several rules are disabled by default to avoid breaking existing projects in a patch release. They may be enabled by default in a future minor version. All of them are enabled together via [bleedingEdge.neon](#bleeding-edge-checks); the list below lets you enable them individually.
 
 ```neon
 parameters:
@@ -182,6 +182,7 @@ Currently `bleedingEdge.neon` enables the following:
 - `accessResultConditionRule` — flags always-true/always-false `AccessResult` conditions
 - `cacheableDependencyRule` — flags `addCacheableDependency()` calls with non-cacheable arguments
 - `loggerFromFactoryPropertyAssignmentRule` — flags logger channels assigned to properties in classes using `DependencySerializationTrait`
+- `entityStorageDirectInjectionRule` — flags direct injection of entity storage into a constructor; inject `EntityTypeManagerInterface` and call `getStorage()` instead
 
 To enable individual checks instead of all of them, see the parameters above under [Opt-in rules](#opt-in-rules).
 
