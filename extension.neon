@@ -296,6 +296,10 @@ services:
 		arguments:
 			entityMapping: %drupal.entityMapping%
 	-
+		class: mglaman\PHPStanDrupal\Type\EntityTypeId\EntityTypeIdTypeNodeResolverExtension
+		tags:
+			- phpstan.phpDoc.typeNodeResolverExtension
+	-
 		class: mglaman\PHPStanDrupal\Type\EntityIdNarrowedByNew
 		tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
 	-

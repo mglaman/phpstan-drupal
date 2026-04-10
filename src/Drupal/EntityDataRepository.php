@@ -25,6 +25,14 @@ final class EntityDataRepository
         }
     }
 
+    /**
+     * @return list<string>
+     */
+    public function getAllEntityTypeIds(): array
+    {
+        return array_values(array_keys($this->entityData));
+    }
+
     public function get(string $entityTypeId): EntityData
     {
         if (!isset($this->entityData[$entityTypeId])) {
