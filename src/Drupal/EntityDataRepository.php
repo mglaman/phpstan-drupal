@@ -30,7 +30,7 @@ final class EntityDataRepository
      */
     public function getAllEntityTypeIds(): array
     {
-        return array_values(array_keys($this->entityData));
+        return array_keys($this->entityData);
     }
 
     public function get(string $entityTypeId): EntityData

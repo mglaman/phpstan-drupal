@@ -2,7 +2,6 @@
 
 namespace mglaman\PHPStanDrupal\Type\EntityTypeId;
 
-use PHPStan\Type\Constant\ConstantStringType;
 use PHPStan\Type\IsSuperTypeOfResult;
 use PHPStan\Type\StringType;
 use PHPStan\Type\Type;
@@ -20,6 +19,7 @@ class EntityTypeIdType extends StringType
      */
     public function __construct(array $entityTypeIds)
     {
+        parent::__construct();
         $this->entityTypeIds = $entityTypeIds;
     }
 
@@ -46,12 +46,16 @@ class EntityTypeIdType extends StringType
         if ($type instanceof self) {
             return IsSuperTypeOfResult::createYes();
         }
-        if ($type instanceof ConstantStringType) {
-            return IsSuperTypeOfResult::createFromBoolean(
-                in_array($type->getValue(), $this->entityTypeIds, true)
-            );
+        $constantStrings = $type->getConstantStrings();
+        foreach ($constantStrings as $constantString) {
+            if (!in_array($constantString->getValue(), $this->entityTypeIds, true)) {
+                return IsSuperTypeOfResult::createNo();
+            }
         }
-        if ($type instanceof StringType) {
+        if ($constantStrings !== []) {
+            return IsSuperTypeOfResult::createYes();
+        }
+        if ($type->isString()->yes()) {
             return IsSuperTypeOfResult::createMaybe();
         }
         return parent::isSuperTypeOf($type);
