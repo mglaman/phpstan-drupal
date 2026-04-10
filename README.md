@@ -99,7 +99,7 @@ See the `extension-installer` documentation for more information: https://github
 
 #### Opt-in rules
 
-Several rules are disabled by default because they may produce noise on existing codebases or require additional setup. Enable them one at a time as your codebase is ready.
+Several rules are disabled by default because they may produce noise on existing codebases or require additional setup. Most of them are enabled together via [bleedingEdge.neon](#bleeding-edge-checks); the list below lets you enable them individually.
 
 ```neon
 parameters:
@@ -163,20 +163,27 @@ parameters:
 
 Both options are enabled by default.
 
-#### Bleeding-edge hook deprecation checks
+#### Bleeding-edge checks
 
-Hook deprecation checks against `.api.php` files are opt-in because they can produce false positives on projects that have not yet fully declared their `.api.php` files. Enable them separately for Drupal core hooks, contributed module hooks, or both:
+`bleedingEdge.neon` is a convenience include that enables all rules and checks that are disabled by default. New rules are typically added here first and promoted to the default set in a future minor release, so including it lets you adopt upcoming checks early.
 
 ```neon
-parameters:
-    drupal:
-        bleedingEdge:
-            # Report hook implementations that are deprecated in Drupal core's .api.php files.
-            checkCoreDeprecatedHooksInApiFiles: true
-
-            # Report hook implementations that are deprecated in contrib module .api.php files.
-            checkContribDeprecatedHooksInApiFiles: true
+includes:
+    - vendor/mglaman/phpstan-drupal/bleedingEdge.neon
 ```
+
+Currently `bleedingEdge.neon` enables the following:
+
+- `checkCoreDeprecatedHooksInApiFiles` — reports hook implementations deprecated in Drupal core `.api.php` files
+- `checkContribDeprecatedHooksInApiFiles` — reports hook implementations deprecated in contrib module `.api.php` files
+- `hookRules` — validates OOP hook method signatures (requires Drupal 10.3+)
+- `testClassSuffixNameRule` — non-abstract test class names must end with `Test`
+- `dependencySerializationTraitPropertyRule` — flags private or read-only properties in classes using `DependencySerializationTrait`
+- `accessResultConditionRule` — flags always-true/always-false `AccessResult` conditions
+- `cacheableDependencyRule` — flags `addCacheableDependency()` calls with non-cacheable arguments
+- `loggerFromFactoryPropertyAssignmentRule` — flags logger channels assigned to properties in classes using `DependencySerializationTrait`
+
+To enable individual checks instead of all of them, see the parameters above under [Opt-in rules](#opt-in-rules).
 
 > [!NOTE]
 > The older `checkDeprecatedHooksInApiFiles` parameter is deprecated and will be removed in a future release. Use
