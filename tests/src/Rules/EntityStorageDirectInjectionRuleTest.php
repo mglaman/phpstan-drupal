@@ -36,6 +36,11 @@ final class EntityStorageDirectInjectionRuleTest extends DrupalRuleTestCase
                     34,
                     'See https://mglaman.dev/blog/dependency-injection-anti-patterns-drupal',
                 ],
+                [
+                    'Direct injection of entity storage via $storage is not recommended. Inject Drupal\Core\Entity\EntityTypeManagerInterface and call getStorage() at the call-site instead.',
+                    43,
+                    'See https://mglaman.dev/blog/dependency-injection-anti-patterns-drupal',
+                ],
             ]
         );
     }

@@ -36,6 +36,15 @@ class ServiceWithMixedParams
     }
 }
 
+// Error: nullable EntityStorageInterface constructor param.
+class ServiceWithNullableStorageInjected
+{
+    public function __construct(
+        private ?EntityStorageInterface $storage // error on this line
+    ) {
+    }
+}
+
 // No error: correct pattern — inject EntityTypeManagerInterface.
 class ServiceWithEntityTypeManager
 {

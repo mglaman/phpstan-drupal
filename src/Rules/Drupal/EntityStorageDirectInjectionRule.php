@@ -12,6 +12,7 @@ use PHPStan\Analyser\Scope;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
 use PHPStan\Type\ObjectType;
+use PHPStan\Type\TypeCombinator;
 
 /**
  * @implements Rule<Node\Stmt\ClassMethod>
@@ -42,7 +43,7 @@ final class EntityStorageDirectInjectionRule implements Rule
             }
 
             $paramType = $scope->getFunctionType($param->type, false, false);
-            if (!$storageType->isSuperTypeOf($paramType)->yes()) {
+            if (!$storageType->isSuperTypeOf(TypeCombinator::removeNull($paramType))->yes()) {
                 continue;
             }
 
