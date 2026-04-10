@@ -24,6 +24,19 @@ class ClassWithLoggerFromFactory
     }
 }
 
+// Error: factory used directly as constructor parameter (not stored as property first).
+class ClassWithLoggerFromFactoryParam
+{
+    use DependencySerializationTrait;
+
+    private LoggerChannelInterface $logger;
+
+    public function __construct(LoggerChannelFactoryInterface $loggerFactory)
+    {
+        $this->logger = $loggerFactory->get('my_module'); // error on this line
+    }
+}
+
 // No error: class does not use DependencySerializationTrait.
 class ClassWithoutTrait
 {

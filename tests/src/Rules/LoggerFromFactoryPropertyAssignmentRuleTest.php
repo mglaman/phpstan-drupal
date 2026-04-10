@@ -25,6 +25,10 @@ final class LoggerFromFactoryPropertyAssignmentRuleTest extends DrupalRuleTestCa
                     'Logger assigned from LoggerChannelFactory in a class using DependencySerializationTrait will break serialization. Inject a named logger channel service directly (e.g. @logger.channel.my_channel) instead.',
                     23,
                 ],
+                [
+                    'Logger assigned from LoggerChannelFactory in a class using DependencySerializationTrait will break serialization. Inject a named logger channel service directly (e.g. @logger.channel.my_channel) instead.',
+                    36,
+                ],
             ]
         );
     }
