@@ -97,6 +97,44 @@ See the `extension-installer` documentation for more information: https://github
 
 ### Customizing rules
 
+#### Opt-in rules
+
+Several rules are disabled by default because they may produce noise on existing codebases or require additional setup. Enable them one at a time as your codebase is ready.
+
+```neon
+parameters:
+    drupal:
+        rules:
+            # Enforces that OOP hook implementations using the Hook attribute have the
+            # correct method signature for hook_form_alter, hook_form_FORM_ID_alter, etc.
+            # Requires Drupal 10.3+ (Hook attribute).
+            hookRules: true
+
+            # Flags non-abstract test classes whose names do not end with "Test".
+            testClassSuffixNameRule: true
+
+            # Flags properties that are private or read-only in classes using
+            # DependencySerializationTrait, which does not support them.
+            dependencySerializationTraitPropertyRule: true
+
+            # Flags calls to AccessResult static methods (::allowed(), ::forbidden(), etc.)
+            # whose argument type already makes the condition always true or always false.
+            accessResultConditionRule: true
+
+            # Flags addCacheableDependency() calls whose argument does not implement
+            # CacheableDependencyInterface.
+            cacheableDependencyRule: true
+
+            # Flags logger channel objects (from LoggerChannelFactoryInterface::get()) that
+            # are assigned to a property in a class using DependencySerializationTrait,
+            # which cannot serialize logger channels correctly.
+            loggerFromFactoryPropertyAssignmentRule: true
+
+            # Flags direct injection of EntityStorageInterface (or a subtype) into a
+            # constructor. Inject EntityTypeManagerInterface and call getStorage() instead.
+            entityStorageDirectInjectionRule: true
+```
+
 #### Disabling checks for extending `@internal` classes
 
 You can disable the `ClassExtendsInternalClassRule` rule by adding the following to your `phpstan.neon`:
@@ -124,6 +162,25 @@ parameters:
 ```
 
 Both options are enabled by default.
+
+#### Bleeding-edge hook deprecation checks
+
+Hook deprecation checks against `.api.php` files are opt-in because they can produce false positives on projects that have not yet fully declared their `.api.php` files. Enable them separately for Drupal core hooks, contributed module hooks, or both:
+
+```neon
+parameters:
+    drupal:
+        bleedingEdge:
+            # Report hook implementations that are deprecated in Drupal core's .api.php files.
+            checkCoreDeprecatedHooksInApiFiles: true
+
+            # Report hook implementations that are deprecated in contrib module .api.php files.
+            checkContribDeprecatedHooksInApiFiles: true
+```
+
+> [!NOTE]
+> The older `checkDeprecatedHooksInApiFiles` parameter is deprecated and will be removed in a future release. Use
+> `checkCoreDeprecatedHooksInApiFiles` and `checkContribDeprecatedHooksInApiFiles` instead.
 
 #### Detecting @todo comments referencing the current Drupal.org issue (contrib CI)
 
