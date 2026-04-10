@@ -218,6 +218,50 @@ rules:
 
 Both `drupal.org/i/{nid}` and `drupal.org/project/{project}/issues/{nid}` URL formats are recognized.
 
+### Custom PHPDoc types
+
+phpstan-drupal provides custom PHPDoc types that can be used to improve type safety in Drupal code.
+
+#### `entity-type-id`
+
+The `entity-type-id` type represents a valid Drupal entity type ID string (e.g. `'node'`, `'user'`, `'taxonomy_term'`). PHPStan will report an error when a constant string that is not a known entity type ID is passed where `entity-type-id` is expected.
+
+Drupal coding standards require keeping PHPStan-specific types in `@phpstan-param` and `@phpstan-return` tags rather than in the standard `@param` and `@return` tags:
+
+```php
+/**
+ * Loads an entity by its entity type ID and entity ID.
+ *
+ * @param string $entityTypeId
+ *   The entity type ID.
+ * @param int|string $id
+ *   The entity ID.
+ *
+ * @phpstan-param entity-type-id $entityTypeId
+ */
+public function loadEntity(string $entityTypeId, int|string $id): ?EntityInterface {
+    return $this->entityTypeManager->getStorage($entityTypeId)->load($id);
+}
+```
+
+For return types:
+
+```php
+/**
+ * Returns the entity type ID.
+ *
+ * @return string
+ *   The entity type ID.
+ *
+ * @phpstan-return entity-type-id
+ */
+public function getEntityTypeId(): string {
+    return $this->entityTypeId;
+}
+```
+
+Known entity type IDs are sourced from the `drupal.entityMapping` parameter. See [Entity storage mappings](#entity-storage-mappings) for how to register custom entity types so their IDs are also recognized.
+
 ### Entity storage mappings.
 
 The `EntityTypeManagerGetStorageDynamicReturnTypeExtension` service helps map dynamic return types. This inspects the
