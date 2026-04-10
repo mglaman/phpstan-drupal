@@ -11,4 +11,4 @@ parameters:
 			cacheableDependencyRule: true
 			hookRules: true
 			loggerFromFactoryPropertyAssignmentRule: true
-		entityStorageDirectInjectionRule: true
+			entityStorageDirectInjectionRule: true
