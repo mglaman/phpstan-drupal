@@ -11,6 +11,7 @@ use PHPStan\Analyser\Scope;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
 use PHPStan\Type\ObjectType;
+use PHPStan\Type\TypeCombinator;
 
 /**
  * @implements Rule<Node\Expr\Assign>
@@ -29,11 +30,6 @@ final class EntityStoragePropertyAssignmentRule implements Rule
             return [];
         }
 
-        $scopeFunction = $scope->getFunction();
-        if ($scopeFunction === null || $scopeFunction->getName() !== '__construct') {
-            return [];
-        }
-
         if (!$node->var instanceof Node\Expr\PropertyFetch) {
             return [];
         }
@@ -43,7 +39,7 @@ final class EntityStoragePropertyAssignmentRule implements Rule
 
         $assignedType = $scope->getType($node->expr);
         $storageType = new ObjectType(EntityStorageInterface::class);
-        if (!$storageType->isSuperTypeOf($assignedType)->yes()) {
+        if (!$storageType->isSuperTypeOf(TypeCombinator::removeNull($assignedType))->yes()) {
             return [];
         }
 

@@ -8,7 +8,7 @@ use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 
 // Error: getStorage() result stored as class property in constructor.
-class ServiceStoringStorageFromManager
+class ServiceStoringStorageFromManagerInConstructor
 {
     private EntityStorageInterface $storage;
 
@@ -29,6 +29,21 @@ class ServiceStoringInjectedStorage
     }
 }
 
+// Error: getStorage() result stored as class property in a non-constructor method.
+class ServiceStoringStorageInSetter
+{
+    private EntityStorageInterface $storage;
+
+    public function __construct(private EntityTypeManagerInterface $entityTypeManager)
+    {
+    }
+
+    public function setStorage(): void
+    {
+        $this->storage = $this->entityTypeManager->getStorage('node'); // error on this line
+    }
+}
+
 // No error: storing EntityTypeManagerInterface itself is fine.
 class ServiceStoringEntityTypeManager
 {
@@ -40,8 +55,8 @@ class ServiceStoringEntityTypeManager
     }
 }
 
-// No error: getStorage() called outside constructor (e.g. in a method).
-class ServiceCallingStorageInMethod
+// No error: getStorage() used via local variable at the call-site.
+class ServiceCallingStorageAtCallSite
 {
     public function __construct(private EntityTypeManagerInterface $entityTypeManager)
     {
@@ -51,14 +66,5 @@ class ServiceCallingStorageInMethod
     {
         $storage = $this->entityTypeManager->getStorage('node');
         $storage->load(1);
-    }
-}
-
-// No error: local variable assignment (not a property).
-class ServiceWithLocalStorageVariable
-{
-    public function __construct(EntityTypeManagerInterface $entityTypeManager)
-    {
-        $storage = $entityTypeManager->getStorage('node');
     }
 }
