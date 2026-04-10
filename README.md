@@ -99,7 +99,7 @@ See the `extension-installer` documentation for more information: https://github
 
 #### Opt-in rules
 
-Several rules are disabled by default because they may produce noise on existing codebases or require additional setup. Most of them are enabled together via [bleedingEdge.neon](#bleeding-edge-checks); the list below lets you enable them individually.
+Several rules are disabled by default to avoid breaking existing projects in a patch release. They may be enabled by default in a future minor version. Most of them are enabled together via [bleedingEdge.neon](#bleeding-edge-checks); the list below lets you enable them individually.
 
 ```neon
 parameters:
