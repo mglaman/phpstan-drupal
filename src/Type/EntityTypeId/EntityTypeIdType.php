@@ -22,11 +22,6 @@ class EntityTypeIdType extends StringType
         return 'entity-type-id';
     }
 
-    public function describeAdditionalCacheKey(): string
-    {
-        return md5(implode(',', $this->entityTypeIds));
-    }
-
     public function isSuperTypeOf(Type $type): IsSuperTypeOfResult
     {
         if ($type instanceof self) {
