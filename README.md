@@ -99,7 +99,7 @@ See the `extension-installer` documentation for more information: https://github
 
 #### Opt-in rules
 
-Several rules are disabled by default to avoid breaking existing projects in a patch release. They may be enabled by default in a future minor version. All of them are enabled together via [bleedingEdge.neon](#bleeding-edge-checks); the list below lets you enable them individually.
+These rules are disabled by default to avoid unexpected failures in a patch release. They graduate to the default ruleset in a future minor version. Include [bleedingEdge.neon](#bleeding-edge-checks) to enable all of them at once, or enable them individually:
 
 ```neon
 parameters:
@@ -165,14 +165,14 @@ Both options are enabled by default.
 
 #### Bleeding-edge checks
 
-`bleedingEdge.neon` is a convenience include that enables all rules and checks that are disabled by default. New rules are typically added here first and promoted to the default set in a future minor release, so including it lets you adopt upcoming checks early.
+`bleedingEdge.neon` enables all [opt-in rules](#opt-in-rules) plus hook deprecation checks against `.api.php` files. New rules land here first before graduating to the default ruleset in a minor release.
 
 ```neon
 includes:
     - vendor/mglaman/phpstan-drupal/bleedingEdge.neon
 ```
 
-Currently `bleedingEdge.neon` enables the following:
+What it currently enables:
 
 - `checkCoreDeprecatedHooksInApiFiles` — reports hook implementations deprecated in Drupal core `.api.php` files
 - `checkContribDeprecatedHooksInApiFiles` — reports hook implementations deprecated in contrib module `.api.php` files
@@ -184,11 +184,8 @@ Currently `bleedingEdge.neon` enables the following:
 - `loggerFromFactoryPropertyAssignmentRule` — flags logger channels assigned to properties in classes using `DependencySerializationTrait`
 - `entityStorageDirectInjectionRule` — flags direct injection of entity storage into a constructor; inject `EntityTypeManagerInterface` and call `getStorage()` instead
 
-To enable individual checks instead of all of them, see the parameters above under [Opt-in rules](#opt-in-rules).
-
 > [!NOTE]
-> The older `checkDeprecatedHooksInApiFiles` parameter is deprecated and will be removed in a future release. Use
-> `checkCoreDeprecatedHooksInApiFiles` and `checkContribDeprecatedHooksInApiFiles` instead.
+> `checkDeprecatedHooksInApiFiles` is deprecated. Use `checkCoreDeprecatedHooksInApiFiles` and `checkContribDeprecatedHooksInApiFiles` instead.
 
 #### Detecting @todo comments referencing the current Drupal.org issue (contrib CI)
 
