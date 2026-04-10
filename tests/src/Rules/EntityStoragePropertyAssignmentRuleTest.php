@@ -36,6 +36,11 @@ final class EntityStoragePropertyAssignmentRuleTest extends DrupalRuleTestCase
                     43,
                     'See https://mglaman.dev/blog/dependency-injection-anti-patterns-drupal',
                 ],
+                [
+                    'Storing entity storage as a class property is not recommended. Call Drupal\Core\Entity\EntityTypeManagerInterface::getStorage() at the call-site instead.',
+                    55,
+                    'See https://mglaman.dev/blog/dependency-injection-anti-patterns-drupal',
+                ],
             ]
         );
     }

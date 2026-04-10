@@ -44,6 +44,18 @@ class ServiceStoringStorageInSetter
     }
 }
 
+// Error: storage fetched into local variable then stored as property.
+class ServiceStoringStorageViaLocalVariable
+{
+    private $storage;
+
+    public function __construct(EntityTypeManagerInterface $entityTypeManager)
+    {
+        $storage = $entityTypeManager->getStorage('node');
+        $this->storage = $storage; // error on this line
+    }
+}
+
 // No error: storing EntityTypeManagerInterface itself is fine.
 class ServiceStoringEntityTypeManager
 {
