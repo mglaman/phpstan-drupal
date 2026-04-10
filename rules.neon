@@ -32,6 +32,8 @@ conditionalTags:
 		phpstan.rules.rule: %drupal.rules.loggerFromFactoryPropertyAssignmentRule%
 	mglaman\PHPStanDrupal\Rules\Drupal\EntityStorageDirectInjectionRule:
 		phpstan.rules.rule: %drupal.rules.entityStorageDirectInjectionRule%
+	mglaman\PHPStanDrupal\Rules\Drupal\EntityStoragePropertyAssignmentRule:
+		phpstan.rules.rule: %drupal.rules.entityStorageDirectInjectionRule%
 
 services:
 	-
@@ -54,3 +56,5 @@ services:
 		class: mglaman\PHPStanDrupal\Rules\Drupal\LoggerFromFactoryPropertyAssignmentRule
 	-
 		class: mglaman\PHPStanDrupal\Rules\Drupal\EntityStorageDirectInjectionRule
+	-
+		class: mglaman\PHPStanDrupal\Rules\Drupal\EntityStoragePropertyAssignmentRule
