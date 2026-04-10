@@ -35,6 +35,7 @@ parameters:
 			pluginManagerInspectionRule: false
 			cacheableDependencyRule: false
 			hookRules: false
+			loggerFromFactoryPropertyAssignmentRule: false
 		entityMapping:
 			aggregator_feed:
 				class: Drupal\aggregator\Entity\Feed
@@ -271,6 +272,7 @@ parametersSchema:
 			pluginManagerInspectionRule: boolean()
 			cacheableDependencyRule: boolean()
 			hookRules: boolean()
+			loggerFromFactoryPropertyAssignmentRule: boolean()
 		])
 		entityMapping: arrayOf(anyOf(
 			structure([

@@ -28,6 +28,8 @@ conditionalTags:
 		phpstan.rules.rule: %drupal.rules.pluginManagerInspectionRule%
 	mglaman\PHPStanDrupal\Rules\Drupal\CacheableDependencyRule:
 		phpstan.rules.rule: %drupal.rules.cacheableDependencyRule%
+	mglaman\PHPStanDrupal\Rules\Drupal\LoggerFromFactoryPropertyAssignmentRule:
+		phpstan.rules.rule: %drupal.rules.loggerFromFactoryPropertyAssignmentRule%
 
 services:
 	-
@@ -46,3 +48,5 @@ services:
 		class: mglaman\PHPStanDrupal\Rules\Classes\PluginManagerInspectionRule
 	-
 		class: mglaman\PHPStanDrupal\Rules\Drupal\CacheableDependencyRule
+	-
+		class: mglaman\PHPStanDrupal\Rules\Drupal\LoggerFromFactoryPropertyAssignmentRule
