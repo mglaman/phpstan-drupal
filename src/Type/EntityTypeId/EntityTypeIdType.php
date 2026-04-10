@@ -10,25 +10,11 @@ use PHPStan\Type\VerbosityLevel;
 class EntityTypeIdType extends StringType
 {
     /**
-     * @var list<string>
-     */
-    private array $entityTypeIds;
-
-    /**
      * @param list<string> $entityTypeIds
      */
-    public function __construct(array $entityTypeIds)
+    public function __construct(public readonly array $entityTypeIds)
     {
         parent::__construct();
-        $this->entityTypeIds = $entityTypeIds;
-    }
-
-    /**
-     * @return list<string>
-     */
-    public function getEntityTypeIds(): array
-    {
-        return $this->entityTypeIds;
     }
 
     public function describe(VerbosityLevel $level): string
