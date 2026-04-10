@@ -29,7 +29,7 @@ conditionalTags:
 	mglaman\PHPStanDrupal\Rules\Drupal\CacheableDependencyRule:
 		phpstan.rules.rule: %drupal.rules.cacheableDependencyRule%
 	mglaman\PHPStanDrupal\Rules\Drupal\LoggerFromFactoryPropertyAssignmentRule:
-		phpstan.rules.rule: %drupal.rules.loggerFromFactoryPropertyRule%
+		phpstan.rules.rule: %drupal.rules.loggerFromFactoryPropertyAssignmentRule%
 
 services:
 	-

@@ -60,7 +60,7 @@ final class LoggerFromFactoryPropertyAssignmentRule implements Rule
 
         return [
             RuleErrorBuilder::message(
-                'Logger assigned from LoggerChannelFactory will break serialization. Inject a named logger channel service directly (e.g. @logger.channel.my_channel) instead.'
+                'Logger assigned from LoggerChannelFactory in a class using DependencySerializationTrait will break serialization. Inject a named logger channel service directly (e.g. @logger.channel.my_channel) instead.'
             )
                 ->identifier('loggerFromFactory.propertyAssignment')
                 ->build(),

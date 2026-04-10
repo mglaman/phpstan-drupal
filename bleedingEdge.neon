@@ -10,4 +10,4 @@ parameters:
 			accessResultConditionRule: true
 			cacheableDependencyRule: true
 			hookRules: true
-			loggerFromFactoryPropertyRule: true
+			loggerFromFactoryPropertyAssignmentRule: true
