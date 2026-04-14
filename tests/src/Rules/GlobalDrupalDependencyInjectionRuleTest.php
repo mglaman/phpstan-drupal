@@ -70,6 +70,16 @@ final class GlobalDrupalDependencyInjectionRuleTest extends DrupalRuleTestCase {
             [],
         ];
 
+        yield [
+            __DIR__ . '/data/bug-828.php',
+            [
+                [
+                    '\Drupal calls should be avoided in classes, use dependency injection instead',
+                    35,
+                ],
+            ],
+        ];
+
     }
 
 
