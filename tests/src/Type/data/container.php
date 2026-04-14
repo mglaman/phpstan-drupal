@@ -19,4 +19,7 @@ function test(): void {
     assertType(Override::class, $container->get('service_map.concrete_service_overriding_definition_of_its_parent'));
     assertType(Concrete::class, $container->get('service_map.concrete_overriding_its_parent_which_has_a_parent'));
     assertType(MyService::class, $container->get(MyService::class));
+
+    // app.root is a synthetic SplString service set by DrupalKernel::initializeContainer().
+    assertType('string', $container->get('app.root'));
 }

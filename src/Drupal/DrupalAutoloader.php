@@ -114,6 +114,9 @@ class DrupalAutoloader
         $this->serviceMap['class_loader'] = ['class' => ClassLoader::class];
         $this->serviceMap['service_container'] = ['class' => DrupalContainer::class];
         $this->serviceMap[ContainerInterface::class] = ['alias' => 'service_container'];
+        // app.root is set as a synthetic SplString service by DrupalKernel::initializeContainer().
+        // @see https://www.drupal.org/project/drupal/issues/3074585
+        $this->serviceMap['app.root'] = ['class' => 'SplString'];
 
         $extensionDiscovery = new ExtensionDiscovery($this->drupalRoot);
         $extensionDiscovery->setProfileDirectories([]);

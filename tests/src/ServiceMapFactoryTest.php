@@ -5,7 +5,6 @@ namespace mglaman\PHPStanDrupal\Tests;
 use Drupal\Core\Logger\LoggerChannel;
 use mglaman\PHPStanDrupal\Drupal\DrupalServiceDefinition;
 use mglaman\PHPStanDrupal\Drupal\ServiceMap;
-use PHPStan\Type\StringType;
 use PHPUnit\Framework\TestCase;
 
 final class ServiceMapFactoryTest extends TestCase
@@ -242,18 +241,6 @@ final class ServiceMapFactoryTest extends TestCase
                 self::assertArrayHasKey('service_map.decorates_decorating_base', $child_decorators);
             }
         ];
-    }
-
-    /**
-     * Drupal uses SplString as a class for pseudo-services such as 'app.root'
-     * which are actually strings injected into the container.
-     *
-     * @see https://www.drupal.org/project/drupal/issues/3074585
-     */
-    public function testSplStringServiceResolvesToStringType(): void
-    {
-        $service = new DrupalServiceDefinition('app.root', 'SplString');
-        self::assertInstanceOf(StringType::class, $service->getType());
     }
 
 }
