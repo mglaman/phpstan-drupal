@@ -39,9 +39,9 @@ conditionalTags:
 	mglaman\PHPStanDrupal\Rules\Drupal\EntityListBuilderOperationsCacheabilityRule:
 		phpstan.rules.rule: %drupal.rules.entityListBuilderOperationsCacheabilityRule%
 	mglaman\PHPStanDrupal\Rules\Drupal\HookEntityOperationCacheabilityRule:
-		phpstan.rules.rule: %drupal.rules.hookEntityOperationCacheabilityRule%
+		phpstan.rules.rule: %drupal.rules.entityListBuilderOperationsCacheabilityRule%
 	mglaman\PHPStanDrupal\Rules\Drupal\ProceduralHookEntityOperationCacheabilityRule:
-		phpstan.rules.rule: %drupal.rules.proceduralHookEntityOperationCacheabilityRule%
+		phpstan.rules.rule: %drupal.rules.entityListBuilderOperationsCacheabilityRule%
 
 services:
 	-

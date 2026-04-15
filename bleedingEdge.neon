@@ -14,5 +14,3 @@ parameters:
 			entityStorageDirectInjectionRule: true
 			symfonyYamlParseRule: true
 			entityListBuilderOperationsCacheabilityRule: true
-			hookEntityOperationCacheabilityRule: true
-			proceduralHookEntityOperationCacheabilityRule: true
