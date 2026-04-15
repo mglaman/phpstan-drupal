@@ -34,6 +34,8 @@ conditionalTags:
 		phpstan.rules.rule: %drupal.rules.entityStorageDirectInjectionRule%
 	mglaman\PHPStanDrupal\Rules\Drupal\EntityStoragePropertyAssignmentRule:
 		phpstan.rules.rule: %drupal.rules.entityStorageDirectInjectionRule%
+	mglaman\PHPStanDrupal\Rules\Drupal\ConstraintValidatorValidateNarrowsConstraintTypeRule:
+		phpstan.rules.rule: %drupal.rules.constraintValidatorMustNarrowConstraintType%
 
 services:
 	-
@@ -58,3 +60,5 @@ services:
 		class: mglaman\PHPStanDrupal\Rules\Drupal\EntityStorageDirectInjectionRule
 	-
 		class: mglaman\PHPStanDrupal\Rules\Drupal\EntityStoragePropertyAssignmentRule
+	-
+		class: mglaman\PHPStanDrupal\Rules\Drupal\ConstraintValidatorValidateNarrowsConstraintTypeRule

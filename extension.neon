@@ -37,6 +37,7 @@ parameters:
 			hookRules: false
 			loggerFromFactoryPropertyAssignmentRule: false
 			entityStorageDirectInjectionRule: false
+			constraintValidatorMustNarrowConstraintType: false
 		entityMapping:
 			aggregator_feed:
 				class: Drupal\aggregator\Entity\Feed
@@ -275,6 +276,7 @@ parametersSchema:
 			hookRules: boolean()
 			loggerFromFactoryPropertyAssignmentRule: boolean()
 			entityStorageDirectInjectionRule: boolean()
+			constraintValidatorMustNarrowConstraintType: boolean()
 		])
 		entityMapping: arrayOf(anyOf(
 			structure([
