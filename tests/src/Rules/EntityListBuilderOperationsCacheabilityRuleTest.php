@@ -2,8 +2,10 @@
 
 namespace mglaman\PHPStanDrupal\Tests\Rules;
 
+use Drupal;
 use mglaman\PHPStanDrupal\Rules\Drupal\EntityListBuilderOperationsCacheabilityRule;
 use mglaman\PHPStanDrupal\Tests\DrupalRuleTestCase;
+use function version_compare;
 
 final class EntityListBuilderOperationsCacheabilityRuleTest extends DrupalRuleTestCase
 {
@@ -15,9 +17,10 @@ final class EntityListBuilderOperationsCacheabilityRuleTest extends DrupalRuleTe
 
     public function testRule(): void
     {
+        $isApplicableVersion = version_compare(Drupal::VERSION, '11.3', '>=') && version_compare(Drupal::VERSION, '12.0', '<');
         $this->analyse(
             [__DIR__ . '/data/entity-list-builder-operations-cacheability.php'],
-            [
+            $isApplicableVersion ? [
                 [
                     'Method MissingCacheabilityGetOperations::getOperations() is missing the CacheableMetadata parameter added in Drupal 11.3. Update the signature to: getOperations(\Drupal\Core\Entity\EntityInterface $entity, ?\Drupal\Core\Cache\CacheableMetadata $cacheability = NULL).',
                     10,
@@ -38,7 +41,7 @@ final class EntityListBuilderOperationsCacheabilityRuleTest extends DrupalRuleTe
                     33,
                     'See https://www.drupal.org/node/3533080',
                 ],
-            ]
+            ] : []
         );
     }
 
