@@ -26,11 +26,11 @@ class SymfonyYamlParseRule implements Rule
 
     public function processNode(Node $node, Scope $scope): array
     {
-        if (!($node->class instanceof Node\Name\FullyQualified)) {
+        if (!($node->class instanceof Node\Name)) {
             return [];
         }
 
-        $className = (string) $node->class;
+        $className = $scope->resolveName($node->class);
         if ($className !== 'Symfony\Component\Yaml\Yaml') {
             return [];
         }
