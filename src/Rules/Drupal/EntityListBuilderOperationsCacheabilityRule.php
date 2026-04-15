@@ -12,8 +12,8 @@ use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
 use PHPStan\Type\ObjectType;
 use function count;
-use function explode;
 use function in_array;
+use function version_compare;
 
 /**
  * Detects EntityListBuilder subclasses overriding getOperations() or
@@ -40,13 +40,7 @@ class EntityListBuilderOperationsCacheabilityRule implements Rule
     public function processNode(Node $node, Scope $scope): array
     {
         // Version gate: only applies for Drupal 11.3.x.
-        [$major, $minor] = explode('.', Drupal::VERSION, 3);
-        $majorVersion = (int) $major;
-        $minorVersion = (int) $minor;
-        if ($majorVersion < 11 || ($majorVersion === 11 && $minorVersion < 3)) {
-            return [];
-        }
-        if ($majorVersion >= 12) {
+        if (version_compare(Drupal::VERSION, '11.3', '<') || version_compare(Drupal::VERSION, '12.0', '>=')) {
             return [];
         }
 
