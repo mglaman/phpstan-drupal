@@ -39,6 +39,8 @@ parameters:
 			entityStorageDirectInjectionRule: false
 			symfonyYamlParseRule: false
 			entityListBuilderOperationsCacheabilityRule: false
+			hookEntityOperationCacheabilityRule: false
+			proceduralHookEntityOperationCacheabilityRule: false
 		entityMapping:
 			aggregator_feed:
 				class: Drupal\aggregator\Entity\Feed
@@ -279,6 +281,8 @@ parametersSchema:
 			entityStorageDirectInjectionRule: boolean()
 			symfonyYamlParseRule: boolean()
 			entityListBuilderOperationsCacheabilityRule: boolean()
+			hookEntityOperationCacheabilityRule: boolean()
+			proceduralHookEntityOperationCacheabilityRule: boolean()
 		])
 		entityMapping: arrayOf(anyOf(
 			structure([

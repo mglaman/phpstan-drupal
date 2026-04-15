@@ -38,6 +38,10 @@ conditionalTags:
 		phpstan.rules.rule: %drupal.rules.symfonyYamlParseRule%
 	mglaman\PHPStanDrupal\Rules\Drupal\EntityListBuilderOperationsCacheabilityRule:
 		phpstan.rules.rule: %drupal.rules.entityListBuilderOperationsCacheabilityRule%
+	mglaman\PHPStanDrupal\Rules\Drupal\HookEntityOperationCacheabilityRule:
+		phpstan.rules.rule: %drupal.rules.hookEntityOperationCacheabilityRule%
+	mglaman\PHPStanDrupal\Rules\Drupal\ProceduralHookEntityOperationCacheabilityRule:
+		phpstan.rules.rule: %drupal.rules.proceduralHookEntityOperationCacheabilityRule%
 
 services:
 	-
@@ -66,3 +70,7 @@ services:
 		class: mglaman\PHPStanDrupal\Rules\Drupal\SymfonyYamlParseRule
 	-
 		class: mglaman\PHPStanDrupal\Rules\Drupal\EntityListBuilderOperationsCacheabilityRule
+	-
+		class: mglaman\PHPStanDrupal\Rules\Drupal\HookEntityOperationCacheabilityRule
+	-
+		class: mglaman\PHPStanDrupal\Rules\Drupal\ProceduralHookEntityOperationCacheabilityRule
