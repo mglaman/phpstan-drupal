@@ -23,7 +23,7 @@ final class ConstraintValidatorValidateNarrowsConstraintTypeRuleTest extends Dru
             [
                 [
                     'Method UniqueItemValidator::validate() does not narrow the $constraint parameter type. Add assert($constraint instanceof UniqueItem) to allow PHPStan to infer constraint-specific properties.',
-                    23,
+                    22,
                     'See https://www.drupal.org/project/drupal/issues/3246287',
                 ],
             ]

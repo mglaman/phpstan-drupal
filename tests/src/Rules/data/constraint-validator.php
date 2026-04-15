@@ -6,7 +6,6 @@ namespace mglaman\PHPStanDrupal\Tests\Rules\data\ConstraintValidator;
 
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
-use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 // Constraint class following the naming convention: UniqueItem / UniqueItemValidator.
 class UniqueItem extends Constraint
@@ -16,7 +15,7 @@ class UniqueItem extends Constraint
 
 }
 
-// Error: validate() accesses constraint properties but never asserts the type.
+// Error: validate() does not assert the concrete constraint type.
 class UniqueItemValidator extends ConstraintValidator
 {
 
@@ -27,20 +26,28 @@ class UniqueItemValidator extends ConstraintValidator
 
 }
 
-// No error: validate() uses assert() to narrow the constraint type.
-class UniqueItemValidatorWithAssert extends ConstraintValidator
+// Constraint class for the assert-detection test case.
+class UniqueItemWithAssert extends Constraint
+{
+
+    public string $alreadyExists = 'The item %value already exists.';
+
+}
+
+// No error: validate() uses assert() to narrow to the expected constraint type.
+class UniqueItemWithAssertValidator extends ConstraintValidator
 {
 
     public function validate(mixed $value, Constraint $constraint): void
     {
-        assert($constraint instanceof UniqueItem);
+        assert($constraint instanceof UniqueItemWithAssert);
         $this->context->addViolation($constraint->alreadyExists);
     }
 
 }
 
-// No error: validator class name does not follow the FooValidator/Foo convention,
-// so no matching constraint class can be derived.
+// No error: 'StandaloneValidator' strips to 'Standalone', but there is no
+// corresponding constraint class with that name.
 class StandaloneValidator extends ConstraintValidator
 {
 

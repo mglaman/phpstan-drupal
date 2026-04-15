@@ -54,6 +54,12 @@ final class ConstraintValidatorValidateNarrowsConstraintTypeRule implements Rule
             return [];
         }
 
+        // Guard: symfony/validator may not be installed in every project.
+        if (!$this->reflectionProvider->hasClass(ConstraintValidator::class)
+            || !$this->reflectionProvider->hasClass(Constraint::class)) {
+            return [];
+        }
+
         $classReflection = $scope->getClassReflection();
         if (!$classReflection->isSubclassOfClass($this->reflectionProvider->getClass(ConstraintValidator::class))) {
             return [];
@@ -84,7 +90,7 @@ final class ConstraintValidatorValidateNarrowsConstraintTypeRule implements Rule
         }
 
         // Check if the method body asserts the concrete constraint type.
-        if ($this->hasConstraintAssertion($node->stmts ?? [], $constraintParamName)) {
+        if ($this->hasConstraintAssertion($node->stmts ?? [], $constraintParamName, $constraintClass, $scope)) {
             return [];
         }
 
@@ -110,11 +116,11 @@ final class ConstraintValidatorValidateNarrowsConstraintTypeRule implements Rule
     }
 
     /**
-     * Returns true if any statement in the list is assert($var instanceof SomeClass).
+     * Returns true if the statement list contains assert($var instanceof ExpectedConstraintClass).
      *
      * @param Node\Stmt[] $stmts
      */
-    private function hasConstraintAssertion(array $stmts, string $paramName): bool
+    private function hasConstraintAssertion(array $stmts, string $paramName, string $expectedConstraintFqcn, Scope $scope): bool
     {
         foreach ($stmts as $stmt) {
             if (!$stmt instanceof Node\Stmt\Expression) {
@@ -138,7 +144,14 @@ final class ConstraintValidatorValidateNarrowsConstraintTypeRule implements Rule
             if (!$assertArg->expr instanceof Node\Expr\Variable) {
                 continue;
             }
-            if ($assertArg->expr->name === $paramName) {
+            if ($assertArg->expr->name !== $paramName) {
+                continue;
+            }
+            if (!$assertArg->class instanceof Node\Name) {
+                continue;
+            }
+            $assertedClass = $scope->resolveName($assertArg->class);
+            if ($assertedClass === $expectedConstraintFqcn) {
                 return true;
             }
         }
