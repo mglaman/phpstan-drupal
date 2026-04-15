@@ -12,3 +12,4 @@ parameters:
 			hookRules: true
 			loggerFromFactoryPropertyAssignmentRule: true
 			entityStorageDirectInjectionRule: true
+			symfonyYamlParseRule: true
