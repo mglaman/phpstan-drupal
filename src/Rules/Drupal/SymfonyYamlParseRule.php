@@ -11,9 +11,9 @@ use PHPStan\Rules\RuleErrorBuilder;
 /**
  * Detects direct usage of Symfony's YAML parser and suggests the Drupal wrapper.
  *
- * Drupal\Component\Serialization\Yaml::decode() respects the yaml_parser_class
- * setting, allowing sites to override the parser. Using Symfony's class directly
- * bypasses that setting.
+ * Drupal\Component\Serialization\Yaml::decode() should be used instead of
+ * Symfony\Component\Yaml\Yaml::parse() because it wraps exceptions as
+ * InvalidDataTypeException and applies consistent parse flags.
  *
  * @implements Rule<StaticCall>
  */
@@ -45,7 +45,7 @@ class SymfonyYamlParseRule implements Rule
 
         return [
             RuleErrorBuilder::message(
-                'Avoid calling Symfony\Component\Yaml\Yaml::parse() directly. Use \Drupal\Component\Serialization\Yaml::decode() instead, which respects the yaml_parser_class setting.'
+                'Avoid calling Symfony\Component\Yaml\Yaml::parse() directly. Use \Drupal\Component\Serialization\Yaml::decode() instead, which handles exceptions consistently and applies the correct parse flags.'
             )
             ->identifier('drupal.symfonyYamlParse')
             ->build(),

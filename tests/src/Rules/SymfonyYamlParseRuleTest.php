@@ -18,11 +18,11 @@ final class SymfonyYamlParseRuleTest extends DrupalRuleTestCase
             [__DIR__ . '/data/symfony-yaml-parse.php'],
             [
                 [
-                    'Avoid calling Symfony\Component\Yaml\Yaml::parse() directly. Use \Drupal\Component\Serialization\Yaml::decode() instead, which respects the yaml_parser_class setting.',
+                    'Avoid calling Symfony\Component\Yaml\Yaml::parse() directly. Use \Drupal\Component\Serialization\Yaml::decode() instead, which handles exceptions consistently and applies the correct parse flags.',
                     6,
                 ],
                 [
-                    'Avoid calling Symfony\Component\Yaml\Yaml::parse() directly. Use \Drupal\Component\Serialization\Yaml::decode() instead, which respects the yaml_parser_class setting.',
+                    'Avoid calling Symfony\Component\Yaml\Yaml::parse() directly. Use \Drupal\Component\Serialization\Yaml::decode() instead, which handles exceptions consistently and applies the correct parse flags.',
                     9,
                 ],
             ]
