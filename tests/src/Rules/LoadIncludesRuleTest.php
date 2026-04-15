@@ -26,12 +26,12 @@ final class LoadIncludesRuleTest extends DrupalRuleTestCase
     {
         yield [
             [
-                __DIR__ . '/../../fixtures/drupal/modules/phpstan_fixtures/phpstan_fixtures.module'
+                __DIR__ . '/data/load-include-invalid.php'
             ],
             [
                 [
                     'File modules/phpstan_fixtures/phpstan_fixtures.fetch.inc could not be loaded from Drupal\Core\Extension\ModuleHandlerInterface::loadInclude',
-                    25,
+                    5,
                 ]
             ],
         ];

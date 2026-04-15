@@ -3,7 +3,6 @@
 namespace mglaman\PHPStanDrupal\Drupal;
 
 use PHPStan\Type\ObjectType;
-use PHPStan\Type\StringType;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
 use function count;
@@ -110,13 +109,6 @@ class DrupalServiceDefinition
 
     public function getType(): Type
     {
-        // Work around Drupal misusing the SplString class for string
-        // pseudo-services such as 'app.root'.
-        // @see https://www.drupal.org/project/drupal/issues/3074585
-        if ($this->getClass() === 'SplString') {
-            return new StringType();
-        }
-
         $decorating_services = $this->getDecorators();
         if (count($decorating_services) !== 0) {
             $combined_services = [];

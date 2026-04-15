@@ -29,7 +29,7 @@ final class GlobalDrupalDependencyInjectionRuleTest extends DrupalRuleTestCase {
             [],
         ];
         yield [
-            __DIR__ . '/../../fixtures/drupal/modules/phpstan_fixtures/src/UsesDeprecatedUrlFunction.php',
+            __DIR__ . '/data/global-drupal-di-deprecated-url.php',
             [
                 [
                     '\Drupal calls should be avoided in classes, use dependency injection instead',
@@ -38,7 +38,7 @@ final class GlobalDrupalDependencyInjectionRuleTest extends DrupalRuleTestCase {
             ]
         ];
         yield [
-            __DIR__ . '/../../fixtures/drupal/modules/phpstan_fixtures/src/TestServicesMappingExtension.php',
+            __DIR__ . '/data/global-drupal-di-service-mapping.php',
             [
                 [
                     '\Drupal calls should be avoided in classes, use dependency injection instead',

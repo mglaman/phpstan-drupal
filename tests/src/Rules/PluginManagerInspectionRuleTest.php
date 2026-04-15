@@ -33,7 +33,7 @@ final class PluginManagerInspectionRuleTest extends DrupalRuleTestCase
             []
         ];
         yield 'ExamplePluginManager' => [
-            __DIR__ . '/../../fixtures/drupal/modules/phpstan_fixtures/src/ExamplePluginManager.php',
+            __DIR__ . '/data/plugin-manager-valid.php',
             []
         ];
         yield [
