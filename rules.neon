@@ -1,6 +1,7 @@
 rules:
 	- mglaman\PHPStanDrupal\Rules\Drupal\Coder\DiscouragedFunctionsRule
 	- mglaman\PHPStanDrupal\Rules\Drupal\GlobalDrupalDependencyInjectionRule
+	- mglaman\PHPStanDrupal\Rules\Drupal\SymfonyYamlParseRule
 	- mglaman\PHPStanDrupal\Rules\Drupal\PluginManager\PluginManagerSetsCacheBackendRule
 	- mglaman\PHPStanDrupal\Rules\Drupal\RenderCallbackRule
 	- mglaman\PHPStanDrupal\Rules\Deprecations\StaticServiceDeprecatedServiceRule
