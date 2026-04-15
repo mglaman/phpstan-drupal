@@ -111,7 +111,7 @@ final class InspectorTypeExtension implements StaticMethodTypeSpecifyingExtensio
         // If it is already not mixed (narrowed by other code, like
         // '::assertAllArray()'), we could not provide any additional
         // information. We can only narrow this method to 'array<mixed, mixed>'.
-        if (!$traversableType->equals(new MixedType())) {
+        if (!$traversableType instanceof MixedType) {
             return new SpecifiedTypes();
         }
 
