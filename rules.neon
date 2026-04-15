@@ -36,6 +36,8 @@ conditionalTags:
 		phpstan.rules.rule: %drupal.rules.entityStorageDirectInjectionRule%
 	mglaman\PHPStanDrupal\Rules\Drupal\SymfonyYamlParseRule:
 		phpstan.rules.rule: %drupal.rules.symfonyYamlParseRule%
+	mglaman\PHPStanDrupal\Rules\Drupal\EntityListBuilderOperationsCacheabilityRule:
+		phpstan.rules.rule: %drupal.rules.entityListBuilderOperationsCacheabilityRule%
 
 services:
 	-
@@ -62,3 +64,5 @@ services:
 		class: mglaman\PHPStanDrupal\Rules\Drupal\EntityStoragePropertyAssignmentRule
 	-
 		class: mglaman\PHPStanDrupal\Rules\Drupal\SymfonyYamlParseRule
+	-
+		class: mglaman\PHPStanDrupal\Rules\Drupal\EntityListBuilderOperationsCacheabilityRule

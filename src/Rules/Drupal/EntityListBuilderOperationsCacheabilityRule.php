@@ -1,0 +1,100 @@
+<?php declare(strict_types=1);
+
+namespace mglaman\PHPStanDrupal\Rules\Drupal;
+
+use Drupal;
+use Drupal\Core\Entity\EntityListBuilder;
+use Drupal\Core\Entity\EntityListBuilderInterface;
+use PhpParser\Node;
+use PhpParser\Node\Stmt\ClassMethod;
+use PHPStan\Analyser\Scope;
+use PHPStan\Rules\Rule;
+use PHPStan\Rules\RuleErrorBuilder;
+use PHPStan\Type\ObjectType;
+use function count;
+use function explode;
+use function in_array;
+
+/**
+ * Detects EntityListBuilder subclasses overriding getOperations() or
+ * getDefaultOperations() without the CacheableMetadata parameter added in
+ * Drupal 11.3.
+ *
+ * The parameter was introduced as a deprecated workaround (via func_get_args)
+ * in 11.3.0 and becomes a formal required-compatible parameter in 12.0.0.
+ * This rule fires for Drupal 11.3.x only; for 12+ PHPStan's native
+ * method-signature checking handles the incompatibility.
+ *
+ * @implements Rule<ClassMethod>
+ */
+class EntityListBuilderOperationsCacheabilityRule implements Rule
+{
+
+    private const METHODS = ['getOperations', 'getDefaultOperations'];
+
+    public function getNodeType(): string
+    {
+        return ClassMethod::class;
+    }
+
+    public function processNode(Node $node, Scope $scope): array
+    {
+        // Version gate: only applies for Drupal 11.3.x.
+        [$major, $minor] = explode('.', Drupal::VERSION, 3);
+        $majorVersion = (int) $major;
+        $minorVersion = (int) $minor;
+        if ($majorVersion < 11 || ($majorVersion === 11 && $minorVersion < 3)) {
+            return [];
+        }
+        if ($majorVersion >= 12) {
+            return [];
+        }
+
+        if (!$scope->isInClass()) {
+            return [];
+        }
+
+        $methodName = $node->name->toString();
+        if (!in_array($methodName, self::METHODS, true)) {
+            return [];
+        }
+
+        $classReflection = $scope->getClassReflection();
+
+        // Skip the base class itself — it uses func_get_args() intentionally.
+        if ($classReflection->getName() === EntityListBuilder::class) {
+            return [];
+        }
+
+        $classType = new ObjectType($classReflection->getName());
+
+        // getDefaultOperations is protected and not part of the interface;
+        // only flag it for subclasses of EntityListBuilder.
+        $parentType = $methodName === 'getDefaultOperations'
+            ? new ObjectType(EntityListBuilder::class)
+            : new ObjectType(EntityListBuilderInterface::class);
+
+        if (!$parentType->isSuperTypeOf($classType)->yes()) {
+            return [];
+        }
+
+        // Second parameter (CacheableMetadata) already present — no issue.
+        if (count($node->params) >= 2) {
+            return [];
+        }
+
+        return [
+            RuleErrorBuilder::message(
+                sprintf(
+                    'Method %s::%s() is missing the CacheableMetadata parameter added in Drupal 11.3. Update the signature to: %s(\Drupal\Core\Entity\EntityInterface $entity, ?\Drupal\Core\Cache\CacheableMetadata $cacheability = NULL).',
+                    $classReflection->getName(),
+                    $methodName,
+                    $methodName,
+                )
+            )
+            ->tip('See https://www.drupal.org/node/3533080')
+            ->identifier('drupal.entityListBuilderMissingCacheabilityParameter')
+            ->build(),
+        ];
+    }
+}
