@@ -1,0 +1,18 @@
+<?php
+
+use Drupal\Core\Cache\CacheableMetadata;
+use Drupal\Core\Entity\EntityInterface;
+
+// Bad: missing CacheableMetadata (1 param instead of 2).
+function mymodule_entity_operation(EntityInterface $entity): array {
+    return [];
+}
+
+// Bad: entity_operation_alter missing CacheableMetadata (2 params instead of 3).
+function mymodule_entity_operation_alter(array &$operations, EntityInterface $entity): void {
+}
+
+// Not flagged: different module prefix — not from this module.
+function other_module_entity_operation(EntityInterface $entity): array {
+    return [];
+}

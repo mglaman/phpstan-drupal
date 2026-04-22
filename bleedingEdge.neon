@@ -13,3 +13,4 @@ parameters:
 			loggerFromFactoryPropertyAssignmentRule: true
 			entityStorageDirectInjectionRule: true
 			symfonyYamlParseRule: true
+			entityOperationsCacheabilityRule: true
