@@ -9,7 +9,6 @@ use PHPStan\Analyser\Scope;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
 use function basename;
-use function count;
 use function explode;
 use function str_ends_with;
 use function str_starts_with;
