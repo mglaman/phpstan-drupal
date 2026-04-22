@@ -11,6 +11,7 @@ use PHPStan\Analyser\Scope;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
 use PHPStan\Type\ObjectType;
+use function count;
 use function in_array;
 use function version_compare;
 
@@ -71,8 +72,7 @@ class EntityListBuilderOperationsCacheabilityRule implements Rule
             return [];
         }
 
-        // Second parameter (CacheableMetadata) must be present and correctly typed.
-        if (isset($node->params[1]) && $this->isValidCacheabilityParam($node->params[1], $scope)) {
+        if (count($node->params) > 1 && ParamHelper::isValidParam($node->params[1], 'Drupal\Core\Cache\CacheableMetadata', true, $scope)) {
             return [];
         }
 
@@ -89,34 +89,5 @@ class EntityListBuilderOperationsCacheabilityRule implements Rule
             ->identifier('drupal.entityListBuilderMissingCacheabilityParameter')
             ->build(),
         ];
-    }
-
-    private function isValidCacheabilityParam(Node\Param $param, Scope $scope): bool
-    {
-        if ($param->type === null) {
-            return false;
-        }
-
-        $type = $param->type;
-        $isNullable = false;
-        if ($type instanceof Node\NullableType) {
-            $type = $type->type;
-            $isNullable = true;
-        }
-
-        if ($type instanceof Node\Name) {
-            $resolvedName = $scope->resolveName($type);
-            if ($resolvedName !== 'Drupal\Core\Cache\CacheableMetadata') {
-                return false;
-            }
-        } else {
-            return false;
-        }
-
-        if ($param->default !== null && $scope->getType($param->default)->isNull()->yes()) {
-            $isNullable = true;
-        }
-
-        return $isNullable;
     }
 }

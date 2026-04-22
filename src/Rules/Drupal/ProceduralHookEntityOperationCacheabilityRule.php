@@ -9,6 +9,7 @@ use PHPStan\Analyser\Scope;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
 use function basename;
+use function count;
 use function explode;
 use function str_ends_with;
 use function str_starts_with;
@@ -51,7 +52,7 @@ class ProceduralHookEntityOperationCacheabilityRule implements Rule
         $hookName = substr_replace($functionName, 'hook', 0, strlen($moduleName));
 
         if ($hookName === 'hook_entity_operation') {
-            if (!isset($node->params[1]) || !$this->isValidCacheabilityParam($node->params[1], $scope)) {
+            if (count($node->params) < 2 || !ParamHelper::isValidParam($node->params[1], 'Drupal\Core\Cache\CacheableMetadata', true, $scope)) {
                 return [
                     RuleErrorBuilder::message(
                         sprintf(
@@ -68,7 +69,7 @@ class ProceduralHookEntityOperationCacheabilityRule implements Rule
         }
 
         if ($hookName === 'hook_entity_operation_alter') {
-            if (!isset($node->params[2]) || !$this->isValidCacheabilityParam($node->params[2], $scope)) {
+            if (count($node->params) < 3 || !ParamHelper::isValidParam($node->params[2], 'Drupal\Core\Cache\CacheableMetadata', true, $scope)) {
                 return [
                     RuleErrorBuilder::message(
                         sprintf(
@@ -85,34 +86,5 @@ class ProceduralHookEntityOperationCacheabilityRule implements Rule
         }
 
         return [];
-    }
-
-    private function isValidCacheabilityParam(Node\Param $param, Scope $scope): bool
-    {
-        if ($param->type === null) {
-            return false;
-        }
-
-        $type = $param->type;
-        $isNullable = false;
-        if ($type instanceof Node\NullableType) {
-            $type = $type->type;
-            $isNullable = true;
-        }
-
-        if ($type instanceof Node\Name) {
-            $resolvedName = $scope->resolveName($type);
-            if ($resolvedName !== 'Drupal\Core\Cache\CacheableMetadata') {
-                return false;
-            }
-        } else {
-            return false;
-        }
-
-        if ($param->default !== null && $scope->getType($param->default)->isNull()->yes()) {
-            $isNullable = true;
-        }
-
-        return $isNullable;
     }
 }

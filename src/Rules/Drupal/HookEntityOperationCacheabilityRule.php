@@ -63,7 +63,7 @@ class HookEntityOperationCacheabilityRule implements Rule
             $hookInstance = $hookAttribute->newInstance();
 
             if ($hookInstance->hook === 'entity_operation') {
-                if (!isset($node->params[1]) || !$this->isValidCacheabilityParam($node->params[1], $scope)) {
+                if (count($node->params) < 2 || !ParamHelper::isValidParam($node->params[1], 'Drupal\Core\Cache\CacheableMetadata', true, $scope)) {
                     $errors[] = RuleErrorBuilder::message(
                         sprintf(
                             'Method %s::%s() implements hook_entity_operation but is missing the CacheableMetadata parameter added in Drupal 11.3. Update the signature to include ?\Drupal\Core\Cache\CacheableMetadata $cacheability = NULL as the second parameter.',
@@ -78,7 +78,7 @@ class HookEntityOperationCacheabilityRule implements Rule
             }
 
             if ($hookInstance->hook === 'entity_operation_alter') {
-                if (!isset($node->params[2]) || !$this->isValidCacheabilityParam($node->params[2], $scope)) {
+                if (count($node->params) < 3 || !ParamHelper::isValidParam($node->params[2], 'Drupal\Core\Cache\CacheableMetadata', true, $scope)) {
                     $errors[] = RuleErrorBuilder::message(
                         sprintf(
                             'Method %s::%s() implements hook_entity_operation_alter but is missing the CacheableMetadata parameter added in Drupal 11.3. Update the signature to include ?\Drupal\Core\Cache\CacheableMetadata $cacheability = NULL as the third parameter.',
@@ -94,34 +94,5 @@ class HookEntityOperationCacheabilityRule implements Rule
         }
 
         return $errors;
-    }
-
-    private function isValidCacheabilityParam(Node\Param $param, Scope $scope): bool
-    {
-        if ($param->type === null) {
-            return false;
-        }
-
-        $type = $param->type;
-        $isNullable = false;
-        if ($type instanceof Node\NullableType) {
-            $type = $type->type;
-            $isNullable = true;
-        }
-
-        if ($type instanceof Node\Name) {
-            $resolvedName = $scope->resolveName($type);
-            if ($resolvedName !== 'Drupal\Core\Cache\CacheableMetadata') {
-                return false;
-            }
-        } else {
-            return false;
-        }
-
-        if ($param->default !== null && $scope->getType($param->default)->isNull()->yes()) {
-            $isNullable = true;
-        }
-
-        return $isNullable;
     }
 }
