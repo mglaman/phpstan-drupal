@@ -72,8 +72,9 @@ class EntityListBuilderOperationsCacheabilityRule implements Rule
             return [];
         }
 
-        // Second parameter (CacheableMetadata) already present — no issue.
-        if (count($node->params) >= 2) {
+        // Second parameter (CacheableMetadata) must be present and correctly typed.
+        $params = $node->params;
+        if (isset($params[1]) && $this->isValidCacheabilityParam($params[1], $scope)) {
             return [];
         }
 
@@ -90,5 +91,39 @@ class EntityListBuilderOperationsCacheabilityRule implements Rule
             ->identifier('drupal.entityListBuilderMissingCacheabilityParameter')
             ->build(),
         ];
+    }
+
+    private function isValidCacheabilityParam(Node\Param $param, Scope $scope): bool
+    {
+        if ($param->type === null) {
+            return false;
+        }
+
+        $type = $param->type;
+        $isNullable = false;
+        if ($type instanceof Node\NullableType) {
+            $type = $type->type;
+            $isNullable = true;
+        }
+
+        if ($type instanceof Node\Name) {
+            $resolvedName = $scope->resolveName($type);
+            if ($resolvedName !== 'Drupal\Core\Cache\CacheableMetadata') {
+                return false;
+            }
+        } else {
+            return false;
+        }
+
+        // It should be nullable, either via ? or by having a default value of NULL.
+        return $isNullable || $this->isDefaultValueNull($param);
+    }
+
+    private function isDefaultValueNull(Node\Param $param): bool
+    {
+        if ($param->default instanceof Node\Expr\ConstFetch) {
+            return $param->default->name->toLowerString() === 'null';
+        }
+        return false;
     }
 }

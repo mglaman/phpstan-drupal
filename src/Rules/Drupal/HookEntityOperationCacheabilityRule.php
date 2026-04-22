@@ -62,33 +62,71 @@ class HookEntityOperationCacheabilityRule implements Rule
             /** @var Hook $hookInstance */
             $hookInstance = $hookAttribute->newInstance();
 
-            if ($hookInstance->hook === 'entity_operation' && count($node->params) < 2) {
-                $errors[] = RuleErrorBuilder::message(
-                    sprintf(
-                        'Method %s::%s() implements hook_entity_operation but is missing the CacheableMetadata parameter added in Drupal 11.3. Update the signature to include ?\Drupal\Core\Cache\CacheableMetadata $cacheability as the second parameter.',
-                        $classReflection->getName(),
-                        $methodName,
+            if ($hookInstance->hook === 'entity_operation') {
+                if (!isset($node->params[1]) || !$this->isValidCacheabilityParam($node->params[1], $scope)) {
+                    $errors[] = RuleErrorBuilder::message(
+                        sprintf(
+                            'Method %s::%s() implements hook_entity_operation but is missing the CacheableMetadata parameter added in Drupal 11.3. Update the signature to include ?\Drupal\Core\Cache\CacheableMetadata $cacheability as the second parameter.',
+                            $classReflection->getName(),
+                            $methodName,
+                        )
                     )
-                )
-                ->tip('See https://www.drupal.org/node/3533080')
-                ->identifier('drupal.hookEntityOperationMissingCacheabilityParameter')
-                ->build();
+                    ->tip('See https://www.drupal.org/node/3533080')
+                    ->identifier('drupal.hookEntityOperationMissingCacheabilityParameter')
+                    ->build();
+                }
             }
 
-            if ($hookInstance->hook === 'entity_operation_alter' && count($node->params) < 3) {
-                $errors[] = RuleErrorBuilder::message(
-                    sprintf(
-                        'Method %s::%s() implements hook_entity_operation_alter but is missing the CacheableMetadata parameter added in Drupal 11.3. Update the signature to include ?\Drupal\Core\Cache\CacheableMetadata $cacheability as the third parameter.',
-                        $classReflection->getName(),
-                        $methodName,
+            if ($hookInstance->hook === 'entity_operation_alter') {
+                if (!isset($node->params[2]) || !$this->isValidCacheabilityParam($node->params[2], $scope)) {
+                    $errors[] = RuleErrorBuilder::message(
+                        sprintf(
+                            'Method %s::%s() implements hook_entity_operation_alter but is missing the CacheableMetadata parameter added in Drupal 11.3. Update the signature to include ?\Drupal\Core\Cache\CacheableMetadata $cacheability as the third parameter.',
+                            $classReflection->getName(),
+                            $methodName,
+                        )
                     )
-                )
-                ->tip('See https://www.drupal.org/node/3533080')
-                ->identifier('drupal.hookEntityOperationAlterMissingCacheabilityParameter')
-                ->build();
+                    ->tip('See https://www.drupal.org/node/3533080')
+                    ->identifier('drupal.hookEntityOperationAlterMissingCacheabilityParameter')
+                    ->build();
+                }
             }
         }
 
         return $errors;
+    }
+
+    private function isValidCacheabilityParam(Node\Param $param, Scope $scope): bool
+    {
+        if ($param->type === null) {
+            return false;
+        }
+
+        $type = $param->type;
+        $isNullable = false;
+        if ($type instanceof Node\NullableType) {
+            $type = $type->type;
+            $isNullable = true;
+        }
+
+        if ($type instanceof Node\Name) {
+            $resolvedName = $scope->resolveName($type);
+            if ($resolvedName !== 'Drupal\Core\Cache\CacheableMetadata') {
+                return false;
+            }
+        } else {
+            return false;
+        }
+
+        // It should be nullable, either via ? or by having a default value of NULL.
+        return $isNullable || $this->isDefaultValueNull($param);
+    }
+
+    private function isDefaultValueNull(Node\Param $param): bool
+    {
+        if ($param->default instanceof Node\Expr\ConstFetch) {
+            return $param->default->name->toLowerString() === 'null';
+        }
+        return false;
     }
 }
