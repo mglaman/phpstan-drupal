@@ -34,7 +34,7 @@ class HookEntityOperationCacheabilityRule implements Rule
             return [];
         }
 
-        if (version_compare(Drupal::VERSION, '11.3', '<') || version_compare(Drupal::VERSION, '12.0', '>=')) {
+        if (version_compare(Drupal::VERSION, '11.3', '<')) {
             return [];
         }
 
