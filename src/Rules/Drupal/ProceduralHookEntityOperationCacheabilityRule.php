@@ -8,8 +8,6 @@ use PhpParser\Node\Stmt\Function_;
 use PHPStan\Analyser\Scope;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
-use PHPStan\Type\NullType;
-use PHPStan\Type\ObjectType;
 use function basename;
 use function explode;
 use function str_ends_with;

@@ -9,8 +9,6 @@ use PhpParser\Node\Stmt\ClassMethod;
 use PHPStan\Analyser\Scope;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
-use PHPStan\Type\NullType;
-use PHPStan\Type\ObjectType;
 use function class_exists;
 use function count;
 use function version_compare;
