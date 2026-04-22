@@ -10,6 +10,7 @@ use PhpParser\Node\Stmt\ClassMethod;
 use PHPStan\Analyser\Scope;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
+use PHPStan\Type\NullType;
 use PHPStan\Type\ObjectType;
 use function in_array;
 use function version_compare;
@@ -72,8 +73,7 @@ class EntityListBuilderOperationsCacheabilityRule implements Rule
         }
 
         // Second parameter (CacheableMetadata) must be present and correctly typed.
-        $params = $node->params;
-        if (isset($params[1]) && $this->isValidCacheabilityParam($params[1], $scope)) {
+        if (isset($node->params[1]) && $this->isValidCacheabilityParam($node->params[1], $scope)) {
             return [];
         }
 
@@ -114,15 +114,10 @@ class EntityListBuilderOperationsCacheabilityRule implements Rule
             return false;
         }
 
-        // It should be nullable, either via ? or by having a default value of NULL.
-        return $isNullable || $this->isDefaultValueNull($param);
-    }
-
-    private function isDefaultValueNull(Node\Param $param): bool
-    {
-        if ($param->default instanceof Node\Expr\ConstFetch) {
-            return $param->default->name->toLowerString() === 'null';
+        if ($param->default !== null && $scope->getType($param->default)->isNull()->yes()) {
+            $isNullable = true;
         }
-        return false;
+
+        return $isNullable;
     }
 }
