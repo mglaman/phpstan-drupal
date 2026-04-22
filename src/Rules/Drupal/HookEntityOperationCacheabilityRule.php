@@ -66,7 +66,7 @@ class HookEntityOperationCacheabilityRule implements Rule
                 if (!isset($node->params[1]) || !$this->isValidCacheabilityParam($node->params[1], $scope)) {
                     $errors[] = RuleErrorBuilder::message(
                         sprintf(
-                            'Method %s::%s() implements hook_entity_operation but is missing the CacheableMetadata parameter added in Drupal 11.3. Update the signature to include ?\Drupal\Core\Cache\CacheableMetadata $cacheability as the second parameter.',
+                            'Method %s::%s() implements hook_entity_operation but is missing the CacheableMetadata parameter added in Drupal 11.3. Update the signature to include ?\Drupal\Core\Cache\CacheableMetadata $cacheability = NULL as the second parameter.',
                             $classReflection->getName(),
                             $methodName,
                         )
@@ -81,7 +81,7 @@ class HookEntityOperationCacheabilityRule implements Rule
                 if (!isset($node->params[2]) || !$this->isValidCacheabilityParam($node->params[2], $scope)) {
                     $errors[] = RuleErrorBuilder::message(
                         sprintf(
-                            'Method %s::%s() implements hook_entity_operation_alter but is missing the CacheableMetadata parameter added in Drupal 11.3. Update the signature to include ?\Drupal\Core\Cache\CacheableMetadata $cacheability as the third parameter.',
+                            'Method %s::%s() implements hook_entity_operation_alter but is missing the CacheableMetadata parameter added in Drupal 11.3. Update the signature to include ?\Drupal\Core\Cache\CacheableMetadata $cacheability = NULL as the third parameter.',
                             $classReflection->getName(),
                             $methodName,
                         )

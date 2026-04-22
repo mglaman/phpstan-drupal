@@ -56,7 +56,7 @@ class ProceduralHookEntityOperationCacheabilityRule implements Rule
                 return [
                     RuleErrorBuilder::message(
                         sprintf(
-                            'Function %s() implements hook_entity_operation but is missing the CacheableMetadata parameter added in Drupal 11.3. Update the signature to: %s(\Drupal\Core\Entity\EntityInterface $entity, \Drupal\Core\Cache\CacheableMetadata $cacheability).',
+                            'Function %s() implements hook_entity_operation but is missing the CacheableMetadata parameter added in Drupal 11.3. Update the signature to: %s(\Drupal\Core\Entity\EntityInterface $entity, ?\Drupal\Core\Cache\CacheableMetadata $cacheability = NULL).',
                             $functionName,
                             $functionName,
                         )
@@ -73,7 +73,7 @@ class ProceduralHookEntityOperationCacheabilityRule implements Rule
                 return [
                     RuleErrorBuilder::message(
                         sprintf(
-                            'Function %s() implements hook_entity_operation_alter but is missing the CacheableMetadata parameter added in Drupal 11.3. Update the signature to: %s(array &$operations, \Drupal\Core\Entity\EntityInterface $entity, \Drupal\Core\Cache\CacheableMetadata $cacheability).',
+                            'Function %s() implements hook_entity_operation_alter but is missing the CacheableMetadata parameter added in Drupal 11.3. Update the signature to: %s(array &$operations, \Drupal\Core\Entity\EntityInterface $entity, ?\Drupal\Core\Cache\CacheableMetadata $cacheability = NULL).',
                             $functionName,
                             $functionName,
                         )
