@@ -183,6 +183,7 @@ What it currently enables:
 - `cacheableDependencyRule` — flags `addCacheableDependency()` calls with non-cacheable arguments
 - `loggerFromFactoryPropertyAssignmentRule` — flags logger channels assigned to properties in classes using `DependencySerializationTrait`
 - `entityStorageDirectInjectionRule` — flags direct injection of entity storage into a constructor; inject `EntityTypeManagerInterface` and call `getStorage()` instead
+- `containerHasAlwaysTrue: false` — `ContainerInterface::has()` returns `bool` instead of always-`true` for known services, preventing false positives that may cause developers to remove legitimate conditional service guards
 
 > [!NOTE]
 > `checkDeprecatedHooksInApiFiles` is deprecated. Use `checkCoreDeprecatedHooksInApiFiles` and `checkContribDeprecatedHooksInApiFiles` instead.
