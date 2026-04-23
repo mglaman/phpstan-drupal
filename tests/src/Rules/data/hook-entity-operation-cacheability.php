@@ -32,8 +32,27 @@ class BadEntityOperationAlterHookTwoParams
     }
 }
 
-// Good: entity_operation with CacheableMetadata.
+// Good: entity_operation with non-nullable CacheableMetadata (canonical form).
 class GoodEntityOperationHook
+{
+    #[Hook('entity_operation')]
+    public function entityOperation(EntityInterface $entity, CacheableMetadata $cacheability): array
+    {
+        return [];
+    }
+}
+
+// Good: entity_operation_alter with non-nullable CacheableMetadata (canonical form).
+class GoodEntityOperationAlterHook
+{
+    #[Hook('entity_operation_alter')]
+    public function entityOperationAlter(array &$operations, EntityInterface $entity, CacheableMetadata $cacheability): void
+    {
+    }
+}
+
+// Good: nullable CacheableMetadata also accepted.
+class GoodEntityOperationHookNullable
 {
     #[Hook('entity_operation')]
     public function entityOperation(EntityInterface $entity, ?CacheableMetadata $cacheability = null): array
@@ -42,8 +61,8 @@ class GoodEntityOperationHook
     }
 }
 
-// Good: entity_operation_alter with CacheableMetadata.
-class GoodEntityOperationAlterHook
+// Good: nullable CacheableMetadata also accepted for alter.
+class GoodEntityOperationAlterHookNullable
 {
     #[Hook('entity_operation_alter')]
     public function entityOperationAlter(array &$operations, EntityInterface $entity, ?CacheableMetadata $cacheability = null): void

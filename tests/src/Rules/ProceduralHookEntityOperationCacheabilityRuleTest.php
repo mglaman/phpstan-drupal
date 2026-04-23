@@ -22,12 +22,12 @@ final class ProceduralHookEntityOperationCacheabilityRuleTest extends DrupalRule
             [__DIR__ . '/data/mymodule.module'],
             $isApplicableVersion ? [
                 [
-                    'Function mymodule_entity_operation() implements hook_entity_operation but is missing the CacheableMetadata parameter added in Drupal 11.3. Update the signature to: mymodule_entity_operation(\Drupal\Core\Entity\EntityInterface $entity, ?\Drupal\Core\Cache\CacheableMetadata $cacheability = NULL).',
+                    'Function mymodule_entity_operation() implements hook_entity_operation but is missing the CacheableMetadata parameter added in Drupal 11.3. Update the signature to: mymodule_entity_operation(\Drupal\Core\Entity\EntityInterface $entity, \Drupal\Core\Cache\CacheableMetadata $cacheability).',
                     7,
                     'See https://www.drupal.org/node/3533080',
                 ],
                 [
-                    'Function mymodule_entity_operation_alter() implements hook_entity_operation_alter but is missing the CacheableMetadata parameter added in Drupal 11.3. Update the signature to: mymodule_entity_operation_alter(array &$operations, \Drupal\Core\Entity\EntityInterface $entity, ?\Drupal\Core\Cache\CacheableMetadata $cacheability = NULL).',
+                    'Function mymodule_entity_operation_alter() implements hook_entity_operation_alter but is missing the CacheableMetadata parameter added in Drupal 11.3. Update the signature to: mymodule_entity_operation_alter(array &$operations, \Drupal\Core\Entity\EntityInterface $entity, \Drupal\Core\Cache\CacheableMetadata $cacheability).',
                     12,
                     'See https://www.drupal.org/node/3533080',
                 ],
