@@ -7,6 +7,7 @@ use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\ParametersAcceptorSelector;
+use PHPStan\Type\BooleanType;
 use PHPStan\Type\Constant\ConstantBooleanType;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
 use PHPStan\Type\NullType;
@@ -18,14 +19,11 @@ use function in_array;
 
 class ContainerDynamicReturnTypeExtension implements DynamicMethodReturnTypeExtension
 {
-    /**
-     * @var ServiceMap
-     */
-    private ServiceMap $serviceMap;
 
-    public function __construct(ServiceMap $serviceMap)
-    {
-        $this->serviceMap = $serviceMap;
+    public function __construct(
+        private ServiceMap $serviceMap,
+        private bool $containerHasAlwaysTrue,
+    ) {
     }
 
     public function getClass(): string
@@ -62,7 +60,11 @@ class ContainerDynamicReturnTypeExtension implements DynamicMethodReturnTypeExte
             foreach ($argType->getConstantStrings() as $constantStringType) {
                 $serviceId = $constantStringType->getValue();
                 $service = $this->serviceMap->getService($serviceId);
-                $types[] = new ConstantBooleanType($service !== null);
+                if (!$this->containerHasAlwaysTrue && $service !== null) {
+                    $types[] = new BooleanType();
+                } else {
+                    $types[] = new ConstantBooleanType($service !== null);
+                }
             }
 
             return TypeCombinator::union(...$types);
