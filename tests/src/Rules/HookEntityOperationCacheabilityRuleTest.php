@@ -22,17 +22,17 @@ final class HookEntityOperationCacheabilityRuleTest extends DrupalRuleTestCase
             [__DIR__ . '/data/hook-entity-operation-cacheability.php'],
             $isApplicableVersion ? [
                 [
-                    'Method BadEntityOperationHook::entityOperation() implements hook_entity_operation but is missing the CacheableMetadata parameter added in Drupal 11.3. Update the signature to include ?\Drupal\Core\Cache\CacheableMetadata $cacheability = NULL as the second parameter.',
+                    'Method BadEntityOperationHook::entityOperation() implements hook_entity_operation but is missing the CacheableMetadata parameter added in Drupal 11.3. Update the signature to include \Drupal\Core\Cache\CacheableMetadata $cacheability as the second parameter.',
                     10,
                     'See https://www.drupal.org/node/3533080',
                 ],
                 [
-                    'Method BadEntityOperationAlterHookOneParam::entityOperationAlter() implements hook_entity_operation_alter but is missing the CacheableMetadata parameter added in Drupal 11.3. Update the signature to include ?\Drupal\Core\Cache\CacheableMetadata $cacheability = NULL as the third parameter.',
+                    'Method BadEntityOperationAlterHookOneParam::entityOperationAlter() implements hook_entity_operation_alter but is missing the CacheableMetadata parameter added in Drupal 11.3. Update the signature to include \Drupal\Core\Cache\CacheableMetadata $cacheability as the third parameter.',
                     20,
                     'See https://www.drupal.org/node/3533080',
                 ],
                 [
-                    'Method BadEntityOperationAlterHookTwoParams::entityOperationAlter() implements hook_entity_operation_alter but is missing the CacheableMetadata parameter added in Drupal 11.3. Update the signature to include ?\Drupal\Core\Cache\CacheableMetadata $cacheability = NULL as the third parameter.',
+                    'Method BadEntityOperationAlterHookTwoParams::entityOperationAlter() implements hook_entity_operation_alter but is missing the CacheableMetadata parameter added in Drupal 11.3. Update the signature to include \Drupal\Core\Cache\CacheableMetadata $cacheability as the third parameter.',
                     29,
                     'See https://www.drupal.org/node/3533080',
                 ],

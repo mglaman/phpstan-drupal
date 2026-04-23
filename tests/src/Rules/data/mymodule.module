@@ -16,3 +16,21 @@ function mymodule_entity_operation_alter(array &$operations, EntityInterface $en
 function other_module_entity_operation(EntityInterface $entity): array {
     return [];
 }
+
+// Good: non-nullable CacheableMetadata (canonical form).
+function mymodule_entity_operation_good(EntityInterface $entity, CacheableMetadata $cacheability): array {
+    return [];
+}
+
+// Good: nullable CacheableMetadata also accepted.
+function mymodule_entity_operation_good_nullable(EntityInterface $entity, ?CacheableMetadata $cacheability = null): array {
+    return [];
+}
+
+// Good: entity_operation_alter with non-nullable CacheableMetadata.
+function mymodule_entity_operation_alter_good(array &$operations, EntityInterface $entity, CacheableMetadata $cacheability): void {
+}
+
+// Good: entity_operation_alter with nullable CacheableMetadata also accepted.
+function mymodule_entity_operation_alter_good_nullable(array &$operations, EntityInterface $entity, ?CacheableMetadata $cacheability = null): void {
+}

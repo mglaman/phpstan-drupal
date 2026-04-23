@@ -52,11 +52,11 @@ class ProceduralHookEntityOperationCacheabilityRule implements Rule
         $hookName = substr_replace($functionName, 'hook', 0, strlen($moduleName));
 
         if ($hookName === 'hook_entity_operation') {
-            if (count($node->params) < 2 || !ParamHelper::isValidParam($node->params[1], 'Drupal\Core\Cache\CacheableMetadata', true, $scope)) {
+            if (count($node->params) < 2 || !ParamHelper::isValidParam($node->params[1], 'Drupal\Core\Cache\CacheableMetadata', false, $scope)) {
                 return [
                     RuleErrorBuilder::message(
                         sprintf(
-                            'Function %s() implements hook_entity_operation but is missing the CacheableMetadata parameter added in Drupal 11.3. Update the signature to: %s(\Drupal\Core\Entity\EntityInterface $entity, ?\Drupal\Core\Cache\CacheableMetadata $cacheability = NULL).',
+                            'Function %s() implements hook_entity_operation but is missing the CacheableMetadata parameter added in Drupal 11.3. Update the signature to: %s(\Drupal\Core\Entity\EntityInterface $entity, \Drupal\Core\Cache\CacheableMetadata $cacheability).',
                             $functionName,
                             $functionName,
                         )
@@ -69,11 +69,11 @@ class ProceduralHookEntityOperationCacheabilityRule implements Rule
         }
 
         if ($hookName === 'hook_entity_operation_alter') {
-            if (count($node->params) < 3 || !ParamHelper::isValidParam($node->params[2], 'Drupal\Core\Cache\CacheableMetadata', true, $scope)) {
+            if (count($node->params) < 3 || !ParamHelper::isValidParam($node->params[2], 'Drupal\Core\Cache\CacheableMetadata', false, $scope)) {
                 return [
                     RuleErrorBuilder::message(
                         sprintf(
-                            'Function %s() implements hook_entity_operation_alter but is missing the CacheableMetadata parameter added in Drupal 11.3. Update the signature to: %s(array &$operations, \Drupal\Core\Entity\EntityInterface $entity, ?\Drupal\Core\Cache\CacheableMetadata $cacheability = NULL).',
+                            'Function %s() implements hook_entity_operation_alter but is missing the CacheableMetadata parameter added in Drupal 11.3. Update the signature to: %s(array &$operations, \Drupal\Core\Entity\EntityInterface $entity, \Drupal\Core\Cache\CacheableMetadata $cacheability).',
                             $functionName,
                             $functionName,
                         )
