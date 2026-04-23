@@ -38,6 +38,11 @@ final class EntityStoragePropertyAssignmentRule implements Rule
         }
 
         $assignedType = $scope->getType($node->expr);
+        // Bail early when assigning literal null — removeNull(NullType) yields
+        // NeverType, and isSuperTypeOf(NeverType) is vacuously true for any type.
+        if ($assignedType->isNull()->yes()) {
+            return [];
+        }
         $storageType = new ObjectType(EntityStorageInterface::class);
         if (!$storageType->isSuperTypeOf(TypeCombinator::removeNull($assignedType))->yes()) {
             return [];

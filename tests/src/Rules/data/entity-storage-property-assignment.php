@@ -80,3 +80,14 @@ class ServiceCallingStorageAtCallSite
         $storage->load(1);
     }
 }
+
+// No error: assigning null to a nullable non-storage property (issue #983).
+class ServiceWithNullableNonStorageProperty
+{
+    protected ?int $foo = null;
+
+    public function reset(): void
+    {
+        $this->foo = null;
+    }
+}
