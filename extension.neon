@@ -21,6 +21,7 @@ parameters:
 			checkDeprecatedHooksInApiFiles: false
 			checkCoreDeprecatedHooksInApiFiles: false
 			checkContribDeprecatedHooksInApiFiles: false
+			containerHasAlwaysTrue: true
 		extensions:
 			entityFieldsViaMagicReflection: true
 			entityFieldMethodsViaMagicReflection: true
@@ -259,6 +260,7 @@ parametersSchema:
 			checkDeprecatedHooksInApiFiles: boolean()
 			checkCoreDeprecatedHooksInApiFiles: boolean()
 			checkContribDeprecatedHooksInApiFiles: boolean()
+			containerHasAlwaysTrue: boolean()
 		])
 		extensions: structure([
 			entityFieldsViaMagicReflection: boolean()
@@ -325,6 +327,8 @@ services:
 	-
 		class: mglaman\PHPStanDrupal\Type\ContainerDynamicReturnTypeExtension
 		tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
+		arguments:
+			containerHasAlwaysTrue: %drupal.bleedingEdge.containerHasAlwaysTrue%
 	-
 		class: mglaman\PHPStanDrupal\Type\DrupalClassResolverDynamicReturnTypeExtension
 		tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
