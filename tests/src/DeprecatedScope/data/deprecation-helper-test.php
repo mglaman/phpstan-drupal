@@ -57,6 +57,14 @@ final class FooTest {
             $this->deprecatedCallable(...),
             $this->currentCallable(...)
         );
+
+        // BC wrapper nested inside an outer function call — deprecatedCallable must still be suppressed.
+        $x = trim(DeprecationHelper::backwardsCompatibleCall(
+            \Drupal::VERSION,
+            '10.1.0',
+            fn() => count([]),
+            fn() => deprecated_function()
+        ));
     }
 
     /**
