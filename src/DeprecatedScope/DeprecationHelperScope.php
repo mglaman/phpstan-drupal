@@ -9,7 +9,6 @@ use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Rules\Deprecations\DeprecatedScopeResolver;
 use function class_exists;
-use function count;
 
 final class DeprecationHelperScope implements DeprecatedScopeResolver
 {
@@ -18,19 +17,19 @@ final class DeprecationHelperScope implements DeprecatedScopeResolver
         if (!class_exists(DeprecationHelper::class)) {
             return false;
         }
-        $callStack = $scope->getFunctionCallStackWithParameters();
-        if (count($callStack) === 0) {
-            return false;
+        foreach ($scope->getFunctionCallStackWithParameters() as [$function, $parameter]) {
+            if (!$function instanceof MethodReflection) {
+                continue;
+            }
+            if ($function->getName() !== 'backwardsCompatibleCall'
+                || $function->getDeclaringClass()->getName() !== DeprecationHelper::class
+            ) {
+                continue;
+            }
+            if ($parameter !== null && $parameter->getName() === 'deprecatedCallable') {
+                return true;
+            }
         }
-        [$function, $parameter] = $callStack[0];
-        if (!$function instanceof MethodReflection) {
-            return false;
-        }
-        if ($function->getName() !== 'backwardsCompatibleCall'
-            || $function->getDeclaringClass()->getName() !== DeprecationHelper::class
-        ) {
-            return false;
-        }
-        return $parameter !== null && $parameter->getName() === 'deprecatedCallable';
+        return false;
     }
 }
