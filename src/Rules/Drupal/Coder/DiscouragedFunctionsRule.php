@@ -6,9 +6,15 @@ use PhpParser\Node;
 use PhpParser\Node\Expr\FuncCall;
 use PHPStan\Analyser\Scope;
 use PHPStan\Rules\Rule;
+use PHPStan\Rules\RuleErrorBuilder;
+use function in_array;
+use function sprintf;
+use function strtolower;
 
 /**
  * Based on Drupal_Sniffs_Functions_DiscouragedFunctionsSniff.
+ *
+ * @implements Rule<FuncCall>
  */
 class DiscouragedFunctionsRule implements Rule
 {
@@ -19,8 +25,6 @@ class DiscouragedFunctionsRule implements Rule
 
     public function processNode(Node $node, Scope $scope): array
     {
-        assert($node instanceof FuncCall);
-
         if (!($node->name instanceof Node\Name)) {
             return [];
         }
@@ -53,7 +57,13 @@ class DiscouragedFunctionsRule implements Rule
         ];
 
         if (in_array($name, $discouragedFunctions, true)) {
-            return [sprintf('Calls to function %s should not exist.', $name)];
+            return [
+                RuleErrorBuilder::message(
+                    sprintf('Calls to function %s should not exist.', $name)
+                )
+                ->identifier('discouragedFunctions.discouragedFunctionCalled')
+                ->build()
+            ];
         }
         return [];
     }

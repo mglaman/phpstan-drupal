@@ -19,7 +19,7 @@ final class ExtensionTest extends TestCase
         );
     }
 
-    public function dependenciesProvider(): \Generator
+    public static function dependenciesProvider(): \Generator
     {
         yield [
             [

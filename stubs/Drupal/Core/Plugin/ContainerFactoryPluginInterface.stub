@@ -1,0 +1,7 @@
+<?php
+
+namespace Drupal\Core\Plugin;
+
+interface ContainerFactoryPluginInterface {
+
+}

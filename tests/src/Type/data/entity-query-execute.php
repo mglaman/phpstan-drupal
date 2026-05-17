@@ -15,14 +15,14 @@ assertType(
         ->execute()
 );
 assertType(
-    'int',
+    'int<0, max>',
     \Drupal::entityTypeManager()->getStorage('node')->getQuery()
         ->accessCheck(TRUE)
         ->count()
         ->execute()
 );
 assertType(
-    'int',
+    'int<0, max>',
     \Drupal::entityTypeManager()->getStorage('node')->getQuery()
         ->count()
         ->condition('foo', 'bar')
@@ -30,7 +30,7 @@ assertType(
         ->execute()
 );
 assertType(
-    'int',
+    'int<0, max>',
     \Drupal::entityQuery('node')
         ->accessCheck(TRUE)
         ->count()
@@ -48,7 +48,7 @@ $query = \Drupal::entityTypeManager()->getStorage('node')->getQuery()
 assertType('array<int, string>', $query->execute());
 $query = \Drupal::entityTypeManager()->getStorage('node')->getQuery()
     ->accessCheck(TRUE)->count();
-assertType('int', $query->execute());
+assertType('int<0, max>', $query->execute());
 
 assertType(
     'array<string, string>',
@@ -62,14 +62,14 @@ assertType(
         ->execute()
 );
 assertType(
-    'int',
+    'int<0, max>',
     \Drupal::entityTypeManager()->getStorage('block')->getQuery()
         ->accessCheck(TRUE)
         ->count()
         ->execute()
 );
 assertType(
-    'int',
+    'int<0, max>',
     \Drupal::entityQuery('block')
         ->accessCheck(TRUE)
         ->count()
@@ -87,4 +87,4 @@ $query = \Drupal::entityTypeManager()->getStorage('block')->getQuery()
 assertType('array<string, string>', $query->execute());
 $query = \Drupal::entityTypeManager()->getStorage('block')->getQuery()
     ->accessCheck(TRUE)->count();
-assertType('int', $query->execute());
+assertType('int<0, max>', $query->execute());

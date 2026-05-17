@@ -2,6 +2,20 @@
 
 namespace mglaman\PHPStanDrupal\Drupal;
 
+use FilesystemIterator;
+use mglaman\PHPStanDrupal\Drupal\Extension;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
+use Symfony\Component\Finder\Finder;
+use function array_filter;
+use function array_flip;
+use function array_multisort;
+use function dirname;
+use function file_exists;
+use function is_dir;
+use function preg_match;
+use function strpos;
+
 class ExtensionDiscovery
 {
 
@@ -59,11 +73,11 @@ class ExtensionDiscovery
     protected $root;
 
     /**
-     * The site path.
+     * The site paths.
      *
-     * @var string
+     * @var string[]
      */
-    protected $sitePath;
+    protected $sitePaths;
 
     /**
      * Constructs a new ExtensionDiscovery object.
@@ -77,7 +91,27 @@ class ExtensionDiscovery
         $this->profileDirectories = [
             $root . '/core/profiles/standard'
         ];
-        $this->sitePath = 'sites/default';
+        $this->sitePaths = $this->discoverSitePaths();
+    }
+
+    /**
+     * Discovers all site-specific directories under sites/.
+     *
+     * @return string[]
+     *   An array of site paths relative to the root (e.g. 'sites/default').
+     */
+    private function discoverSitePaths(): array
+    {
+        $sitesDir = $this->root . '/sites';
+        if (!is_dir($sitesDir)) {
+            return [];
+        }
+        $finder = Finder::create()->directories()->in($sitesDir)->depth(0)->exclude(['all', 'default', 'simpletest']);
+        $paths = [];
+        foreach ($finder as $dir) {
+            $paths[] = 'sites/' . $dir->getFilename();
+        }
+        return $paths;
     }
 
     /**
@@ -139,7 +173,12 @@ class ExtensionDiscovery
         // type specific directory names only.
         $searchdirs[self::ORIGIN_ROOT] = '';
 
-        $searchdirs[self::ORIGIN_SITE] = $this->sitePath;
+        // Search the default site-specific directory, plus any additional site
+        // directories discovered for multisite setups.
+        $searchdirs[self::ORIGIN_SITE] = 'sites/default';
+        foreach ($this->sitePaths as $sitePath) {
+            $searchdirs[] = $sitePath;
+        }
 
         $files = [];
         foreach ($searchdirs as $dir) {
@@ -207,7 +246,7 @@ class ExtensionDiscovery
             return $all_files;
         }
 
-        return array_filter($all_files, function (\mglaman\PHPStanDrupal\Drupal\Extension $file) : bool {
+        return array_filter($all_files, function (Extension $file) : bool {
             if (strpos($file->subpath, 'profiles') !== 0) {
                 // This extension doesn't belong to a profile, ignore it.
                 return true;
@@ -332,11 +371,11 @@ class ExtensionDiscovery
         // symlinks (to allow extensions to be linked from elsewhere), and return
         // the RecursiveDirectoryIterator instance to have access to getSubPath(),
         // since SplFileInfo does not support relative paths.
-        $flags = \FilesystemIterator::UNIX_PATHS;
-        $flags |= \FilesystemIterator::SKIP_DOTS;
-        $flags |= \FilesystemIterator::FOLLOW_SYMLINKS;
-        $flags |= \FilesystemIterator::CURRENT_AS_SELF;
-        $directory_iterator = new \RecursiveDirectoryIterator($absolute_dir, $flags);
+        $flags = FilesystemIterator::UNIX_PATHS;
+        $flags |= FilesystemIterator::SKIP_DOTS;
+        $flags |= FilesystemIterator::FOLLOW_SYMLINKS;
+        $flags |= FilesystemIterator::CURRENT_AS_SELF;
+        $directory_iterator = new RecursiveDirectoryIterator($absolute_dir, $flags);
 
         // Allow directories specified in settings.php to be ignored. You can use
         // this to not check for files in common special-purpose directories. For
@@ -352,11 +391,11 @@ class ExtensionDiscovery
 
         // The actual recursive filesystem scan is only invoked by instantiating the
         // RecursiveIteratorIterator.
-        $iterator = new \RecursiveIteratorIterator(
+        $iterator = new RecursiveIteratorIterator(
             $filter,
-            \RecursiveIteratorIterator::LEAVES_ONLY,
+            RecursiveIteratorIterator::LEAVES_ONLY,
             // Suppress filesystem errors in case a directory cannot be accessed.
-            \RecursiveIteratorIterator::CATCH_GET_CHILD
+            RecursiveIteratorIterator::CATCH_GET_CHILD
         );
 
         foreach ($iterator as $key => $fileinfo) {

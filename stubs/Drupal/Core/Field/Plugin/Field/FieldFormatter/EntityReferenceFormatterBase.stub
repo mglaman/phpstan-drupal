@@ -1,0 +1,37 @@
+<?php
+
+namespace Drupal\Core\Field\Plugin\Field\FieldFormatter;
+
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Field\EntityReferenceFieldItemList;
+use Drupal\Core\Field\FieldItemListInterface;
+use Drupal\Core\Field\FormatterBase;
+
+/**
+ * @template T of EntityInterface
+ * @extends FormatterBase<EntityReferenceFieldItemList<T>>
+ */
+abstract class EntityReferenceFormatterBase extends FormatterBase {
+
+  /**
+   * @param array<EntityReferenceFieldItemList<T>> $entities_items
+   */
+  public function prepareView(array $entities_items): void {}
+
+  /**
+   * @param EntityReferenceFieldItemList<T> $items
+   * @param string|null $langcode
+   *
+   * @return array<int|string, mixed>
+   */
+  public function view(FieldItemListInterface $items, $langcode = NULL) {}
+
+  /**
+   * @param EntityReferenceFieldItemList<T> $items
+   * @param string $langcode
+   *
+   * @return array<int, array<int|string, mixed>>
+   */
+  public function viewElements(FieldItemListInterface $items, $langcode) {}
+
+}

@@ -9,10 +9,11 @@ use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\ParametersAcceptorSelector;
 use PHPStan\Type\ArrayType;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
+use PHPStan\Type\IntegerRangeType;
 use PHPStan\Type\IntegerType;
-use PHPStan\Type\ObjectType;
 use PHPStan\Type\StringType;
 use PHPStan\Type\Type;
+use function in_array;
 
 class EntityQueryDynamicReturnTypeExtension implements DynamicMethodReturnTypeExtension
 {
@@ -35,11 +36,15 @@ class EntityQueryDynamicReturnTypeExtension implements DynamicMethodReturnTypeEx
         MethodCall $methodCall,
         Scope $scope
     ): Type {
-        $defaultReturnType = ParametersAcceptorSelector::selectSingle($methodReflection->getVariants())->getReturnType();
+        $defaultReturnType = ParametersAcceptorSelector::selectFromArgs(
+            $scope,
+            $methodCall->getArgs(),
+            $methodReflection->getVariants()
+        )->getReturnType();
         $varType = $scope->getType($methodCall->var);
         $methodName = $methodReflection->getName();
 
-        if (!$varType instanceof ObjectType) {
+        if (!$varType->isObject()->yes()) {
             return $defaultReturnType;
         }
 
@@ -58,7 +63,7 @@ class EntityQueryDynamicReturnTypeExtension implements DynamicMethodReturnTypeEx
             }
             if ($varType->isCount()) {
                 return $varType->hasAccessCheck()
-                    ? new IntegerType()
+                    ? IntegerRangeType::createAllGreaterThanOrEqualTo(0)
                     : new EntityQueryExecuteWithoutAccessCheckCountType();
             }
             if ($varType instanceof ConfigEntityQueryType) {

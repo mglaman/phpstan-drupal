@@ -12,6 +12,7 @@ use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\ParametersAcceptorSelector;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\Type;
+use function count;
 
 final class DrupalClassResolverReturnType
 {
@@ -24,7 +25,17 @@ final class DrupalClassResolverReturnType
     ): Type {
         $arg1 = $scope->getType($methodCall->getArgs()[0]->value);
         if (count($arg1->getConstantStrings()) === 0) {
-            return ParametersAcceptorSelector::selectSingle($methodReflection->getVariants())->getReturnType();
+            // Handle class-string<T> typed variables
+            $classStringObjectType = $arg1->getClassStringObjectType();
+            if (count($classStringObjectType->getObjectClassNames()) > 0) {
+                return $classStringObjectType;
+            }
+
+            return ParametersAcceptorSelector::selectFromArgs(
+                $scope,
+                $methodCall->getArgs(),
+                $methodReflection->getVariants()
+            )->getReturnType();
         }
 
         $serviceName = $arg1->getConstantStrings()[0];

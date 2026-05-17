@@ -14,22 +14,24 @@ final class LoadIncludesRuleTest extends DrupalRuleTestCase
 
     /**
      * @dataProvider cases
+     *
+     * @param list<array{0: string, 1: int, 2?: string|null}> $errors
      */
     public function test(array $files, array $errors): void
     {
         $this->analyse($files, $errors);
     }
 
-    public function cases(): \Generator
+    public static function cases(): \Generator
     {
         yield [
             [
-                __DIR__ . '/../../fixtures/drupal/modules/phpstan_fixtures/phpstan_fixtures.module'
+                __DIR__ . '/data/load-include-invalid.php'
             ],
             [
                 [
                     'File modules/phpstan_fixtures/phpstan_fixtures.fetch.inc could not be loaded from Drupal\Core\Extension\ModuleHandlerInterface::loadInclude',
-                    30
+                    5,
                 ]
             ],
         ];
@@ -63,6 +65,11 @@ final class LoadIncludesRuleTest extends DrupalRuleTestCase
                     8
                 ],
             ]
+        ];
+
+        yield 'multisite module in sites/acme/' => [
+            [__DIR__.'/data/multisite-load-include.php'],
+            []
         ];
     }
 

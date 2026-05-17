@@ -2,6 +2,7 @@
 
 namespace DrupalEntityFields;
 
+use Drupal\comment\Plugin\Field\FieldType\CommentItem;
 use Drupal\Core\Field\Plugin\Field\FieldType\BooleanItem;
 use Drupal\Core\Field\Plugin\Field\FieldType\ChangedItem;
 use Drupal\Core\Field\Plugin\Field\FieldType\CreatedItem;
@@ -18,13 +19,28 @@ use Drupal\Core\Field\Plugin\Field\FieldType\StringLongItem;
 use Drupal\Core\Field\Plugin\Field\FieldType\TimestampItem;
 use Drupal\Core\Field\Plugin\Field\FieldType\UriItem;
 use Drupal\Core\Field\Plugin\Field\FieldType\UuidItem;
+use Drupal\datetime\Plugin\Field\FieldType\DateTimeItem;
+use Drupal\datetime_range\Plugin\Field\FieldType\DateRangeItem;
 use Drupal\file\Plugin\Field\FieldType\FileItem;
 use Drupal\file\Plugin\Field\FieldType\FileUriItem;
 use Drupal\link\Plugin\Field\FieldType\LinkItem;
 use Drupal\node\Entity\Node;
+use Drupal\text\Plugin\Field\FieldType\TextItem;
+use Drupal\text\Plugin\Field\FieldType\TextLongItem;
+use Drupal\text\Plugin\Field\FieldType\TextWithSummaryItem;
 use function PHPStan\Testing\assertType;
 
 $node = Node::create(['type' => 'page']);
+
+// CommentItem.
+$comment_field = $node->get('field_comment')->first();
+assert($comment_field instanceof CommentItem);
+assertType(CommentItem::class, $comment_field);
+assertType('int|null', $comment_field->status);
+assertType('int|null', $comment_field->cid);
+assertType('int|null', $comment_field->last_comment_timestamp);
+assertType('string|null', $comment_field->last_comment_name);
+assertType('int|null', $comment_field->comment_count);
 
 // LinkItem.
 $link_field = $node->get('field_link')->first();
@@ -44,13 +60,13 @@ assertType('int', $boolean_field->value);
 $changed_field = $node->get('field_changed')->first();
 assert($changed_field instanceof ChangedItem);
 assertType(ChangedItem::class, $changed_field);
-assertType('string', $changed_field->value);
+assertType('int', $changed_field->value);
 
 // CreatedItem.
 $created_field = $node->get('field_created')->first();
 assert($created_field instanceof CreatedItem);
 assertType(CreatedItem::class, $created_field);
-assertType('string', $created_field->value);
+assertType('int', $created_field->value);
 
 // DecimalItem.
 $decimal_field = $node->get('field_decimal')->first();
@@ -120,7 +136,7 @@ assertType('string', $string_long_field->value);
 $timestamp_field = $node->get('field_timestamp')->first();
 assert($timestamp_field instanceof TimestampItem);
 assertType(TimestampItem::class, $timestamp_field);
-assertType('string', $timestamp_field->value);
+assertType('int', $timestamp_field->value);
 
 // UriItem.
 $uri_field = $node->get('field_uri')->first();
@@ -134,6 +150,23 @@ assert($uuid_field instanceof UuidItem);
 assertType(UuidItem::class, $uuid_field);
 assertType('string', $uuid_field->value);
 
+// DateTimeItem.
+$datetime_field = $node->get('field_datetime')->first();
+assert($datetime_field instanceof DateTimeItem);
+assertType(DateTimeItem::class, $datetime_field);
+assertType('string|null', $datetime_field->value);
+assertType('Drupal\Core\Datetime\DrupalDateTime|null', $datetime_field->date);
+
+// DateRangeItem.
+$daterange_field = $node->get('field_daterange')->first();
+assert($daterange_field instanceof DateRangeItem);
+assertType(DateRangeItem::class, $daterange_field);
+assertType('string|null', $daterange_field->value);
+assertType('never', $daterange_field->date);
+assertType('Drupal\Core\Datetime\DrupalDateTime|null', $daterange_field->start_date);
+assertType('string|null', $daterange_field->end_value);
+assertType('Drupal\Core\Datetime\DrupalDateTime|null', $daterange_field->end_date);
+
 // FileItem.
 $file_field = $node->get('field_file')->first();
 assert($file_field instanceof FileItem);
@@ -146,3 +179,28 @@ $file_uri_field = $node->get('field_file')->first();
 assert($file_uri_field instanceof FileUriItem);
 assertType(FileUriItem::class, $file_uri_field);
 assertType('string', $file_uri_field->url);
+
+// TextITem.
+$text_field = $node->get('field_text')->first();
+assert($text_field instanceof TextItem);
+assertType(TextItem::class, $text_field);
+assertType('string|null', $text_field->value);
+assertType('string|null', $text_field->format);
+assertType('Drupal\Component\Render\MarkupInterface', $text_field->processed);
+
+// TextLongITem.
+$text_long_field = $node->get('field_text_long')->first();
+assert($text_long_field instanceof TextLongItem);
+assertType(TextLongItem::class, $text_long_field);
+assertType('string|null', $text_long_field->value);
+assertType('string|null', $text_long_field->format);
+assertType('Drupal\Component\Render\MarkupInterface', $text_long_field->processed);
+
+// TextWithSummaryITem.
+$text_with_summary_field = $node->get('field_text_with_summary')->first();
+assert($text_with_summary_field instanceof TextWithSummaryItem);
+assertType(TextWithSummaryItem::class, $text_with_summary_field);
+assertType('string|null', $text_with_summary_field->value);
+assertType('string|null', $text_with_summary_field->format);
+assertType('string|null', $text_with_summary_field->summary);
+assertType('Drupal\Component\Render\MarkupInterface', $text_with_summary_field->summary_processed);

@@ -2,6 +2,7 @@
 
 namespace mglaman\PHPStanDrupal\Type;
 
+use Drupal;
 use Drupal\Core\Config\Entity\ConfigEntityStorageInterface;
 use Drupal\Core\Entity\ContentEntityStorageInterface;
 use mglaman\PHPStanDrupal\Drupal\EntityDataRepository;
@@ -31,7 +32,7 @@ class DrupalStaticEntityQueryDynamicReturnTypeExtension implements DynamicStatic
 
     public function getClass(): string
     {
-        return \Drupal::class;
+        return Drupal::class;
     }
 
     public function isStaticMethodSupported(MethodReflection $methodReflection): bool
@@ -44,10 +45,20 @@ class DrupalStaticEntityQueryDynamicReturnTypeExtension implements DynamicStatic
         StaticCall $methodCall,
         Scope $scope
     ): Type {
-        $returnType = ParametersAcceptorSelector::selectSingle($methodReflection->getVariants())->getReturnType();
-        if (!$returnType instanceof ObjectType) {
+        $returnType = ParametersAcceptorSelector::selectFromArgs(
+            $scope,
+            $methodCall->getArgs(),
+            $methodReflection->getVariants()
+        )->getReturnType();
+        if (!$returnType->isObject()->yes()) {
             return $returnType;
         }
+        $objectClassNames = $returnType->getObjectClassNames();
+        if (count($objectClassNames) !== 1) {
+            return $returnType;
+        }
+        $className = $objectClassNames[0];
+
         $args = $methodCall->getArgs();
         if (count($args) !== 1) {
             return $returnType;
@@ -57,11 +68,7 @@ class DrupalStaticEntityQueryDynamicReturnTypeExtension implements DynamicStatic
         if (count($type->getConstantStrings()) === 0) {
             // We're unsure what specific EntityQueryType it is, so let's stick
             // with the general class itself to ensure it gets access checked.
-            return new EntityQueryType(
-                $returnType->getClassName(),
-                $returnType->getSubtractedType(),
-                $returnType->getClassReflection()
-            );
+            return new EntityQueryType($className);
         }
         $entityTypeId = $type->getConstantStrings()[0]->getValue();
         $entityType = $this->entityDataRepository->get($entityTypeId);
@@ -71,24 +78,12 @@ class DrupalStaticEntityQueryDynamicReturnTypeExtension implements DynamicStatic
         }
 
         if ((new ObjectType(ContentEntityStorageInterface::class))->isSuperTypeOf($entityStorageType)->yes()) {
-            return new ContentEntityQueryType(
-                $returnType->getClassName(),
-                $returnType->getSubtractedType(),
-                $returnType->getClassReflection()
-            );
+            return new ContentEntityQueryType($className);
         }
         if ((new ObjectType(ConfigEntityStorageInterface::class))->isSuperTypeOf($entityStorageType)->yes()) {
-            return new ConfigEntityQueryType(
-                $returnType->getClassName(),
-                $returnType->getSubtractedType(),
-                $returnType->getClassReflection()
-            );
+            return new ConfigEntityQueryType($className);
         }
 
-        return new EntityQueryType(
-            $returnType->getClassName(),
-            $returnType->getSubtractedType(),
-            $returnType->getClassReflection()
-        );
+        return new EntityQueryType($className);
     }
 }

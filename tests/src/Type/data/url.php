@@ -2,6 +2,7 @@
 
 namespace DrupalUrl;
 
+use Drupal\Core\Access\AccessResultInterface;
 use Drupal\Core\Url;
 use Symfony\Component\HttpFoundation\Request;
 use function PHPStan\Testing\assertType;
@@ -24,3 +25,6 @@ assertType('Drupal\Core\GeneratedUrl', Url::fromRouteMatch(\Drupal::routeMatch()
 assertType('Drupal\Core\GeneratedUrl', Url::fromUri('the_uri')->toString(TRUE));
 assertType('Drupal\Core\GeneratedUrl', Url::fromUserInput('user_input')->toString(TRUE));
 assertType('Drupal\Core\GeneratedUrl', Url::createFromRequest(new Request())->toString(TRUE));
+assertType('bool', (new Url('route_name'))->access());
+assertType(AccessResultInterface::class, (new Url())->access(return_as_object: TRUE));
+assertType('bool', (new Url())->access(return_as_object: FALSE));

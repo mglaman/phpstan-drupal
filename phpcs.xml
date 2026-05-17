@@ -21,6 +21,7 @@
 	<rule ref="SlevomatCodingStandard.Namespaces.UnusedUses"/>
 	<rule ref="SlevomatCodingStandard.Namespaces.UselessAlias"/>
 	<rule ref="SlevomatCodingStandard.Namespaces.UseSpacing"/>
+	<rule ref="SlevomatCodingStandard.Namespaces.ReferenceUsedNamesOnly"/>
 	<rule ref="SlevomatCodingStandard.PHP.UselessSemicolon"/>
 	<rule ref="SlevomatCodingStandard.PHP.UselessParentheses"/>
 </ruleset>

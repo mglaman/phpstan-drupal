@@ -14,20 +14,22 @@ final class GlobalDrupalDependencyInjectionRuleTest extends DrupalRuleTestCase {
 
     /**
      * @dataProvider resultData
+     *
+     * @param list<array{0: string, 1: int, 2?: string|null}> $errorMessages
      */
     public function testRule(string $path, array $errorMessages): void
     {
         $this->analyse([$path], $errorMessages);
     }
 
-    public function resultData(): \Generator
+    public static function resultData(): \Generator
     {
         yield [
             __DIR__ . '/data/drupal-static.php',
             [],
         ];
         yield [
-            __DIR__ . '/../../fixtures/drupal/modules/phpstan_fixtures/src/UsesDeprecatedUrlFunction.php',
+            __DIR__ . '/data/global-drupal-di-deprecated-url.php',
             [
                 [
                     '\Drupal calls should be avoided in classes, use dependency injection instead',
@@ -36,7 +38,7 @@ final class GlobalDrupalDependencyInjectionRuleTest extends DrupalRuleTestCase {
             ]
         ];
         yield [
-            __DIR__ . '/../../fixtures/drupal/modules/phpstan_fixtures/src/TestServicesMappingExtension.php',
+            __DIR__ . '/data/global-drupal-di-service-mapping.php',
             [
                 [
                     '\Drupal calls should be avoided in classes, use dependency injection instead',
@@ -63,12 +65,20 @@ final class GlobalDrupalDependencyInjectionRuleTest extends DrupalRuleTestCase {
             [],
         ];
 
-        if (PHP_VERSION_ID >= 80100) {
-            yield [
-                __DIR__ . '/data/bug-500.php',
-                [],
-            ];
-        }
+        yield [
+            __DIR__ . '/data/bug-500.php',
+            [],
+        ];
+
+        yield [
+            __DIR__ . '/data/bug-828.php',
+            [
+                [
+                    '\Drupal calls should be avoided in classes, use dependency injection instead',
+                    35,
+                ],
+            ],
+        ];
 
     }
 

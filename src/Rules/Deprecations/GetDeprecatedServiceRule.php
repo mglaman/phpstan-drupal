@@ -7,7 +7,11 @@ use mglaman\PHPStanDrupal\Drupal\ServiceMap;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
 use PHPStan\Rules\Rule;
+use PHPStan\Rules\RuleErrorBuilder;
 
+/**
+ * @implements Rule<Node\Expr\MethodCall>
+ */
 final class GetDeprecatedServiceRule implements Rule
 {
 
@@ -28,7 +32,6 @@ final class GetDeprecatedServiceRule implements Rule
 
     public function processNode(Node $node, Scope $scope): array
     {
-        assert($node instanceof Node\Expr\MethodCall);
         if (!$node->name instanceof Node\Identifier) {
             return [];
         }
@@ -55,7 +58,11 @@ final class GetDeprecatedServiceRule implements Rule
 
         $service = $this->serviceMap->getService($serviceName->value);
         if (($service instanceof DrupalServiceDefinition) && $service->isDeprecated()) {
-            return [$service->getDeprecatedDescription()];
+            return [
+                RuleErrorBuilder::message($service->getDeprecatedDescription())
+                    ->identifier('getDeprecatedService.deprecated')
+                    ->build(),
+            ];
         }
 
         return [];

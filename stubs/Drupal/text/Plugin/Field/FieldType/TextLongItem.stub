@@ -1,0 +1,6 @@
+<?php
+
+namespace Drupal\text\Plugin\Field\FieldType;
+
+class TextLongItem extends TextItemBase {
+}

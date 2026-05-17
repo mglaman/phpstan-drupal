@@ -1,0 +1,10 @@
+<?php
+
+namespace Drupal\text\Plugin\Field\FieldType;
+
+/**
+ * @property ?string $summary
+ * @property-read \Drupal\Component\Render\MarkupInterface $summary_processed
+ */
+class TextWithSummaryItem extends TextItemBase {
+}

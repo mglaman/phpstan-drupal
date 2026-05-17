@@ -20,6 +20,8 @@ final class RenderCallbackRuleTest extends DrupalRuleTestCase {
 
     /**
      * @dataProvider fileData
+     *
+     * @param list<array{0: string, 1: int, 2?: string|null}> $errorMessages
      */
     public function testRule(string $path, array $errorMessages): void
     {
@@ -142,10 +144,6 @@ final class RenderCallbackRuleTest extends DrupalRuleTestCase {
         yield [
             __DIR__ . '/data/bug-424.php',
             $bug424
-        ];
-        yield [
-            __DIR__ . '/../../fixtures/drupal/core/modules/filter/src/FilterProcessResult.php',
-            []
         ];
         if (version_compare(\Drupal::VERSION, '10.1', '>=')) {
             yield [

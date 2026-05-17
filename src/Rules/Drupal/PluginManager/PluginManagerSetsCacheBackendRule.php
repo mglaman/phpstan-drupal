@@ -5,8 +5,15 @@ namespace mglaman\PHPStanDrupal\Rules\Drupal\PluginManager;
 use PhpParser\Node;
 use PhpParser\Node\Stmt\ClassMethod;
 use PHPStan\Analyser\Scope;
+use PHPStan\Rules\RuleErrorBuilder;
 use PHPStan\ShouldNotHappenException;
+use PHPStan\Type\Type;
+use function array_map;
+use function count;
 
+/**
+ * @extends AbstractPluginManagerRule<ClassMethod>
+ */
 class PluginManagerSetsCacheBackendRule extends AbstractPluginManagerRule
 {
     public function getNodeType(): string
@@ -14,18 +21,10 @@ class PluginManagerSetsCacheBackendRule extends AbstractPluginManagerRule
         return ClassMethod::class;
     }
 
-    /**
-     * @param Node $node
-     * @param \PHPStan\Analyser\Scope $scope
-     * @return string[]
-     * @throws \PHPStan\ShouldNotHappenException
-     */
     public function processNode(Node $node, Scope $scope): array
     {
-        assert($node instanceof Node\Stmt\ClassMethod);
-
         if (!$scope->isInClass()) {
-            throw new \PHPStan\ShouldNotHappenException();
+            throw new ShouldNotHappenException();
         }
 
         if ($scope->isInTrait()) {
@@ -43,7 +42,6 @@ class PluginManagerSetsCacheBackendRule extends AbstractPluginManagerRule
         }
 
         $hasCacheBackendSet = false;
-        $misnamedCacheTagWarnings = [];
 
         foreach ($node->stmts ?? [] as $statement) {
             if ($statement instanceof Node\Stmt\Expression) {
@@ -53,32 +51,18 @@ class PluginManagerSetsCacheBackendRule extends AbstractPluginManagerRule
                 ($statement->name instanceof Node\Identifier) &&
                 $statement->name->name === 'setCacheBackend') {
                 // setCacheBackend accepts a cache backend, the cache key, and optional (but suggested) cache tags.
-                $setCacheBackendArgs = $statement->args;
-
-                if ($setCacheBackendArgs[1] instanceof Node\VariadicPlaceholder) {
-                    throw new ShouldNotHappenException();
-                }
-                $cacheKey = $setCacheBackendArgs[1]->value;
-                if (!$cacheKey instanceof Node\Scalar\String_) {
+                $setCacheBackendArgs = $statement->getArgs();
+                if (count($setCacheBackendArgs) < 2) {
                     continue;
                 }
                 $hasCacheBackendSet = true;
 
-                if (isset($setCacheBackendArgs[2])) {
-                    if ($setCacheBackendArgs[2] instanceof Node\VariadicPlaceholder) {
-                        throw new ShouldNotHappenException();
-                    }
-                    /** @var \PhpParser\Node\Expr\Array_ $cacheTags */
-                    $cacheTags = $setCacheBackendArgs[2]->value;
-                    if (count($cacheTags->items) > 0) {
-                        /** @var \PhpParser\Node\Expr\ArrayItem $item */
-                        foreach ($cacheTags->items as $item) {
-                            if (($item->value instanceof Node\Scalar\String_) &&
-                                strpos($item->value->value, $cacheKey->value) === false) {
-                                $misnamedCacheTagWarnings[] = $item->value->value;
-                            }
-                        }
-                    }
+                $cacheKey = array_map(
+                    static fn (Type $type) => $type->getValue(),
+                    $scope->getType($setCacheBackendArgs[1]->value)->getConstantStrings()
+                );
+                if (count($cacheKey) === 0) {
+                    continue;
                 }
 
                 break;
@@ -87,10 +71,9 @@ class PluginManagerSetsCacheBackendRule extends AbstractPluginManagerRule
 
         $errors = [];
         if (!$hasCacheBackendSet) {
-            $errors[] = 'Missing cache backend declaration for performance.';
-        }
-        foreach ($misnamedCacheTagWarnings as $cacheTagWarning) {
-            $errors[] = sprintf('%s cache tag might be unclear and does not contain the cache key in it.', $cacheTagWarning);
+            $errors[] = RuleErrorBuilder::message('Missing cache backend declaration for performance.')
+            ->identifier('pluginManagerSetsCacheBackend.missingCacheBackend')
+            ->build();
         }
 
         return $errors;

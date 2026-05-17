@@ -2,11 +2,38 @@
 
 namespace mglaman\PHPStanDrupal\Drupal;
 
+use Composer\Autoload\ClassLoader;
+use Drupal\Component\DependencyInjection\Container as DrupalContainer;
 use Drupal\Core\DependencyInjection\ContainerNotInitializedException;
-use DrupalFinder\DrupalFinder;
+use Drupal\Core\DrupalKernelInterface;
+use Drupal\TestTools\PhpUnitCompatibility\PhpUnit8\ClassWriter;
+use DrupalFinder\DrupalFinderComposerRuntime;
+use Drush\Drush;
 use PHPStan\DependencyInjection\Container;
+use PHPUnit\Framework\Test;
+use ReflectionClass;
+use RuntimeException;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Yaml\Yaml;
+use Throwable;
+use function array_map;
+use function array_merge;
+use function array_walk;
+use function class_exists;
+use function dirname;
+use function file_exists;
+use function in_array;
+use function interface_exists;
+use function is_array;
+use function is_dir;
+use function is_string;
+use function str_replace;
+use function strpos;
+use function strtr;
+use function trigger_error;
+use function ucwords;
+use function usort;
 
 class DrupalAutoloader
 {
@@ -57,17 +84,22 @@ class DrupalAutoloader
 
     public function register(Container $container): void
     {
+        /**
+         * @var array{drupal_root: string|null, bleedingEdge: array{checkDeprecatedHooksInApiFiles: bool, checkCoreDeprecatedHooksInApiFiles: bool, checkContribDeprecatedHooksInApiFiles: bool}} $drupalParams
+         */
         $drupalParams = $container->getParameter('drupal');
-        $drupalRoot = realpath($drupalParams['drupal_root']);
-        $finder = new DrupalFinder();
-        $finder->locateRoot($drupalRoot);
 
-        $drupalRoot = $finder->getDrupalRoot();
-        $drupalVendorRoot = $finder->getVendorDir();
-        if (! (bool) $drupalRoot || ! (bool) $drupalVendorRoot) {
-            throw new \RuntimeException("Unable to detect Drupal at $drupalRoot");
+        // Trigger deprecation error if drupal_root is used.
+        if (is_string($drupalParams['drupal_root'])) {
+            trigger_error('The drupal_root parameter is deprecated. Remove it from your configuration. Drupal Root is discovered automatically.', E_USER_DEPRECATED);
         }
 
+        $finder = new DrupalFinderComposerRuntime();
+        $drupalRoot = $finder->getDrupalRoot();
+        $drupalVendorRoot = $finder->getVendorDir();
+        if (!(is_string($drupalRoot) && is_string($drupalVendorRoot))) {
+            throw new RuntimeException("Unable to detect Drupal with webflo/drupal-finder.");
+        }
         $this->drupalRoot = $drupalRoot;
 
         $this->autoloader = include $drupalVendorRoot . '/autoload.php';
@@ -75,6 +107,13 @@ class DrupalAutoloader
         $this->serviceYamls['core'] = $drupalRoot . '/core/core.services.yml';
         $this->serviceClassProviders['core'] = '\Drupal\Core\CoreServiceProvider';
         $this->serviceMap['service_provider.core.service_provider'] = ['class' => $this->serviceClassProviders['core']];
+        // Attach synthetic services
+        // @see \Drupal\Core\DrupalKernel::attachSynthetic
+        $this->serviceMap['kernel'] = ['class' => DrupalKernelInterface::class];
+        $this->serviceMap[DrupalKernelInterface::class] = ['alias' => 'kernel'];
+        $this->serviceMap['class_loader'] = ['class' => ClassLoader::class];
+        $this->serviceMap['service_container'] = ['class' => DrupalContainer::class];
+        $this->serviceMap[ContainerInterface::class] = ['alias' => 'service_container'];
 
         $extensionDiscovery = new ExtensionDiscovery($this->drupalRoot);
         $extensionDiscovery->setProfileDirectories([]);
@@ -95,6 +134,14 @@ class DrupalAutoloader
         $this->registerPs4Namespaces($this->namespaces);
         $this->loadLegacyIncludes();
 
+        // Trigger deprecation error if checkDeprecatedHooksInApiFiles is enabled.
+        if ($drupalParams['bleedingEdge']['checkDeprecatedHooksInApiFiles']) {
+            trigger_error('The bleedingEdge.checkDeprecatedHooksInApiFiles parameter is deprecated and will be removed in a future release.', E_USER_DEPRECATED);
+        }
+        $checkDeprecatedHooksInApiFiles = $drupalParams['bleedingEdge']['checkDeprecatedHooksInApiFiles'];
+        $checkCoreDeprecatedHooksInApiFiles = $drupalParams['bleedingEdge']['checkCoreDeprecatedHooksInApiFiles'] || $checkDeprecatedHooksInApiFiles;
+        $checkContribDeprecatedHooksInApiFiles = $drupalParams['bleedingEdge']['checkContribDeprecatedHooksInApiFiles'] || $checkDeprecatedHooksInApiFiles;
+
         foreach ($this->moduleData as $extension) {
             $this->loadExtension($extension);
 
@@ -110,6 +157,15 @@ class DrupalAutoloader
             // Add .post_update.php
             if (file_exists($module_dir . '/' . $module_name . '.post_update.php')) {
                 $this->loadAndCatchErrors($module_dir . '/' . $module_name . '.post_update.php');
+            }
+
+            // Add .api.php for core modules
+            if ($checkCoreDeprecatedHooksInApiFiles && $extension->origin === 'core' && file_exists($module_dir . '/' . $module_name . '.api.php')) {
+                $this->loadAndCatchErrors($module_dir . '/' . $module_name . '.api.php');
+            }
+            // Add .api.php for contrib modules
+            if ($checkContribDeprecatedHooksInApiFiles && $extension->origin !== 'core' && file_exists($module_dir . '/' . $module_name . '.api.php')) {
+                $this->loadAndCatchErrors($module_dir . '/' . $module_name . '.api.php');
             }
             // Add misc .inc that are magically allowed via hook_hook_info.
             $magic_hook_info_includes = [
@@ -134,15 +190,14 @@ class DrupalAutoloader
             }
         }
 
-        if (class_exists(\Drush\Drush::class)) {
-            $reflect = new \ReflectionClass(\Drush\Drush::class);
+        if (class_exists(Drush::class)) {
+            $reflect = new ReflectionClass(Drush::class);
             if ($reflect->getFileName() !== false) {
                 $levels = 2;
-                if (\Drush\Drush::getMajorVersion() < 9) {
+                if (Drush::getMajorVersion() < 9) {
                     $levels = 3;
                 }
                 $drushDir = dirname($reflect->getFileName(), $levels);
-                /** @var \SplFileInfo $file */
                 foreach (Finder::create()->files()->name('*.inc')->in($drushDir . '/includes') as $file) {
                     require_once $file->getPathname();
                 }
@@ -150,7 +205,7 @@ class DrupalAutoloader
         }
 
         foreach ($this->serviceYamls as $extension => $serviceYaml) {
-            $yaml = Yaml::parseFile($serviceYaml);
+            $yaml = Yaml::parseFile($serviceYaml, Yaml::PARSE_CUSTOM_TAGS);
             // Weed out service files which only provide parameters.
             if (!isset($yaml['services']) || !is_array($yaml['services'])) {
                 continue;
@@ -175,6 +230,16 @@ class DrupalAutoloader
                         }
                     });
                 }
+                // Handle shorthand syntax for service definition:
+                // @code
+                //   Drupal\foo\FooService: {}
+                //   Drupal\foo\BarService:
+                //     tags:
+                //       - { name: foo_bar }
+                // @endcode
+                if (!isset($serviceDefinition['class']) && class_exists($serviceId)) {
+                    $serviceDefinition['class'] = $serviceId;
+                }
                 // @todo sanitize "calls" and "configurator" and "factory"
                 /**
                 jsonapi.params.enhancer:
@@ -192,9 +257,9 @@ class DrupalAutoloader
         $service_map = $container->getByType(ServiceMap::class);
         $service_map->setDrupalServices($this->serviceMap);
 
-        if (interface_exists(\PHPUnit\Framework\Test::class)
+        if (interface_exists(Test::class)
             && class_exists('Drupal\TestTools\PhpUnitCompatibility\PhpUnit8\ClassWriter')) {
-            \Drupal\TestTools\PhpUnitCompatibility\PhpUnit8\ClassWriter::mutateTestBase($this->autoloader);
+            ClassWriter::mutateTestBase($this->autoloader);
         }
 
         $extension_map = $container->getByType(ExtensionMap::class);
@@ -203,7 +268,6 @@ class DrupalAutoloader
 
     protected function loadLegacyIncludes(): void
     {
-        /** @var \SplFileInfo $file */
         foreach (Finder::create()->files()->name('*.inc')->in($this->drupalRoot . '/core/includes') as $file) {
             require_once $file->getPathname();
         }
@@ -299,7 +363,7 @@ class DrupalAutoloader
     {
         try {
             $extension->load();
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             // Something prevented the extension file from loading.
             // This can happen when drupal_get_path or drupal_get_filename are used outside of the scope of a function.
         }
@@ -313,7 +377,7 @@ class DrupalAutoloader
             $path = str_replace(dirname($this->drupalRoot) . '/', '', $path);
             // This can happen when drupal_get_path or drupal_get_filename are used outside the scope of a function.
             @trigger_error("$path invoked the Drupal container outside of the scope of a function or class method. It was not loaded.", E_USER_WARNING);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $path = str_replace(dirname($this->drupalRoot) . '/', '', $path);
             // Something prevented the extension file from loading.
             @trigger_error("$path failed loading due to {$e->getMessage()}", E_USER_WARNING);

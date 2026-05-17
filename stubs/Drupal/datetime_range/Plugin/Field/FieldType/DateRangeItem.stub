@@ -1,0 +1,18 @@
+<?php
+
+namespace Drupal\datetime_range\Plugin\Field\FieldType;
+
+use Drupal\datetime\Plugin\Field\FieldType\DateTimeItem;
+
+/**
+ * @property never $date
+ *   Even though this extends DateTimeItem, the date property does not actually
+ *   exist. DateRangeItem::propertyDefinitions() does not call parent:: and does
+ *   not define 'date'. Use $start_date instead.
+ * @property ?\Drupal\Core\Datetime\DrupalDateTime $start_date
+ * @property ?string $end_value
+ * @property ?\Drupal\Core\Datetime\DrupalDateTime $end_date
+ */
+class DateRangeItem extends DateTimeItem {
+
+}

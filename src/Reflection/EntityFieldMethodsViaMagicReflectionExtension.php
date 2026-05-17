@@ -6,15 +6,16 @@ use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\MethodsClassReflectionExtension;
 use PHPStan\Type\ObjectType;
+use function array_key_exists;
 
 /**
  * Allows some common methods on fields.
  */
 class EntityFieldMethodsViaMagicReflectionExtension implements MethodsClassReflectionExtension
 {
-
     public function hasMethod(ClassReflection $classReflection, string $methodName): bool
     {
+        
         if ($classReflection->hasNativeMethod($methodName) || array_key_exists($methodName, $classReflection->getMethodTags())) {
             // Let other parts of PHPStan handle this.
             return false;

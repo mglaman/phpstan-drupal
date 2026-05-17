@@ -7,22 +7,23 @@ use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\ParametersAcceptorSelector;
+use PHPStan\Type\BooleanType;
 use PHPStan\Type\Constant\ConstantBooleanType;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
+use PHPStan\Type\NullType;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
-use Psr\Container\ContainerInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use function count;
+use function in_array;
 
 class ContainerDynamicReturnTypeExtension implements DynamicMethodReturnTypeExtension
 {
-    /**
-     * @var ServiceMap
-     */
-    private ServiceMap $serviceMap;
 
-    public function __construct(ServiceMap $serviceMap)
-    {
-        $this->serviceMap = $serviceMap;
+    public function __construct(
+        private ServiceMap $serviceMap,
+        private bool $containerHasAlwaysTrue,
+    ) {
     }
 
     public function getClass(): string
@@ -40,25 +41,63 @@ class ContainerDynamicReturnTypeExtension implements DynamicMethodReturnTypeExte
         MethodCall $methodCall,
         Scope $scope
     ): Type {
-        $returnType = ParametersAcceptorSelector::selectSingle($methodReflection->getVariants())->getReturnType();
-        $args = $methodCall->getArgs();
-        if (count($args) !== 1) {
-            return $returnType;
-        }
-
+        $returnType = ParametersAcceptorSelector::selectFromArgs(
+            $scope,
+            $methodCall->getArgs(),
+            $methodReflection->getVariants()
+        )->getReturnType();
         $methodName = $methodReflection->getName();
-        $types = [];
-        $argType = $scope->getType($args[0]->value);
 
-        foreach ($argType->getConstantStrings() as $constantStringType) {
-            $serviceId = $constantStringType->getValue();
-            $service = $this->serviceMap->getService($serviceId);
-            if ($methodName === 'get') {
-                $types[] = $service !== null ? $service->getType() : $returnType;
-            } elseif ($methodName === 'has') {
-                $types[] = new ConstantBooleanType($service !== null);
+        if ($methodName === 'has') {
+            $args = $methodCall->getArgs();
+            if (count($args) !== 1) {
+                return $returnType;
             }
+
+            $types = [];
+            $argType = $scope->getType($args[0]->value);
+
+            foreach ($argType->getConstantStrings() as $constantStringType) {
+                $serviceId = $constantStringType->getValue();
+                $service = $this->serviceMap->getService($serviceId);
+                if (!$this->containerHasAlwaysTrue && $service !== null) {
+                    $types[] = new BooleanType();
+                } else {
+                    $types[] = new ConstantBooleanType($service !== null);
+                }
+            }
+
+            return TypeCombinator::union(...$types);
+        } elseif ($methodName === 'get') {
+            $args = $methodCall->getArgs();
+            if (count($args) === 0) {
+                return $returnType;
+            }
+
+            $types = [];
+
+            if (isset($args[1])) {
+                $invalidBehaviour = $scope->getType($args[1]->value);
+
+                foreach ($invalidBehaviour->getConstantScalarValues() as $value) {
+                    if ($value === ContainerInterface::NULL_ON_INVALID_REFERENCE) {
+                        $types[] = new NullType();
+                        break;
+                    }
+                }
+            }
+
+            $argType = $scope->getType($args[0]->value);
+
+            foreach ($argType->getConstantStrings() as $constantStringType) {
+                $serviceId = $constantStringType->getValue();
+                $service = $this->serviceMap->getService($serviceId);
+                $types[] = $service !== null ? $service->getType() : $returnType;
+            }
+
+            return TypeCombinator::union(...$types);
         }
-        return TypeCombinator::union(...$types);
+
+        return $returnType;
     }
 }

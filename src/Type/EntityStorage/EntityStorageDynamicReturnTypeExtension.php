@@ -14,7 +14,9 @@ use PHPStan\Type\DynamicMethodReturnTypeExtension;
 use PHPStan\Type\IntegerType;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\StringType;
+use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
+use function in_array;
 
 class EntityStorageDynamicReturnTypeExtension implements DynamicMethodReturnTypeExtension
 {
@@ -36,7 +38,7 @@ class EntityStorageDynamicReturnTypeExtension implements DynamicMethodReturnType
 
     public function isMethodSupported(MethodReflection $methodReflection): bool
     {
-        return \in_array(
+        return in_array(
             $methodReflection->getName(),
             [
                 'create',
@@ -53,16 +55,24 @@ class EntityStorageDynamicReturnTypeExtension implements DynamicMethodReturnType
         MethodReflection $methodReflection,
         MethodCall $methodCall,
         Scope $scope
-    ): \PHPStan\Type\Type {
+    ): Type {
         $callerType = $scope->getType($methodCall->var);
-        if (!$callerType instanceof ObjectType) {
-            return ParametersAcceptorSelector::selectSingle($methodReflection->getVariants())->getReturnType();
+        if (!$callerType->isObject()->yes()) {
+            return ParametersAcceptorSelector::selectFromArgs(
+                $scope,
+                $methodCall->getArgs(),
+                $methodReflection->getVariants()
+            )->getReturnType();
         }
 
         if (!$callerType instanceof EntityStorageType) {
             $resolvedEntityType = $this->entityDataRepository->resolveFromStorage($callerType);
             if ($resolvedEntityType === null) {
-                return ParametersAcceptorSelector::selectSingle($methodReflection->getVariants())->getReturnType();
+                return ParametersAcceptorSelector::selectFromArgs(
+                    $scope,
+                    $methodCall->getArgs(),
+                    $methodReflection->getVariants()
+                )->getReturnType();
             }
             $type = $resolvedEntityType->getClassType();
         } else {
@@ -70,13 +80,17 @@ class EntityStorageDynamicReturnTypeExtension implements DynamicMethodReturnType
         }
 
         if ($type === null) {
-            return ParametersAcceptorSelector::selectSingle($methodReflection->getVariants())->getReturnType();
+            return ParametersAcceptorSelector::selectFromArgs(
+                $scope,
+                $methodCall->getArgs(),
+                $methodReflection->getVariants()
+            )->getReturnType();
         }
-        if (\in_array($methodReflection->getName(), ['load', 'loadUnchanged'], true)) {
+        if (in_array($methodReflection->getName(), ['load', 'loadUnchanged'], true)) {
             return TypeCombinator::addNull($type);
         }
 
-        if (\in_array($methodReflection->getName(), ['loadMultiple', 'loadByProperties'], true)) {
+        if (in_array($methodReflection->getName(), ['loadMultiple', 'loadByProperties'], true)) {
             if ((new ObjectType(ConfigEntityStorageInterface::class))->isSuperTypeOf($callerType)->yes()) {
                 return new ArrayType(new StringType(), $type);
             }
@@ -88,6 +102,10 @@ class EntityStorageDynamicReturnTypeExtension implements DynamicMethodReturnType
             return $type;
         }
 
-        return ParametersAcceptorSelector::selectSingle($methodReflection->getVariants())->getReturnType();
+        return ParametersAcceptorSelector::selectFromArgs(
+            $scope,
+            $methodCall->getArgs(),
+            $methodReflection->getVariants()
+        )->getReturnType();
     }
 }

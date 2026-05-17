@@ -12,7 +12,7 @@ use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\ParametersAcceptorSelector;
 use PHPStan\ShouldNotHappenException;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
-use PHPStan\Type\ObjectType;
+use PHPStan\Type\Type;
 
 class EntityTypeManagerGetStorageDynamicReturnTypeExtension implements DynamicMethodReturnTypeExtension
 {
@@ -46,8 +46,12 @@ class EntityTypeManagerGetStorageDynamicReturnTypeExtension implements DynamicMe
         MethodReflection $methodReflection,
         MethodCall $methodCall,
         Scope $scope
-    ): \PHPStan\Type\Type {
-        $returnType = ParametersAcceptorSelector::selectSingle($methodReflection->getVariants())->getReturnType();
+    ): Type {
+        $returnType = ParametersAcceptorSelector::selectFromArgs(
+            $scope,
+            $methodCall->getArgs(),
+            $methodReflection->getVariants()
+        )->getReturnType();
         if (!isset($methodCall->args[0])) {
             // Parameter is required.
             throw new ShouldNotHappenException();
@@ -80,8 +84,9 @@ class EntityTypeManagerGetStorageDynamicReturnTypeExtension implements DynamicMe
             return $storageType;
         }
 
-        if ($returnType instanceof ObjectType) {
-            return new EntityStorageType($entityTypeId, $returnType->getClassName());
+        $classNames = $returnType->getObjectClassNames();
+        if (count($classNames) === 1) {
+            return new EntityStorageType($entityTypeId, $classNames[0]);
         }
         return $returnType;
     }

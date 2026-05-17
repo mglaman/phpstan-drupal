@@ -9,9 +9,9 @@ final class EntityAccessControlHandlerReturnTypeExtensionTest extends TypeInfere
 
     use AdditionalConfigFilesTrait;
 
-    public function dataFileAsserts(): iterable
+    public static function dataFileAsserts(): iterable
     {
-        yield from $this->gatherAssertTypes(__DIR__ . '/data/entity-access-control-handler.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/entity-access-control-handler.php');
     }
 
     /**

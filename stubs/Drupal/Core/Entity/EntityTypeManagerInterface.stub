@@ -1,0 +1,10 @@
+<?php
+
+namespace Drupal\Core\Entity;
+
+interface EntityTypeManagerInterface {
+    /**
+     * @return ($exception_on_invalid is true ? EntityTypeInterface : EntityTypeInterface|null)
+     */
+    public function getDefinition(string $entity_type_id, bool $exception_on_invalid = TRUE);
+}

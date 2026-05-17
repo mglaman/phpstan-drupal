@@ -1,0 +1,6 @@
+<?php
+
+namespace Drupal\Component\Render;
+
+interface MarkupInterface extends \JsonSerializable, \Stringable  {
+}

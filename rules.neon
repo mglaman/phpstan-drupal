@@ -2,10 +2,6 @@ rules:
 	- mglaman\PHPStanDrupal\Rules\Drupal\Coder\DiscouragedFunctionsRule
 	- mglaman\PHPStanDrupal\Rules\Drupal\GlobalDrupalDependencyInjectionRule
 	- mglaman\PHPStanDrupal\Rules\Drupal\PluginManager\PluginManagerSetsCacheBackendRule
-	- mglaman\PHPStanDrupal\Rules\Deprecations\AccessDeprecatedConstant
-	- mglaman\PHPStanDrupal\Rules\Classes\ClassExtendsInternalClassRule
-	- mglaman\PHPStanDrupal\Rules\Classes\PluginManagerInspectionRule
-	- mglaman\PHPStanDrupal\Rules\Deprecations\ConditionManagerCreateInstanceContextConfigurationRule
 	- mglaman\PHPStanDrupal\Rules\Drupal\RenderCallbackRule
 	- mglaman\PHPStanDrupal\Rules\Deprecations\StaticServiceDeprecatedServiceRule
 	- mglaman\PHPStanDrupal\Rules\Deprecations\GetDeprecatedServiceRule
@@ -15,6 +11,66 @@ rules:
 	- mglaman\PHPStanDrupal\Rules\Drupal\ModuleLoadInclude
 	- mglaman\PHPStanDrupal\Rules\Drupal\LoadIncludes
 	- mglaman\PHPStanDrupal\Rules\Drupal\EntityQuery\EntityQueryHasAccessCheckRule
-	- mglaman\PHPStanDrupal\Rules\Deprecations\SymfonyCmfRouteObjectInterfaceConstantsRule
-	- mglaman\PHPStanDrupal\Rules\Deprecations\SymfonyCmfRoutingInClassMethodSignatureRule
-	- mglaman\PHPStanDrupal\Rules\Drupal\RequestStackGetMainRequestRule
+	- mglaman\PHPStanDrupal\Rules\Drupal\TestClassesProtectedPropertyModulesRule
+
+conditionalTags:
+	mglaman\PHPStanDrupal\Rules\Drupal\HookFormAlterRule:
+		phpstan.rules.rule: %drupal.rules.hookRules%
+	mglaman\PHPStanDrupal\Rules\Drupal\Tests\TestClassSuffixNameRule:
+		phpstan.rules.rule: %drupal.rules.testClassSuffixNameRule%
+	mglaman\PHPStanDrupal\Rules\Drupal\DependencySerializationTraitPropertyRule:
+		phpstan.rules.rule: %drupal.rules.dependencySerializationTraitPropertyRule%
+	mglaman\PHPStanDrupal\Rules\Drupal\AccessResultConditionRule:
+		phpstan.rules.rule: %drupal.rules.accessResultConditionRule%
+	mglaman\PHPStanDrupal\Rules\Classes\ClassExtendsInternalClassRule:
+		phpstan.rules.rule: %drupal.rules.classExtendsInternalClassRule%
+	mglaman\PHPStanDrupal\Rules\Classes\PluginManagerInspectionRule:
+		phpstan.rules.rule: %drupal.rules.pluginManagerInspectionRule%
+	mglaman\PHPStanDrupal\Rules\Drupal\CacheableDependencyRule:
+		phpstan.rules.rule: %drupal.rules.cacheableDependencyRule%
+	mglaman\PHPStanDrupal\Rules\Drupal\LoggerFromFactoryPropertyAssignmentRule:
+		phpstan.rules.rule: %drupal.rules.loggerFromFactoryPropertyAssignmentRule%
+	mglaman\PHPStanDrupal\Rules\Drupal\EntityStorageDirectInjectionRule:
+		phpstan.rules.rule: %drupal.rules.entityStorageDirectInjectionRule%
+	mglaman\PHPStanDrupal\Rules\Drupal\EntityStoragePropertyAssignmentRule:
+		phpstan.rules.rule: %drupal.rules.entityStorageDirectInjectionRule%
+	mglaman\PHPStanDrupal\Rules\Drupal\SymfonyYamlParseRule:
+		phpstan.rules.rule: %drupal.rules.symfonyYamlParseRule%
+	mglaman\PHPStanDrupal\Rules\Drupal\EntityListBuilderOperationsCacheabilityRule:
+		phpstan.rules.rule: %drupal.rules.entityOperationsCacheabilityRule%
+	mglaman\PHPStanDrupal\Rules\Drupal\HookEntityOperationCacheabilityRule:
+		phpstan.rules.rule: %drupal.rules.entityOperationsCacheabilityRule%
+	mglaman\PHPStanDrupal\Rules\Drupal\ProceduralHookEntityOperationCacheabilityRule:
+		phpstan.rules.rule: %drupal.rules.entityOperationsCacheabilityRule%
+
+services:
+	-
+		class: mglaman\PHPStanDrupal\Rules\Drupal\HookFormAlterRule
+	-
+		class: mglaman\PHPStanDrupal\Rules\Drupal\Tests\TestClassSuffixNameRule
+	-
+		class: mglaman\PHPStanDrupal\Rules\Drupal\DependencySerializationTraitPropertyRule
+	-
+		class: mglaman\PHPStanDrupal\Rules\Drupal\AccessResultConditionRule
+		arguments:
+			treatPhpDocTypesAsCertain: %treatPhpDocTypesAsCertain%
+	-
+		class: mglaman\PHPStanDrupal\Rules\Classes\ClassExtendsInternalClassRule
+	-
+		class: mglaman\PHPStanDrupal\Rules\Classes\PluginManagerInspectionRule
+	-
+		class: mglaman\PHPStanDrupal\Rules\Drupal\CacheableDependencyRule
+	-
+		class: mglaman\PHPStanDrupal\Rules\Drupal\LoggerFromFactoryPropertyAssignmentRule
+	-
+		class: mglaman\PHPStanDrupal\Rules\Drupal\EntityStorageDirectInjectionRule
+	-
+		class: mglaman\PHPStanDrupal\Rules\Drupal\EntityStoragePropertyAssignmentRule
+	-
+		class: mglaman\PHPStanDrupal\Rules\Drupal\SymfonyYamlParseRule
+	-
+		class: mglaman\PHPStanDrupal\Rules\Drupal\EntityListBuilderOperationsCacheabilityRule
+	-
+		class: mglaman\PHPStanDrupal\Rules\Drupal\HookEntityOperationCacheabilityRule
+	-
+		class: mglaman\PHPStanDrupal\Rules\Drupal\ProceduralHookEntityOperationCacheabilityRule

@@ -10,9 +10,11 @@ use Drupal\phpstan_fixtures\Entity\ReflectionEntityTest;
 use mglaman\PHPStanDrupal\Reflection\EntityFieldsViaMagicReflectionExtension;
 use mglaman\PHPStanDrupal\Tests\AdditionalConfigFilesTrait;
 use PHPStan\Testing\PHPStanTestCase;
+use PHPStan\Type\MixedType;
 use PHPStan\Type\NullType;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\StringType;
+use PHPStan\Type\VerbosityLevel;
 
 final class EntityFieldsViaMagicReflectionExtensionTest extends PHPStanTestCase {
 
@@ -26,7 +28,7 @@ final class EntityFieldsViaMagicReflectionExtensionTest extends PHPStanTestCase 
     protected function setUp(): void
     {
         parent::setUp();
-        $this->extension = new EntityFieldsViaMagicReflectionExtension();
+        $this->extension = new EntityFieldsViaMagicReflectionExtension(self::createReflectionProvider());
     }
 
     /**
@@ -40,22 +42,22 @@ final class EntityFieldsViaMagicReflectionExtensionTest extends PHPStanTestCase 
         self::assertEquals($result, $this->extension->hasProperty($reflection, $property));
     }
 
-    public function dataHasProperty(): \Generator
+    public static function dataHasProperty(): \Generator
     {
         yield 'content entity supported' => [
-            // @phpstan-ignore-next-line
+            // @phpstan-ignore class.notFound
             EntityTest::class,
             'foobar',
             true
         ];
         yield 'config entity not supported' => [
-            // @phpstan-ignore-next-line
+            // @phpstan-ignore class.notFound
             TestConfigType::class,
             'foobar',
             false
         ];
         yield 'annotated properties are skipped on content entities' => [
-            // @phpstan-ignore-next-line
+            // @phpstan-ignore class.notFound
             ReflectionEntityTest::class,
             'user_id',
             false
@@ -82,17 +84,16 @@ final class EntityFieldsViaMagicReflectionExtensionTest extends PHPStanTestCase 
             'value',
             false,
         ];
-        // @todo support more proeprties.
         yield 'field item list: format' => [
             \Drupal\Core\Field\FieldItemList::class,
             'format',
-            false,
+            true,
         ];
     }
 
     public function testGetPropertyEntity(): void
     {
-        // @phpstan-ignore-next-line
+        // @phpstan-ignore class.notFound
         $classReflection = $this->createReflectionProvider()->getClass(EntityTest::class);
         $propertyReflection = $this->extension->getProperty($classReflection, 'field_myfield');
         $readableType = $propertyReflection->getReadableType();
@@ -119,11 +120,11 @@ final class EntityFieldsViaMagicReflectionExtensionTest extends PHPStanTestCase 
         self::assertInstanceOf(StringType::class, $readableType);
         $propertyReflection = $this->extension->getProperty($classReflection, 'entity');
         $readableType = $propertyReflection->getReadableType();
-        self::assertInstanceOf(ObjectType::class, $readableType);
+        self::assertSame('Drupal\Core\Entity\EntityInterface|null', $readableType->describe(VerbosityLevel::typeOnly()));
         $propertyReflection = $this->extension->getProperty($classReflection, 'format');
         $readableType = $propertyReflection->getReadableType();
-        self::assertInstanceOf(NullType::class, $readableType);
-
+        self::assertInstanceOf(MixedType::class, $readableType);
     }
+    
 
 }

@@ -16,16 +16,18 @@ final class ConfigEntityConfigExportRuleTest extends DrupalRuleTestCase {
 
     /**
      * @dataProvider pluginData
+     *
+     * @param list<array{0: string, 1: int, 2?: string|null}> $errorMessages
      */
     public function testConfigExportRuleCheck(string $path, array $errorMessages): void
     {
         $this->analyse([$path], $errorMessages);
     }
 
-    public function pluginData(): \Generator
+    public static function pluginData(): \Generator
     {
         yield [
-            __DIR__ . '/../../fixtures/drupal/modules/phpstan_fixtures/src/Entity/ConfigWithoutExport.php',
+            __DIR__ . '/data/config-entity-without-export.php',
             [
                [
                    'Configuration entity must define a `config_export` key. See https://www.drupal.org/node/2481909',
@@ -34,7 +36,7 @@ final class ConfigEntityConfigExportRuleTest extends DrupalRuleTestCase {
             ]
         ];
         yield [
-            __DIR__ . '/../../fixtures/drupal/modules/phpstan_fixtures/src/Entity/ConfigWithExport.php',
+            __DIR__ . '/data/config-entity-with-export.php',
             []
         ];
     }

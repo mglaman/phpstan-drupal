@@ -11,10 +11,10 @@ final class EntityTypesTest extends TypeInferenceTestCase
 {
     use AdditionalConfigFilesTrait;
 
-    public function dataFileAsserts(): iterable
+    public static function dataFileAsserts(): iterable
     {
-        yield from $this->gatherAssertTypes(__DIR__ . '/data/entity-type-stubs.php');
-        yield from $this->gatherAssertTypes(__DIR__ . '/data/bug-499.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/entity-type-stubs.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/bug-499.php');
     }
 
     /**

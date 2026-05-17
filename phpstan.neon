@@ -1,15 +1,21 @@
 parameters:
 	level: 8
-	checkGenericClassInNonGenericObjectType: false
-	checkMissingIterableValueType: false
 	reportUnmatchedIgnoredErrors: false
+	ignoreErrors:
+		-
+			identifier: missingType.iterableValue
+		-
+			identifier: missingType.generics
 	paths:
 		- src
 		- drupal-autoloader.php
 		- tests/src
 	excludePaths:
+		-  tests/src/data/*.php
+		-  tests/src/Generics/data/*.php
 		-  tests/src/Type/data/*.php
 		-  tests/src/Rules/data/*.php
+		-  tests/src/DeprecatedScope/data/*.php
 	dynamicConstantNames:
 		- Drupal::VERSION
 includes:

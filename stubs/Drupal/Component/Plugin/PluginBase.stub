@@ -1,0 +1,7 @@
+<?php
+
+namespace Drupal\Component\Plugin;
+
+abstract class PluginBase implements PluginInspectionInterface, DerivativeInspectionInterface {
+
+}

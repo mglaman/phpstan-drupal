@@ -1,0 +1,17 @@
+<?php
+
+namespace Drupal\comment\Plugin\Field\FieldType;
+
+use Drupal\Core\Field\FieldItemBase;
+
+/**
+ * @property ?int $status
+ * @property ?int $cid
+ * @property ?int $last_comment_timestamp
+ * @property ?string $last_comment_name
+ * @property ?int $last_comment_uid
+ * @property ?int $comment_count
+ */
+class CommentItem extends FieldItemBase implements CommentItemInterface {
+
+}

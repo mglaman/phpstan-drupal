@@ -17,6 +17,8 @@ final class BrowserTestBaseDefaultThemeRuleTest extends DrupalRuleTestCase {
 
     /**
      * @dataProvider fileData
+     *
+     * @param list<array{0: string, 1: int, 2?: string|null}> $errorMessages
      */
     public function testRule(string $path, array $errorMessages): void
     {
@@ -26,7 +28,7 @@ final class BrowserTestBaseDefaultThemeRuleTest extends DrupalRuleTestCase {
         );
     }
 
-    public function fileData(): \Generator
+    public static function fileData(): \Generator
     {
         yield [
             __DIR__ . '/../../fixtures/drupal/modules/module_with_tests/tests/src/Functional/MissingDefaultThemeTest.php',
