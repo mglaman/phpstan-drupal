@@ -128,6 +128,11 @@ jobs:
         run: |
           cd ~/drupal
           ./vendor/bin/phpstan analyze web/core/install.php --debug
+      - name: "Test legacy hook attribute stubs"
+        run: |
+          cp $GITHUB_WORKSPACE/tests/fixtures/integration/legacy-hook-attributes.php ~/drupal/legacy-hook-attributes.php
+          cd ~/drupal
+          ./vendor/bin/phpstan analyze legacy-hook-attributes.php --no-progress
       - name: "Test BrowserTestBase is autoloaded"
         run: |
           cd ~/drupal
@@ -200,6 +205,11 @@ jobs:
         run: |
           cd ~/drupal
           ./vendor/bin/phpstan analyze web/core/install.php --debug
+      - name: "Test legacy hook attribute stubs"
+        run: |
+          cp $GITHUB_WORKSPACE/tests/fixtures/integration/legacy-hook-attributes.php ~/drupal/legacy-hook-attributes.php
+          cd ~/drupal
+          ./vendor/bin/phpstan analyze legacy-hook-attributes.php --no-progress
       - name: "Test no crash"
         run: |
           cd ~/drupal
