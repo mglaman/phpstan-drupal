@@ -216,15 +216,14 @@ final class RuleConventionsTest extends TestCase
                 continue;
             }
             $tagValue = (string) $tags['phpstan.rules.rule'];
-            self::assertSame(
-                1,
-                preg_match('/^%drupal\.rules\.([A-Za-z0-9_]+)%$/', $tagValue, $matches),
-                sprintf(
-                    'conditionalTags phpstan.rules.rule value "%s" must be a %%drupal.rules.<name>%% parameter.',
-                    $tagValue
-                )
-            );
-            $parameters[$matches[1]] = true;
+            if (preg_match('/^%drupal\.rules\.([A-Za-z0-9_]+)%$/', $tagValue, $matches) === 1) {
+                $parameters[$matches[1]] = true;
+                continue;
+            }
+            self::fail(sprintf(
+                'conditionalTags phpstan.rules.rule value "%s" must be a %%drupal.rules.<name>%% parameter.',
+                $tagValue
+            ));
         }
 
         self::assertNotEmpty($parameters, 'Expected at least one conditional rule in rules.neon.');
