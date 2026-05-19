@@ -9,6 +9,7 @@ parameters:
 			testClassSuffixNameRule: true
 			dependencySerializationTraitPropertyRule: true
 			accessResultConditionRule: true
+			pluginManagerInspectionRule: true
 			cacheableDependencyRule: true
 			hookRules: true
 			loggerFromFactoryPropertyAssignmentRule: true
