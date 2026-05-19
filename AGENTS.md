@@ -53,6 +53,16 @@ To add a rule named `fooBarRule`:
 
 4. Document the rule under "Opt-in rules" in `README.md`.
 
+### Exception: opt-in rules excluded from bleeding edge
+
+An opt-in rule that is known to be too noisy or unstable to inflict on
+bleeding-edge users may be deliberately kept out of `bleedingEdge.neon`. It then
+stays available only through explicit per-rule configuration. Record the
+exception by adding its parameter name to
+`RuleConventionsTest::OPT_IN_RULES_EXCLUDED_FROM_BLEEDING_EDGE` (with a comment
+explaining why) instead of adding it to `bleedingEdge.neon` in step 3. The path
+back is to remove it from that list and add it to `bleedingEdge.neon`.
+
 ## Graduating a rule to the default ruleset
 
 When an opt-in rule is stable enough to be on by default:
@@ -68,7 +78,7 @@ When an opt-in rule is stable enough to be on by default:
 
 | Location in `rules.neon` | Default in `extension.neon` | Meaning | In `bleedingEdge.neon`? |
 |---|---|---|---|
-| `conditionalTags` | `false` | Opt-in, not yet default | **Yes** |
+| `conditionalTags` | `false` | Opt-in, not yet default | **Yes**, unless excluded (see above) |
 | `conditionalTags` | `true` | Graduated, still toggleable (opt-out) | No |
 | `rules:` directly | — | Legacy, not toggleable — **no new additions** | — |
 

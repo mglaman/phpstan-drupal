@@ -68,6 +68,23 @@ final class RuleConventionsTest extends TestCase
         'classExtendsInternalClassRule',
     ];
 
+    /**
+     * Opt-in rules deliberately kept out of bleedingEdge.neon.
+     *
+     * Normally an opt-in rule (default `false`) must also be enabled in
+     * bleedingEdge.neon. A rule may be excluded here when it is known to be too
+     * noisy or unstable to inflict on bleeding-edge users; it then stays
+     * available only through explicit per-rule configuration. The path back is
+     * to remove it from this list and add it to bleedingEdge.neon.
+     *
+     * @var list<string>
+     */
+    private const OPT_IN_RULES_EXCLUDED_FROM_BLEEDING_EDGE = [
+        // PluginManagerInspectionRule is currently too unreliable to enable by
+        // default for bleeding-edge users.
+        'pluginManagerInspectionRule',
+    ];
+
     public function testNewRulesAreNotDirectlyRegistered(): void
     {
         $rules = $this->decodeFile('rules.neon');
@@ -147,6 +164,19 @@ final class RuleConventionsTest extends TestCase
             if (!array_key_exists($parameter, $defaults) || $defaults[$parameter] !== false) {
                 // Graduated rules (default `true`) are already on by default and
                 // must not be listed in bleedingEdge.neon.
+                continue;
+            }
+
+            if (in_array($parameter, self::OPT_IN_RULES_EXCLUDED_FROM_BLEEDING_EDGE, true)) {
+                self::assertArrayNotHasKey(
+                    $parameter,
+                    $bleedingEdge,
+                    sprintf(
+                        'Rule "%s" is listed in OPT_IN_RULES_EXCLUDED_FROM_BLEEDING_EDGE but is enabled in '
+                        . 'bleedingEdge.neon. Remove it from one or the other so the exception stays honest.',
+                        $parameter
+                    )
+                );
                 continue;
             }
 
