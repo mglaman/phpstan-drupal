@@ -17,7 +17,7 @@ use function preg_match;
 use function sprintf;
 
 /**
- * Enforces the rule registration conventions documented in AGENTS.md.
+ * Enforces the rule registration conventions documented in CLAUDE.md.
  *
  * Every rule must be toggleable: registered through `conditionalTags` with a
  * matching boolean parameter under `parameters.drupal.rules` in
@@ -101,7 +101,7 @@ final class RuleConventionsTest extends TestCase
                     "%s is registered directly under rules: in rules.neon but is not a known legacy rule.\n"
                     . 'New rules must be toggleable: register the rule under conditionalTags with a '
                     . '%%drupal.rules.<name>%% parameter and add a `false` default under '
-                    . 'parameters.drupal.rules in extension.neon. See AGENTS.md.',
+                    . 'parameters.drupal.rules in extension.neon. See CLAUDE.md.',
                     $normalized
                 )
             );
@@ -119,7 +119,7 @@ final class RuleConventionsTest extends TestCase
                 sprintf(
                     'Conditional rule parameter "%s" (from rules.neon conditionalTags) has no default '
                     . 'under parameters.drupal.rules in extension.neon. Add it with a `false` default '
-                    . 'so the rule is opt-in and toggleable. See AGENTS.md.',
+                    . 'so the rule is opt-in and toggleable. See CLAUDE.md.',
                     $parameter
                 )
             );
@@ -147,7 +147,7 @@ final class RuleConventionsTest extends TestCase
                 sprintf(
                     'Rule parameter "%s" must default to `false` in extension.neon (opt-in). To graduate it '
                     . 'to the default ruleset, flip the default to `true` and add "%s" to '
-                    . 'RuleConventionsTest::GRADUATED_RULES in the same change. See AGENTS.md.',
+                    . 'RuleConventionsTest::GRADUATED_RULES in the same change. See CLAUDE.md.',
                     $parameter,
                     $parameter
                 )
@@ -186,7 +186,7 @@ final class RuleConventionsTest extends TestCase
                 sprintf(
                     'Opt-in rule parameter "%s" (default `false` in extension.neon) is not enabled in '
                     . 'bleedingEdge.neon. Add `%s: true` under parameters.drupal.rules in bleedingEdge.neon '
-                    . 'so the rule runs for bleeding-edge users. See AGENTS.md.',
+                    . 'so the rule runs for bleeding-edge users. See CLAUDE.md.',
                     $parameter,
                     $parameter
                 )
