@@ -40,6 +40,7 @@ parameters:
 			entityStorageDirectInjectionRule: false
 			symfonyYamlParseRule: false
 			entityOperationsCacheabilityRule: false
+			configGetUnknownKeyRule: false
 		entityMapping:
 			aggregator_feed:
 				class: Drupal\aggregator\Entity\Feed
@@ -281,6 +282,7 @@ parametersSchema:
 			entityStorageDirectInjectionRule: boolean()
 			symfonyYamlParseRule: boolean()
 			entityOperationsCacheabilityRule: boolean()
+			configGetUnknownKeyRule: boolean()
 		])
 		entityMapping: arrayOf(anyOf(
 			structure([
@@ -297,6 +299,8 @@ services:
 		class: mglaman\PHPStanDrupal\Drupal\ServiceMap
 	-
 		class: mglaman\PHPStanDrupal\Drupal\ExtensionMap
+	-
+		class: mglaman\PHPStanDrupal\Drupal\ConfigSchemaData
 	-
 		class: mglaman\PHPStanDrupal\Drupal\EntityDataRepository
 		arguments:
@@ -329,6 +333,9 @@ services:
 		tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
 		arguments:
 			containerHasAlwaysTrue: %drupal.bleedingEdge.containerHasAlwaysTrue%
+	-
+		class: mglaman\PHPStanDrupal\Type\ConfigGetDynamicReturnTypeExtension
+		tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
 	-
 		class: mglaman\PHPStanDrupal\Type\DrupalClassResolverDynamicReturnTypeExtension
 		tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
