@@ -271,6 +271,7 @@ class DrupalAutoloader
 
     protected function loadConfigSchemas(Container $container): void
     {
+        // TODO: lazy-load schemas when neither configGetReturnType nor configGetUnknownKeyRule is active.
         $definitions = [];
         $fullyValidatable = [];
 

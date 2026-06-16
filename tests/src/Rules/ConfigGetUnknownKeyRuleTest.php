@@ -50,7 +50,7 @@ final class ConfigGetUnknownKeyRuleTest extends DrupalRuleTestCase
                 ],
                 [
                     'Config key "unknown_via_trait" does not exist in the schema for "system.maintenance".',
-                    64,
+                    72,
                 ],
             ],
         ];

@@ -23,16 +23,21 @@ class ConfigSchemaData
     /**
      * Raw schema definitions keyed by schema type name.
      *
+     * Static so that schema data loaded by the bootstrap survives across
+     * PHPStan container re-instantiations in the test infrastructure.
+     *
      * @var array<string, array<string, mixed>>
      */
-    private static $definitions = [];
+    private static array $definitions = [];
 
     /**
      * Config names that have FullyValidatable constraint.
      *
+     * Static for the same reason as $definitions.
+     *
      * @var array<string, bool>
      */
-    private static $fullyValidatable = [];
+    private static array $fullyValidatable = [];
 
     /**
      * @param array<string, array<string, mixed>> $definitions
@@ -78,6 +83,29 @@ class ConfigSchemaData
         $definition = $this->resolveDefinition($definition);
 
         if ($parts === []) {
+            return true;
+        }
+
+        // If the definition is a sequence, the next path segment is a dynamic
+        // element key (e.g. 'default' in 'interface.default'). We cannot
+        // statically validate element keys, so consume the segment and recurse
+        // into the element definition with the remaining parts.
+        $typeName = $definition['type'] ?? null;
+        if ($typeName === 'sequence' || (isset($definition['sequence']) && !isset($definition['mapping']))) {
+            // Discard the dynamic element key.
+            array_shift($parts);
+            if ($parts === []) {
+                return true;
+            }
+            // Recurse into the element definition.
+            if (isset($definition['sequence']) && is_array($definition['sequence'])) {
+                $seq = $definition['sequence'];
+                $elementDef = isset($seq[0]) && is_array($seq[0]) ? $seq[0] : (!isset($seq[0]) ? $seq : null);
+                if ($elementDef !== null && is_array($elementDef)) {
+                    return $this->keyExistsInDefinition($elementDef, $parts);
+                }
+            }
+            // Fall back: accept any further path under a sequence.
             return true;
         }
 
@@ -176,6 +204,25 @@ class ConfigSchemaData
 
         if ($parts === []) {
             return $this->mapSchemaTypeToPhpStanType($definition);
+        }
+
+        // If the definition is a sequence, the next path segment is a dynamic
+        // element key. Discard it and recurse into the element definition.
+        $typeName = $definition['type'] ?? null;
+        if ($typeName === 'sequence' || (isset($definition['sequence']) && !isset($definition['mapping']))) {
+            array_shift($parts);
+            if ($parts === []) {
+                // The key resolves to the element type (caller adds null).
+                return $this->resolveSequenceElementType($definition);
+            }
+            if (isset($definition['sequence']) && is_array($definition['sequence'])) {
+                $seq = $definition['sequence'];
+                $elementDef = isset($seq[0]) && is_array($seq[0]) ? $seq[0] : (!isset($seq[0]) ? $seq : null);
+                if ($elementDef !== null && is_array($elementDef)) {
+                    return $this->resolveKeyType($elementDef, $parts);
+                }
+            }
+            return null;
         }
 
         // Must be a mapping to traverse further.

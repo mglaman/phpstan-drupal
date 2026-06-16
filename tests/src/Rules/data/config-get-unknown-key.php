@@ -37,6 +37,14 @@ function testUnknownKeysViaConfigFactory(ConfigFactoryInterface $configFactory):
     $configFactory->getEditable('system.maintenance')->get('bad_editable_key');
 }
 
+// --- Sequence traversal: keys under a sequence should not be reported ---
+
+function testSequenceTraversal(): void {
+    // system.mail.interface is a sequence of strings; 'default' is a dynamic
+    // element key — should NOT be reported as unknown.
+    \Drupal::config('system.mail')->get('interface.default');
+}
+
 // --- Non-FullyValidatable configs: no errors regardless of key ---
 
 function testNonFullyValidatable(): void {

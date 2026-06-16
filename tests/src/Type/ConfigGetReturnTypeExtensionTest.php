@@ -4,12 +4,17 @@ declare(strict_types=1);
 
 namespace mglaman\PHPStanDrupal\Tests\Type;
 
-use mglaman\PHPStanDrupal\Tests\AdditionalConfigFilesTrait;
 use PHPStan\Testing\TypeInferenceTestCase;
 
 final class ConfigGetReturnTypeExtensionTest extends TypeInferenceTestCase
 {
-    use AdditionalConfigFilesTrait;
+
+    public static function getAdditionalConfigFiles(): array
+    {
+        return array_merge(parent::getAdditionalConfigFiles(), [
+            __DIR__ . '/../../fixtures/config/phpunit-drupal-phpstan-config-get-return-type.neon',
+        ]);
+    }
 
     public static function dataFileAsserts(): iterable
     {

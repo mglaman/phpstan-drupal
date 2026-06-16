@@ -30,6 +30,9 @@ function testDrupalConfig(): void {
     // system.mail has a sequence of strings
     assertType('array<string>|null', \Drupal::config('system.mail')->get('interface'));
 
+    // system.mail.interface is a sequence; 'default' is a dynamic element key -> string|null
+    assertType('string|null', \Drupal::config('system.mail')->get('interface.default'));
+
     // system.feature_flags is FullyValidatable with a boolean
     assertType('bool|null', \Drupal::config('system.feature_flags')->get('linkset_endpoint'));
 }
