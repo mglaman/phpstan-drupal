@@ -100,8 +100,14 @@ class ConfigSchemaData
             // Recurse into the element definition.
             if (isset($definition['sequence']) && is_array($definition['sequence'])) {
                 $seq = $definition['sequence'];
-                $elementDef = isset($seq[0]) && is_array($seq[0]) ? $seq[0] : (!isset($seq[0]) ? $seq : null);
-                if ($elementDef !== null && is_array($elementDef)) {
+                /** @var array<mixed>|null $elementDef */
+                $elementDef = null;
+                if (isset($seq[0]) && is_array($seq[0])) {
+                    $elementDef = $seq[0];
+                } elseif (!isset($seq[0])) {
+                    $elementDef = $seq;
+                }
+                if ($elementDef !== null) {
                     return $this->keyExistsInDefinition($elementDef, $parts);
                 }
             }
@@ -217,8 +223,14 @@ class ConfigSchemaData
             }
             if (isset($definition['sequence']) && is_array($definition['sequence'])) {
                 $seq = $definition['sequence'];
-                $elementDef = isset($seq[0]) && is_array($seq[0]) ? $seq[0] : (!isset($seq[0]) ? $seq : null);
-                if ($elementDef !== null && is_array($elementDef)) {
+                /** @var array<mixed>|null $elementDef */
+                $elementDef = null;
+                if (isset($seq[0]) && is_array($seq[0])) {
+                    $elementDef = $seq[0];
+                } elseif (!isset($seq[0])) {
+                    $elementDef = $seq;
+                }
+                if ($elementDef !== null) {
                     return $this->resolveKeyType($elementDef, $parts);
                 }
             }
