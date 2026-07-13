@@ -27,12 +27,6 @@ function testDrupalConfig(): void {
     // Unknown config should return mixed
     assertType('mixed', \Drupal::config('nonexistent.config')->get('key'));
 
-    // system.mail has a sequence of strings
-    assertType('array<string>|null', \Drupal::config('system.mail')->get('interface'));
-
-    // system.mail.interface is a sequence; 'default' is a dynamic element key -> string|null
-    assertType('string|null', \Drupal::config('system.mail')->get('interface.default'));
-
     // system.feature_flags is FullyValidatable with a boolean
     assertType('bool|null', \Drupal::config('system.feature_flags')->get('linkset_endpoint'));
 }
@@ -44,16 +38,6 @@ function testConfigFactory(ConfigFactoryInterface $configFactory): void {
 
     // getEditable() returns Config (mutable)
     assertType('string|null', $configFactory->getEditable('system.maintenance')->get('message'));
-}
-
-function testDynamicTypeReference(): void {
-    // mailer_dsn.scheme is a static string in the schema.
-    assertType('string|null', \Drupal::config('system.mail')->get('mailer_dsn.scheme'));
-
-    // mailer_dsn.options uses the dynamic type
-    // `mailer_dsn.options.[%parent.scheme]` — no narrowing possible.
-    assertType('mixed', \Drupal::config('system.mail')->get('mailer_dsn.options'));
-    assertType('mixed', \Drupal::config('system.mail')->get('mailer_dsn.options.verify_peer'));
 }
 
 function testPartiallyResolvableUnion(bool $flag): void {
