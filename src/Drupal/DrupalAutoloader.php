@@ -254,6 +254,8 @@ class DrupalAutoloader
             }
         }
 
+        $this->loadConfigSchemas($container);
+
         $service_map = $container->getByType(ServiceMap::class);
         $service_map->setDrupalServices($this->serviceMap);
 
@@ -264,6 +266,35 @@ class DrupalAutoloader
 
         $extension_map = $container->getByType(ExtensionMap::class);
         $extension_map->setExtensions($this->moduleData, $this->themeData, $profiles);
+    }
+
+    protected function loadConfigSchemas(Container $container): void
+    {
+        // Only collect the schema directories here. Parsing every schema file
+        // has a real memory cost, and this bootstrap runs regardless of
+        // whether a schema-consuming feature (configGetReturnType or
+        // configGetUnknownKeyRule) is enabled, so ConfigSchemaData parses the
+        // files lazily on first query.
+        $schemaDirs = [];
+        $coreSchemaDir = $this->drupalRoot . '/core/config/schema';
+        if (is_dir($coreSchemaDir)) {
+            $schemaDirs[] = $coreSchemaDir;
+        }
+        foreach ($this->moduleData as $extension) {
+            $schemaDir = $this->drupalRoot . '/' . $extension->getPath() . '/config/schema';
+            if (is_dir($schemaDir)) {
+                $schemaDirs[] = $schemaDir;
+            }
+        }
+        foreach ($this->themeData as $extension) {
+            $schemaDir = $this->drupalRoot . '/' . $extension->getPath() . '/config/schema';
+            if (is_dir($schemaDir)) {
+                $schemaDirs[] = $schemaDir;
+            }
+        }
+
+        $configSchemaData = $container->getByType(ConfigSchemaData::class);
+        $configSchemaData->setSchemaDirectories($schemaDirs);
     }
 
     protected function loadLegacyIncludes(): void
