@@ -17,7 +17,7 @@ conditionalTags:
 	mglaman\PHPStanDrupal\Rules\Drupal\ConfigGetUnknownKeyRule:
 		phpstan.rules.rule: %drupal.rules.configGetUnknownKeyRule%
 	mglaman\PHPStanDrupal\Rules\Drupal\HookFormAlterRule:
-		phpstan.rules.rule: %drupal.rules.hookRules%
+		phpstan.rules.rule: %drupal.rules.hookFormAlterRule%
 	mglaman\PHPStanDrupal\Rules\Drupal\Tests\TestClassSuffixNameRule:
 		phpstan.rules.rule: %drupal.rules.testClassSuffixNameRule%
 	mglaman\PHPStanDrupal\Rules\Drupal\DependencySerializationTraitPropertyRule:
