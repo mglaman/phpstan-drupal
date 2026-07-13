@@ -30,17 +30,17 @@ parameters:
 			stubFiles: true
 		configGetReturnType: false
 		rules:
-			testClassSuffixNameRule: false
-			dependencySerializationTraitPropertyRule: false
-			accessResultConditionRule: false
+			testClassSuffixNameRule: true
+			dependencySerializationTraitPropertyRule: true
+			accessResultConditionRule: true
 			classExtendsInternalClassRule: true
 			pluginManagerInspectionRule: false
-			cacheableDependencyRule: false
-			hookRules: false
-			loggerFromFactoryPropertyAssignmentRule: false
-			entityStorageDirectInjectionRule: false
-			symfonyYamlParseRule: false
-			entityOperationsCacheabilityRule: false
+			cacheableDependencyRule: true
+			hookFormAlterRule: true
+			loggerFromFactoryPropertyAssignmentRule: true
+			entityStorageDirectInjectionRule: true
+			symfonyYamlParseRule: true
+			entityOperationsCacheabilityRule: true
 			configGetUnknownKeyRule: false
 		entityMapping:
 			aggregator_feed:
@@ -279,7 +279,7 @@ parametersSchema:
 			classExtendsInternalClassRule: boolean()
 			pluginManagerInspectionRule: boolean()
 			cacheableDependencyRule: boolean()
-			hookRules: boolean()
+			hookFormAlterRule: boolean()
 			loggerFromFactoryPropertyAssignmentRule: boolean()
 			entityStorageDirectInjectionRule: boolean()
 			symfonyYamlParseRule: boolean()
