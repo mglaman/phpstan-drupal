@@ -188,6 +188,35 @@ What it currently enables:
 > [!NOTE]
 > `checkDeprecatedHooksInApiFiles` is deprecated. Use `checkCoreDeprecatedHooksInApiFiles` and `checkContribDeprecatedHooksInApiFiles` instead.
 
+#### Config schema-based checks (experimental)
+
+Two opt-in features use Drupal's config schema files to analyze `Config::get()` calls. Both only act on config objects whose schema has the `FullyValidatable` constraint, since only those schemas are guaranteed complete. Schema files are parsed lazily on first use, so there is no cost when the features are disabled.
+
+```neon
+parameters:
+    drupal:
+        # Narrows Config::get() return types from the config schema, e.g.
+        # \Drupal::config('system.cron')->get('logging') resolves to bool|null
+        # instead of mixed. Types are nullable because any key can be absent
+        # at runtime.
+        configGetReturnType: true
+        rules:
+            # Reports Config::get() calls with a key that does not exist in the
+            # config schema, catching typos at analysis time.
+            configGetUnknownKeyRule: true
+```
+
+Recognized call patterns:
+
+- `\Drupal::config('...')->get('...')`
+- `$configFactory->get('...')->get('...')`
+- `$configFactory->getEditable('...')->get('...')`
+- `$this->config('...')->get('...')` in classes using `ConfigFormBaseTrait`
+
+The config name and key must be literal strings. Config entity schemas with wildcard names (e.g. `block.block.*`) are not supported yet, and keys beneath dynamic type references (e.g. `mailer_dsn.options.[%parent.scheme]`) are not validated.
+
+Neither feature is included in `bleedingEdge.neon` yet.
+
 #### Detecting @todo comments referencing the current Drupal.org issue (contrib CI)
 
 `TodoCommentWithIssueUrlRule` is an opt-in rule for Drupal contrib CI pipelines. When running PHPStan as part of a GitLab merge request, it reports an error for any `@todo` comment that contains a drupal.org issue URL matching the current issue — for example:
