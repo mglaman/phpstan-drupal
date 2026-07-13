@@ -46,6 +46,49 @@ function testConfigFactory(ConfigFactoryInterface $configFactory): void {
     assertType('string|null', $configFactory->getEditable('system.maintenance')->get('message'));
 }
 
+function testDynamicTypeReference(): void {
+    // mailer_dsn.scheme is a static string in the schema.
+    assertType('string|null', \Drupal::config('system.mail')->get('mailer_dsn.scheme'));
+
+    // mailer_dsn.options uses the dynamic type
+    // `mailer_dsn.options.[%parent.scheme]` — no narrowing possible.
+    assertType('mixed', \Drupal::config('system.mail')->get('mailer_dsn.options'));
+    assertType('mixed', \Drupal::config('system.mail')->get('mailer_dsn.options.verify_peer'));
+}
+
+function testPartiallyResolvableUnion(bool $flag): void {
+    // One branch resolves, the other does not: narrowing must not drop the
+    // unresolvable branch.
+    $key = $flag ? 'message' : 'unknown_key_xyz';
+    assertType('mixed', \Drupal::config('system.maintenance')->get($key));
+
+    // Both branches resolve: union of both types.
+    $key = $flag ? 'message' : 'langcode';
+    assertType('string|null', \Drupal::config('system.maintenance')->get($key));
+}
+
+class NotDrupal {
+    public static function config(string $name): ImmutableConfig {
+        return \Drupal::config('some.other_config');
+    }
+}
+
+class HasConfigHelper {
+    public function config(string $name): ImmutableConfig {
+        return \Drupal::config('mymodule.' . $name);
+    }
+
+    public function run(): void {
+        // Not ConfigFormBaseTrait — no narrowing.
+        assertType('mixed', $this->config('system.maintenance')->get('message'));
+    }
+}
+
+function testStaticCallOnOtherClass(): void {
+    // Static ::config() on a class other than \Drupal — no narrowing.
+    assertType('mixed', NotDrupal::config('system.maintenance')->get('message'));
+}
+
 function testImmutableConfig(ImmutableConfig $config): void {
     // ImmutableConfig extends Config, so the extension applies.
     // Without knowing the config name at call site this falls back to mixed.

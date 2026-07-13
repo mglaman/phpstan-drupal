@@ -23,7 +23,6 @@ use function array_walk;
 use function class_exists;
 use function dirname;
 use function file_exists;
-use function glob;
 use function in_array;
 use function interface_exists;
 use function is_array;
@@ -271,11 +270,11 @@ class DrupalAutoloader
 
     protected function loadConfigSchemas(Container $container): void
     {
-        // TODO: lazy-load schemas when neither configGetReturnType nor configGetUnknownKeyRule is active.
-        $definitions = [];
-        $fullyValidatable = [];
-
-        // Collect schema directories.
+        // Only collect the schema directories here. Parsing every schema file
+        // has a real memory cost, and this bootstrap runs regardless of
+        // whether a schema-consuming feature (configGetReturnType or
+        // configGetUnknownKeyRule) is enabled, so ConfigSchemaData parses the
+        // files lazily on first query.
         $schemaDirs = [];
         $coreSchemaDir = $this->drupalRoot . '/core/config/schema';
         if (is_dir($coreSchemaDir)) {
@@ -294,67 +293,8 @@ class DrupalAutoloader
             }
         }
 
-        // Parse all schema files.
-        foreach ($schemaDirs as $dir) {
-            $files = glob($dir . '/*.schema.yml');
-            if ($files === false) {
-                continue;
-            }
-            foreach ($files as $file) {
-                try {
-                    $yaml = Yaml::parseFile($file);
-                } catch (Throwable $e) {
-                    continue;
-                }
-                if (!is_array($yaml)) {
-                    continue;
-                }
-                foreach ($yaml as $typeName => $definition) {
-                    if (!is_array($definition)) {
-                        continue;
-                    }
-                    $definitions[(string) $typeName] = $definition;
-                }
-            }
-        }
-
-        // Detect FullyValidatable configs.
-        foreach ($definitions as $typeName => $definition) {
-            if ($this->hasFullyValidatableConstraint($definition, $definitions)) {
-                $fullyValidatable[$typeName] = true;
-            }
-        }
-
         $configSchemaData = $container->getByType(ConfigSchemaData::class);
-        $configSchemaData->setSchema($definitions, $fullyValidatable);
-    }
-
-    /**
-     * @param array<string, mixed> $definition
-     * @param array<string, array<string, mixed>> $allDefinitions
-     */
-    private function hasFullyValidatableConstraint(array $definition, array $allDefinitions, int $depth = 0): bool
-    {
-        if ($depth > 10) {
-            return false;
-        }
-
-        // Check direct constraints.
-        if (isset($definition['constraints']) && is_array($definition['constraints'])) {
-            if (array_key_exists('FullyValidatable', $definition['constraints'])) {
-                return true;
-            }
-        }
-
-        // Check parent type.
-        if (isset($definition['type']) && is_string($definition['type'])) {
-            $parent = $allDefinitions[$definition['type']] ?? null;
-            if ($parent !== null) {
-                return $this->hasFullyValidatableConstraint($parent, $allDefinitions, $depth + 1);
-            }
-        }
-
-        return false;
+        $configSchemaData->setSchemaDirectories($schemaDirs);
     }
 
     protected function loadLegacyIncludes(): void

@@ -8,6 +8,13 @@ use mglaman\PHPStanDrupal\Tests\DrupalRuleTestCase;
 final class ConfigGetUnknownKeyRuleTest extends DrupalRuleTestCase
 {
 
+    public static function getAdditionalConfigFiles(): array
+    {
+        return array_merge(parent::getAdditionalConfigFiles(), [
+            __DIR__ . '/../../fixtures/config/phpunit-drupal-phpstan-config-get-unknown-key.neon',
+        ]);
+    }
+
     protected function getRule(): \PHPStan\Rules\Rule
     {
         return $this->getContainer()->getByType(ConfigGetUnknownKeyRule::class);
@@ -50,7 +57,7 @@ final class ConfigGetUnknownKeyRuleTest extends DrupalRuleTestCase
                 ],
                 [
                     'Config key "unknown_via_trait" does not exist in the schema for "system.maintenance".',
-                    72,
+                    106,
                 ],
             ],
         ];

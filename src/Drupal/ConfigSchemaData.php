@@ -10,21 +10,40 @@ use PHPStan\Type\MixedType;
 use PHPStan\Type\NullType;
 use PHPStan\Type\StringType;
 use PHPStan\Type\Type;
-use PHPStan\Type\UnionType;
+use PHPStan\Type\TypeCombinator;
+use Symfony\Component\Yaml\Yaml;
+use Throwable;
 use function array_key_exists;
 use function array_shift;
 use function explode;
+use function glob;
 use function in_array;
 use function is_array;
 use function is_string;
+use function str_contains;
 
 class ConfigSchemaData
 {
     /**
+     * Schema directories collected by the bootstrap.
+     *
+     * Static because PHPStan executes the bootstrap file once per process,
+     * while the test infrastructure creates multiple containers — each with
+     * its own ConfigSchemaData instance — after the bootstrap has run.
+     *
+     * @var list<string>
+     */
+    private static array $schemaDirectories = [];
+
+    /**
+     * Whether the schema files have been parsed.
+     */
+    private static bool $loaded = false;
+
+    /**
      * Raw schema definitions keyed by schema type name.
      *
-     * Static so that schema data loaded by the bootstrap survives across
-     * PHPStan container re-instantiations in the test infrastructure.
+     * Static for the same reason as $schemaDirectories.
      *
      * @var array<string, array<string, mixed>>
      */
@@ -33,24 +52,99 @@ class ConfigSchemaData
     /**
      * Config names that have FullyValidatable constraint.
      *
-     * Static for the same reason as $definitions.
+     * Static for the same reason as $schemaDirectories.
      *
      * @var array<string, bool>
      */
     private static array $fullyValidatable = [];
 
     /**
-     * @param array<string, array<string, mixed>> $definitions
-     * @param array<string, bool> $fullyValidatable
+     * @param list<string> $schemaDirectories
      */
-    public function setSchema(array $definitions, array $fullyValidatable): void
+    public function setSchemaDirectories(array $schemaDirectories): void
     {
-        self::$definitions = $definitions;
-        self::$fullyValidatable = $fullyValidatable;
+        if ($schemaDirectories !== self::$schemaDirectories) {
+            self::$schemaDirectories = $schemaDirectories;
+            self::$loaded = false;
+        }
+    }
+
+    /**
+     * Parses the schema files on first query.
+     *
+     * Parsing every schema file of every extension is too expensive to do
+     * eagerly in the bootstrap: neither configGetReturnType nor
+     * configGetUnknownKeyRule may be enabled, and those consumers gate their
+     * own queries, so unused schema data would only waste memory.
+     */
+    private function ensureLoaded(): void
+    {
+        if (self::$loaded) {
+            return;
+        }
+        self::$loaded = true;
+        self::$definitions = [];
+        self::$fullyValidatable = [];
+
+        foreach (self::$schemaDirectories as $dir) {
+            $files = glob($dir . '/*.schema.yml');
+            if ($files === false) {
+                continue;
+            }
+            foreach ($files as $file) {
+                try {
+                    $yaml = Yaml::parseFile($file);
+                } catch (Throwable $e) {
+                    continue;
+                }
+                if (!is_array($yaml)) {
+                    continue;
+                }
+                foreach ($yaml as $typeName => $definition) {
+                    if (!is_array($definition)) {
+                        continue;
+                    }
+                    self::$definitions[(string) $typeName] = $definition;
+                }
+            }
+        }
+
+        foreach (self::$definitions as $typeName => $definition) {
+            if ($this->hasFullyValidatableConstraint($definition)) {
+                self::$fullyValidatable[$typeName] = true;
+            }
+        }
+    }
+
+    /**
+     * @param array<string, mixed> $definition
+     */
+    private function hasFullyValidatableConstraint(array $definition, int $depth = 0): bool
+    {
+        if ($depth > 10) {
+            return false;
+        }
+
+        if (isset($definition['constraints']) && is_array($definition['constraints'])
+            && array_key_exists('FullyValidatable', $definition['constraints'])
+        ) {
+            return true;
+        }
+
+        // Check the parent type.
+        if (isset($definition['type']) && is_string($definition['type'])) {
+            $parent = self::$definitions[$definition['type']] ?? null;
+            if ($parent !== null) {
+                return $this->hasFullyValidatableConstraint($parent, $depth + 1);
+            }
+        }
+
+        return false;
     }
 
     public function isFullyValidatable(string $configName): bool
     {
+        $this->ensureLoaded();
         return self::$fullyValidatable[$configName] ?? false;
     }
 
@@ -83,6 +177,12 @@ class ConfigSchemaData
         $definition = $this->resolveDefinition($definition);
 
         if ($parts === []) {
+            return true;
+        }
+
+        // A dynamic type reference (e.g. `mailer_dsn.options.[%parent.scheme]`)
+        // cannot be statically resolved, so any key beneath it is unverifiable.
+        if ($this->hasDynamicTypeReference($definition)) {
             return true;
         }
 
@@ -154,7 +254,18 @@ class ConfigSchemaData
         }
 
         // Config::get() can always return null when a key is absent.
-        return new UnionType([$type, new NullType()]);
+        return TypeCombinator::union($type, new NullType());
+    }
+
+    /**
+     * Whether the definition's type is a dynamic reference like `foo.[%key]`.
+     *
+     * @param array<string, mixed> $definition
+     */
+    private function hasDynamicTypeReference(array $definition): bool
+    {
+        $typeName = $definition['type'] ?? null;
+        return is_string($typeName) && str_contains($typeName, '[');
     }
 
     /**
@@ -210,6 +321,11 @@ class ConfigSchemaData
 
         if ($parts === []) {
             return $this->mapSchemaTypeToPhpStanType($definition);
+        }
+
+        // Keys beneath a dynamic type reference cannot be resolved statically.
+        if ($this->hasDynamicTypeReference($definition)) {
+            return null;
         }
 
         // If the definition is a sequence, the next path segment is a dynamic

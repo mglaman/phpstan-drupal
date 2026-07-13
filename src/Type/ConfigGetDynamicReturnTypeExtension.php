@@ -10,7 +10,7 @@ use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
 use PHPStan\Type\Type;
-use PHPStan\Type\UnionType;
+use PHPStan\Type\TypeCombinator;
 use function count;
 
 class ConfigGetDynamicReturnTypeExtension implements DynamicMethodReturnTypeExtension
@@ -62,19 +62,14 @@ class ConfigGetDynamicReturnTypeExtension implements DynamicMethodReturnTypeExte
         foreach ($constantStrings as $constantString) {
             $key = $constantString->getValue();
             $type = $this->configSchemaData->getTypeForKey($configName, $key);
-            if ($type !== null) {
-                $types[] = $type;
+            if ($type === null) {
+                // One unresolvable key poisons the union: narrowing to only
+                // the resolved branches would drop the mixed branch.
+                return null;
             }
+            $types[] = $type;
         }
 
-        if (count($types) === 0) {
-            return null;
-        }
-
-        if (count($types) === 1) {
-            return $types[0];
-        }
-
-        return new UnionType($types);
+        return TypeCombinator::union(...$types);
     }
 }

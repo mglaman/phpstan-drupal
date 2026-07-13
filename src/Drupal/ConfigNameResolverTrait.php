@@ -3,9 +3,11 @@
 namespace mglaman\PHPStanDrupal\Drupal;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Form\ConfigFormBaseTrait;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\StaticCall;
 use PhpParser\Node\Identifier;
+use PhpParser\Node\Name;
 use PhpParser\Node\Scalar\String_;
 use PHPStan\Analyser\Scope;
 use PHPStan\Type\ObjectType;
@@ -42,12 +44,23 @@ trait ConfigNameResolverTrait
 
         // Pattern 1: \Drupal::config('name')
         if ($var instanceof StaticCall && $methodName === 'config') {
+            if (!$var->class instanceof Name || $scope->resolveName($var->class) !== 'Drupal') {
+                return null;
+            }
             return $this->extractFirstStringArg($var->getArgs());
         }
 
-        // Pattern 2: $this->config('name') from ConfigFormBaseTrait
+        // Pattern 2: $this->config('name') from ConfigFormBaseTrait. The trait
+        // passes the name through unchanged; a same-named helper on another
+        // class may not (e.g. prefixing the config name), so require the trait.
         if ($var instanceof MethodCall && $methodName === 'config') {
-            return $this->extractFirstStringArg($var->getArgs());
+            $receiverType = $scope->getType($var->var);
+            foreach ($receiverType->getObjectClassReflections() as $classReflection) {
+                if ($classReflection->hasTraitUse(ConfigFormBaseTrait::class)) {
+                    return $this->extractFirstStringArg($var->getArgs());
+                }
+            }
+            return null;
         }
 
         // Pattern 3: $configFactory->get('name')

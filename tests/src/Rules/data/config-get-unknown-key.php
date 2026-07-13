@@ -55,6 +55,40 @@ function testNonFullyValidatable(): void {
     \Drupal::config('nonexistent.config')->get('any_key');
 }
 
+// --- Dynamic type references: keys beneath them are unverifiable ---
+
+function testDynamicTypeReference(): void {
+    // system.mail is FullyValidatable, but mailer_dsn.options uses the dynamic
+    // type `mailer_dsn.options.[%parent.scheme]` — keys beneath it must not be
+    // reported.
+    \Drupal::config('system.mail')->get('mailer_dsn.options.verify_peer');
+}
+
+// --- Receiver verification: same-named methods on other classes ---
+
+class NotDrupal {
+    public static function config(string $name): \Drupal\Core\Config\Config {
+        return \Drupal::getContainer()->get('config.factory')->getEditable('some.other_config');
+    }
+}
+
+class HasConfigHelper {
+    public function config(string $name): \Drupal\Core\Config\Config {
+        return \Drupal::getContainer()->get('config.factory')->getEditable('mymodule.' . $name);
+    }
+
+    public function run(): void {
+        // Not ConfigFormBaseTrait; the helper prefixes the name, so the key
+        // belongs to a different config — no error.
+        $this->config('system.maintenance')->get('anything_at_all');
+    }
+}
+
+function testStaticCallOnOtherClass(): void {
+    // Static ::config() on a class other than \Drupal — no error.
+    NotDrupal::config('system.maintenance')->get('legit_key_of_other_config');
+}
+
 class TestFormWithUnknownKey extends ConfigFormBase {
     protected function getEditableConfigNames() {
         return ['system.maintenance'];
