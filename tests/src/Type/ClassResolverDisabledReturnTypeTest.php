@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace mglaman\PHPStanDrupal\Tests\Type;
 
+use Drupal\Core\DependencyInjection\ClassResolverInterface;
 use PHPStan\Testing\TypeInferenceTestCase;
+use ReflectionMethod;
+use function str_contains;
 
 final class ClassResolverDisabledReturnTypeTest extends TypeInferenceTestCase
 {
@@ -19,6 +22,21 @@ final class ClassResolverDisabledReturnTypeTest extends TypeInferenceTestCase
     public static function dataFileAsserts(): iterable
     {
         yield from self::gatherAssertTypes(__DIR__ . '/data/drupal-class-resolver-disabled.php');
+        if (!self::coreDeclaresClassResolverGenerics()) {
+            yield from self::gatherAssertTypes(__DIR__ . '/data/drupal-class-resolver-disabled-legacy-core.php');
+        }
+    }
+
+    /**
+     * Drupal 11.x HEAD declares a conditional return type on
+     * getInstanceFromDefinition(), so class-string arguments narrow from the
+     * signature itself and the plain `object` fallback asserts only hold on
+     * cores without the generics.
+     */
+    private static function coreDeclaresClassResolverGenerics(): bool
+    {
+        $method = new ReflectionMethod(ClassResolverInterface::class, 'getInstanceFromDefinition');
+        return str_contains((string) $method->getDocComment(), '@template');
     }
 
     /**
