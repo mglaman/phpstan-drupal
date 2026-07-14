@@ -21,7 +21,7 @@ parameters:
 			checkDeprecatedHooksInApiFiles: false
 			checkCoreDeprecatedHooksInApiFiles: false
 			checkContribDeprecatedHooksInApiFiles: false
-			containerHasAlwaysTrue: true
+			containerHasAlwaysTrue: false
 		extensions:
 			entityFieldsViaMagicReflection: true
 			entityFieldMethodsViaMagicReflection: true
