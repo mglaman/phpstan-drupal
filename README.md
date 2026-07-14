@@ -173,6 +173,18 @@ parameters:
 
 Both options are enabled by default.
 
+#### Class resolver return types
+
+`ClassResolverInterface::getInstanceFromDefinition()` and `\Drupal::classResolver()` calls are narrowed to the type of the passed class name or service ID. The return value is not guaranteed at runtime: the container is checked first, and a service definition can substitute a different class. Disable the narrowing to keep `instanceof` assertions meaningful:
+
+```neon
+parameters:
+    drupal:
+        classResolverReturnType: false
+```
+
+Enabled by default. When disabled, calls fall back to the declared `object` return type.
+
 #### Bleeding-edge checks
 
 `bleedingEdge.neon` enables hook deprecation checks against `.api.php` files and stricter service-container checking. New rules land here first before graduating to the default ruleset in a minor release.
