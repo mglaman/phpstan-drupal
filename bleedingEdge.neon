@@ -4,4 +4,3 @@ parameters:
 			checkDeprecatedHooksInApiFiles: false
 			checkCoreDeprecatedHooksInApiFiles: true
 			checkContribDeprecatedHooksInApiFiles: true
-			containerHasAlwaysTrue: false

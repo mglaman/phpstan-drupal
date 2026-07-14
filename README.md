@@ -198,10 +198,18 @@ What it currently enables:
 
 - `checkCoreDeprecatedHooksInApiFiles` — reports hook implementations deprecated in Drupal core `.api.php` files
 - `checkContribDeprecatedHooksInApiFiles` — reports hook implementations deprecated in contrib module `.api.php` files
-- `containerHasAlwaysTrue: false` — `ContainerInterface::has()` returns `bool` instead of always-`true` for known services, preventing false positives that may cause developers to remove legitimate conditional service guards
 
 > [!NOTE]
 > `checkDeprecatedHooksInApiFiles` is deprecated. Use `checkCoreDeprecatedHooksInApiFiles` and `checkContribDeprecatedHooksInApiFiles` instead.
+
+> [!NOTE]
+> `containerHasAlwaysTrue: false` graduated from bleeding edge to the default in 2.1.0. `ContainerInterface::has()` returns `bool` instead of always-`true` for known services, so conditional service guards stay meaningful. Restore the old inference with:
+> ```neon
+> parameters:
+>     drupal:
+>         bleedingEdge:
+>             containerHasAlwaysTrue: true
+> ```
 
 #### Config schema-based checks (experimental)
 

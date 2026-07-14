@@ -12,7 +12,7 @@ final class DrupalContainerDynamicReturnTypeLegacyTest extends TypeInferenceTest
     public static function getAdditionalConfigFiles(): array
     {
         return array_merge(parent::getAdditionalConfigFiles(), [
-            __DIR__ . '/../../fixtures/config/phpunit-drupal-phpstan-no-bleedingedge.neon',
+            __DIR__ . '/../../fixtures/config/phpunit-drupal-phpstan-container-has-always-true.neon',
         ]);
     }
 
