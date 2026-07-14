@@ -29,6 +29,7 @@ parameters:
 			entityRepository: true
 			stubFiles: true
 		configGetReturnType: false
+		classResolverReturnType: true
 		rules:
 			testClassSuffixNameRule: true
 			dependencySerializationTraitPropertyRule: true
@@ -272,6 +273,7 @@ parametersSchema:
 			stubFiles: boolean()
 		])
 		configGetReturnType: boolean()
+		classResolverReturnType: boolean()
 		rules: structure([
 			testClassSuffixNameRule: boolean()
 			dependencySerializationTraitPropertyRule: boolean()
@@ -343,6 +345,8 @@ services:
 	-
 		class: mglaman\PHPStanDrupal\Type\DrupalClassResolverDynamicReturnTypeExtension
 		tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
+		arguments:
+			classResolverReturnType: %drupal.classResolverReturnType%
 	-
 		class: mglaman\PHPStanDrupal\Type\EntityQuery\EntityQueryDynamicReturnTypeExtension
 	-
@@ -353,6 +357,8 @@ services:
 	-
 		class: mglaman\PHPStanDrupal\Type\DrupalClassResolverDynamicStaticReturnTypeExtension
 		tags: [phpstan.broker.dynamicStaticMethodReturnTypeExtension]
+		arguments:
+			classResolverReturnType: %drupal.classResolverReturnType%
 	-
 		class: mglaman\PHPStanDrupal\Type\DrupalServiceDynamicReturnTypeExtension
 		tags: [phpstan.broker.dynamicStaticMethodReturnTypeExtension]
