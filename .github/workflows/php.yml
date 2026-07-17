@@ -42,7 +42,6 @@ jobs:
         php-version:
           - "8.3"
         drupal:
-          - "~11.2.0"
           - "~11.3.0"
         include:
           - php-version: "8.1"
@@ -87,7 +86,6 @@ jobs:
         php-version:
           - "8.3"
         drupal:
-          - "~11.2.0"
           - "~11.3.0"
         include:
           - php-version: "8.1"
@@ -163,7 +161,6 @@ jobs:
         php-version:
           - "8.3"
         drupal:
-          - "~11.2.0"
           - "~11.3.0"
         include:
           - php-version: "8.1"
