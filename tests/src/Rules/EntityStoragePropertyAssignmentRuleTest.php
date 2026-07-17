@@ -44,4 +44,9 @@ final class EntityStoragePropertyAssignmentRuleTest extends DrupalRuleTestCase
             ]
         );
     }
+
+    public function testBug1012(): void
+    {
+        $this->analyse([__DIR__ . '/data/bug-1012-proxy.php'], []);
+    }
 }
