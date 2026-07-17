@@ -67,6 +67,12 @@ class ContainerDynamicReturnTypeExtension implements DynamicMethodReturnTypeExte
                 }
             }
 
+            // A dynamic service ID has no constant strings; unioning zero
+            // types would produce `never`.
+            if ($types === []) {
+                return $returnType;
+            }
+
             return TypeCombinator::union(...$types);
         } elseif ($methodName === 'get') {
             $args = $methodCall->getArgs();
@@ -89,10 +95,18 @@ class ContainerDynamicReturnTypeExtension implements DynamicMethodReturnTypeExte
 
             $argType = $scope->getType($args[0]->value);
 
-            foreach ($argType->getConstantStrings() as $constantStringType) {
+            $constantStrings = $argType->getConstantStrings();
+            foreach ($constantStrings as $constantStringType) {
                 $serviceId = $constantStringType->getValue();
                 $service = $this->serviceMap->getService($serviceId);
                 $types[] = $service !== null ? $service->getType() : $returnType;
+            }
+
+            // A dynamic service ID has no constant strings; fall back to the
+            // declared return type so the union cannot collapse to `never`,
+            // while keeping any null added for NULL_ON_INVALID_REFERENCE.
+            if ($constantStrings === []) {
+                $types[] = $returnType;
             }
 
             return TypeCombinator::union(...$types);
