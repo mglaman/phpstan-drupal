@@ -1,0 +1,13 @@
+<?php
+
+namespace Drupal\Component\Render;
+
+class FormattableMarkup implements MarkupInterface, \Countable {
+
+    /**
+     * @param string $string
+     * @param array<string, string|\Stringable> $arguments
+     */
+    public function __construct($string, array $arguments) {}
+
+}
