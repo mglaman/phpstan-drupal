@@ -2,6 +2,7 @@
 
 namespace mglaman\PHPStanDrupal\Drupal;
 
+use Throwable;
 use function class_exists;
 
 class ServiceMap
@@ -41,7 +42,7 @@ class ServiceMap
 
             // @todo support factories
             if (!isset($serviceDefinition['class'])) {
-                if (class_exists($serviceId)) {
+                if (self::classExists($serviceId)) {
                     $serviceDefinition['class'] = $serviceId;
                 } else {
                     continue;
@@ -67,12 +68,24 @@ class ServiceMap
         }
 
         foreach ($decorators as $decorated_service_id => $services) {
-            foreach ($services as $dcorating_service_id) {
-                if (!isset(self::$services[$decorated_service_id])) {
+            foreach ($services as $decorating_service_id) {
+                if (!isset(self::$services[$decorated_service_id], self::$services[$decorating_service_id])) {
                     continue;
                 }
-                self::$services[$decorated_service_id]->addDecorator(self::$services[$dcorating_service_id]);
+                self::$services[$decorated_service_id]->addDecorator(self::$services[$decorating_service_id]);
             }
+        }
+    }
+
+    private static function classExists(string $className): bool
+    {
+        try {
+            return class_exists($className);
+        } catch (Throwable) {
+            // Loading the class can fail when it depends on a class from an
+            // extension that is not available, such as a decorator for an
+            // optional module registered with decoration_on_invalid: ignore.
+            return false;
         }
     }
 

@@ -237,7 +237,7 @@ class DrupalAutoloader
                 //     tags:
                 //       - { name: foo_bar }
                 // @endcode
-                if (!isset($serviceDefinition['class']) && class_exists($serviceId)) {
+                if (!isset($serviceDefinition['class']) && $this->classExists($serviceId)) {
                     $serviceDefinition['class'] = $serviceId;
                 }
                 // @todo sanitize "calls" and "configurator" and "factory"
@@ -418,5 +418,17 @@ class DrupalAutoloader
     protected function camelize(string $id): string
     {
         return strtr(ucwords(strtr($id, ['_' => ' ', '.' => '_ ', '\\' => '_ '])), [' ' => '']);
+    }
+
+    private function classExists(string $className): bool
+    {
+        try {
+            return class_exists($className);
+        } catch (Throwable) {
+            // Loading the class can fail when it depends on a class from an
+            // extension that is not available, such as a decorator for an
+            // optional module registered with decoration_on_invalid: ignore.
+            return false;
+        }
     }
 }
