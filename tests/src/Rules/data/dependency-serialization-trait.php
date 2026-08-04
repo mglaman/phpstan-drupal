@@ -46,3 +46,9 @@ class ReadonlyDirectUse {
         protected readonly EntityTypeManagerInterface $entityTypeManager,
     ) {}
 }
+
+class NonServiceProperty {
+    use DependencySerializationTrait;
+
+    private bool $foo;
+}
