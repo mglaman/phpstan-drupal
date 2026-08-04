@@ -37,7 +37,7 @@ class ServiceMap
             }
 
             if (isset($serviceDefinition['decorates'])) {
-                $decorators[$serviceDefinition['decorates']][] = $serviceId;
+                $decorators[$serviceDefinition['decorates']][$serviceId] = $serviceDefinition['decoration_on_invalid'] ?? 'exception';
             }
 
             // @todo support factories
@@ -68,8 +68,17 @@ class ServiceMap
         }
 
         foreach ($decorators as $decorated_service_id => $services) {
-            foreach ($services as $decorating_service_id) {
-                if (!isset(self::$services[$decorated_service_id], self::$services[$decorating_service_id])) {
+            foreach ($services as $decorating_service_id => $decoration_on_invalid) {
+                if (!isset(self::$services[$decorated_service_id])) {
+                    // Symfony removes the decorating service from the
+                    // container when the decorated service does not exist and
+                    // decoration_on_invalid is set to ignore.
+                    if ($decoration_on_invalid === 'ignore') {
+                        unset(self::$services[$decorating_service_id]);
+                    }
+                    continue;
+                }
+                if (!isset(self::$services[$decorating_service_id])) {
                     continue;
                 }
                 self::$services[$decorated_service_id]->addDecorator(self::$services[$decorating_service_id]);
