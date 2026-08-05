@@ -316,6 +316,10 @@ services:
 	-
 		class: mglaman\PHPStanDrupal\Drupal\ConfigSchemaData
 	-
+		class: mglaman\PHPStanDrupal\Drupal\BootstrapResultCacheMetaExtension
+		tags:
+			- phpstan.resultCacheMetaExtension
+	-
 		class: mglaman\PHPStanDrupal\Drupal\EntityDataRepository
 		arguments:
 			entityMapping: %drupal.entityMapping%

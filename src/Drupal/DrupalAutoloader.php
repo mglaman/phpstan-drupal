@@ -254,7 +254,7 @@ class DrupalAutoloader
         $this->loadConfigSchemas($container);
 
         $service_map = $container->getByType(ServiceMap::class);
-        $service_map->setDrupalServices($this->serviceMap);
+        $service_map->setDrupalServices($this->serviceMap, $this->serviceYamls);
 
         $extension_map = $container->getByType(ExtensionMap::class);
         $extension_map->setExtensions($this->moduleData, $this->themeData, $profiles);

@@ -59,6 +59,14 @@ class ConfigSchemaData
     private static array $fullyValidatable = [];
 
     /**
+     * @return list<string>
+     */
+    public function getSchemaDirectories(): array
+    {
+        return self::$schemaDirectories;
+    }
+
+    /**
      * @param list<string> $schemaDirectories
      */
     public function setSchemaDirectories(array $schemaDirectories): void
