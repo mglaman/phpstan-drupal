@@ -18,7 +18,7 @@ use function strtolower;
 /**
  * @implements Rule<InClassNode>
  */
-class PluginManagerInspectionRule implements Rule
+final class PluginManagerInspectionRule implements Rule
 {
     public function getNodeType(): string
     {

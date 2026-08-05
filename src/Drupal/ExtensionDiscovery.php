@@ -3,7 +3,6 @@
 namespace mglaman\PHPStanDrupal\Drupal;
 
 use FilesystemIterator;
-use mglaman\PHPStanDrupal\Drupal\Extension;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use Symfony\Component\Finder\Finder;
@@ -14,8 +13,15 @@ use function dirname;
 use function file_exists;
 use function is_dir;
 use function preg_match;
-use function strpos;
+use function str_starts_with;
 
+/**
+ * Discovers extensions in a Drupal site.
+ *
+ * Bundled version of \Drupal\Core\Extension\ExtensionDiscovery.
+ *
+ * @internal
+ */
 class ExtensionDiscovery
 {
 
@@ -61,23 +67,21 @@ class ExtensionDiscovery
     /**
      * List of installation profile directories to additionally scan.
      *
-     * @var array
+     * @var array<int, string>
      */
-    protected $profileDirectories;
+    protected array $profileDirectories;
 
     /**
      * The app root for the current operation.
-     *
-     * @var string
      */
-    protected $root;
+    protected string $root;
 
     /**
      * The site paths.
      *
      * @var string[]
      */
-    protected $sitePaths;
+    protected array $sitePaths;
 
     /**
      * Constructs a new ExtensionDiscovery object.
@@ -85,7 +89,7 @@ class ExtensionDiscovery
      * @param string $root
      *   The app root.
      */
-    public function __construct($root)
+    public function __construct(string $root)
     {
         $this->root = $root;
         $this->profileDirectories = [
@@ -247,13 +251,13 @@ class ExtensionDiscovery
         }
 
         return array_filter($all_files, function (Extension $file) : bool {
-            if (strpos($file->subpath, 'profiles') !== 0) {
+            if (!str_starts_with($file->subpath, 'profiles')) {
                 // This extension doesn't belong to a profile, ignore it.
                 return true;
             }
 
             foreach ($this->profileDirectories as $weight => $profile_path) {
-                if (strpos($file->getPath(), $profile_path) === 0) {
+                if (str_starts_with($file->getPath(), $profile_path)) {
                     // Parent profile found.
                     return true;
                 }
@@ -281,7 +285,7 @@ class ExtensionDiscovery
         foreach ($all_files as $key => $file) {
             // If the extension does not belong to a profile, just apply the weight
             // of the originating directory.
-            if (strpos($file->subpath, 'profiles') !== 0) {
+            if (!str_starts_with($file->subpath, 'profiles')) {
                 $origins[$key] = $weights[$file->origin];
                 $profiles[$key] = null;
             } elseif ($this->profileDirectories === []) {
@@ -293,7 +297,7 @@ class ExtensionDiscovery
             } else {
                 // Apply the weight of the originating profile directory.
                 foreach ($this->profileDirectories as $weight => $profile_path) {
-                    if (strpos($file->getPath(), $profile_path) === 0) {
+                    if (str_starts_with($file->getPath(), $profile_path)) {
                         $origins[$key] = self::ORIGIN_PROFILE;
                         $profiles[$key] = $weight;
                         continue 2;

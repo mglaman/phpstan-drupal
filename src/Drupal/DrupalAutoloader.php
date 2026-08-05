@@ -32,52 +32,51 @@ use function trigger_error;
 use function ucwords;
 use function usort;
 
+/**
+ * Bootstraps a Drupal site for analysis from PHPStan's bootstrap file.
+ *
+ * @internal
+ */
 class DrupalAutoloader
 {
 
-    /**
-     * @var \Composer\Autoload\ClassLoader
-     */
-    private $autoloader;
+    private ClassLoader $autoloader;
 
-    /**
-     * @var string
-     */
-    private $drupalRoot;
+    private string $drupalRoot;
 
     /**
      * List of available modules.
      *
      * @var Extension[]
      */
-    protected $moduleData = [];
+    protected array $moduleData = [];
 
     /**
      * List of available themes.
      *
      * @var Extension[]
      */
-    protected $themeData = [];
+    protected array $themeData = [];
 
     /**
      * @var array<array<string, string>>
      */
-    private $serviceMap = [];
+    private array $serviceMap = [];
 
     /**
      * @var array<string, string>
      */
-    private $serviceYamls = [];
+    private array $serviceYamls = [];
 
     /**
      * @var array<string, string>
      */
-    private $serviceClassProviders = [];
+    private array $serviceClassProviders = [];
 
     /**
-     * @var array
+     * @var array<string, mixed>
      */
-    private $namespaces = [];
+    private array $namespaces = [];
 
     public function register(Container $container): void
     {

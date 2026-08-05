@@ -2,6 +2,7 @@
 
 namespace mglaman\PHPStanDrupal\Type;
 
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use mglaman\PHPStanDrupal\Drupal\EntityDataRepository;
 use mglaman\PHPStanDrupal\Type\EntityStorage\EntityStorageType;
 use PhpParser\Node\Expr\BinaryOp\Concat;
@@ -15,24 +16,14 @@ use PHPStan\Type\Type;
 class EntityTypeManagerGetStorageDynamicReturnTypeExtension implements DynamicMethodReturnTypeExtension
 {
 
-    /**
-     * @var EntityDataRepository
-     */
-    private $entityDataRepository;
-
-    /**
-     * EntityTypeManagerGetStorageDynamicReturnTypeExtension constructor.
-     *
-     * @param EntityDataRepository $entityDataRepository
-     */
-    public function __construct(EntityDataRepository $entityDataRepository)
-    {
-        $this->entityDataRepository = $entityDataRepository;
+    public function __construct(
+        private readonly EntityDataRepository $entityDataRepository
+    ) {
     }
 
     public function getClass(): string
     {
-        return 'Drupal\Core\Entity\EntityTypeManagerInterface';
+        return EntityTypeManagerInterface::class;
     }
 
     public function isMethodSupported(MethodReflection $methodReflection): bool

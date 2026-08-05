@@ -8,74 +8,38 @@ use function explode;
 use function file_get_contents;
 use function is_array;
 use function sprintf;
-use function strpos;
+use function str_contains;
 use function trim;
 
 /**
  * Defines an extension (file) object.
  *
  * Bundled version of \Drupal\Core\Extension\Extension.
+ *
+ * @internal
  */
 class Extension
 {
 
     /**
-     * The type of the extension (e.g., 'module').
-     *
-     * @var string
+     * The subpath of the extension below the search path it was found in.
      */
-    protected $type;
+    public string $subpath = '';
 
     /**
-     * The relative pathname of the extension (e.g.,
-     * 'core/modules/node/node.info.yml').
-     *
-     * @var string
+     * The originating search path directory (e.g., 'core').
      */
-    protected $pathname;
+    public string $origin = '';
 
     /**
-     * The filename of the main extension file (e.g., 'node.module').
-     *
-     * @var string|null
+     * @var array<mixed>|null
      */
-    protected $filename;
-
-    /**
-     * An SplFileInfo instance for the extension's info file.
-     *
-     * Note that SplFileInfo is a PHP resource and resources cannot be serialized.
-     *
-     * @var ?\SplFileInfo
-     */
-    protected $splFileInfo;
-
-    /**
-     * The app root.
-     *
-     * @var string
-     */
-    protected $root;
-
-    /**
-     * @var string
-     */
-    public $subpath = '';
-
-    /**
-     * @var string
-     */
-    public $origin = '';
-
-    /**
-     * @var array|null
-     */
-    private $info;
+    private ?array $info = null;
 
     /**
      * @var string[]|null
      */
-    private $dependencies;
+    private ?array $dependencies = null;
 
     /**
      * Constructs a new Extension object.
@@ -87,15 +51,15 @@ class Extension
      * @param string $pathname
      *   The relative path and filename of the extension's info file; e.g.,
      *   'core/modules/node/node.info.yml'.
-     * @param string $filename
+     * @param string|null $filename
      *   (optional) The filename of the main extension file; e.g., 'node.module'.
      */
-    public function __construct($root, $type, $pathname, $filename = null)
-    {
-        $this->root = $root;
-        $this->type = $type;
-        $this->pathname = $pathname;
-        $this->filename = $filename;
+    public function __construct(
+        protected string $root,
+        protected string $type,
+        protected string $pathname,
+        protected ?string $filename = null
+    ) {
     }
 
     /**
@@ -212,7 +176,7 @@ class Extension
 
         // @see \Drupal\Core\Extension\Dependency::createFromString().
         foreach ($dependencies as $dependency) {
-            if (strpos($dependency, ':') !== false) {
+            if (str_contains($dependency, ':')) {
                 [, $dependency] = explode(':', $dependency);
             }
 
@@ -234,6 +198,11 @@ class Extension
             throw new RuntimeException(sprintf('Cannot read "%s"', $this->getPathname()));
         }
 
-        return $this->info = Yaml::parse($infoContent);
+        $parsed = Yaml::parse($infoContent);
+        if (!is_array($parsed)) {
+            throw new RuntimeException(sprintf('Malformed info file "%s"', $this->getPathname()));
+        }
+
+        return $this->info = $parsed;
     }
 }

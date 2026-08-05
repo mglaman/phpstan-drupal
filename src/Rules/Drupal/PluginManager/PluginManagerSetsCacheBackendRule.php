@@ -11,7 +11,7 @@ use function count;
 /**
  * @extends AbstractPluginManagerRule<ClassMethod>
  */
-class PluginManagerSetsCacheBackendRule extends AbstractPluginManagerRule
+final class PluginManagerSetsCacheBackendRule extends AbstractPluginManagerRule
 {
     public function getNodeType(): string
     {

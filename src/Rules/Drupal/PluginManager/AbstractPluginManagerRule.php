@@ -2,6 +2,7 @@
 
 namespace mglaman\PHPStanDrupal\Rules\Drupal\PluginManager;
 
+use Drupal\Component\Plugin\PluginManagerInterface;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Rules\Rule;
 
@@ -17,6 +18,6 @@ abstract class AbstractPluginManagerRule implements Rule
         return
             !$classReflection->isInterface() &&
             !$classReflection->isAnonymous() &&
-            $classReflection->implementsInterface('Drupal\Component\Plugin\PluginManagerInterface');
+            $classReflection->implementsInterface(PluginManagerInterface::class);
     }
 }

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace mglaman\PHPStanDrupal\Reflection;
 
@@ -19,16 +19,10 @@ use PHPStan\Type\TypeCombinator;
 class FieldItemListPropertyReflection implements PropertyReflection
 {
 
-    /** @var ClassReflection */
-    private $declaringClass;
-
-    /** @var string */
-    private $propertyName;
-
-    public function __construct(ClassReflection $declaringClass, string $propertyName)
-    {
-        $this->declaringClass = $declaringClass;
-        $this->propertyName = $propertyName;
+    public function __construct(
+        private readonly ClassReflection $declaringClass,
+        private readonly string $propertyName
+    ) {
     }
 
     public static function canHandleProperty(ClassReflection $classReflection, string $propertyName): bool

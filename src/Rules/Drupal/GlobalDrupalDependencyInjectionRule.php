@@ -11,8 +11,27 @@ use PHPStan\Rules\RuleErrorBuilder;
 /**
  * @implements Rule<Node\Expr\StaticCall>
  */
-class GlobalDrupalDependencyInjectionRule implements Rule
+final class GlobalDrupalDependencyInjectionRule implements Rule
 {
+    /**
+     * Interfaces whose implementations cannot use dependency injection.
+     */
+    private const ALLOWED_INTERFACES = [
+        // Ignore tests.
+        'PHPUnit\Framework\Test',
+        // Typed data objects cannot use dependency injection.
+        'Drupal\Core\TypedData\TypedDataInterface',
+        // Entities don't use services for now
+        // @see https://www.drupal.org/project/drupal/issues/2913224
+        'Drupal\Core\Entity\EntityInterface',
+        // Stream wrappers are only registered as a service for their tags
+        // and cannot use dependency injection. Function calls like
+        // file_exists, stat, etc. will construct the class directly.
+        'Drupal\Core\StreamWrapper\StreamWrapperInterface',
+        // Ignore Nightwatch test setup classes.
+        'Drupal\TestSite\TestSetupInterface',
+    ];
+
     public function getNodeType(): string
     {
         return Node\Expr\StaticCall::class;
@@ -35,23 +54,7 @@ class GlobalDrupalDependencyInjectionRule implements Rule
             return [];
         }
 
-        $allowed_list = [
-            // Ignore tests.
-            'PHPUnit\Framework\Test',
-            // Typed data objects cannot use dependency injection.
-            'Drupal\Core\TypedData\TypedDataInterface',
-            // Entities don't use services for now
-            // @see https://www.drupal.org/project/drupal/issues/2913224
-            'Drupal\Core\Entity\EntityInterface',
-            // Stream wrappers are only registered as a service for their tags
-            // and cannot use dependency injection. Function calls like
-            // file_exists, stat, etc. will construct the class directly.
-            'Drupal\Core\StreamWrapper\StreamWrapperInterface',
-            // Ignore Nightwatch test setup classes.
-            'Drupal\TestSite\TestSetupInterface',
-        ];
-
-        foreach ($allowed_list as $item) {
+        foreach (self::ALLOWED_INTERFACES as $item) {
             if ($scopeClassReflection->implementsInterface($item)) {
                 return [];
             }

@@ -16,8 +16,32 @@ use function strtolower;
  *
  * @implements Rule<FuncCall>
  */
-class DiscouragedFunctionsRule implements Rule
+final class DiscouragedFunctionsRule implements Rule
 {
+    private const DISCOURAGED_FUNCTIONS = [
+        // Devel module debugging functions.
+        'dargs',
+        'dcp',
+        'dd',
+        'dfb',
+        'dfbt',
+        'dpm',
+        'dpq',
+        'dpr',
+        'dprint_r',
+        'drupal_debug',
+        'dsm',
+        'dvm',
+        'dvr',
+        'kdevel_print_object',
+        'kpr',
+        'kprint_r',
+        'sdpm',
+        // Functions which are not available on all
+        // PHP builds.
+        'fnmatch',
+    ];
+
     public function getNodeType(): string
     {
         return FuncCall::class;
@@ -30,31 +54,7 @@ class DiscouragedFunctionsRule implements Rule
         }
         $name = strtolower((string)$node->name);
 
-        $discouragedFunctions = [
-            // Devel module debugging functions.
-            'dargs',
-            'dcp',
-            'dd',
-            'dfb',
-            'dfbt',
-            'dpm',
-            'dpq',
-            'dpr',
-            'dprint_r',
-            'drupal_debug',
-            'dsm',
-            'dvm',
-            'dvr',
-            'kdevel_print_object',
-            'kpr',
-            'kprint_r',
-            'sdpm',
-            // Functions which are not available on all
-            // PHP builds.
-            'fnmatch',
-        ];
-
-        if (in_array($name, $discouragedFunctions, true)) {
+        if (in_array($name, self::DISCOURAGED_FUNCTIONS, true)) {
             return [
                 RuleErrorBuilder::message(
                     sprintf('Calls to function %s should not exist.', $name)
