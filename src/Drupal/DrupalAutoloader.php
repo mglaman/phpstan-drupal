@@ -6,11 +6,9 @@ use Composer\Autoload\ClassLoader;
 use Drupal\Component\DependencyInjection\Container as DrupalContainer;
 use Drupal\Core\DependencyInjection\ContainerNotInitializedException;
 use Drupal\Core\DrupalKernelInterface;
-use Drupal\TestTools\PhpUnitCompatibility\PhpUnit8\ClassWriter;
 use DrupalFinder\DrupalFinderComposerRuntime;
 use Drush\Drush;
 use PHPStan\DependencyInjection\Container;
-use PHPUnit\Framework\Test;
 use ReflectionClass;
 use RuntimeException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -24,7 +22,6 @@ use function class_exists;
 use function dirname;
 use function file_exists;
 use function in_array;
-use function interface_exists;
 use function is_array;
 use function is_dir;
 use function is_string;
@@ -124,8 +121,12 @@ class DrupalAutoloader
         $extensionDiscovery->setProfileDirectories($profile_directories);
 
         $this->moduleData = array_merge($extensionDiscovery->scan('module'), $profiles);
-        usort($this->moduleData, static function (Extension $a, Extension $b) {
-            return strpos($a->getName(), '_test') !== false ? 10 : 0;
+        // Sort test extensions after regular ones so that their namespaces
+        // and services do not take precedence during registration.
+        usort($this->moduleData, static function (Extension $a, Extension $b): int {
+            $aIsTest = strpos($a->getName(), '_test') !== false ? 1 : 0;
+            $bIsTest = strpos($b->getName(), '_test') !== false ? 1 : 0;
+            return $aIsTest <=> $bIsTest;
         });
         $this->themeData = $extensionDiscovery->scan('theme');
         $this->addCoreTestNamespaces();
@@ -193,11 +194,7 @@ class DrupalAutoloader
         if (class_exists(Drush::class)) {
             $reflect = new ReflectionClass(Drush::class);
             if ($reflect->getFileName() !== false) {
-                $levels = 2;
-                if (Drush::getMajorVersion() < 9) {
-                    $levels = 3;
-                }
-                $drushDir = dirname($reflect->getFileName(), $levels);
+                $drushDir = dirname($reflect->getFileName(), 2);
                 foreach (Finder::create()->files()->name('*.inc')->in($drushDir . '/includes') as $file) {
                     require_once $file->getPathname();
                 }
@@ -258,11 +255,6 @@ class DrupalAutoloader
 
         $service_map = $container->getByType(ServiceMap::class);
         $service_map->setDrupalServices($this->serviceMap);
-
-        if (interface_exists(Test::class)
-            && class_exists('Drupal\TestTools\PhpUnitCompatibility\PhpUnit8\ClassWriter')) {
-            ClassWriter::mutateTestBase($this->autoloader);
-        }
 
         $extension_map = $container->getByType(ExtensionMap::class);
         $extension_map->setExtensions($this->moduleData, $this->themeData, $profiles);
