@@ -24,6 +24,8 @@ conditionalTags:
 		phpstan.rules.rule: %drupal.rules.dependencySerializationTraitPropertyRule%
 	mglaman\PHPStanDrupal\Rules\Drupal\AccessResultConditionRule:
 		phpstan.rules.rule: %drupal.rules.accessResultConditionRule%
+	mglaman\PHPStanDrupal\Rules\Drupal\AccessResultBooleanContextRule:
+		phpstan.rules.rule: %drupal.rules.accessResultBooleanContextRule%
 	mglaman\PHPStanDrupal\Rules\Classes\ClassExtendsInternalClassRule:
 		phpstan.rules.rule: %drupal.rules.classExtendsInternalClassRule%
 	mglaman\PHPStanDrupal\Rules\Classes\PluginManagerInspectionRule:
@@ -56,6 +58,10 @@ services:
 		class: mglaman\PHPStanDrupal\Rules\Drupal\DependencySerializationTraitPropertyRule
 	-
 		class: mglaman\PHPStanDrupal\Rules\Drupal\AccessResultConditionRule
+		arguments:
+			treatPhpDocTypesAsCertain: %treatPhpDocTypesAsCertain%
+	-
+		class: mglaman\PHPStanDrupal\Rules\Drupal\AccessResultBooleanContextRule
 		arguments:
 			treatPhpDocTypesAsCertain: %treatPhpDocTypesAsCertain%
 	-
