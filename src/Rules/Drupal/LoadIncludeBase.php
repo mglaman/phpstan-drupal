@@ -35,6 +35,11 @@ abstract class LoadIncludeBase implements Rule
         return null;
     }
 
+    /**
+     * @return array{string, string}|array{false, false}
+     *   The module name and file name, or [false, false] when either could
+     *   not be resolved to a constant string.
+     */
     protected function parseLoadIncludeArgs(Node\Arg $module, Node\Arg $type, ?Node\Arg $name, Scope $scope): array
     {
         $moduleName = $this->getStringArgValue($module->value, $scope);
