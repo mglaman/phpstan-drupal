@@ -145,6 +145,34 @@ parameters:
 > [!NOTE]
 > `hookRules` was renamed to `hookFormAlterRule` in 2.1.0 — update your configuration if you referenced it explicitly.
 
+#### Legacy rules made configurable in 2.2.0
+
+The following rules were previously always on. They remain enabled by default, but can now be disabled individually:
+
+```neon
+parameters:
+    drupal:
+        rules:
+            # Flags calls to discouraged functions such as Devel's debugging
+            # functions (dpm, dsm, kint, ...) and fnmatch.
+            discouragedFunctionsRule: false
+
+            # Flags \Drupal static calls inside classes that should use
+            # dependency injection instead.
+            globalDrupalDependencyInjectionRule: false
+
+            # Flags plugin managers that do not set a cache backend.
+            pluginManagerSetsCacheBackendRule: false
+
+            # Validates module_load_include() calls and loads the include for
+            # the rest of the analysis.
+            moduleLoadInclude: false
+
+            # Validates ModuleHandlerInterface::loadInclude() calls and loads
+            # the include for the rest of the analysis.
+            loadIncludes: false
+```
+
 #### Disabling checks for extending `@internal` classes
 
 You can disable the `ClassExtendsInternalClassRule` rule by adding the following to your `phpstan.neon`:
