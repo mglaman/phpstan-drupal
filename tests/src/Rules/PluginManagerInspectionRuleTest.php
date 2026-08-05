@@ -11,9 +11,7 @@ final class PluginManagerInspectionRuleTest extends DrupalRuleTestCase
 
     protected function getRule(): Rule
     {
-        return new PluginManagerInspectionRule(
-            self::createReflectionProvider()
-        );
+        return new PluginManagerInspectionRule();
     }
 
     /**
