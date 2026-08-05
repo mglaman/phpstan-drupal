@@ -83,6 +83,13 @@ class RecursiveExtensionFilterIterator extends RecursiveFilterIterator
     public function getChildren(): RecursiveFilterIterator
     {
         $filter = parent::getChildren();
+        // Depending on the PHP version PHPStan runs under, the SPL stub
+        // types getChildren() as static (making this check always true) or
+        // as the base RecursiveFilterIterator (making it a real narrowing).
+        // Keep the check for the latter and ignore the always-true report
+        // of the former; reportUnmatchedIgnoredErrors is disabled, so the
+        // ignore is inert where the report does not occur.
+        // @phpstan-ignore instanceof.alwaysTrue
         if ($filter instanceof self) {
             // Pass on the blacklist.
             $filter->blacklist = $this->blacklist;
