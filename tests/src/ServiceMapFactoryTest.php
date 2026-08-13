@@ -112,8 +112,46 @@ final class ServiceMapFactoryTest extends TestCase
                 'decorates' => 'unknown',
                 'class' => 'Drupal\service_map\Override',
             ],
+            'ignored_decorator_of_unknown_service' => [
+                'decorates' => 'unknown',
+                'decoration_on_invalid' => 'ignore',
+                'class' => 'Drupal\service_map\Override',
+            ],
         ]);
         $validator($service->getService($id));
+    }
+
+    /**
+     * @covers \mglaman\PHPStanDrupal\Drupal\ServiceMap::setDrupalServices
+     * @covers \mglaman\PHPStanDrupal\Drupal\ServiceMap::getService
+     * @covers \mglaman\PHPStanDrupal\Drupal\ServiceMap::classExists
+     */
+    public function testShorthandServiceWithUnloadableClass(): void
+    {
+        $autoloader = static function (string $class): void {
+            if ($class === 'Drupal\service_map_broken\ExtendsMissingClass') {
+                require __DIR__ . '/../fixtures/drupal/modules/service_map_broken/src/ExtendsMissingClass.php';
+            }
+        };
+        spl_autoload_register($autoloader);
+        try {
+            $service = new ServiceMap();
+            $service->setDrupalServices([
+                'decorated_service' => [
+                    'class' => 'Drupal\service_map\Base',
+                ],
+                'Drupal\service_map_broken\ExtendsMissingClass' => [
+                    'decorates' => 'decorated_service',
+                    'decoration_on_invalid' => 'ignore',
+                ],
+            ]);
+        } finally {
+            spl_autoload_unregister($autoloader);
+        }
+        self::assertNull($service->getService('Drupal\service_map_broken\ExtendsMissingClass'));
+        $decorated = $service->getService('decorated_service');
+        self::assertNotNull($decorated);
+        self::assertCount(0, $decorated->getDecorators());
     }
 
     public static function getServiceProvider(): \Iterator
@@ -229,6 +267,18 @@ final class ServiceMapFactoryTest extends TestCase
             function (DrupalServiceDefinition $service): void {
                 self::assertEquals(LoggerChannel::class, $service->getClass());
             }
+        ];
+        yield [
+            'decorating_an_unknown_service',
+            function (?DrupalServiceDefinition $service): void {
+                self::assertNotNull($service, 'decorating_an_unknown_service');
+            },
+        ];
+        yield [
+            'ignored_decorator_of_unknown_service',
+            function (?DrupalServiceDefinition $service): void {
+                self::assertNull($service, 'ignored_decorator_of_unknown_service');
+            },
         ];
         yield [
             'service_map.base_to_be_decorated',
