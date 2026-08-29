@@ -1,6 +1,16 @@
 parameters:
 	bootstrapFiles:
 		- drupal-autoloader.php
+	ignoreErrors:
+		-
+			message: '#^Attribute class Drupal\\Core\\Hook\\Attribute\\LegacyHook does not exist\.$#'
+			reportUnmatched: false
+		-
+			message: '#^Attribute class Drupal\\Core\\Hook\\Attribute\\LegacyRequirementsHook does not exist\.$#'
+			reportUnmatched: false
+		-
+			message: '#^Attribute class Drupal\\Core\\Hook\\Attribute\\LegacyModuleImplementsAlter does not exist\.$#'
+			reportUnmatched: false
 	excludePaths:
 		- '*.api.php'
 		- '*/tests/fixtures/*.php'
