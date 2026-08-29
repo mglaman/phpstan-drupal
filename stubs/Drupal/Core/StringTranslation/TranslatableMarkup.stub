@@ -1,0 +1,16 @@
+<?php
+
+namespace Drupal\Core\StringTranslation;
+
+use Drupal\Component\Render\FormattableMarkup;
+
+class TranslatableMarkup extends FormattableMarkup {
+
+  /**
+   * @param string $string
+   * @param array<string, string|\Stringable> $arguments
+   * @param array<string, mixed> $options
+   */
+  public function __construct($string, array $arguments = [], array $options = [], ?TranslationInterface $string_translation = NULL) {}
+
+}
