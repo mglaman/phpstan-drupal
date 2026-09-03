@@ -77,7 +77,12 @@ final class EntityRepositoryReturnTypeExtension implements DynamicMethodReturnTy
 
         $entityObjectTypes = [];
         $entityIdArg = $scope->getType($methodArgs[0]->value);
-        foreach ($entityIdArg->getConstantStrings() as $constantStringType) {
+
+        $constantStrings = $entityIdArg->getConstantStrings();
+        if (count($constantStrings) === 0) {
+            return $returnType;
+        }
+        foreach ($constantStrings as $constantStringType) {
             $entityObjectTypes[] = $this->entityDataRepository->get($constantStringType->getValue())->getClassType() ?? $returnType;
         }
         $entityTypes = TypeCombinator::union(...$entityObjectTypes);
