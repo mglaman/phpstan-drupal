@@ -299,6 +299,11 @@ class ExtensionDiscovery
                         continue 2;
                     }
                 }
+                // The extension lives under a profiles directory that is not
+                // a known profile directory. Every key must be present in
+                // both arrays or array_multisort() fails on unequal sizes.
+                $origins[$key] = self::ORIGIN_PROFILE;
+                $profiles[$key] = null;
             }
         }
         // Now sort the extensions by origin and installation profile(s).
