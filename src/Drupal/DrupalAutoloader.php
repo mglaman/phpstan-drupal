@@ -25,8 +25,8 @@ use function in_array;
 use function is_array;
 use function is_dir;
 use function is_string;
+use function str_contains;
 use function str_replace;
-use function strpos;
 use function strtr;
 use function trigger_error;
 use function ucwords;
@@ -121,12 +121,13 @@ class DrupalAutoloader
         $extensionDiscovery->setProfileDirectories($profile_directories);
 
         $this->moduleData = array_merge($extensionDiscovery->scan('module'), $profiles);
-        // Sort test extensions after regular ones so that their namespaces
-        // and services do not take precedence during registration.
+        // Load test extensions after regular ones. Test modules stub functions
+        // from their parent module behind function_exists() guards, so if the
+        // test module's .module file loads first the parent's unconditional
+        // declaration is a compile error that loadAndCatchErrors() cannot
+        // intercept.
         usort($this->moduleData, static function (Extension $a, Extension $b): int {
-            $aIsTest = strpos($a->getName(), '_test') !== false ? 1 : 0;
-            $bIsTest = strpos($b->getName(), '_test') !== false ? 1 : 0;
-            return $aIsTest <=> $bIsTest;
+            return str_contains($a->getName(), '_test') <=> str_contains($b->getName(), '_test');
         });
         $this->themeData = $extensionDiscovery->scan('theme');
         $this->addCoreTestNamespaces();
