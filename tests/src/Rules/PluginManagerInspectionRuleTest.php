@@ -34,6 +34,10 @@ final class PluginManagerInspectionRuleTest extends DrupalRuleTestCase
             __DIR__ . '/data/plugin-manager-valid.php',
             []
         ];
+        yield 'nested anonymous class constructor does not crash' => [
+            __DIR__ . '/data/plugin-manager-nested-constructor.php',
+            []
+        ];
         yield [
             __DIR__ . '/data/plugin-manager-alter-info.php',
             [

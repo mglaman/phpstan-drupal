@@ -49,10 +49,10 @@ class PluginManagerInspectionRule implements Rule
             return [];
         }
 
-        $constructorMethodNode = (new NodeFinder())->findFirst($originalNode->stmts, static function (Node $node) {
-            return $node instanceof Node\Stmt\ClassMethod && $node->name->toString() === '__construct';
-        });
-        if (!$constructorMethodNode instanceof Node\Stmt\ClassMethod) {
+        // Only look at the class's own methods. A recursive search would also
+        // match a constructor declared by an anonymous class nested in a method.
+        $constructorMethodNode = $originalNode->getMethod('__construct');
+        if ($constructorMethodNode === null) {
             return [];
         }
 
@@ -113,6 +113,9 @@ class PluginManagerInspectionRule implements Rule
         $errors = [];
 
         $fqn = $classReflection->getName();
+        if (!$classReflection->hasConstructor()) {
+            return $errors;
+        }
         $constructor = $classReflection->getConstructor();
 
         if ($constructor->getDeclaringClass()->getName() !== $fqn) {
