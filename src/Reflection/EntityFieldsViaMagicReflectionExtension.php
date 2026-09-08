@@ -2,11 +2,11 @@
 
 namespace mglaman\PHPStanDrupal\Reflection;
 
-use LogicException;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\PropertiesClassReflectionExtension;
 use PHPStan\Reflection\PropertyReflection;
 use PHPStan\Reflection\ReflectionProvider;
+use PHPStan\ShouldNotHappenException;
 use PHPStan\Type\IsSuperTypeOfResult;
 use PHPStan\Type\ObjectType;
 use function array_key_exists;
@@ -68,7 +68,7 @@ class EntityFieldsViaMagicReflectionExtension implements PropertiesClassReflecti
             return new FieldItemListPropertyReflection($classReflection, $propertyName);
         }
 
-        throw new LogicException($classReflection->getName() . "::$propertyName should be handled earlier.");
+        throw new ShouldNotHappenException($classReflection->getName() . "::$propertyName should be handled earlier.");
     }
 
     public static function classObjectIsSuperOfInterface(string $name, ObjectType $interfaceObject) : IsSuperTypeOfResult
