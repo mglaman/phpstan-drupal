@@ -231,7 +231,7 @@ class Extension
 
         $infoContent = file_get_contents(sprintf('%s/%s', $this->root, $this->getPathname()));
         if (false === $infoContent) {
-            throw new RuntimeException(sprintf('Cannot read "%s', $this->getPathname()));
+            throw new RuntimeException(sprintf('Cannot read "%s"', $this->getPathname()));
         }
 
         return $this->info = Yaml::parse($infoContent);

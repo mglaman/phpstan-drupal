@@ -52,8 +52,6 @@ class DiscouragedFunctionsRule implements Rule
             // Functions which are not available on all
             // PHP builds.
             'fnmatch',
-            // Functions which are a security risk.
-            'eval',
         ];
 
         if (in_array($name, $discouragedFunctions, true)) {
