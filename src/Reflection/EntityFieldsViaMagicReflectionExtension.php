@@ -2,6 +2,7 @@
 
 namespace mglaman\PHPStanDrupal\Reflection;
 
+use Drupal\Core\Field\FieldItemListInterface;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\PropertiesClassReflectionExtension;
 use PHPStan\Reflection\PropertyReflection;
@@ -50,7 +51,7 @@ class EntityFieldsViaMagicReflectionExtension implements PropertiesClassReflecti
             // Content entities have magical __get... so it is kind of true.
             return true;
         }
-        if ($classReflection->implementsInterface('Drupal\Core\Field\FieldItemListInterface')) {
+        if ($classReflection->is(FieldItemListInterface::class)) {
             return FieldItemListPropertyReflection::canHandleProperty($classReflection, $propertyName);
         }
 
@@ -62,7 +63,7 @@ class EntityFieldsViaMagicReflectionExtension implements PropertiesClassReflecti
         if ($classReflection->implementsInterface('Drupal\Core\Entity\EntityInterface')) {
             return new EntityFieldReflection($classReflection, $propertyName, $this->reflectionProvider);
         }
-        if ($classReflection->implementsInterface('Drupal\Core\Field\FieldItemListInterface')) {
+        if ($classReflection->is(FieldItemListInterface::class)) {
             return new FieldItemListPropertyReflection($classReflection, $propertyName);
         }
 
