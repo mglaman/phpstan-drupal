@@ -10,6 +10,9 @@ class ServiceMap
     /** @var DrupalServiceDefinition[] */
     private static $services = [];
 
+    /** @var array<string, string> */
+    private static array $serviceYamlPaths = [];
+
     public function getService(string $id): ?DrupalServiceDefinition
     {
         return self::$services[$id] ?? null;
@@ -23,9 +26,26 @@ class ServiceMap
         return self::$services;
     }
 
-    public function setDrupalServices(array $drupalServices): void
+    /**
+     * Absolute paths of the services.yml files the map was built from.
+     *
+     * @return array<string, string>
+     *   Paths keyed by the providing extension name.
+     */
+    public function getServiceYamlPaths(): array
+    {
+        return self::$serviceYamlPaths;
+    }
+
+    /**
+     * @param array<string, string> $serviceYamlPaths
+     *   Absolute paths of the consumed services.yml files, keyed by the
+     *   providing extension name.
+     */
+    public function setDrupalServices(array $drupalServices, array $serviceYamlPaths = []): void
     {
         self::$services = [];
+        self::$serviceYamlPaths = $serviceYamlPaths;
         $decorators = [];
 
         foreach ($drupalServices as $serviceId => $serviceDefinition) {
