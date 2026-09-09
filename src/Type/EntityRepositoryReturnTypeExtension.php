@@ -75,26 +75,38 @@ final class EntityRepositoryReturnTypeExtension implements DynamicMethodReturnTy
             return $scope->getType($methodArgs[0]->value);
         }
 
-        $entityObjectTypes = [];
         $entityIdArg = $scope->getType($methodArgs[0]->value);
+        $returnsArray = $returnType->isArray()->yes();
+
+        $resolvedTypes = [];
         foreach ($entityIdArg->getConstantStrings() as $constantStringType) {
-            $entityObjectTypes[] = $this->entityDataRepository->get($constantStringType->getValue())->getClassType() ?? $returnType;
-        }
-        $entityTypes = TypeCombinator::union(...$entityObjectTypes);
-
-        if ($returnType->isArray()->no()) {
-            if ($returnType->isNull()->maybe()) {
-                $entityTypes = TypeCombinator::addNull($entityTypes);
+            $classType = $this->entityDataRepository->get($constantStringType->getValue())->getClassType();
+            if ($classType === null) {
+                // The entity type ID is unknown, so nothing can be narrowed.
+                return $returnType;
             }
-            return $entityTypes;
+            $resolvedTypes[] = $returnsArray ? new ArrayType($this->getKeyType($classType), $classType) : $classType;
+        }
+        if ($resolvedTypes === []) {
+            return $returnType;
         }
 
-        if ((new ObjectType(ConfigEntityInterface::class))->isSuperTypeOf($entityTypes)->yes()) {
-            $keyType = new StringType();
-        } else {
-            $keyType = new IntegerType();
+        $resolvedType = TypeCombinator::union(...$resolvedTypes);
+        if ($returnType->isNull()->maybe()) {
+            $resolvedType = TypeCombinator::addNull($resolvedType);
         }
+        return $resolvedType;
+    }
 
-        return new ArrayType($keyType, $entityTypes);
+    /**
+     * Config entities are keyed by their string ID, content entities by their
+     * integer ID.
+     */
+    private function getKeyType(Type $classType): Type
+    {
+        if ((new ObjectType(ConfigEntityInterface::class))->isSuperTypeOf($classType)->yes()) {
+            return new StringType();
+        }
+        return new IntegerType();
     }
 }
