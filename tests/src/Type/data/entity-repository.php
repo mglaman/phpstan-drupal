@@ -7,8 +7,8 @@ use function PHPStan\Testing\assertType;
 
 $entityRepository = \Drupal::service('entity.repository');
 
-/** @phpstan-var string $someEntityType */
-/** @phpstan-var string|int $someEntityId */
+/** @var string $someEntityType */
+/** @var 'node'|'block' $nodeOrBlock */
 
 assertType(
     'Drupal\node\Entity\Node|null',
@@ -21,7 +21,7 @@ assertType(
 );
 assertType(
     'Drupal\Core\Entity\EntityInterface|null',
-    $entityRepository->loadEntityByConfigTarget($nonConstantString, 'media.default')
+    $entityRepository->loadEntityByConfigTarget($someEntityType, 'media.default')
 );
 
 assertType(
@@ -37,6 +37,14 @@ assertType(
     'Drupal\Core\Entity\EntityInterface|null',
     $entityRepository->getActive($someEntityType, 5)
 );
+assertType(
+    'Drupal\Core\Entity\EntityInterface|null',
+    $entityRepository->getActive('not_an_entity_type', 5)
+);
+assertType(
+    'Drupal\block\Entity\Block|Drupal\node\Entity\Node|null',
+    $entityRepository->getActive($nodeOrBlock, 5)
+);
 
 assertType(
     'array<int, Drupal\node\Entity\Node>',
@@ -49,7 +57,15 @@ assertType(
 
 assertType(
     'array<Drupal\Core\Entity\EntityInterface>',
-    $entityRepository->getActiveMultiple($someEntityType, [$someEntityId])
+    $entityRepository->getActiveMultiple($someEntityType, [5])
+);
+assertType(
+    'array<Drupal\Core\Entity\EntityInterface>',
+    $entityRepository->getActiveMultiple('not_an_entity_type', [5])
+);
+assertType(
+    'array<int|string, Drupal\block\Entity\Block|Drupal\node\Entity\Node>',
+    $entityRepository->getActiveMultiple($nodeOrBlock, [5])
 );
 
 assertType(
@@ -58,7 +74,7 @@ assertType(
 );
 assertType(
     'Drupal\Core\Entity\EntityInterface|null',
-    $entityRepository->getCanonical($someEntityType, $someEntityId)
+    $entityRepository->getCanonical($someEntityType, 5)
 );
 
 assertType(
@@ -67,5 +83,5 @@ assertType(
 );
 assertType(
     'array<Drupal\Core\Entity\EntityInterface>',
-    $entityRepository->getCanonicalMultiple($someEntityType, [$someEntityId])
+    $entityRepository->getCanonicalMultiple($someEntityType, [5])
 );
