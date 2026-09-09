@@ -31,6 +31,11 @@ parameters:
 		configGetReturnType: false
 		classResolverReturnType: true
 		rules:
+			discouragedFunctionsRule: true
+			globalDrupalDependencyInjectionRule: true
+			pluginManagerSetsCacheBackendRule: true
+			moduleLoadInclude: true
+			loadIncludes: true
 			testClassSuffixNameRule: true
 			dependencySerializationTraitPropertyRule: true
 			accessResultConditionRule: true
@@ -275,6 +280,11 @@ parametersSchema:
 		configGetReturnType: boolean()
 		classResolverReturnType: boolean()
 		rules: structure([
+			discouragedFunctionsRule: boolean()
+			globalDrupalDependencyInjectionRule: boolean()
+			pluginManagerSetsCacheBackendRule: boolean()
+			moduleLoadInclude: boolean()
+			loadIncludes: boolean()
 			testClassSuffixNameRule: boolean()
 			dependencySerializationTraitPropertyRule: boolean()
 			accessResultConditionRule: boolean()
