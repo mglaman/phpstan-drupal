@@ -19,7 +19,7 @@ use function sprintf;
  *
  * @extends LoadIncludeBase<Node\Expr\FuncCall>
  */
-class ModuleLoadInclude extends LoadIncludeBase
+final class ModuleLoadInclude extends LoadIncludeBase
 {
 
     public function getNodeType(): string

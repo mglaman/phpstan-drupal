@@ -15,14 +15,9 @@ use function count;
 abstract class LoadIncludeBase implements Rule
 {
 
-    /**
-     * @var \mglaman\PHPStanDrupal\Drupal\ExtensionMap
-     */
-    protected $extensionMap;
-
-    public function __construct(ExtensionMap $extensionMap)
-    {
-        $this->extensionMap = $extensionMap;
+    public function __construct(
+        protected readonly ExtensionMap $extensionMap
+    ) {
     }
 
     private function getStringArgValue(Node\Expr $expr, Scope $scope): ?string

@@ -15,7 +15,7 @@ use function sprintf;
 /**
  * @extends LoadIncludeBase<Node\Expr\MethodCall>
  */
-class LoadIncludes extends LoadIncludeBase
+final class LoadIncludes extends LoadIncludeBase
 {
 
     public function getNodeType(): string

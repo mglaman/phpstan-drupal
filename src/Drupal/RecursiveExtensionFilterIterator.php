@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace mglaman\PHPStanDrupal\Drupal;
 
@@ -6,14 +6,14 @@ use RecursiveFilterIterator;
 use RecursiveIterator;
 use function array_merge;
 use function in_array;
-use function substr;
+use function str_ends_with;
 
 /**
  * Filters a RecursiveDirectoryIterator to discover extensions.
  *
  * Locally bundled version of \Drupal\Core\Extension\Discovery\RecursiveExtensionFilterIterator.
  *
- * @method bool isDir()
+ * @internal
  */
 class RecursiveExtensionFilterIterator extends RecursiveFilterIterator
 {
@@ -24,9 +24,9 @@ class RecursiveExtensionFilterIterator extends RecursiveFilterIterator
      * Only these directory names are considered when starting a filesystem
      * recursion in a search path.
      *
-     * @var array
+     * @var list<string>
      */
-    protected $whitelist = [
+    protected array $whitelist = [
         'profiles',
         'modules',
         'themes',
@@ -39,9 +39,9 @@ class RecursiveExtensionFilterIterator extends RecursiveFilterIterator
      * i.e., extensions (of all types) are not able to use any of these names,
      * because their directory names will be skipped.
      *
-     * @var array
+     * @var list<string>
      */
-    protected $blacklist = [
+    protected array $blacklist = [
         // Object-oriented code subdirectories.
         'src',
         'lib',
@@ -67,7 +67,7 @@ class RecursiveExtensionFilterIterator extends RecursiveFilterIterator
      *
      * @param \RecursiveIterator $iterator
      *   The iterator to filter.
-     * @param array $blacklist
+     * @param list<string> $blacklist
      *   (optional) Add to the blacklist of directories that should be filtered
      *   out during the iteration.
      */
@@ -108,7 +108,7 @@ class RecursiveExtensionFilterIterator extends RecursiveFilterIterator
         if ($name[0] === '.') {
             return false;
         }
-        if ($this->isDir()) {
+        if ($this->current()->isDir()) {
             // If this is a subdirectory of a base search path, only recurse into the
             // fixed list of expected extension type directory names. Required for
             // scanning the top-level/root directory; without this condition, we would
@@ -126,13 +126,13 @@ class RecursiveExtensionFilterIterator extends RecursiveFilterIterator
             // config module to be overridden/replaced in a profile/site directory
             // (whereas it must be located directly in a modules directory).
             if ($name === 'config') {
-                return substr($this->current()->getPathname(), -14) === 'modules/config';
+                return str_ends_with($this->current()->getPathname(), 'modules/config');
             }
             // Accept the directory unless the name is blacklisted.
             return !in_array($name, $this->blacklist, true);
         }
 
         // Only accept extension info files.
-        return substr($name, -9) === '.info.yml';
+        return str_ends_with($name, '.info.yml');
     }
 }
