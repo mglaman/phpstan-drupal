@@ -56,7 +56,6 @@ class ModuleLoadInclude extends LoadIncludeBase
                     $filename,
                     $moduleName
                 ))
-                ->line($node->getStartLine())
                 ->identifier('moduleLoadInclude.moduleNotFound')
                 ->build()
             ];
@@ -73,7 +72,6 @@ class ModuleLoadInclude extends LoadIncludeBase
             } catch (Throwable $e) {
                 return [
                     RuleErrorBuilder::message('A file could not be loaded from module_load_include')
-                    ->line($node->getStartLine())
                     ->identifier('moduleLoadInclude.moduleNotLoadable')
                     ->build()
                 ];
@@ -85,7 +83,6 @@ class ModuleLoadInclude extends LoadIncludeBase
                 'File %s could not be loaded from module_load_include.',
                 $module->getPath() . '/' . $filename
             ))
-            ->line($node->getStartLine())
             ->identifier('moduleLoadInclude.moduleNotLoadable')
             ->build()
         ];

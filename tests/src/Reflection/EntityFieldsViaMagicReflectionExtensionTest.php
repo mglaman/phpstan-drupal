@@ -84,6 +84,18 @@ final class EntityFieldsViaMagicReflectionExtensionTest extends PHPStanTestCase 
             'value',
             false,
         ];
+        // Values typed as the interface itself, such as $node->uid, are the
+        // common case and must be handled like the concrete class.
+        yield 'field item list interface: entity' => [
+            \Drupal\Core\Field\FieldItemListInterface::class,
+            'entity',
+            true,
+        ];
+        yield 'field item list interface: target_id' => [
+            \Drupal\Core\Field\FieldItemListInterface::class,
+            'target_id',
+            true,
+        ];
         yield 'field item list: format' => [
             \Drupal\Core\Field\FieldItemList::class,
             'format',
@@ -125,6 +137,15 @@ final class EntityFieldsViaMagicReflectionExtensionTest extends PHPStanTestCase 
         $readableType = $propertyReflection->getReadableType();
         self::assertInstanceOf(MixedType::class, $readableType);
     }
-    
+
+    public function testGetPropertyFieldItemListInterface(): void
+    {
+        $classReflection = $this->createReflectionProvider()->getClass(FieldItemListInterface::class);
+        $propertyReflection = $this->extension->getProperty($classReflection, 'entity');
+        $readableType = $propertyReflection->getReadableType();
+        self::assertSame('Drupal\Core\Entity\EntityInterface|null', $readableType->describe(VerbosityLevel::typeOnly()));
+        $propertyReflection = $this->extension->getProperty($classReflection, 'target_id');
+        self::assertInstanceOf(StringType::class, $propertyReflection->getReadableType());
+    }
 
 }

@@ -60,11 +60,17 @@ class EntityFieldReflection implements PropertyReflection
 
     private function isContentEntityType(): bool
     {
+        if (!$this->reflectionProvider->hasClass(ContentEntityInterface::class)) {
+            return false;
+        }
         return $this->declaringClass->isSubclassOfClass($this->reflectionProvider->getClass(ContentEntityInterface::class));
     }
 
     private function isConfigEntityType(): bool
     {
+        if (!$this->reflectionProvider->hasClass(ConfigEntityInterface::class)) {
+            return false;
+        }
         return $this->declaringClass->isSubclassOfClass($this->reflectionProvider->getClass(ConfigEntityInterface::class));
     }
 

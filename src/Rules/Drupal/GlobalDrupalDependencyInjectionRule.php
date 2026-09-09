@@ -4,7 +4,7 @@ namespace mglaman\PHPStanDrupal\Rules\Drupal;
 
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
-use PHPStan\Reflection\ExtendedMethodReflection;
+use PHPStan\Reflection\MethodReflection;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
 
@@ -21,7 +21,7 @@ class GlobalDrupalDependencyInjectionRule implements Rule
     public function processNode(Node $node, Scope $scope): array
     {
         // Only check static calls to \Drupal
-        if (!($node->class instanceof Node\Name\FullyQualified) || (string) $node->class !== 'Drupal') {
+        if (!$node->class instanceof Node\Name || $scope->resolveName($node->class) !== 'Drupal') {
             return [];
         }
         // Do not raise if called inside a trait.
@@ -61,7 +61,7 @@ class GlobalDrupalDependencyInjectionRule implements Rule
         if ($scopeFunction === null) {
             return [];
         }
-        if (!$scopeFunction instanceof ExtendedMethodReflection) {
+        if (!$scopeFunction instanceof MethodReflection) {
             return [];
         }
         if ($scopeFunction->isStatic()) {

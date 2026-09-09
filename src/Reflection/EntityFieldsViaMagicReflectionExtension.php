@@ -2,13 +2,12 @@
 
 namespace mglaman\PHPStanDrupal\Reflection;
 
+use Drupal\Core\Field\FieldItemListInterface;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\PropertiesClassReflectionExtension;
 use PHPStan\Reflection\PropertyReflection;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\ShouldNotHappenException;
-use PHPStan\Type\IsSuperTypeOfResult;
-use PHPStan\Type\ObjectType;
 use function array_key_exists;
 
 /**
@@ -52,7 +51,7 @@ class EntityFieldsViaMagicReflectionExtension implements PropertiesClassReflecti
             // Content entities have magical __get... so it is kind of true.
             return true;
         }
-        if (self::classObjectIsSuperOfInterface($classReflection->getName(), self::getFieldItemListInterfaceObject())->yes()) {
+        if ($classReflection->is(FieldItemListInterface::class)) {
             return FieldItemListPropertyReflection::canHandleProperty($classReflection, $propertyName);
         }
 
@@ -64,20 +63,10 @@ class EntityFieldsViaMagicReflectionExtension implements PropertiesClassReflecti
         if ($classReflection->implementsInterface('Drupal\Core\Entity\EntityInterface')) {
             return new EntityFieldReflection($classReflection, $propertyName, $this->reflectionProvider);
         }
-        if (self::classObjectIsSuperOfInterface($classReflection->getName(), self::getFieldItemListInterfaceObject())->yes()) {
+        if ($classReflection->is(FieldItemListInterface::class)) {
             return new FieldItemListPropertyReflection($classReflection, $propertyName);
         }
 
         throw new ShouldNotHappenException($classReflection->getName() . "::$propertyName should be handled earlier.");
-    }
-
-    public static function classObjectIsSuperOfInterface(string $name, ObjectType $interfaceObject) : IsSuperTypeOfResult
-    {
-        return $interfaceObject->isSuperTypeOf(new ObjectType($name));
-    }
-
-    protected static function getFieldItemListInterfaceObject() : ObjectType
-    {
-        return new ObjectType('Drupal\Core\Field\FieldItemListInterface');
     }
 }

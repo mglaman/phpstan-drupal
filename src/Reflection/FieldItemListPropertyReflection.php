@@ -6,11 +6,10 @@ use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\PropertyReflection;
 use PHPStan\TrinaryLogic;
 use PHPStan\Type\MixedType;
-use PHPStan\Type\NullType;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\StringType;
 use PHPStan\Type\Type;
-use PHPStan\Type\UnionType;
+use PHPStan\Type\TypeCombinator;
 
 /**
  * Allows field access via magic methods
@@ -42,7 +41,7 @@ class FieldItemListPropertyReflection implements PropertyReflection
     public function getReadableType(): Type
     {
         if ($this->propertyName === 'entity') {
-            return new UnionType([new ObjectType('Drupal\Core\Entity\EntityInterface'), new NullType()]);
+            return TypeCombinator::addNull(new ObjectType('Drupal\Core\Entity\EntityInterface'));
         }
         if ($this->propertyName === 'target_id') {
             // @todo needs to be union type.
@@ -60,7 +59,7 @@ class FieldItemListPropertyReflection implements PropertyReflection
     public function getWritableType(): Type
     {
         if ($this->propertyName === 'entity') {
-            return new UnionType([new ObjectType('Drupal\Core\Entity\EntityInterface'), new NullType()]);
+            return TypeCombinator::addNull(new ObjectType('Drupal\Core\Entity\EntityInterface'));
         }
         if ($this->propertyName === 'target_id') {
             return new StringType();
