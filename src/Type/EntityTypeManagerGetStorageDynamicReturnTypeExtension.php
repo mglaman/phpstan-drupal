@@ -4,14 +4,13 @@ namespace mglaman\PHPStanDrupal\Type;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use mglaman\PHPStanDrupal\Drupal\EntityDataRepository;
-use mglaman\PHPStanDrupal\Type\EntityStorage\EntityStorageType;
-use PhpParser\Node\Expr\BinaryOp\Concat;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\MethodReflection;
-use PHPStan\Reflection\ParametersAcceptorSelector;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
 use PHPStan\Type\Type;
+use PHPStan\Type\TypeCombinator;
+use function count;
 
 class EntityTypeManagerGetStorageDynamicReturnTypeExtension implements DynamicMethodReturnTypeExtension
 {
@@ -35,49 +34,31 @@ class EntityTypeManagerGetStorageDynamicReturnTypeExtension implements DynamicMe
         MethodReflection $methodReflection,
         MethodCall $methodCall,
         Scope $scope
-    ): Type {
-        $returnType = ParametersAcceptorSelector::selectFromArgs(
-            $scope,
-            $methodCall->getArgs(),
-            $methodReflection->getVariants()
-        )->getReturnType();
+    ): ?Type {
         if ($methodCall->isFirstClassCallable()) {
-            return $returnType;
+            return null;
         }
         $args = $methodCall->getArgs();
         if (count($args) === 0) {
-            // Calling getStorage() without arguments is invalid, but PHPStan
-            // reports that itself; do not crash the analysis.
-            return $returnType;
+            return null;
         }
 
-        $arg1 = $args[0]->value;
-
-        // @todo handle where the first param is EntityTypeInterface::id()
-        if ($arg1 instanceof MethodCall) {
-            // There may not be much that can be done, since it's a generic EntityTypeInterface.
-            return $returnType;
-        }
-        // @todo handle concat ie: entity_{$display_context}_display for entity_form_display or entity_view_display
-        if ($arg1 instanceof Concat) {
-            return $returnType;
+        $constantStrings = $scope->getType($args[0]->value)->getConstantStrings();
+        if ($constantStrings === []) {
+            // A dynamic entity type ID; fall back to the declared return type.
+            return null;
         }
 
-        $type = $scope->getType($arg1);
-        if (count($type->getConstantStrings()) === 0) {
-            return $returnType;
+        $types = [];
+        foreach ($constantStrings as $constantString) {
+            $storageType = $this->entityDataRepository->get($constantString->getValue())->getStorageType();
+            if ($storageType === null) {
+                // An unknown entity type ID. Once one member is unknown the
+                // whole call can only be trusted to the declared return type.
+                return null;
+            }
+            $types[] = $storageType;
         }
-
-        $entityTypeId = $type->getConstantStrings()[0]->getValue();
-        $storageType = $this->entityDataRepository->get($entityTypeId)->getStorageType();
-        if ($storageType !== null) {
-            return $storageType;
-        }
-
-        $classNames = $returnType->getObjectClassNames();
-        if (count($classNames) === 1) {
-            return new EntityStorageType($entityTypeId, $classNames[0]);
-        }
-        return $returnType;
+        return TypeCombinator::union(...$types);
     }
 }
