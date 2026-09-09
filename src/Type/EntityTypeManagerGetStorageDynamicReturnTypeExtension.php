@@ -4,11 +4,9 @@ namespace mglaman\PHPStanDrupal\Type;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use mglaman\PHPStanDrupal\Drupal\EntityDataRepository;
-use mglaman\PHPStanDrupal\Type\EntityStorage\EntityStorageType;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\MethodReflection;
-use PHPStan\Reflection\ParametersAcceptorSelector;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
@@ -51,25 +49,15 @@ class EntityTypeManagerGetStorageDynamicReturnTypeExtension implements DynamicMe
             return null;
         }
 
-        $returnType = null;
         $types = [];
         foreach ($constantStrings as $constantString) {
-            $entityTypeId = $constantString->getValue();
-            $storageType = $this->entityDataRepository->get($entityTypeId)->getStorageType();
-            if ($storageType !== null) {
-                $types[] = $storageType;
-                continue;
+            $storageType = $this->entityDataRepository->get($constantString->getValue())->getStorageType();
+            if ($storageType === null) {
+                // An unknown entity type ID. Once one member is unknown the
+                // whole call can only be trusted to the declared return type.
+                return null;
             }
-
-            $returnType ??= ParametersAcceptorSelector::selectFromArgs(
-                $scope,
-                $args,
-                $methodReflection->getVariants()
-            )->getReturnType();
-            $classNames = $returnType->getObjectClassNames();
-            $types[] = count($classNames) === 1
-                ? new EntityStorageType($entityTypeId, $classNames[0])
-                : $returnType;
+            $types[] = $storageType;
         }
         return TypeCombinator::union(...$types);
     }
