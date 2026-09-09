@@ -150,7 +150,7 @@ class DrupalAutoloader
             $module_dir = $this->drupalRoot . '/' . $extension->getPath();
             // Add .install
             if (file_exists($module_dir . '/' . $module_name . '.install')) {
-                $ignored_install_files = ['entity_test', 'entity_test_update', 'update_test_schema'];
+                $ignored_install_files = ['entity_test', 'update_test_schema'];
                 if (!in_array($module_name, $ignored_install_files, true)) {
                     $this->loadAndCatchErrors($module_dir . '/' . $module_name . '.install');
                 }
