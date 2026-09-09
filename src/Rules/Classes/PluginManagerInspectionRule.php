@@ -8,10 +8,8 @@ use PhpParser\Node;
 use PhpParser\NodeFinder;
 use PHPStan\Analyser\Scope;
 use PHPStan\Node\InClassNode;
-use PHPStan\Reflection\ClassReflection;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
-use function sprintf;
 use function str_contains;
 use function strtolower;
 
@@ -58,7 +56,7 @@ final class PluginManagerInspectionRule implements Rule
 
         $errors = [];
         if ($this->isYamlDiscovery($originalNode)) {
-            $errors = $this->inspectYamlPluginManager($classReflection, $constructorMethodNode);
+            $errors = $this->inspectYamlPluginManager($constructorMethodNode);
         } else {
             // @todo inspect annotated plugin managers.
         }
@@ -108,38 +106,23 @@ final class PluginManagerInspectionRule implements Rule
     /**
      * @return list<\PHPStan\Rules\IdentifierRuleError>
      */
-    private function inspectYamlPluginManager(ClassReflection $classReflection, Node\Stmt\ClassMethod $constructorMethodNode): array
+    private function inspectYamlPluginManager(Node\Stmt\ClassMethod $constructorMethodNode): array
     {
         $errors = [];
-
-        $fqn = $classReflection->getName();
-        if (!$classReflection->hasConstructor()) {
-            return $errors;
-        }
-        $constructor = $classReflection->getConstructor();
-
-        if ($constructor->getDeclaringClass()->getName() !== $fqn) {
-            $errors[] = RuleErrorBuilder::message(
-                sprintf('%s must override __construct if using YAML plugins.', $fqn)
-            )
-                ->identifier('pluginManagerInspection.constructorOverrideMissing')
-                ->build();
-        } else {
-            foreach ($constructorMethodNode->stmts ?? [] as $constructorStmt) {
-                if ($constructorStmt instanceof Node\Stmt\Expression) {
-                    $constructorStmt = $constructorStmt->expr;
-                }
-                if ($constructorStmt instanceof Node\Expr\StaticCall
-                    && $constructorStmt->class instanceof Node\Name
-                    && ((string)$constructorStmt->class === 'parent')
-                    && $constructorStmt->name instanceof Node\Identifier
-                    && $constructorStmt->name->name === '__construct') {
-                    $errors[] = RuleErrorBuilder::message(
-                        'YAML plugin managers should not invoke its parent constructor.'
-                    )
-                        ->identifier('pluginManagerInspection.yamlPluginManagersInvokesParentConstructor')
-                        ->build();
-                }
+        foreach ($constructorMethodNode->stmts ?? [] as $constructorStmt) {
+            if ($constructorStmt instanceof Node\Stmt\Expression) {
+                $constructorStmt = $constructorStmt->expr;
+            }
+            if ($constructorStmt instanceof Node\Expr\StaticCall
+                && $constructorStmt->class instanceof Node\Name
+                && ((string)$constructorStmt->class === 'parent')
+                && $constructorStmt->name instanceof Node\Identifier
+                && $constructorStmt->name->name === '__construct') {
+                $errors[] = RuleErrorBuilder::message(
+                    'YAML plugin managers should not invoke its parent constructor.'
+                )
+                    ->identifier('pluginManagerInspection.yamlPluginManagersInvokesParentConstructor')
+                    ->build();
             }
         }
         return $errors;
