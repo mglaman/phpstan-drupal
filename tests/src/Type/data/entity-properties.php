@@ -34,3 +34,18 @@ assertType('mixed', $fieldItemList->uri);
 /** @var EntityReferenceFieldItemList $refList */
 assertType('int|string|null', $refList->target_id);
 assertType('Drupal\Core\Entity\EntityInterface|null', $refList->entity);
+
+// A value typed as the interface itself gets the same magic field access as
+// a concrete entity class.
+function contentEntityInterfaceField(\Drupal\Core\Entity\ContentEntityInterface $entity): void
+{
+    assertType('Drupal\Core\Field\FieldItemListInterface', $entity->field_myfield);
+    assertType('Drupal\Core\Entity\ContentEntityInterface', $entity->original);
+}
+
+// Interfaces extending ContentEntityInterface keep their own @property tags
+// and still get magic field access.
+function nodeInterfaceField(\Drupal\node\NodeInterface $node): void
+{
+    assertType('Drupal\Core\Field\FieldItemListInterface', $node->field_myfield);
+}

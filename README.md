@@ -199,7 +199,10 @@ parameters:
             stubFiles: true
 ```
 
-Both options are enabled by default.
+All options are enabled by default.
+
+> [!NOTE]
+> Content entities are registered as PHPStan universal object crates, because `ContentEntityBase::__get()` accepts any property name. With `entityFieldsViaMagicReflection` disabled, a field access such as `$node->field_foo` is typed `mixed` instead of being reported as an undefined property.
 
 #### Class resolver return types
 

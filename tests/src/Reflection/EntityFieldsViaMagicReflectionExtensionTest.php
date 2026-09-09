@@ -3,6 +3,7 @@
 namespace mglaman\PHPStanDrupal\Tests\Reflection;
 
 use Drupal\Core\Entity\ContentEntityInterface;
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\entity_test\Entity\EntityTest;
 use Drupal\module_installer_config_test\Entity\TestConfigType;
@@ -28,7 +29,7 @@ final class EntityFieldsViaMagicReflectionExtensionTest extends PHPStanTestCase 
     protected function setUp(): void
     {
         parent::setUp();
-        $this->extension = new EntityFieldsViaMagicReflectionExtension(self::createReflectionProvider());
+        $this->extension = new EntityFieldsViaMagicReflectionExtension();
     }
 
     /**
@@ -53,6 +54,18 @@ final class EntityFieldsViaMagicReflectionExtensionTest extends PHPStanTestCase 
         yield 'config entity not supported' => [
             // @phpstan-ignore class.notFound
             TestConfigType::class,
+            'foobar',
+            false
+        ];
+        // A value typed as the interface itself, such as a
+        // ContentEntityInterface parameter, must behave like a concrete entity.
+        yield 'content entity interface supported' => [
+            ContentEntityInterface::class,
+            'foobar',
+            true
+        ];
+        yield 'entity interface not supported' => [
+            EntityInterface::class,
             'foobar',
             false
         ];
@@ -119,6 +132,15 @@ final class EntityFieldsViaMagicReflectionExtensionTest extends PHPStanTestCase 
         $readableType = $originalPropertyReflection->getReadableType();
         self::assertInstanceOf(ObjectType::class, $readableType);
         self::assertEquals(ContentEntityInterface::class, $readableType->getClassName());
+    }
+
+    public function testGetPropertyContentEntityInterface(): void
+    {
+        $classReflection = $this->createReflectionProvider()->getClass(ContentEntityInterface::class);
+        $propertyReflection = $this->extension->getProperty($classReflection, 'field_myfield');
+        $readableType = $propertyReflection->getReadableType();
+        self::assertInstanceOf(ObjectType::class, $readableType);
+        self::assertEquals(FieldItemListInterface::class, $readableType->getClassName());
     }
 
     public function testGetPropertyFieldItemList(): void

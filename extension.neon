@@ -1,4 +1,9 @@
 parameters:
+	# Content entities accept any property name through ContentEntityBase::__get(),
+	# and PHPStan only consults property reflection extensions for an interface
+	# when it is listed here. Covers every interface extending ContentEntityInterface.
+	universalObjectCratesClasses:
+		- Drupal\Core\Entity\ContentEntityInterface
 	bootstrapFiles:
 		- drupal-autoloader.php
 	excludePaths:
