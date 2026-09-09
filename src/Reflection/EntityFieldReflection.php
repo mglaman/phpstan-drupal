@@ -8,7 +8,6 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\PropertyReflection;
-use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\TrinaryLogic;
 use PHPStan\Type\MixedType;
 use PHPStan\Type\ObjectType;
@@ -24,8 +23,7 @@ class EntityFieldReflection implements PropertyReflection
 
     public function __construct(
         private readonly ClassReflection $declaringClass,
-        private readonly string $propertyName,
-        private readonly ReflectionProvider $reflectionProvider
+        private readonly string $propertyName
     ) {
     }
 
@@ -52,18 +50,12 @@ class EntityFieldReflection implements PropertyReflection
 
     private function isContentEntityType(): bool
     {
-        if (!$this->reflectionProvider->hasClass(ContentEntityInterface::class)) {
-            return false;
-        }
-        return $this->declaringClass->isSubclassOfClass($this->reflectionProvider->getClass(ContentEntityInterface::class));
+        return $this->declaringClass->is(ContentEntityInterface::class);
     }
 
     private function isConfigEntityType(): bool
     {
-        if (!$this->reflectionProvider->hasClass(ConfigEntityInterface::class)) {
-            return false;
-        }
-        return $this->declaringClass->isSubclassOfClass($this->reflectionProvider->getClass(ConfigEntityInterface::class));
+        return $this->declaringClass->is(ConfigEntityInterface::class);
     }
 
     public function getWritableType(): Type

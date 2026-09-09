@@ -2,11 +2,12 @@
 
 namespace mglaman\PHPStanDrupal\Reflection;
 
+use Drupal\Core\Entity\ContentEntityInterface;
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\PropertiesClassReflectionExtension;
 use PHPStan\Reflection\PropertyReflection;
-use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\ShouldNotHappenException;
 use function array_key_exists;
 
@@ -19,11 +20,6 @@ use function array_key_exists;
  */
 class EntityFieldsViaMagicReflectionExtension implements PropertiesClassReflectionExtension
 {
-
-    public function __construct(
-        private readonly ReflectionProvider $reflectionProvider
-    ) {
-    }
 
     public function hasProperty(ClassReflection $classReflection, string $propertyName): bool
     {
@@ -45,7 +41,7 @@ class EntityFieldsViaMagicReflectionExtension implements PropertiesClassReflecti
         // We need to find a way to parse the entity annotation so that at the minimum the `entity_keys` are
         // supported. The real fix is Drupal developers _really_ need to start writing @property definitions in the
         // class doc if they don't get `get` methods.
-        if ($classReflection->implementsInterface('Drupal\Core\Entity\ContentEntityInterface')) {
+        if ($classReflection->is(ContentEntityInterface::class)) {
             // @todo revisit if it's a good idea to be true.
             // Content entities have magical __get... so it is kind of true.
             return true;
@@ -59,8 +55,8 @@ class EntityFieldsViaMagicReflectionExtension implements PropertiesClassReflecti
 
     public function getProperty(ClassReflection $classReflection, string $propertyName): PropertyReflection
     {
-        if ($classReflection->implementsInterface('Drupal\Core\Entity\EntityInterface')) {
-            return new EntityFieldReflection($classReflection, $propertyName, $this->reflectionProvider);
+        if ($classReflection->is(EntityInterface::class)) {
+            return new EntityFieldReflection($classReflection, $propertyName);
         }
         if ($classReflection->is(FieldItemListInterface::class)) {
             return new FieldItemListPropertyReflection($classReflection, $propertyName);
