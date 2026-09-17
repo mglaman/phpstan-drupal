@@ -23,22 +23,37 @@ final class EntityStorageDirectInjectionRuleTest extends DrupalRuleTestCase
             [
                 [
                     'Direct injection of entity storage via $nodeStorage is not recommended. Inject Drupal\Core\Entity\EntityTypeManagerInterface and call getStorage() at the call-site instead.',
-                    15,
+                    20,
                     'See https://mglaman.dev/blog/dependency-injection-anti-patterns-drupal',
                 ],
                 [
                     'Direct injection of entity storage via $storage is not recommended. Inject Drupal\Core\Entity\EntityTypeManagerInterface and call getStorage() at the call-site instead.',
-                    24,
+                    29,
                     'See https://mglaman.dev/blog/dependency-injection-anti-patterns-drupal',
                 ],
                 [
                     'Direct injection of entity storage via $storage is not recommended. Inject Drupal\Core\Entity\EntityTypeManagerInterface and call getStorage() at the call-site instead.',
-                    34,
+                    39,
                     'See https://mglaman.dev/blog/dependency-injection-anti-patterns-drupal',
                 ],
                 [
                     'Direct injection of entity storage via $storage is not recommended. Inject Drupal\Core\Entity\EntityTypeManagerInterface and call getStorage() at the call-site instead.',
-                    43,
+                    48,
+                    'See https://mglaman.dev/blog/dependency-injection-anti-patterns-drupal',
+                ],
+                [
+                    'Direct injection of entity storage via $storage is not recommended. Inject Drupal\Core\Entity\EntityTypeManagerInterface and call getStorage() at the call-site instead.',
+                    138,
+                    'See https://mglaman.dev/blog/dependency-injection-anti-patterns-drupal',
+                ],
+                [
+                    'Direct injection of entity storage via $userStorage is not recommended. Inject Drupal\Core\Entity\EntityTypeManagerInterface and call getStorage() at the call-site instead.',
+                    151,
+                    'See https://mglaman.dev/blog/dependency-injection-anti-patterns-drupal',
+                ],
+                [
+                    'Direct injection of entity storage via $storage is not recommended. Inject Drupal\Core\Entity\EntityTypeManagerInterface and call getStorage() at the call-site instead.',
+                    171,
                     'See https://mglaman.dev/blog/dependency-injection-anti-patterns-drupal',
                 ],
             ]

@@ -37,6 +37,13 @@ final class EntityStoragePropertyAssignmentRule implements Rule
             return [];
         }
 
+        // A property declared by a parent class (e.g. EntityListBuilder::$storage)
+        // is part of an inherited contract; populating it is not the subclass's
+        // choice, so only report properties the class declares itself.
+        if ($this->isInheritedProperty($node->var, $scope)) {
+            return [];
+        }
+
         $assignedType = $scope->getType($node->expr);
         // Bail early when assigning literal null — removeNull(NullType) yields
         // NeverType, and isSuperTypeOf(NeverType) is vacuously true for any type.
@@ -59,5 +66,25 @@ final class EntityStoragePropertyAssignmentRule implements Rule
                 ->tip('See https://mglaman.dev/blog/dependency-injection-anti-patterns-drupal')
                 ->build(),
         ];
+    }
+
+    private function isInheritedProperty(Node\Expr\PropertyFetch $propertyFetch, Scope $scope): bool
+    {
+        if (!$propertyFetch->name instanceof Node\Identifier) {
+            return false;
+        }
+
+        $classReflection = $scope->getClassReflection();
+        if ($classReflection === null) {
+            return false;
+        }
+
+        $propertyName = $propertyFetch->name->toString();
+        if (!$classReflection->hasInstanceProperty($propertyName)) {
+            return false;
+        }
+
+        $declaringClass = $classReflection->getInstanceProperty($propertyName, $scope)->getDeclaringClass();
+        return $declaringClass->getName() !== $classReflection->getName();
     }
 }
