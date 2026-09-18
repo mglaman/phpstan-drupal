@@ -118,3 +118,17 @@ class ListBuilderWithOwnStorageProperty extends EntityListBuilder
         $this->nodeStorage = $entityTypeManager->getStorage('node'); // error on this line
     }
 }
+
+// Error: the storage property is declared by a parent whose constructor does
+// not require storage, so populating it is still the subclass's choice.
+abstract class ServiceBaseWithStorageProperty
+{
+    protected EntityStorageInterface $nodeStorage;
+}
+class ServiceAssigningInheritedStorageProperty extends ServiceBaseWithStorageProperty
+{
+    public function __construct(EntityTypeManagerInterface $entityTypeManager)
+    {
+        $this->nodeStorage = $entityTypeManager->getStorage('node'); // error on this line
+    }
+}
