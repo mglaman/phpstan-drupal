@@ -1,0 +1,10 @@
+<?php
+
+/**
+ * @param string $string
+ * @param array<string, scalar|\Stringable> $args
+ * @param array<string, mixed> $options
+ * @return \Drupal\Core\StringTranslation\TranslatableMarkup
+ */
+function t($string, array $args = [], array $options = []) {
+}
