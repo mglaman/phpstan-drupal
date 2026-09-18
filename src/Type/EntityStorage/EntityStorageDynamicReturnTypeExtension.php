@@ -16,6 +16,7 @@ use PHPStan\Type\ObjectType;
 use PHPStan\Type\StringType;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
+use PHPStan\Type\UnionType;
 use function in_array;
 
 class EntityStorageDynamicReturnTypeExtension implements DynamicMethodReturnTypeExtension
@@ -56,56 +57,58 @@ class EntityStorageDynamicReturnTypeExtension implements DynamicMethodReturnType
         MethodCall $methodCall,
         Scope $scope
     ): Type {
+        $declaredReturnType = ParametersAcceptorSelector::selectFromArgs(
+            $scope,
+            $methodCall->getArgs(),
+            $methodReflection->getVariants()
+        )->getReturnType();
+
         $callerType = $scope->getType($methodCall->var);
         if (!$callerType->isObject()->yes()) {
-            return ParametersAcceptorSelector::selectFromArgs(
-                $scope,
-                $methodCall->getArgs(),
-                $methodReflection->getVariants()
-            )->getReturnType();
+            return $declaredReturnType;
         }
 
-        if (!$callerType instanceof EntityStorageType) {
-            $resolvedEntityType = $this->entityDataRepository->resolveFromStorage($callerType);
-            if ($resolvedEntityType === null) {
-                return ParametersAcceptorSelector::selectFromArgs(
-                    $scope,
-                    $methodCall->getArgs(),
-                    $methodReflection->getVariants()
-                )->getReturnType();
+        // A union of storages, such as getStorage($cond ? 'node' : 'user'),
+        // resolves each member on its own so no branch is dropped.
+        if ($callerType instanceof UnionType) {
+            $types = [];
+            foreach ($callerType->getTypes() as $storageType) {
+                $types[] = $this->resolveForStorage($methodReflection, $storageType, $declaredReturnType);
             }
-            $type = $resolvedEntityType->getClassType();
-        } else {
-            $type = $this->entityDataRepository->get($callerType->getEntityTypeId())->getClassType();
+            return TypeCombinator::union(...$types);
         }
 
-        if ($type === null) {
-            return ParametersAcceptorSelector::selectFromArgs(
-                $scope,
-                $methodCall->getArgs(),
-                $methodReflection->getVariants()
-            )->getReturnType();
+        return $this->resolveForStorage($methodReflection, $callerType, $declaredReturnType);
+    }
+
+    private function resolveForStorage(MethodReflection $methodReflection, Type $storageType, Type $declaredReturnType): Type
+    {
+        if ($storageType instanceof EntityStorageType) {
+            $type = $this->entityDataRepository->get($storageType->getEntityTypeId())->getClassType();
+        } else {
+            $type = $this->entityDataRepository->resolveFromStorage($storageType)?->getClassType();
         }
-        if (in_array($methodReflection->getName(), ['load', 'loadUnchanged'], true)) {
+        if ($type === null) {
+            return $declaredReturnType;
+        }
+
+        $methodName = $methodReflection->getName();
+        if (in_array($methodName, ['load', 'loadUnchanged'], true)) {
             return TypeCombinator::addNull($type);
         }
 
-        if (in_array($methodReflection->getName(), ['loadMultiple', 'loadByProperties'], true)) {
-            if ((new ObjectType(ConfigEntityStorageInterface::class))->isSuperTypeOf($callerType)->yes()) {
+        if (in_array($methodName, ['loadMultiple', 'loadByProperties'], true)) {
+            if ((new ObjectType(ConfigEntityStorageInterface::class))->isSuperTypeOf($storageType)->yes()) {
                 return new ArrayType(new StringType(), $type);
             }
 
             return new ArrayType(new IntegerType(), $type);
         }
 
-        if ($methodReflection->getName() === 'create') {
+        if ($methodName === 'create') {
             return $type;
         }
 
-        return ParametersAcceptorSelector::selectFromArgs(
-            $scope,
-            $methodCall->getArgs(),
-            $methodReflection->getVariants()
-        )->getReturnType();
+        return $declaredReturnType;
     }
 }

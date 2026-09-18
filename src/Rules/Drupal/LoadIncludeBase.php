@@ -15,14 +15,9 @@ use function count;
 abstract class LoadIncludeBase implements Rule
 {
 
-    /**
-     * @var \mglaman\PHPStanDrupal\Drupal\ExtensionMap
-     */
-    protected $extensionMap;
-
-    public function __construct(ExtensionMap $extensionMap)
-    {
-        $this->extensionMap = $extensionMap;
+    public function __construct(
+        protected readonly ExtensionMap $extensionMap
+    ) {
     }
 
     private function getStringArgValue(Node\Expr $expr, Scope $scope): ?string
@@ -35,6 +30,11 @@ abstract class LoadIncludeBase implements Rule
         return null;
     }
 
+    /**
+     * @return array{string, string}|array{false, false}
+     *   The module name and file name, or [false, false] when either could
+     *   not be resolved to a constant string.
+     */
     protected function parseLoadIncludeArgs(Node\Arg $module, Node\Arg $type, ?Node\Arg $name, Scope $scope): array
     {
         $moduleName = $this->getStringArgValue($module->value, $scope);

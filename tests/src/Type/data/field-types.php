@@ -25,6 +25,7 @@ use Drupal\file\Plugin\Field\FieldType\FileItem;
 use Drupal\file\Plugin\Field\FieldType\FileUriItem;
 use Drupal\link\Plugin\Field\FieldType\LinkItem;
 use Drupal\node\Entity\Node;
+use Drupal\path\Plugin\Field\FieldType\PathItem;
 use Drupal\text\Plugin\Field\FieldType\TextItem;
 use Drupal\text\Plugin\Field\FieldType\TextLongItem;
 use Drupal\text\Plugin\Field\FieldType\TextWithSummaryItem;
@@ -179,6 +180,14 @@ $file_uri_field = $node->get('field_file')->first();
 assert($file_uri_field instanceof FileUriItem);
 assertType(FileUriItem::class, $file_uri_field);
 assertType('string', $file_uri_field->url);
+
+// PathItem.
+$path_field = $node->get('path')->first();
+assert($path_field instanceof PathItem);
+assertType(PathItem::class, $path_field);
+assertType('string|null', $path_field->alias);
+assertType('int|null', $path_field->pid);
+assertType('string|null', $path_field->langcode);
 
 // TextITem.
 $text_field = $node->get('field_text')->first();

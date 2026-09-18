@@ -1,0 +1,3 @@
+services:
+  pre_render_callback_rule.trusted_callback:
+    class: Drupal\pre_render_callback_rule\RenderArrayWithPreRenderCallback

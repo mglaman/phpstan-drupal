@@ -7,62 +7,56 @@ use Drupal\Core\Plugin\DefaultPluginManager;
 use PhpParser\Node;
 use PhpParser\NodeFinder;
 use PHPStan\Analyser\Scope;
-use PHPStan\Reflection\ReflectionProvider;
+use PHPStan\Node\InClassNode;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
-use PHPStan\Type\ObjectType;
-use function sprintf;
+use function str_contains;
+use function strtolower;
 
 /**
- * @implements \PHPStan\Rules\Rule<\PhpParser\Node\Stmt\Class_>
+ * @implements Rule<InClassNode>
  */
-class PluginManagerInspectionRule implements Rule
+final class PluginManagerInspectionRule implements Rule
 {
-    /** @var ReflectionProvider */
-    private $reflectionProvider;
-    public function __construct(ReflectionProvider $reflectionProvider)
-    {
-        $this->reflectionProvider = $reflectionProvider;
-    }
-
     public function getNodeType(): string
     {
-        return Node\Stmt\Class_::class;
+        return InClassNode::class;
     }
 
     public function processNode(Node $node, Scope $scope): array
     {
-        if ($node->namespacedName === null) {
-            // anonymous class
+        $classReflection = $node->getClassReflection();
+        if ($classReflection->isAnonymous()) {
             return [];
         }
-        if ($node->extends === null) {
+        $originalNode = $node->getOriginalNode();
+        if (!$originalNode instanceof Node\Stmt\Class_) {
             return [];
         }
-        if (str_contains($node->namespacedName->toLowerString(), 'test')) {
+        if ($originalNode->extends === null) {
             return [];
         }
-
-        $pluginManagerType = $scope->resolveTypeByName($node->namespacedName);
-        $pluginManagerInterfaceType = new ObjectType(PluginManagerInterface::class);
-        if (!$pluginManagerInterfaceType->isSuperTypeOf($pluginManagerType)->yes()) {
-            return [];
-        }
-        $defaultPluginManager = new ObjectType(DefaultPluginManager::class);
-        if ($defaultPluginManager->equals($pluginManagerType)) {
+        if (str_contains(strtolower($classReflection->getName()), 'test')) {
             return [];
         }
 
-        $constructorMethodNode = (new NodeFinder())->findFirst($node->stmts, static function (Node $node) {
-            return $node instanceof Node\Stmt\ClassMethod && $node->name->toString() === '__construct';
-        });
-        if (!$constructorMethodNode instanceof Node\Stmt\ClassMethod) {
+        if (!$classReflection->is(PluginManagerInterface::class)) {
+            return [];
+        }
+        if ($classReflection->getName() === DefaultPluginManager::class) {
+            return [];
+        }
+
+        // Only look at the class's own methods. A recursive search would also
+        // match a constructor declared by an anonymous class nested in a method.
+        $constructorMethodNode = $originalNode->getMethod('__construct');
+        if ($constructorMethodNode === null) {
             return [];
         }
 
         $errors = [];
-        if ($this->isYamlDiscovery($node)) {
-            $errors = $this->inspectYamlPluginManager($node, $constructorMethodNode);
+        if ($this->isYamlDiscovery($originalNode)) {
+            $errors = $this->inspectYamlPluginManager($constructorMethodNode);
         } else {
             // @todo inspect annotated plugin managers.
         }
@@ -79,7 +73,6 @@ class PluginManagerInspectionRule implements Rule
                 'Plugin managers should call alterInfo to allow plugin definitions to be altered.'
             )
                 ->tip('For example, to invoke hook_mymodule_data_alter() call alterInfo with "mymodule_data".')
-                ->line($node->getStartLine())
                 ->identifier('pluginManagerInspection.alterInfoMissing')
                 ->build();
         }
@@ -113,36 +106,23 @@ class PluginManagerInspectionRule implements Rule
     /**
      * @return list<\PHPStan\Rules\IdentifierRuleError>
      */
-    private function inspectYamlPluginManager(Node\Stmt\Class_ $class, Node\Stmt\ClassMethod $constructorMethodNode): array
+    private function inspectYamlPluginManager(Node\Stmt\ClassMethod $constructorMethodNode): array
     {
         $errors = [];
-
-        $fqn = (string) $class->namespacedName;
-        $reflection = $this->reflectionProvider->getClass($fqn);
-        $constructor = $reflection->getConstructor();
-
-        if ($constructor->getDeclaringClass()->getName() !== $fqn) {
-            $errors[] = RuleErrorBuilder::message(
-                sprintf('%s must override __construct if using YAML plugins.', $fqn)
-            )
-                ->identifier('pluginManagerInspection.callAlterInfo')
-                ->build();
-        } else {
-            foreach ($constructorMethodNode->stmts ?? [] as $constructorStmt) {
-                if ($constructorStmt instanceof Node\Stmt\Expression) {
-                    $constructorStmt = $constructorStmt->expr;
-                }
-                if ($constructorStmt instanceof Node\Expr\StaticCall
-                    && $constructorStmt->class instanceof Node\Name
-                    && ((string)$constructorStmt->class === 'parent')
-                    && $constructorStmt->name instanceof Node\Identifier
-                    && $constructorStmt->name->name === '__construct') {
-                    $errors[] = RuleErrorBuilder::message(
-                        'YAML plugin managers should not invoke its parent constructor.'
-                    )
-                        ->identifier('pluginManagerInspection.yamlPluginManagersInvokesParentConstructor')
-                        ->build();
-                }
+        foreach ($constructorMethodNode->stmts ?? [] as $constructorStmt) {
+            if ($constructorStmt instanceof Node\Stmt\Expression) {
+                $constructorStmt = $constructorStmt->expr;
+            }
+            if ($constructorStmt instanceof Node\Expr\StaticCall
+                && $constructorStmt->class instanceof Node\Name
+                && ((string)$constructorStmt->class === 'parent')
+                && $constructorStmt->name instanceof Node\Identifier
+                && $constructorStmt->name->name === '__construct') {
+                $errors[] = RuleErrorBuilder::message(
+                    'YAML plugin managers should not invoke its parent constructor.'
+                )
+                    ->identifier('pluginManagerInspection.yamlPluginManagersInvokesParentConstructor')
+                    ->build();
             }
         }
         return $errors;

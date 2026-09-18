@@ -2,9 +2,7 @@
 
 declare(strict_types=1);
 
-namespace fixtures\drupal\modules\phpstan_fixtures\src;
-
-final class EntityQueryWithAccessRule
+final class EntityQueryAccessCheckValid
 {
     public function foo(): void
     {

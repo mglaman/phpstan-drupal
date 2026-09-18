@@ -1,0 +1,5 @@
+includes:
+	- phpunit-drupal-phpstan.neon
+parameters:
+	drupal:
+		classResolverReturnType: false

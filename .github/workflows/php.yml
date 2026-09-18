@@ -1,9 +1,9 @@
 name: Tests
 on:
   push:
-    branches: [main]
+    branches: [main, 2.0.x]
   pull_request:
-    branches: [main]
+    branches: [main, 2.0.x]
   schedule:
     - cron: 0 0 * * *
 
@@ -16,9 +16,10 @@ jobs:
         php-version:
           - "8.3"
           - "8.4"
+          - "8.5"
     steps:
       - name: "Checkout"
-        uses: "actions/checkout@v6"
+        uses: "actions/checkout@v7"
       - name: "Install PHP"
         uses: "shivammathur/setup-php@v2"
         with:
@@ -41,9 +42,11 @@ jobs:
         experimental: [false]
         php-version:
           - "8.3"
+          - "8.4"
+          - "8.5"
         drupal:
-          - "~11.2.0"
           - "~11.3.0"
+          - "~11.4.0"
         include:
           - php-version: "8.1"
             drupal: "^10.4"
@@ -53,7 +56,7 @@ jobs:
             experimental: true
     steps:
       - name: "Checkout"
-        uses: "actions/checkout@v6"
+        uses: "actions/checkout@v7"
       - name: "Install PHP"
         uses: "shivammathur/setup-php@v2"
         with:
@@ -87,8 +90,8 @@ jobs:
         php-version:
           - "8.3"
         drupal:
-          - "~11.2.0"
           - "~11.3.0"
+          - "~11.4.0"
         include:
           - php-version: "8.1"
             drupal: "^10.4"
@@ -98,7 +101,7 @@ jobs:
             experimental: true
     steps:
       - name: "Checkout"
-        uses: "actions/checkout@v6"
+        uses: "actions/checkout@v7"
       - name: "Install PHP"
         uses: "shivammathur/setup-php@v2"
         with:
@@ -168,8 +171,8 @@ jobs:
         php-version:
           - "8.3"
         drupal:
-          - "~11.2.0"
           - "~11.3.0"
+          - "~11.4.0"
         include:
           - php-version: "8.1"
             drupal: "^10.4"
@@ -179,7 +182,7 @@ jobs:
             experimental: true
     steps:
       - name: "Checkout"
-        uses: "actions/checkout@v6"
+        uses: "actions/checkout@v7"
       - name: "Install PHP"
         uses: "shivammathur/setup-php@v2"
         with:
@@ -224,7 +227,7 @@ jobs:
     name: "Drupal core HEAD baseline check"
     steps:
       - name: "Checkout"
-        uses: "actions/checkout@v6"
+        uses: "actions/checkout@v7"
       - name: "set the version alias for self"
         run: |
           if [ "${{ github.event_name }}" == 'pull_request' ]; then
@@ -237,7 +240,7 @@ jobs:
         run: echo PHPSTAN_TMP_DIR=$(php -r "print sys_get_temp_dir() . '/phpstan';") >> $GITHUB_OUTPUT
         id: phpstan_tmp_dir
       - name: cache phpstan
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ${{ steps.phpstan_tmp_dir.outputs.PHPSTAN_TMP_DIR }}
           key: ${{ runner.os }}-phpstan-core-baseline

@@ -7,6 +7,7 @@ use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\ParametersAcceptorSelector;
+use PHPStan\Type\BooleanType;
 use PHPStan\Type\Constant\ConstantBooleanType;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
 use PHPStan\Type\NullType;
@@ -18,14 +19,11 @@ use function in_array;
 
 class ContainerDynamicReturnTypeExtension implements DynamicMethodReturnTypeExtension
 {
-    /**
-     * @var ServiceMap
-     */
-    private ServiceMap $serviceMap;
 
-    public function __construct(ServiceMap $serviceMap)
-    {
-        $this->serviceMap = $serviceMap;
+    public function __construct(
+        private ServiceMap $serviceMap,
+        private bool $containerHasAlwaysTrue,
+    ) {
     }
 
     public function getClass(): string
@@ -62,7 +60,17 @@ class ContainerDynamicReturnTypeExtension implements DynamicMethodReturnTypeExte
             foreach ($argType->getConstantStrings() as $constantStringType) {
                 $serviceId = $constantStringType->getValue();
                 $service = $this->serviceMap->getService($serviceId);
-                $types[] = new ConstantBooleanType($service !== null);
+                if (!$this->containerHasAlwaysTrue && $service !== null) {
+                    $types[] = new BooleanType();
+                } else {
+                    $types[] = new ConstantBooleanType($service !== null);
+                }
+            }
+
+            // A dynamic service ID has no constant strings; unioning zero
+            // types would produce `never`.
+            if ($types === []) {
+                return $returnType;
             }
 
             return TypeCombinator::union(...$types);
@@ -87,10 +95,18 @@ class ContainerDynamicReturnTypeExtension implements DynamicMethodReturnTypeExte
 
             $argType = $scope->getType($args[0]->value);
 
-            foreach ($argType->getConstantStrings() as $constantStringType) {
+            $constantStrings = $argType->getConstantStrings();
+            foreach ($constantStrings as $constantStringType) {
                 $serviceId = $constantStringType->getValue();
                 $service = $this->serviceMap->getService($serviceId);
                 $types[] = $service !== null ? $service->getType() : $returnType;
+            }
+
+            // A dynamic service ID has no constant strings; fall back to the
+            // declared return type so the union cannot collapse to `never`,
+            // while keeping any null added for NULL_ON_INVALID_REFERENCE.
+            if ($constantStrings === []) {
+                $types[] = $returnType;
             }
 
             return TypeCombinator::union(...$types);

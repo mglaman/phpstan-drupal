@@ -31,3 +31,18 @@ class Qux {
 class FooForm extends FormBase {
     private EntityTypeManagerInterface $entityTypeManager;
 }
+
+class ReadonlyChildForm extends FormBase {
+    public function __construct(
+        protected readonly EntityTypeManagerInterface $entityTypeManager,
+        protected readonly string $formName,
+    ) {}
+}
+
+class ReadonlyDirectUse {
+    use DependencySerializationTrait;
+
+    public function __construct(
+        protected readonly EntityTypeManagerInterface $entityTypeManager,
+    ) {}
+}
