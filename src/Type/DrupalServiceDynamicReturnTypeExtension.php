@@ -61,8 +61,8 @@ class DrupalServiceDynamicReturnTypeExtension implements DynamicStaticMethodRetu
         //   \Drupal::service(...).
         // - ArgPlaceholder (nikic/php-parser 5.9+): the "?" in partial function
         //   application, \Drupal::service(?).
-        // The two placeholders describe a callable being created, not a call
-        // being made, so there is no service ID to resolve and we bail out.
+        // The two placeholders create a callable instead of making a call, so
+        // PHPStan never asks this extension to resolve them.
         if (!$arg1 instanceof Arg) {
             throw new ShouldNotHappenException();
         }
