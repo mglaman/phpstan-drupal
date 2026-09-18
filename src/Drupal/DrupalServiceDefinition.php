@@ -5,7 +5,6 @@ namespace mglaman\PHPStanDrupal\Drupal;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
-use function count;
 use function str_replace;
 
 class DrupalServiceDefinition
@@ -68,16 +67,27 @@ class DrupalServiceDefinition
 
     public function getType(): Type
     {
-        $decorating_services = $this->getDecorators();
-        if (count($decorating_services) !== 0) {
-            $combined_services = [];
-            $combined_services[] = new ObjectType($this->getClass() ?? $this->id);
-            foreach ($decorating_services as $service_id => $service_definition) {
-                $combined_services[] = $service_definition->getType();
+        return $this->resolveType([]);
+    }
+
+    /**
+     * Drupal refuses to build a container with a decorator cycle, but the
+     * service map is parsed from services.yml files and never gets that
+     * validation, so stop at a service already on the path.
+     *
+     * @param array<string, true> $visited
+     */
+    private function resolveType(array $visited): Type
+    {
+        $visited[$this->id] = true;
+        $types = [new ObjectType($this->getClass() ?? $this->id)];
+        foreach ($this->getDecorators() as $serviceId => $decorator) {
+            if (isset($visited[$serviceId])) {
+                continue;
             }
-            return TypeCombinator::union(...$combined_services);
+            $types[] = $decorator->resolveType($visited);
         }
-        return new ObjectType($this->getClass() ?? $this->id);
+        return TypeCombinator::union(...$types);
     }
 
     public function addDecorator(DrupalServiceDefinition $definition): void

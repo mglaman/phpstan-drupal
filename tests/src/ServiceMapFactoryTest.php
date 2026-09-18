@@ -5,6 +5,7 @@ namespace mglaman\PHPStanDrupal\Tests;
 use Drupal\Core\Logger\LoggerChannel;
 use mglaman\PHPStanDrupal\Drupal\DrupalServiceDefinition;
 use mglaman\PHPStanDrupal\Drupal\ServiceMap;
+use PHPStan\Type\VerbosityLevel;
 use PHPUnit\Framework\TestCase;
 
 final class ServiceMapFactoryTest extends TestCase
@@ -119,6 +120,31 @@ final class ServiceMapFactoryTest extends TestCase
             ],
         ]);
         $validator($service->getService($id));
+    }
+
+    /**
+     * @covers \mglaman\PHPStanDrupal\Drupal\DrupalServiceDefinition::getType
+     */
+    public function testDecoratorCycleDoesNotRecurseForever(): void
+    {
+        $service = new ServiceMap();
+        $service->setDrupalServices([
+            'service_map.cycle_a' => [
+                'class' => 'Drupal\service_map\CycleA',
+                'decorates' => 'service_map.cycle_b',
+            ],
+            'service_map.cycle_b' => [
+                'class' => 'Drupal\service_map\CycleB',
+                'decorates' => 'service_map.cycle_a',
+            ],
+        ]);
+
+        $definition = $service->getService('service_map.cycle_a');
+        self::assertInstanceOf(DrupalServiceDefinition::class, $definition);
+        self::assertSame(
+            'Drupal\service_map\CycleA|Drupal\service_map\CycleB',
+            $definition->getType()->describe(VerbosityLevel::precise())
+        );
     }
 
     /**
