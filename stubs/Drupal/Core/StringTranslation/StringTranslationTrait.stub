@@ -2,7 +2,7 @@
 
 namespace Drupal\Core\StringTranslation;
 
-interface TranslationInterface {
+trait StringTranslationTrait {
 
   /**
    * @param string $string
@@ -10,13 +10,8 @@ interface TranslationInterface {
    * @param array<string, mixed> $options
    * @return TranslatableMarkup
    */
-  public function translate($string, array $args = [], array $options = []);
-
-  /**
-   * @param TranslatableMarkup $translated_string
-   * @return string
-   */
-  public function translateString(TranslatableMarkup $translated_string);
+  protected function t($string, array $args = [], array $options = []) {
+  }
 
   /**
    * @param int $count
@@ -26,6 +21,7 @@ interface TranslationInterface {
    * @param array<string, mixed> $options
    * @return PluralTranslatableMarkup
    */
-  public function formatPlural($count, $singular, $plural, array $args = [], array $options = []);
+  protected function formatPlural($count, $singular, $plural, array $args = [], array $options = []) {
+  }
 
 }

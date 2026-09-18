@@ -10,6 +10,7 @@ use PHPStan\Rules\Classes\InstantiationRule;
 use PHPStan\Rules\ClassNameCheck;
 use PHPStan\Rules\FunctionCallParametersCheck;
 use PHPStan\Rules\Rule;
+use PHPStan\Rules\RuleLevelHelper;
 use PHPUnit\Framework\Attributes\DataProvider;
 
 final class FormattableMarkupNullArgumentRuleTest extends DrupalRuleTestCase
@@ -26,8 +27,11 @@ final class FormattableMarkupNullArgumentRuleTest extends DrupalRuleTestCase
             /** @phpstan-ignore phpstanApi.classConstant */
             $container->getByType(ClassNameCheck::class),
             /** @phpstan-ignore phpstanApi.classConstant */
+            $container->getByType(RuleLevelHelper::class),
+            /** @phpstan-ignore phpstanApi.classConstant */
             $container->getByType(ConsistentConstructorHelper::class),
             false,
+            true,
         );
     }
 
@@ -46,64 +50,44 @@ final class FormattableMarkupNullArgumentRuleTest extends DrupalRuleTestCase
             __DIR__ . '/data/formattable-markup-null-argument.php',
             [
                 [
-                    "Parameter #2 \$arguments of class Drupal\Component\Render\FormattableMarkup constructor expects array<non-empty-string, string|Stringable>, array{'@name': null} given.",
+                    "Parameter #2 \$arguments of class Drupal\\Component\\Render\\FormattableMarkup constructor expects array<string, bool|float|int|string|Stringable>, array<string, null> given.",
                     12,
                 ],
                 [
-                    "Parameter #2 \$arguments of class Drupal\Core\StringTranslation\TranslatableMarkup constructor expects array<non-empty-string, string|Stringable>, array{'@name': null} given.",
+                    "Parameter #2 \$arguments of class Drupal\\Core\\StringTranslation\\TranslatableMarkup constructor expects array<string, bool|float|int|string|Stringable>, array<string, null> given.",
                     15,
                 ],
                 [
-                    "Parameter #4 \$args of class Drupal\Core\StringTranslation\PluralTranslatableMarkup constructor expects array<non-empty-string, string|Stringable>, array{'@name': null} given.",
+                    "Parameter #4 \$args of class Drupal\\Core\\StringTranslation\\PluralTranslatableMarkup constructor expects array<string, bool|float|int|string|Stringable>, array<string, null> given.",
                     18,
                 ],
                 [
-                    "Parameter #2 \$arguments of class Drupal\Component\Render\FormattableMarkup constructor expects array<non-empty-string, string|Stringable>, array{'@name': string|null} given.",
+                    "Parameter #2 \$arguments of class Drupal\\Component\\Render\\FormattableMarkup constructor expects array<string, bool|float|int|string|Stringable>, array<string, string|null> given.",
                     21,
                 ],
                 [
-                    "Parameter #2 \$arguments of class Drupal\Core\StringTranslation\TranslatableMarkup constructor expects array<non-empty-string, string|Stringable>, array{'@name': string|null} given.",
+                    "Parameter #2 \$arguments of class Drupal\\Core\\StringTranslation\\TranslatableMarkup constructor expects array<string, bool|float|int|string|Stringable>, array<string, string|null> given.",
                     22,
                 ],
                 [
-                    "Parameter #4 \$args of class Drupal\Core\StringTranslation\PluralTranslatableMarkup constructor expects array<non-empty-string, string|Stringable>, array{'@name': string|null} given.",
+                    "Parameter #4 \$args of class Drupal\\Core\\StringTranslation\\PluralTranslatableMarkup constructor expects array<string, bool|float|int|string|Stringable>, array<string, string|null> given.",
                     23,
                 ],
                 [
-                    "Parameter #2 \$arguments of class Drupal\Component\Render\FormattableMarkup constructor expects array<non-empty-string, string|Stringable>, array{'@name': string|null, '@email': string} given.",
+                    "Parameter #2 \$arguments of class Drupal\\Component\\Render\\FormattableMarkup constructor expects array<string, bool|float|int|string|Stringable>, array<string, string|null> given.",
                     44,
                 ],
                 [
-                    "Parameter #2 \$arguments of class Drupal\Core\StringTranslation\TranslatableMarkup constructor expects array<non-empty-string, string|Stringable>, array{'@name': string|null, '@email': string} given.",
+                    "Parameter #2 \$arguments of class Drupal\\Core\\StringTranslation\\TranslatableMarkup constructor expects array<string, bool|float|int|string|Stringable>, array<string, string|null> given.",
                     45,
                 ],
                 [
-                    "Parameter #4 \$args of class Drupal\Core\StringTranslation\PluralTranslatableMarkup constructor expects array<non-empty-string, string|Stringable>, array{'@name': string|null, '@email': string} given.",
+                    "Parameter #4 \$args of class Drupal\\Core\\StringTranslation\\PluralTranslatableMarkup constructor expects array<string, bool|float|int|string|Stringable>, array<string, string|null> given.",
                     46,
                 ],
                 [
-                    "Parameter #2 \$arguments of class Drupal\Component\Render\FormattableMarkup constructor expects array<non-empty-string, string|Stringable>, array{'': string} given.",
-                    50,
-                ],
-                [
-                    "Parameter #2 \$arguments of class Drupal\Core\StringTranslation\TranslatableMarkup constructor expects array<non-empty-string, string|Stringable>, array{'': string} given.",
-                    51,
-                ],
-                [
-                    "Parameter #4 \$args of class Drupal\Core\StringTranslation\PluralTranslatableMarkup constructor expects array<non-empty-string, string|Stringable>, array{'': string} given.",
-                    52,
-                ],
-                [
-                    "Parameter #2 \$arguments of class Drupal\Component\Render\FormattableMarkup constructor expects array<non-empty-string, string|Stringable>, non-empty-array<string, string> given.",
-                    56,
-                ],
-                [
-                    "Parameter #2 \$arguments of class Drupal\Core\StringTranslation\TranslatableMarkup constructor expects array<non-empty-string, string|Stringable>, non-empty-array<string, string> given.",
-                    57,
-                ],
-                [
-                    "Parameter #4 \$args of class Drupal\Core\StringTranslation\PluralTranslatableMarkup constructor expects array<non-empty-string, string|Stringable>, non-empty-array<string, string> given.",
-                    58,
+                    "Parameter #2 \$arguments of class Drupal\\Component\\Render\\FormattableMarkup constructor expects array<string, bool|float|int|string|Stringable>, array<string, array<int, string>> given.",
+                    62,
                 ],
             ],
         ];

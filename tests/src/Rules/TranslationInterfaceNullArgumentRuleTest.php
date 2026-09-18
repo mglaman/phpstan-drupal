@@ -40,36 +40,28 @@ final class TranslationInterfaceNullArgumentRuleTest extends DrupalRuleTestCase
             __DIR__ . '/data/translation-interface-null-argument.php',
             [
                 [
-                    "Parameter #2 \$args of method Drupal\Core\StringTranslation\TranslationInterface::translate() expects array<non-empty-string, string|Stringable>, array{'@name': null} given.",
-                    10,
-                ],
-                [
-                    "Parameter #4 \$args of method Drupal\Core\StringTranslation\TranslationInterface::formatPlural() expects array<non-empty-string, string|Stringable>, array{'@name': null} given.",
+                    "Parameter #2 \$args of method Drupal\\Core\\StringTranslation\\TranslationInterface::translate() expects array<string, bool|float|int|string|Stringable>, array<string, null> given.",
                     11,
                 ],
                 [
-                    "Parameter #2 \$args of method Drupal\Core\StringTranslation\TranslationInterface::translate() expects array<non-empty-string, string|Stringable>, array{'@name': string|null} given.",
-                    15,
+                    "Parameter #4 \$args of method Drupal\\Core\\StringTranslation\\TranslationInterface::formatPlural() expects array<string, bool|float|int|string|Stringable>, array<string, null> given.",
+                    12,
                 ],
                 [
-                    "Parameter #4 \$args of method Drupal\Core\StringTranslation\TranslationInterface::formatPlural() expects array<non-empty-string, string|Stringable>, array{'@name': string|null} given.",
+                    "Parameter #2 \$args of method Drupal\\Core\\StringTranslation\\TranslationInterface::translate() expects array<string, bool|float|int|string|Stringable>, array<string, string|null> given.",
                     16,
                 ],
                 [
-                    "Parameter #2 \$args of method Drupal\Core\StringTranslation\TranslationInterface::translate() expects array<non-empty-string, string|Stringable>, array{'': string} given.",
-                    35,
+                    "Parameter #4 \$args of method Drupal\\Core\\StringTranslation\\TranslationInterface::formatPlural() expects array<string, bool|float|int|string|Stringable>, array<string, string|null> given.",
+                    17,
                 ],
                 [
-                    "Parameter #4 \$args of method Drupal\Core\StringTranslation\TranslationInterface::formatPlural() expects array<non-empty-string, string|Stringable>, array{'': string} given.",
-                    36,
+                    "Parameter #2 \$args of method TranslationInterfaceNullArgTest\\UsesStringTranslationTrait::t() expects array<string, bool|float|int|string|Stringable>, array<string, null> given.",
+                    49,
                 ],
                 [
-                    "Parameter #2 \$args of method Drupal\Core\StringTranslation\TranslationInterface::translate() expects array<non-empty-string, string|Stringable>, non-empty-array<string, string> given.",
-                    40,
-                ],
-                [
-                    "Parameter #4 \$args of method Drupal\Core\StringTranslation\TranslationInterface::formatPlural() expects array<non-empty-string, string|Stringable>, non-empty-array<string, string> given.",
-                    41,
+                    "Parameter #4 \$args of method TranslationInterfaceNullArgTest\\UsesStringTranslationTrait::formatPlural() expects array<string, bool|float|int|string|Stringable>, array<string, string|null> given.",
+                    50,
                 ],
             ],
         ];

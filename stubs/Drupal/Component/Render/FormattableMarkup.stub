@@ -6,7 +6,7 @@ class FormattableMarkup implements MarkupInterface {
 
   /**
    * @param string $string
-   * @param array<non-empty-string, string|\Stringable> $arguments
+   * @param array<string, scalar|\Stringable> $arguments
    */
   public function __construct($string, array $arguments) {
   }

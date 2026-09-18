@@ -8,7 +8,7 @@ class TranslatableMarkup extends FormattableMarkup {
 
   /**
    * @param string $string
-   * @param array<non-empty-string, string|\Stringable> $arguments
+   * @param array<string, scalar|\Stringable> $arguments
    * @param array<string, mixed> $options
    * @param TranslationInterface|null $string_translation
    */
