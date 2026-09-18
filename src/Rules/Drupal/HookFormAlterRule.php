@@ -112,10 +112,13 @@ class HookFormAlterRule implements Rule
         $expectedSignature = 'Expected signature: method(&$form, \Drupal\Core\Form\FormStateInterface $form_state[, $form_id])';
         $paramCount = count($method->params);
 
-        if ($paramCount < 2 || $paramCount > 3) {
+        // Drupal passes $form, $form_state, and $form_id, and PHP ignores
+        // arguments beyond the declared parameters, so trailing parameters the
+        // implementation does not use can be left off.
+        if ($paramCount < 1 || $paramCount > 3) {
             return [
                 RuleErrorBuilder::message(
-                    sprintf('Form alter hook "%s" implementation must have 2 or 3 parameters. %s', $hookName, $expectedSignature)
+                    sprintf('Form alter hook "%s" implementation must have 1 to 3 parameters. %s', $hookName, $expectedSignature)
                 )
                 ->line($method->getStartLine())
                 ->identifier('hookFormAlter.invalidParameterCount')
@@ -149,9 +152,9 @@ class HookFormAlterRule implements Rule
             }
         }
 
-        // Validate second parameter (FormStateInterface)
-        $formStateParam = $method->params[1];
-        if ($formStateParam->type !== null) {
+        // Validate second parameter (FormStateInterface) - only if present
+        $formStateParam = $method->params[1] ?? null;
+        if ($formStateParam !== null && $formStateParam->type !== null) {
             $formStateType = $scope->getFunctionType($formStateParam->type, false, false);
             $expectedFormStateType = new ObjectType(FormStateInterface::class);
             if (!$expectedFormStateType->isSuperTypeOf($formStateType)->yes()) {

@@ -44,7 +44,7 @@ class HookFormAlterRuleTest extends DrupalRuleTestCase {
             __DIR__ . '/data/hook-form-alter-invalid.php',
         ], [
             [
-                'Form alter hook "form_alter" implementation must have 2 or 3 parameters. Expected signature: method(&$form, \Drupal\Core\Form\FormStateInterface $form_state[, $form_id])',
+                'Form alter hook "form_alter" implementation must have 1 to 3 parameters. Expected signature: method(&$form, \Drupal\Core\Form\FormStateInterface $form_state[, $form_id])',
                 16,
             ],
             [
@@ -60,7 +60,7 @@ class HookFormAlterRuleTest extends DrupalRuleTestCase {
                 40,
             ],
             [
-                'Form alter hook "form_alter" implementation must have 2 or 3 parameters. Expected signature: method(&$form, \Drupal\Core\Form\FormStateInterface $form_state[, $form_id])',
+                'Form alter hook "form_alter" implementation must have 1 to 3 parameters. Expected signature: method(&$form, \Drupal\Core\Form\FormStateInterface $form_state[, $form_id])',
                 48,
             ],
             [

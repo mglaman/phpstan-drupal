@@ -42,4 +42,12 @@ class ValidFormAlterHooks {
     // Valid implementation - $form_id parameter is optional
   }
 
+  /**
+   * Implements hook_form_node_foobar_edit_form_alter() - valid with 1 parameter.
+   */
+  #[Hook('form_node_foobar_edit_form_alter')]
+  public function formAlterWithoutFormState(array &$form): void {
+    // Valid implementation - unused trailing parameters can be omitted (#1022)
+  }
+
 }
