@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace mglaman\PHPStanDrupal\Tests\Rules;
 
 use mglaman\PHPStanDrupal\Tests\DrupalRuleTestCase;
-use PHPStan\Rules\FunctionCallParametersCheck;
 use PHPStan\Rules\Functions\CallToFunctionParametersRule;
 use PHPStan\Rules\Rule;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -14,12 +13,8 @@ final class TFunctionNullArgumentRuleTest extends DrupalRuleTestCase
 {
     protected function getRule(): Rule
     {
-        /** @phpstan-ignore phpstanApi.constructor */
-        return new CallToFunctionParametersRule(
-            $this->createReflectionProvider(),
-            /** @phpstan-ignore phpstanApi.classConstant */
-            self::getContainer()->getByType(FunctionCallParametersCheck::class),
-        );
+        /** @phpstan-ignore phpstanApi.classConstant */
+        return self::getContainer()->getByType(CallToFunctionParametersRule::class);
     }
 
     /**

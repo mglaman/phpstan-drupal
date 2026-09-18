@@ -5,9 +5,7 @@ declare(strict_types=1);
 namespace mglaman\PHPStanDrupal\Tests\Rules;
 
 use mglaman\PHPStanDrupal\Tests\DrupalRuleTestCase;
-use PHPStan\Rules\FunctionCallParametersCheck;
 use PHPStan\Rules\Methods\CallMethodsRule;
-use PHPStan\Rules\Methods\MethodCallCheck;
 use PHPStan\Rules\Rule;
 use PHPUnit\Framework\Attributes\DataProvider;
 
@@ -15,14 +13,8 @@ final class TranslationInterfaceNullArgumentRuleTest extends DrupalRuleTestCase
 {
     protected function getRule(): Rule
     {
-        $container = self::getContainer();
-        /** @phpstan-ignore phpstanApi.constructor */
-        return new CallMethodsRule(
-            /** @phpstan-ignore phpstanApi.classConstant */
-            $container->getByType(MethodCallCheck::class),
-            /** @phpstan-ignore phpstanApi.classConstant */
-            $container->getByType(FunctionCallParametersCheck::class),
-        );
+        /** @phpstan-ignore phpstanApi.classConstant */
+        return self::getContainer()->getByType(CallMethodsRule::class);
     }
 
     /**

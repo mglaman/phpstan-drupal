@@ -5,34 +5,16 @@ declare(strict_types=1);
 namespace mglaman\PHPStanDrupal\Tests\Rules;
 
 use mglaman\PHPStanDrupal\Tests\DrupalRuleTestCase;
-use PHPStan\Rules\Classes\ConsistentConstructorHelper;
 use PHPStan\Rules\Classes\InstantiationRule;
-use PHPStan\Rules\ClassNameCheck;
-use PHPStan\Rules\FunctionCallParametersCheck;
 use PHPStan\Rules\Rule;
-use PHPStan\Rules\RuleLevelHelper;
 use PHPUnit\Framework\Attributes\DataProvider;
 
 final class FormattableMarkupNullArgumentRuleTest extends DrupalRuleTestCase
 {
     protected function getRule(): Rule
     {
-        $container = self::getContainer();
-        /** @phpstan-ignore phpstanApi.constructor */
-        return new InstantiationRule(
-            $container,
-            $this->createReflectionProvider(),
-            /** @phpstan-ignore phpstanApi.classConstant */
-            $container->getByType(FunctionCallParametersCheck::class),
-            /** @phpstan-ignore phpstanApi.classConstant */
-            $container->getByType(ClassNameCheck::class),
-            /** @phpstan-ignore phpstanApi.classConstant */
-            $container->getByType(RuleLevelHelper::class),
-            /** @phpstan-ignore phpstanApi.classConstant */
-            $container->getByType(ConsistentConstructorHelper::class),
-            false,
-            true,
-        );
+        /** @phpstan-ignore phpstanApi.classConstant */
+        return self::getContainer()->getByType(InstantiationRule::class);
     }
 
     /**
