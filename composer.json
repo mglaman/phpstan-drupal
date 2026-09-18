@@ -22,6 +22,7 @@
         "composer/installers": "^1.9 || ^2",
         "drupal/core-recommended": "^11",
         "drush/drush": "^11 || ^12 || ^13",
+        "nette/neon": "^3.0",
         "phpstan/extension-installer": "^1.4.3",
         "phpstan/phpstan-strict-rules": "^2.0",
         "phpunit/phpunit": "^9 || ^10 || ^11",
