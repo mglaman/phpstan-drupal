@@ -6,6 +6,22 @@ parameters:
 		- Drupal\Core\Entity\ContentEntityInterface
 	bootstrapFiles:
 		- drupal-autoloader.php
+	# Drupal adds and removes these BC attributes across minor versions, so each
+	# one is missing on some supported core version. Unmatched ignores are
+	# expected wherever the class exists.
+	ignoreErrors:
+		-
+			message: '#^Attribute class Drupal\\Core\\Hook\\Attribute\\LegacyHook does not exist\.$#'
+			identifier: attribute.notFound
+			reportUnmatched: false
+		-
+			message: '#^Attribute class Drupal\\Core\\Hook\\Attribute\\LegacyRequirementsHook does not exist\.$#'
+			identifier: attribute.notFound
+			reportUnmatched: false
+		-
+			message: '#^Attribute class Drupal\\Core\\Hook\\Attribute\\LegacyModuleImplementsAlter does not exist\.$#'
+			identifier: attribute.notFound
+			reportUnmatched: false
 	excludePaths:
 		- '*.api.php'
 		- '*/tests/fixtures/*.php'
