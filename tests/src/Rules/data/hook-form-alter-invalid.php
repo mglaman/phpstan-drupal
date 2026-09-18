@@ -14,7 +14,7 @@ class InvalidFormAlterHooks {
    * Too few parameters (missing $form_state).
    */
   #[Hook('form_alter')]
-  public function tooFewParameters(array &$form): void {
+  public function tooFewParameters(): void {
     // Invalid: missing $form_state parameter
   }
 
