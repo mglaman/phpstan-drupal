@@ -18,6 +18,8 @@ final class TranslationInterfaceNullArgumentRuleTest extends DrupalRuleTestCase
     }
 
     /**
+     * @dataProvider resultData
+     *
      * @param list<array{0: string, 1: int, 2?: string|null}> $errorMessages
      */
     #[DataProvider('resultData')]
