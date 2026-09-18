@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace mglaman\PHPStanDrupal\Tests\Rules\data;
 
+use Drupal\Core\Entity\EntityListBuilder;
 use Drupal\Core\Entity\EntityStorageInterface;
+use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 
 // Error: getStorage() result stored as class property in constructor.
@@ -89,5 +91,44 @@ class ServiceWithNullableNonStorageProperty
     public function reset(): void
     {
         $this->foo = null;
+    }
+}
+
+// No error: EntityListBuilder::$storage is declared by the parent class, so a
+// subclass populating it is fulfilling an inherited contract (issue #1039).
+class ListBuilderAssigningInheritedStorageProperty extends EntityListBuilder
+{
+    public function __construct(EntityTypeInterface $entity_type, EntityStorageInterface $storage)
+    {
+        $this->entityTypeId = $entity_type->id();
+        $this->entityType = $entity_type;
+        $this->storage = $storage;
+    }
+}
+
+// Error: a subclass declaring its own storage property is a choice, even when
+// the parent class requires storage.
+class ListBuilderWithOwnStorageProperty extends EntityListBuilder
+{
+    private EntityStorageInterface $nodeStorage;
+
+    public function __construct(EntityTypeInterface $entity_type, EntityStorageInterface $storage, EntityTypeManagerInterface $entityTypeManager)
+    {
+        parent::__construct($entity_type, $storage);
+        $this->nodeStorage = $entityTypeManager->getStorage('node'); // error on this line
+    }
+}
+
+// Error: the storage property is declared by a parent whose constructor does
+// not require storage, so populating it is still the subclass's choice.
+abstract class ServiceBaseWithStorageProperty
+{
+    protected EntityStorageInterface $nodeStorage;
+}
+class ServiceAssigningInheritedStorageProperty extends ServiceBaseWithStorageProperty
+{
+    public function __construct(EntityTypeManagerInterface $entityTypeManager)
+    {
+        $this->nodeStorage = $entityTypeManager->getStorage('node'); // error on this line
     }
 }
