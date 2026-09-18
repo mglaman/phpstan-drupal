@@ -6,11 +6,9 @@ use Composer\Autoload\ClassLoader;
 use Drupal\Component\DependencyInjection\Container as DrupalContainer;
 use Drupal\Core\DependencyInjection\ContainerNotInitializedException;
 use Drupal\Core\DrupalKernelInterface;
-use Drupal\TestTools\PhpUnitCompatibility\PhpUnit8\ClassWriter;
 use DrupalFinder\DrupalFinderComposerRuntime;
 use Drush\Drush;
 use PHPStan\DependencyInjection\Container;
-use PHPUnit\Framework\Test;
 use ReflectionClass;
 use RuntimeException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -24,63 +22,61 @@ use function class_exists;
 use function dirname;
 use function file_exists;
 use function in_array;
-use function interface_exists;
 use function is_array;
 use function is_dir;
 use function is_string;
+use function str_contains;
 use function str_replace;
-use function strpos;
 use function strtr;
 use function trigger_error;
 use function ucwords;
 use function usort;
 
+/**
+ * Bootstraps a Drupal site for analysis from PHPStan's bootstrap file.
+ *
+ * @internal
+ */
 class DrupalAutoloader
 {
 
-    /**
-     * @var \Composer\Autoload\ClassLoader
-     */
-    private $autoloader;
+    private ClassLoader $autoloader;
 
-    /**
-     * @var string
-     */
-    private $drupalRoot;
+    private string $drupalRoot;
 
     /**
      * List of available modules.
      *
      * @var Extension[]
      */
-    protected $moduleData = [];
+    protected array $moduleData = [];
 
     /**
      * List of available themes.
      *
      * @var Extension[]
      */
-    protected $themeData = [];
+    protected array $themeData = [];
 
     /**
      * @var array<array<string, string>>
      */
-    private $serviceMap = [];
+    private array $serviceMap = [];
 
     /**
      * @var array<string, string>
      */
-    private $serviceYamls = [];
+    private array $serviceYamls = [];
 
     /**
      * @var array<string, string>
      */
-    private $serviceClassProviders = [];
+    private array $serviceClassProviders = [];
 
     /**
-     * @var array
+     * @var array<string, mixed>
      */
-    private $namespaces = [];
+    private array $namespaces = [];
 
     public function register(Container $container): void
     {
@@ -124,8 +120,13 @@ class DrupalAutoloader
         $extensionDiscovery->setProfileDirectories($profile_directories);
 
         $this->moduleData = array_merge($extensionDiscovery->scan('module'), $profiles);
-        usort($this->moduleData, static function (Extension $a, Extension $b) {
-            return strpos($a->getName(), '_test') !== false ? 10 : 0;
+        // Load test extensions after regular ones. Test modules stub functions
+        // from their parent module behind function_exists() guards, so if the
+        // test module's .module file loads first the parent's unconditional
+        // declaration is a compile error that loadAndCatchErrors() cannot
+        // intercept.
+        usort($this->moduleData, static function (Extension $a, Extension $b): int {
+            return str_contains($a->getName(), '_test') <=> str_contains($b->getName(), '_test');
         });
         $this->themeData = $extensionDiscovery->scan('theme');
         $this->addCoreTestNamespaces();
@@ -149,7 +150,7 @@ class DrupalAutoloader
             $module_dir = $this->drupalRoot . '/' . $extension->getPath();
             // Add .install
             if (file_exists($module_dir . '/' . $module_name . '.install')) {
-                $ignored_install_files = ['entity_test', 'entity_test_update', 'update_test_schema'];
+                $ignored_install_files = ['entity_test', 'update_test_schema'];
                 if (!in_array($module_name, $ignored_install_files, true)) {
                     $this->loadAndCatchErrors($module_dir . '/' . $module_name . '.install');
                 }
@@ -193,11 +194,7 @@ class DrupalAutoloader
         if (class_exists(Drush::class)) {
             $reflect = new ReflectionClass(Drush::class);
             if ($reflect->getFileName() !== false) {
-                $levels = 2;
-                if (Drush::getMajorVersion() < 9) {
-                    $levels = 3;
-                }
-                $drushDir = dirname($reflect->getFileName(), $levels);
+                $drushDir = dirname($reflect->getFileName(), 2);
                 foreach (Finder::create()->files()->name('*.inc')->in($drushDir . '/includes') as $file) {
                     require_once $file->getPathname();
                 }
@@ -237,7 +234,7 @@ class DrupalAutoloader
                 //     tags:
                 //       - { name: foo_bar }
                 // @endcode
-                if (!isset($serviceDefinition['class']) && class_exists($serviceId)) {
+                if (!isset($serviceDefinition['class']) && $this->classExists($serviceId)) {
                     $serviceDefinition['class'] = $serviceId;
                 }
                 // @todo sanitize "calls" and "configurator" and "factory"
@@ -254,16 +251,42 @@ class DrupalAutoloader
             }
         }
 
-        $service_map = $container->getByType(ServiceMap::class);
-        $service_map->setDrupalServices($this->serviceMap);
+        $this->loadConfigSchemas($container);
 
-        if (interface_exists(Test::class)
-            && class_exists('Drupal\TestTools\PhpUnitCompatibility\PhpUnit8\ClassWriter')) {
-            ClassWriter::mutateTestBase($this->autoloader);
-        }
+        $service_map = $container->getByType(ServiceMap::class);
+        $service_map->setDrupalServices($this->serviceMap, $this->serviceYamls);
 
         $extension_map = $container->getByType(ExtensionMap::class);
         $extension_map->setExtensions($this->moduleData, $this->themeData, $profiles);
+    }
+
+    protected function loadConfigSchemas(Container $container): void
+    {
+        // Only collect the schema directories here. Parsing every schema file
+        // has a real memory cost, and this bootstrap runs regardless of
+        // whether a schema-consuming feature (configGetReturnType or
+        // configGetUnknownKeyRule) is enabled, so ConfigSchemaData parses the
+        // files lazily on first query.
+        $schemaDirs = [];
+        $coreSchemaDir = $this->drupalRoot . '/core/config/schema';
+        if (is_dir($coreSchemaDir)) {
+            $schemaDirs[] = $coreSchemaDir;
+        }
+        foreach ($this->moduleData as $extension) {
+            $schemaDir = $this->drupalRoot . '/' . $extension->getPath() . '/config/schema';
+            if (is_dir($schemaDir)) {
+                $schemaDirs[] = $schemaDir;
+            }
+        }
+        foreach ($this->themeData as $extension) {
+            $schemaDir = $this->drupalRoot . '/' . $extension->getPath() . '/config/schema';
+            if (is_dir($schemaDir)) {
+                $schemaDirs[] = $schemaDir;
+            }
+        }
+
+        $configSchemaData = $container->getByType(ConfigSchemaData::class);
+        $configSchemaData->setSchemaDirectories($schemaDirs);
     }
 
     protected function loadLegacyIncludes(): void
@@ -387,5 +410,17 @@ class DrupalAutoloader
     protected function camelize(string $id): string
     {
         return strtr(ucwords(strtr($id, ['_' => ' ', '.' => '_ ', '\\' => '_ '])), [' ' => '']);
+    }
+
+    private function classExists(string $className): bool
+    {
+        try {
+            return class_exists($className);
+        } catch (Throwable) {
+            // Loading the class can fail when it depends on a class from an
+            // extension that is not available, such as a decorator for an
+            // optional module registered with decoration_on_invalid: ignore.
+            return false;
+        }
     }
 }

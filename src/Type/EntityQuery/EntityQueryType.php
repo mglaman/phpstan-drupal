@@ -55,7 +55,7 @@ class EntityQueryType extends ObjectType
     {
         $parts = [
             $this->hasAccessCheck ? 'with-access-check' : 'without-access-check',
-            $this->isCount ? '' : 'count'
+            $this->isCount ? 'count' : ''
         ];
         return implode('-', $parts);
     }

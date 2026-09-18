@@ -26,12 +26,12 @@ final class LoadIncludesRuleTest extends DrupalRuleTestCase
     {
         yield [
             [
-                __DIR__ . '/../../fixtures/drupal/modules/phpstan_fixtures/phpstan_fixtures.module'
+                __DIR__ . '/data/load-include-invalid.php'
             ],
             [
                 [
                     'File modules/phpstan_fixtures/phpstan_fixtures.fetch.inc could not be loaded from Drupal\Core\Extension\ModuleHandlerInterface::loadInclude',
-                    25,
+                    5,
                 ]
             ],
         ];
@@ -63,6 +63,25 @@ final class LoadIncludesRuleTest extends DrupalRuleTestCase
                 [
                     'File core/modules/locale/locale.fetch.php could not be loaded from Drupal\Core\Extension\ModuleHandlerInterface::loadInclude',
                     8
+                ],
+            ]
+        ];
+
+        yield 'multisite module in sites/acme/' => [
+            [__DIR__.'/data/multisite-load-include.php'],
+            []
+        ];
+
+        yield 'bug-587.php' => [
+            [__DIR__.'/data/bug-587.php'],
+            [
+                [
+                    'File something.inc could not be loaded from Drupal\Core\Extension\ModuleHandlerInterface::loadInclude because non_existing_module module is not found.',
+                    19,
+                ],
+                [
+                    'File something.inc could not be loaded from Drupal\Core\Extension\ModuleHandlerInterface::loadInclude because non_existing_module module is not found.',
+                    20,
                 ],
             ]
         ];

@@ -15,6 +15,8 @@ class EntityReferenceRevisionsFieldItemList extends EntityReferenceFieldItemList
     public function referencedEntities() {
         $target_entities = [];
         foreach ($this->list as $delta => $item) {
+            // Verify that $this->list preserves generic type information
+            assertType('Drupal\Core\Field\Plugin\Field\FieldType\EntityReferenceItem<Drupal\Core\Entity\EntityInterface>', $item);
             if ($item->entity) {
                 $target_entities[$delta] = $item->entity;
             }

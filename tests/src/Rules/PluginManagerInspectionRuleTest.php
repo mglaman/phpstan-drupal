@@ -11,9 +11,7 @@ final class PluginManagerInspectionRuleTest extends DrupalRuleTestCase
 
     protected function getRule(): Rule
     {
-        return new PluginManagerInspectionRule(
-            self::createReflectionProvider()
-        );
+        return new PluginManagerInspectionRule();
     }
 
     /**
@@ -33,7 +31,11 @@ final class PluginManagerInspectionRuleTest extends DrupalRuleTestCase
             []
         ];
         yield 'ExamplePluginManager' => [
-            __DIR__ . '/../../fixtures/drupal/modules/phpstan_fixtures/src/ExamplePluginManager.php',
+            __DIR__ . '/data/plugin-manager-valid.php',
+            []
+        ];
+        yield 'nested anonymous class constructor does not crash' => [
+            __DIR__ . '/data/plugin-manager-nested-constructor.php',
             []
         ];
         yield [

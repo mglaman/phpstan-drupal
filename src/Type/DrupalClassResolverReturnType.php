@@ -25,6 +25,12 @@ final class DrupalClassResolverReturnType
     ): Type {
         $arg1 = $scope->getType($methodCall->getArgs()[0]->value);
         if (count($arg1->getConstantStrings()) === 0) {
+            // Handle class-string<T> typed variables
+            $classStringObjectType = $arg1->getClassStringObjectType();
+            if (count($classStringObjectType->getObjectClassNames()) > 0) {
+                return $classStringObjectType;
+            }
+
             return ParametersAcceptorSelector::selectFromArgs(
                 $scope,
                 $methodCall->getArgs(),

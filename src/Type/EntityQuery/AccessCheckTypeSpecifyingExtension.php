@@ -54,6 +54,6 @@ final class AccessCheckTypeSpecifyingExtension implements MethodTypeSpecifyingEx
             $returnType->withAccessCheck(),
             TypeSpecifierContext::createTruthy(),
             $scope
-        );
+        )->setAlwaysOverwriteTypes();
     }
 }

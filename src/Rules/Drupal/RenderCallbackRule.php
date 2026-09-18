@@ -21,8 +21,6 @@ use PHPStan\Type\ClosureType;
 use PHPStan\Type\Constant\ConstantArrayType;
 use PHPStan\Type\Constant\ConstantIntegerType;
 use PHPStan\Type\Constant\ConstantStringType;
-use PHPStan\Type\Generic\GenericClassStringType;
-use PHPStan\Type\IntersectionType;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\StaticType;
 use PHPStan\Type\Type;
@@ -287,28 +285,31 @@ final class RenderCallbackRule implements Rule
     private function getType(Node\Expr $node, Scope $scope):  Type
     {
         $type = $scope->getType($node);
-        if ($type instanceof IntersectionType) {
-            // Covers concatenation of static::class . '::methodName'.
-            if ($node instanceof Node\Expr\BinaryOp\Concat) {
-                $leftType = $scope->getType($node->left);
-                $rightType = $scope->getType($node->right);
-                if ($rightType instanceof ConstantStringType && $leftType instanceof GenericClassStringType && $leftType->getGenericType() instanceof StaticType) {
-                    return new ConstantArrayType(
-                        [new ConstantIntegerType(0), new ConstantIntegerType(1)],
-                        [
-                            $leftType->getGenericType(),
-                            new ConstantStringType(ltrim($rightType->getValue(), ':'))
-                        ]
-                    );
-                }
+        // Covers concatenation of static::class . '::methodName'.
+        if ($node instanceof Node\Expr\BinaryOp\Concat) {
+            $leftType = $scope->getType($node->left);
+            $rightType = $scope->getType($node->right);
+            $rightConstantStrings = $rightType->getConstantStrings();
+            if (count($rightConstantStrings) > 0 && $leftType->isClassString()->yes() && $leftType->getClassStringObjectType() instanceof StaticType) {
+                return new ConstantArrayType(
+                    [new ConstantIntegerType(0), new ConstantIntegerType(1)],
+                    [
+                        $leftType->getClassStringObjectType(),
+                        new ConstantStringType(ltrim($rightConstantStrings[0]->getValue(), ':'))
+                    ]
+                );
             }
-        } elseif ($type instanceof ConstantStringType) {
-            if ($type->isClassString()->yes()) {
+        }
+
+        $constantStrings = $type->getConstantStrings();
+        if (count($constantStrings) > 0) {
+            $constantString = $constantStrings[0];
+            if ($constantString->isClassString()->yes()) {
                 return $type;
             }
             // Covers \Drupal\Core\Controller\ControllerResolver::createController.
-            if (substr_count($type->getValue(), ':') === 1) {
-                [$class_or_service, $method] = explode(':', $type->getValue(), 2);
+            if (substr_count($constantString->getValue(), ':') === 1) {
+                [$class_or_service, $method] = explode(':', $constantString->getValue(), 2);
 
                 $serviceDefinition = $this->serviceMap->getService($class_or_service);
                 if ($serviceDefinition === null || $serviceDefinition->getClass() === null) {
@@ -323,7 +324,7 @@ final class RenderCallbackRule implements Rule
                 );
             }
             // @see \PHPStan\Type\Constant\ConstantStringType::isCallable
-            preg_match('#^([a-zA-Z_\\x7f-\\xff\\\\][a-zA-Z0-9_\\x7f-\\xff\\\\]*)::([a-zA-Z_\\x7f-\\xff][a-zA-Z0-9_\\x7f-\\xff]*)\\z#', $type->getValue(), $matches);
+            preg_match('#^([a-zA-Z_\\x7f-\\xff\\\\][a-zA-Z0-9_\\x7f-\\xff\\\\]*)::([a-zA-Z_\\x7f-\\xff][a-zA-Z0-9_\\x7f-\\xff]*)\\z#', $constantString->getValue(), $matches);
             if (count($matches) === 3) {
                 return new ConstantArrayType(
                     [new ConstantIntegerType(0), new ConstantIntegerType(1)],
@@ -334,6 +335,7 @@ final class RenderCallbackRule implements Rule
                 );
             }
         }
+
         return $type;
     }
 }

@@ -1,21 +1,28 @@
 rules:
-	- mglaman\PHPStanDrupal\Rules\Drupal\Coder\DiscouragedFunctionsRule
-	- mglaman\PHPStanDrupal\Rules\Drupal\GlobalDrupalDependencyInjectionRule
-	- mglaman\PHPStanDrupal\Rules\Drupal\PluginManager\PluginManagerSetsCacheBackendRule
 	- mglaman\PHPStanDrupal\Rules\Drupal\RenderCallbackRule
 	- mglaman\PHPStanDrupal\Rules\Deprecations\StaticServiceDeprecatedServiceRule
 	- mglaman\PHPStanDrupal\Rules\Deprecations\GetDeprecatedServiceRule
 	- mglaman\PHPStanDrupal\Rules\Drupal\Tests\BrowserTestBaseDefaultThemeRule
 	- mglaman\PHPStanDrupal\Rules\Deprecations\ConfigEntityConfigExportRule
 	- mglaman\PHPStanDrupal\Rules\Deprecations\PluginAnnotationContextDefinitionsRule
-	- mglaman\PHPStanDrupal\Rules\Drupal\ModuleLoadInclude
-	- mglaman\PHPStanDrupal\Rules\Drupal\LoadIncludes
 	- mglaman\PHPStanDrupal\Rules\Drupal\EntityQuery\EntityQueryHasAccessCheckRule
 	- mglaman\PHPStanDrupal\Rules\Drupal\TestClassesProtectedPropertyModulesRule
 
 conditionalTags:
+	mglaman\PHPStanDrupal\Rules\Drupal\Coder\DiscouragedFunctionsRule:
+		phpstan.rules.rule: %drupal.rules.discouragedFunctionsRule%
+	mglaman\PHPStanDrupal\Rules\Drupal\GlobalDrupalDependencyInjectionRule:
+		phpstan.rules.rule: %drupal.rules.globalDrupalDependencyInjectionRule%
+	mglaman\PHPStanDrupal\Rules\Drupal\PluginManager\PluginManagerSetsCacheBackendRule:
+		phpstan.rules.rule: %drupal.rules.pluginManagerSetsCacheBackendRule%
+	mglaman\PHPStanDrupal\Rules\Drupal\ModuleLoadInclude:
+		phpstan.rules.rule: %drupal.rules.moduleLoadInclude%
+	mglaman\PHPStanDrupal\Rules\Drupal\LoadIncludes:
+		phpstan.rules.rule: %drupal.rules.loadIncludes%
+	mglaman\PHPStanDrupal\Rules\Drupal\ConfigGetUnknownKeyRule:
+		phpstan.rules.rule: %drupal.rules.configGetUnknownKeyRule%
 	mglaman\PHPStanDrupal\Rules\Drupal\HookFormAlterRule:
-		phpstan.rules.rule: %drupal.rules.hookRules%
+		phpstan.rules.rule: %drupal.rules.hookFormAlterRule%
 	mglaman\PHPStanDrupal\Rules\Drupal\Tests\TestClassSuffixNameRule:
 		phpstan.rules.rule: %drupal.rules.testClassSuffixNameRule%
 	mglaman\PHPStanDrupal\Rules\Drupal\DependencySerializationTraitPropertyRule:
@@ -28,8 +35,34 @@ conditionalTags:
 		phpstan.rules.rule: %drupal.rules.pluginManagerInspectionRule%
 	mglaman\PHPStanDrupal\Rules\Drupal\CacheableDependencyRule:
 		phpstan.rules.rule: %drupal.rules.cacheableDependencyRule%
+	mglaman\PHPStanDrupal\Rules\Drupal\LoggerFromFactoryPropertyAssignmentRule:
+		phpstan.rules.rule: %drupal.rules.loggerFromFactoryPropertyAssignmentRule%
+	mglaman\PHPStanDrupal\Rules\Drupal\EntityStorageDirectInjectionRule:
+		phpstan.rules.rule: %drupal.rules.entityStorageDirectInjectionRule%
+	mglaman\PHPStanDrupal\Rules\Drupal\EntityStoragePropertyAssignmentRule:
+		phpstan.rules.rule: %drupal.rules.entityStorageDirectInjectionRule%
+	mglaman\PHPStanDrupal\Rules\Drupal\SymfonyYamlParseRule:
+		phpstan.rules.rule: %drupal.rules.symfonyYamlParseRule%
+	mglaman\PHPStanDrupal\Rules\Drupal\EntityListBuilderOperationsCacheabilityRule:
+		phpstan.rules.rule: %drupal.rules.entityOperationsCacheabilityRule%
+	mglaman\PHPStanDrupal\Rules\Drupal\HookEntityOperationCacheabilityRule:
+		phpstan.rules.rule: %drupal.rules.entityOperationsCacheabilityRule%
+	mglaman\PHPStanDrupal\Rules\Drupal\ProceduralHookEntityOperationCacheabilityRule:
+		phpstan.rules.rule: %drupal.rules.entityOperationsCacheabilityRule%
 
 services:
+	-
+		class: mglaman\PHPStanDrupal\Rules\Drupal\Coder\DiscouragedFunctionsRule
+	-
+		class: mglaman\PHPStanDrupal\Rules\Drupal\GlobalDrupalDependencyInjectionRule
+	-
+		class: mglaman\PHPStanDrupal\Rules\Drupal\PluginManager\PluginManagerSetsCacheBackendRule
+	-
+		class: mglaman\PHPStanDrupal\Rules\Drupal\ModuleLoadInclude
+	-
+		class: mglaman\PHPStanDrupal\Rules\Drupal\LoadIncludes
+	-
+		class: mglaman\PHPStanDrupal\Rules\Drupal\ConfigGetUnknownKeyRule
 	-
 		class: mglaman\PHPStanDrupal\Rules\Drupal\HookFormAlterRule
 	-
@@ -46,3 +79,17 @@ services:
 		class: mglaman\PHPStanDrupal\Rules\Classes\PluginManagerInspectionRule
 	-
 		class: mglaman\PHPStanDrupal\Rules\Drupal\CacheableDependencyRule
+	-
+		class: mglaman\PHPStanDrupal\Rules\Drupal\LoggerFromFactoryPropertyAssignmentRule
+	-
+		class: mglaman\PHPStanDrupal\Rules\Drupal\EntityStorageDirectInjectionRule
+	-
+		class: mglaman\PHPStanDrupal\Rules\Drupal\EntityStoragePropertyAssignmentRule
+	-
+		class: mglaman\PHPStanDrupal\Rules\Drupal\SymfonyYamlParseRule
+	-
+		class: mglaman\PHPStanDrupal\Rules\Drupal\EntityListBuilderOperationsCacheabilityRule
+	-
+		class: mglaman\PHPStanDrupal\Rules\Drupal\HookEntityOperationCacheabilityRule
+	-
+		class: mglaman\PHPStanDrupal\Rules\Drupal\ProceduralHookEntityOperationCacheabilityRule

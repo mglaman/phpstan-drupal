@@ -1,0 +1,4 @@
+parameters:
+	drupal:
+		rules:
+			configGetUnknownKeyRule: true

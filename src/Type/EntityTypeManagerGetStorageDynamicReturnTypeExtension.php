@@ -2,40 +2,27 @@
 
 namespace mglaman\PHPStanDrupal\Type;
 
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use mglaman\PHPStanDrupal\Drupal\EntityDataRepository;
-use mglaman\PHPStanDrupal\Type\EntityStorage\EntityStorageType;
-use PhpParser\Node\Expr\BinaryOp\Concat;
 use PhpParser\Node\Expr\MethodCall;
-use PhpParser\Node\VariadicPlaceholder;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\MethodReflection;
-use PHPStan\Reflection\ParametersAcceptorSelector;
-use PHPStan\ShouldNotHappenException;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
-use PHPStan\Type\ObjectType;
 use PHPStan\Type\Type;
+use PHPStan\Type\TypeCombinator;
+use function count;
 
 class EntityTypeManagerGetStorageDynamicReturnTypeExtension implements DynamicMethodReturnTypeExtension
 {
 
-    /**
-     * @var EntityDataRepository
-     */
-    private $entityDataRepository;
-
-    /**
-     * EntityTypeManagerGetStorageDynamicReturnTypeExtension constructor.
-     *
-     * @param EntityDataRepository $entityDataRepository
-     */
-    public function __construct(EntityDataRepository $entityDataRepository)
-    {
-        $this->entityDataRepository = $entityDataRepository;
+    public function __construct(
+        private readonly EntityDataRepository $entityDataRepository
+    ) {
     }
 
     public function getClass(): string
     {
-        return 'Drupal\Core\Entity\EntityTypeManagerInterface';
+        return EntityTypeManagerInterface::class;
     }
 
     public function isMethodSupported(MethodReflection $methodReflection): bool
@@ -47,47 +34,31 @@ class EntityTypeManagerGetStorageDynamicReturnTypeExtension implements DynamicMe
         MethodReflection $methodReflection,
         MethodCall $methodCall,
         Scope $scope
-    ): Type {
-        $returnType = ParametersAcceptorSelector::selectFromArgs(
-            $scope,
-            $methodCall->getArgs(),
-            $methodReflection->getVariants()
-        )->getReturnType();
-        if (!isset($methodCall->args[0])) {
-            // Parameter is required.
-            throw new ShouldNotHappenException();
+    ): ?Type {
+        if ($methodCall->isFirstClassCallable()) {
+            return null;
+        }
+        $args = $methodCall->getArgs();
+        if (count($args) === 0) {
+            return null;
         }
 
-        $arg1 = $methodCall->args[0];
-        if ($arg1 instanceof VariadicPlaceholder) {
-            throw new ShouldNotHappenException();
-        }
-        $arg1 = $arg1->value;
-
-        // @todo handle where the first param is EntityTypeInterface::id()
-        if ($arg1 instanceof MethodCall) {
-            // There may not be much that can be done, since it's a generic EntityTypeInterface.
-            return $returnType;
-        }
-        // @todo handle concat ie: entity_{$display_context}_display for entity_form_display or entity_view_display
-        if ($arg1 instanceof Concat) {
-            return $returnType;
+        $constantStrings = $scope->getType($args[0]->value)->getConstantStrings();
+        if ($constantStrings === []) {
+            // A dynamic entity type ID; fall back to the declared return type.
+            return null;
         }
 
-        $type = $scope->getType($arg1);
-        if (count($type->getConstantStrings()) === 0) {
-            return $returnType;
+        $types = [];
+        foreach ($constantStrings as $constantString) {
+            $storageType = $this->entityDataRepository->get($constantString->getValue())->getStorageType();
+            if ($storageType === null) {
+                // An unknown entity type ID. Once one member is unknown the
+                // whole call can only be trusted to the declared return type.
+                return null;
+            }
+            $types[] = $storageType;
         }
-
-        $entityTypeId = $type->getConstantStrings()[0]->getValue();
-        $storageType = $this->entityDataRepository->get($entityTypeId)->getStorageType();
-        if ($storageType !== null) {
-            return $storageType;
-        }
-
-        if ($returnType instanceof ObjectType) {
-            return new EntityStorageType($entityTypeId, $returnType->getClassName());
-        }
-        return $returnType;
+        return TypeCombinator::union(...$types);
     }
 }

@@ -1,15 +1,15 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace mglaman\PHPStanDrupal\Reflection;
 
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\PropertyReflection;
 use PHPStan\TrinaryLogic;
-use PHPStan\Type\NullType;
+use PHPStan\Type\MixedType;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\StringType;
 use PHPStan\Type\Type;
-use function in_array;
+use PHPStan\Type\TypeCombinator;
 
 /**
  * Allows field access via magic methods
@@ -19,30 +19,23 @@ use function in_array;
 class FieldItemListPropertyReflection implements PropertyReflection
 {
 
-    /** @var ClassReflection */
-    private $declaringClass;
-
-    /** @var string */
-    private $propertyName;
-
-    public function __construct(ClassReflection $declaringClass, string $propertyName)
-    {
-        $this->declaringClass = $declaringClass;
-        $this->propertyName = $propertyName;
+    public function __construct(
+        private readonly ClassReflection $declaringClass,
+        private readonly string $propertyName
+    ) {
     }
 
     public static function canHandleProperty(ClassReflection $classReflection, string $propertyName): bool
     {
-        // @todo use the class reflection and be more specific about handled properties.
-        // Currently \PHPStan\Reflection\EntityFieldReflection::getType always passes FieldItemListInterface.
-        $names = ['entity', 'value', 'target_id'];
-        return in_array($propertyName, $names, true);
+        // FieldItemList::__get() delegates to the first item, so any property
+        // on the underlying FieldItem is potentially valid.
+        return true;
     }
 
     public function getReadableType(): Type
     {
         if ($this->propertyName === 'entity') {
-            return new ObjectType('Drupal\Core\Entity\EntityInterface');
+            return TypeCombinator::addNull(new ObjectType('Drupal\Core\Entity\EntityInterface'));
         }
         if ($this->propertyName === 'target_id') {
             // @todo needs to be union type.
@@ -53,14 +46,14 @@ class FieldItemListPropertyReflection implements PropertyReflection
             return new StringType();
         }
 
-        // Fallback.
-        return new NullType();
+        // Fallback: unknown properties delegated via __get could be any type.
+        return new MixedType();
     }
 
     public function getWritableType(): Type
     {
         if ($this->propertyName === 'entity') {
-            return new ObjectType('Drupal\Core\Entity\EntityInterface');
+            return TypeCombinator::addNull(new ObjectType('Drupal\Core\Entity\EntityInterface'));
         }
         if ($this->propertyName === 'target_id') {
             return new StringType();
@@ -69,8 +62,8 @@ class FieldItemListPropertyReflection implements PropertyReflection
             return new StringType();
         }
 
-        // Fallback.
-        return new NullType();
+        // Fallback: unknown properties delegated via __set could be any type.
+        return new MixedType();
     }
 
     public function canChangeTypeAfterAssignment(): bool

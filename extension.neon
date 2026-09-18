@@ -1,4 +1,9 @@
 parameters:
+	# Content entities accept any property name through ContentEntityBase::__get(),
+	# and PHPStan only consults property reflection extensions for an interface
+	# when it is listed here. Covers every interface extending ContentEntityInterface.
+	universalObjectCratesClasses:
+		- Drupal\Core\Entity\ContentEntityInterface
 	bootstrapFiles:
 		- drupal-autoloader.php
 	excludePaths:
@@ -21,20 +26,33 @@ parameters:
 			checkDeprecatedHooksInApiFiles: false
 			checkCoreDeprecatedHooksInApiFiles: false
 			checkContribDeprecatedHooksInApiFiles: false
+			containerHasAlwaysTrue: false
 		extensions:
 			entityFieldsViaMagicReflection: true
 			entityFieldMethodsViaMagicReflection: true
 			entityQuery: true
 			entityRepository: true
 			stubFiles: true
+		configGetReturnType: false
+		classResolverReturnType: true
 		rules:
-			testClassSuffixNameRule: false
-			dependencySerializationTraitPropertyRule: false
-			accessResultConditionRule: false
+			discouragedFunctionsRule: true
+			globalDrupalDependencyInjectionRule: true
+			pluginManagerSetsCacheBackendRule: true
+			moduleLoadInclude: true
+			loadIncludes: true
+			testClassSuffixNameRule: true
+			dependencySerializationTraitPropertyRule: true
+			accessResultConditionRule: true
 			classExtendsInternalClassRule: true
 			pluginManagerInspectionRule: false
-			cacheableDependencyRule: false
-			hookRules: false
+			cacheableDependencyRule: true
+			hookFormAlterRule: true
+			loggerFromFactoryPropertyAssignmentRule: true
+			entityStorageDirectInjectionRule: true
+			symfonyYamlParseRule: true
+			entityOperationsCacheabilityRule: true
+			configGetUnknownKeyRule: false
 		entityMapping:
 			aggregator_feed:
 				class: Drupal\aggregator\Entity\Feed
@@ -255,6 +273,7 @@ parametersSchema:
 			checkDeprecatedHooksInApiFiles: boolean()
 			checkCoreDeprecatedHooksInApiFiles: boolean()
 			checkContribDeprecatedHooksInApiFiles: boolean()
+			containerHasAlwaysTrue: boolean()
 		])
 		extensions: structure([
 			entityFieldsViaMagicReflection: boolean()
@@ -263,14 +282,26 @@ parametersSchema:
 			entityRepository: boolean()
 			stubFiles: boolean()
 		])
+		configGetReturnType: boolean()
+		classResolverReturnType: boolean()
 		rules: structure([
+			discouragedFunctionsRule: boolean()
+			globalDrupalDependencyInjectionRule: boolean()
+			pluginManagerSetsCacheBackendRule: boolean()
+			moduleLoadInclude: boolean()
+			loadIncludes: boolean()
 			testClassSuffixNameRule: boolean()
 			dependencySerializationTraitPropertyRule: boolean()
 			accessResultConditionRule: boolean()
 			classExtendsInternalClassRule: boolean()
 			pluginManagerInspectionRule: boolean()
 			cacheableDependencyRule: boolean()
-			hookRules: boolean()
+			hookFormAlterRule: boolean()
+			loggerFromFactoryPropertyAssignmentRule: boolean()
+			entityStorageDirectInjectionRule: boolean()
+			symfonyYamlParseRule: boolean()
+			entityOperationsCacheabilityRule: boolean()
+			configGetUnknownKeyRule: boolean()
 		])
 		entityMapping: arrayOf(anyOf(
 			structure([
@@ -288,9 +319,19 @@ services:
 	-
 		class: mglaman\PHPStanDrupal\Drupal\ExtensionMap
 	-
+		class: mglaman\PHPStanDrupal\Drupal\ConfigSchemaData
+	-
+		class: mglaman\PHPStanDrupal\Drupal\BootstrapResultCacheMetaExtension
+		tags:
+			- phpstan.resultCacheMetaExtension
+	-
 		class: mglaman\PHPStanDrupal\Drupal\EntityDataRepository
 		arguments:
 			entityMapping: %drupal.entityMapping%
+	-
+		class: mglaman\PHPStanDrupal\Type\EntityTypeId\EntityTypeIdTypeNodeResolverExtension
+		tags:
+			- phpstan.phpDoc.typeNodeResolverExtension
 	-
 		class: mglaman\PHPStanDrupal\Type\EntityIdNarrowedByNew
 		tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
@@ -313,9 +354,18 @@ services:
 	-
 		class: mglaman\PHPStanDrupal\Type\ContainerDynamicReturnTypeExtension
 		tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
+		arguments:
+			containerHasAlwaysTrue: %drupal.bleedingEdge.containerHasAlwaysTrue%
+	-
+		class: mglaman\PHPStanDrupal\Type\ConfigGetDynamicReturnTypeExtension
+		tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
+		arguments:
+			configGetReturnType: %drupal.configGetReturnType%
 	-
 		class: mglaman\PHPStanDrupal\Type\DrupalClassResolverDynamicReturnTypeExtension
 		tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
+		arguments:
+			classResolverReturnType: %drupal.classResolverReturnType%
 	-
 		class: mglaman\PHPStanDrupal\Type\EntityQuery\EntityQueryDynamicReturnTypeExtension
 	-
@@ -326,6 +376,8 @@ services:
 	-
 		class: mglaman\PHPStanDrupal\Type\DrupalClassResolverDynamicStaticReturnTypeExtension
 		tags: [phpstan.broker.dynamicStaticMethodReturnTypeExtension]
+		arguments:
+			classResolverReturnType: %drupal.classResolverReturnType%
 	-
 		class: mglaman\PHPStanDrupal\Type\DrupalServiceDynamicReturnTypeExtension
 		tags: [phpstan.broker.dynamicStaticMethodReturnTypeExtension]
