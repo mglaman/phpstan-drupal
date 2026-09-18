@@ -3,13 +3,12 @@
 declare(strict_types=1);
 
 /**
- * Fixture for verifying LegacyHook, LegacyRequirementsHook, and
- * LegacyModuleImplementsAlter attribute stubs are available regardless of
- * installed Drupal version.
+ * Fixture for the LegacyHook, LegacyRequirementsHook, and
+ * LegacyModuleImplementsAlter ignores in extension.neon.
  *
- * These attributes were added at different minor versions and LegacyHook is
- * being removed in Drupal 12. PHPStan should not report "class not found"
- * errors when these attributes are used.
+ * Drupal added these attributes in different minor versions and Drupal 12
+ * removes them again, so each is missing on some supported core version.
+ * PHPStan must not report "Attribute class ... does not exist." for them.
  */
 
 use Drupal\Core\Hook\Attribute\LegacyHook;
@@ -19,10 +18,16 @@ use Drupal\Core\Hook\Attribute\LegacyRequirementsHook;
 #[LegacyHook]
 function phpstan_drupal_test_node_presave(): void {}
 
+/**
+ * @return array<string, mixed>
+ */
 #[LegacyRequirementsHook]
 function phpstan_drupal_test_requirements(string $phase): array {
     return [];
 }
 
+/**
+ * @param array<string, mixed> $implementations
+ */
 #[LegacyModuleImplementsAlter]
 function phpstan_drupal_test_module_implements_alter(array &$implementations, string $hook): void {}
