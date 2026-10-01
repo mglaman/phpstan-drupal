@@ -31,6 +31,37 @@ PHPStan extension and rules for Drupal static analysis.
 - Each error is `[message, line, tip?]`
 - Many tests use `@dataProvider` with generators yielding `[files, errors]`
 
+## Rule Registration Conventions
+
+Every rule must be **toggleable**. Never add a new rule directly under `rules:`
+in `rules.neon` — that section is frozen for legacy rules and
+`tests/src/RuleConventionsTest.php` fails if it grows.
+
+To add a rule `fooBarRule`:
+
+- `rules.neon` - register the class under both `services:` and `conditionalTags:`
+  (`phpstan.rules.rule: %drupal.rules.fooBarRule%`)
+- `extension.neon` - add `fooBarRule: false` under `parameters.drupal.rules` and
+  `fooBarRule: boolean()` under `parametersSchema.drupal...rules`
+- `bleedingEdge.neon` - add `fooBarRule: true` so bleeding-edge users get it
+- Document it under "Opt-in rules" in `README.md`
+
+Graduating an opt-in rule to default: flip its `extension.neon` default
+`false` → `true`, remove it from `bleedingEdge.neon`, and add its parameter name
+to `RuleConventionsTest::GRADUATED_RULES` in the same change. It stays in
+`conditionalTags` so it remains opt-out.
+
+A rule too noisy/unstable for bleeding edge may be kept out of
+`bleedingEdge.neon` by listing it in
+`RuleConventionsTest::OPT_IN_RULES_EXCLUDED_FROM_BLEEDING_EDGE` (with a reason)
+instead of step 3.
+
+| `rules.neon` location | `extension.neon` default | Meaning | In `bleedingEdge.neon`? |
+|---|---|---|---|
+| `conditionalTags` | `false` | Opt-in, not yet default | Yes, unless excluded above |
+| `conditionalTags` | `true` | Graduated, still opt-out | No |
+| `rules:` directly | — | Legacy, not toggleable — no new additions | — |
+
 ## Coding Standards
 
 - PSR-2 base with Slevomat coding standard additions
