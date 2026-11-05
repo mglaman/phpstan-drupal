@@ -143,11 +143,11 @@ class DrupalAutoloader
         $checkCoreDeprecatedHooksInApiFiles = $drupalParams['bleedingEdge']['checkCoreDeprecatedHooksInApiFiles'] || $checkDeprecatedHooksInApiFiles;
         $checkContribDeprecatedHooksInApiFiles = $drupalParams['bleedingEdge']['checkContribDeprecatedHooksInApiFiles'] || $checkDeprecatedHooksInApiFiles;
 
-        foreach ($this->moduleData as $extension) {
-            $this->loadExtension($extension);
+        foreach ($this->moduleData as $module) {
+            $this->loadExtension($module);
 
-            $module_name = $extension->getName();
-            $module_dir = $this->drupalRoot . '/' . $extension->getPath();
+            $module_name = $module->getName();
+            $module_dir = $this->drupalRoot . '/' . $module->getPath();
             // Add .install
             if (file_exists($module_dir . '/' . $module_name . '.install')) {
                 $ignored_install_files = ['entity_test', 'update_test_schema'];
@@ -161,11 +161,11 @@ class DrupalAutoloader
             }
 
             // Add .api.php for core modules
-            if ($checkCoreDeprecatedHooksInApiFiles && $extension->origin === 'core' && file_exists($module_dir . '/' . $module_name . '.api.php')) {
+            if ($checkCoreDeprecatedHooksInApiFiles && $module->origin === 'core' && file_exists($module_dir . '/' . $module_name . '.api.php')) {
                 $this->loadAndCatchErrors($module_dir . '/' . $module_name . '.api.php');
             }
             // Add .api.php for contrib modules
-            if ($checkContribDeprecatedHooksInApiFiles && $extension->origin !== 'core' && file_exists($module_dir . '/' . $module_name . '.api.php')) {
+            if ($checkContribDeprecatedHooksInApiFiles && $module->origin !== 'core' && file_exists($module_dir . '/' . $module_name . '.api.php')) {
                 $this->loadAndCatchErrors($module_dir . '/' . $module_name . '.api.php');
             }
             // Add misc .inc that are magically allowed via hook_hook_info.
@@ -182,9 +182,9 @@ class DrupalAutoloader
                 }
             }
         }
-        foreach ($this->themeData as $extension) {
-            $this->loadExtension($extension);
-            $theme_dir = $this->drupalRoot . '/' . $extension->getPath();
+        foreach ($this->themeData as $theme) {
+            $this->loadExtension($theme);
+            $theme_dir = $this->drupalRoot . '/' . $theme->getPath();
             $theme_settings_file = $theme_dir . '/theme-settings.php';
             if (file_exists($theme_settings_file)) {
                 $this->loadAndCatchErrors($theme_settings_file);
