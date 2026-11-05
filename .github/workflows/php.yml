@@ -254,14 +254,13 @@ jobs:
           extensions: dom, curl, libxml, mbstring, zip, pdo, mysql, pdo_mysql, gd, apcu
       - name: "Checkout Drupal core"
         run: |
-         # Drupal 12 packages don't include tests, and core's PHPStan config
-         # needs them. See https://www.drupal.org/node/3618953.
-         composer config --global preferred-install.drupal/core source
          cd ${{ runner.temp }}
          git clone https://git.drupalcode.org/project/drupal.git
          cd drupal
-         composer config repositories.0 composer https://packages.drupal.org/8
-         composer config repositories.1 path $GITHUB_WORKSPACE
+         # Add a repository instead of replacing one of core's. Core's path
+         # repository keeps the checkout, which has the tests its PHPStan config
+         # needs. Drupal 12 packages don't: https://www.drupal.org/node/3618953.
+         composer config repositories.phpstan-drupal path $GITHUB_WORKSPACE
       - name: "Install Drupal core dependencies"
         uses: "ramsey/composer-install@v4"
         with:
