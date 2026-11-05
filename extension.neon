@@ -331,6 +331,8 @@ parametersSchema:
 	])
 services:
 	-
+		class: mglaman\PHPStanDrupal\Drupal\DrupalSite
+	-
 		class: mglaman\PHPStanDrupal\Drupal\ServiceMap
 	-
 		class: mglaman\PHPStanDrupal\Drupal\ExtensionMap
