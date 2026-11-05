@@ -164,6 +164,13 @@ parameters:
             # Flags plugin managers that do not set a cache backend.
             pluginManagerSetsCacheBackendRule: false
 
+            # Flags plugin managers that pass a non-attribute (annotation) class as
+            # the plugin definition attribute name to DefaultPluginManager::__construct().
+            # Annotation-only discovery is deprecated in drupal:11.2.0 and removed in
+            # drupal:12.0.0. Also reports static property and constructor parameter
+            # defaults. Does nothing when AttributeInterface is unavailable (Drupal < 10.2).
+            pluginManagerAttributeDiscoveryRule: false
+
             # Validates module_load_include() calls and loads the include for
             # the rest of the analysis.
             moduleLoadInclude: false
