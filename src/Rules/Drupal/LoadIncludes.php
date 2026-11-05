@@ -2,6 +2,7 @@
 
 namespace mglaman\PHPStanDrupal\Rules\Drupal;
 
+use Drupal\Core\DependencyInjection\ContainerNotInitializedException;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
@@ -72,6 +73,12 @@ final class LoadIncludes extends LoadIncludeBase
                 // include must not crash the analysis, but PHPStan's own
                 // exceptions elsewhere must propagate.
                 require_once $file;
+            } catch (ContainerNotInitializedException $e) {
+                // Top-level code in the include needs a container, which does
+                // not exist during analysis. Its top-level functions are still
+                // declared. Reporting this would also be unreliable: PHP won't
+                // re-run the file, so only the first call in a process throws.
+                return [];
             } catch (Throwable $e) {
                 return [
                     RuleErrorBuilder::message(sprintf(

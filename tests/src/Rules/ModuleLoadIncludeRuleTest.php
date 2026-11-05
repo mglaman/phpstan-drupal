@@ -25,4 +25,9 @@ final class ModuleLoadIncludeRuleTest extends DrupalRuleTestCase
         ]);
     }
 
+    public function testContainerNotInitialized(): void
+    {
+        $this->analyse([__DIR__ . '/data/bug-1062-module-load-include.php'], []);
+    }
+
 }
