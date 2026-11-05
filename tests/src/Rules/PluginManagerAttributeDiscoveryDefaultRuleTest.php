@@ -4,16 +4,40 @@ namespace mglaman\PHPStanDrupal\Tests\Rules;
 
 use mglaman\PHPStanDrupal\Rules\Drupal\PluginManager\PluginManagerAttributeDiscoveryDefaultRule;
 use mglaman\PHPStanDrupal\Tests\DrupalRuleTestCase;
+use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Rules\Rule;
 
 final class PluginManagerAttributeDiscoveryDefaultRuleTest extends DrupalRuleTestCase
 {
 
+    private bool $attributeInterfaceAvailable = true;
+
     protected function getRule(): Rule
     {
-        return new PluginManagerAttributeDiscoveryDefaultRule(
-            self::createReflectionProvider()
+        $reflectionProvider = self::createReflectionProvider();
+        if ($this->attributeInterfaceAvailable) {
+            return new PluginManagerAttributeDiscoveryDefaultRule($reflectionProvider);
+        }
+
+        // Simulate Drupal < 10.2, where AttributeInterface does not exist.
+        $withoutInterface = $this->createMock(ReflectionProvider::class);
+        $withoutInterface->method('hasClass')->willReturnCallback(
+            static fn (string $name): bool => ltrim($name, '\\') !== 'Drupal\Component\Plugin\Attribute\AttributeInterface'
+                && $reflectionProvider->hasClass($name)
         );
+        $withoutInterface->method('getClass')->willReturnCallback(
+            static fn (string $name) => $reflectionProvider->getClass($name)
+        );
+        return new PluginManagerAttributeDiscoveryDefaultRule($withoutInterface);
+    }
+
+    /**
+     * Without AttributeInterface nothing can be told apart, so nothing is reported.
+     */
+    public function testNoopWithoutAttributeInterface(): void
+    {
+        $this->attributeInterfaceAvailable = false;
+        $this->analyse([__DIR__ . '/data/plugin-manager-attribute-discovery-default.php'], []);
     }
 
     public function testRule(): void

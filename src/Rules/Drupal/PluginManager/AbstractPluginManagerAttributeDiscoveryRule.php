@@ -62,6 +62,11 @@ abstract class AbstractPluginManagerAttributeDiscoveryRule implements Rule
      */
     protected function resolveNonAttributeClass(string $className): ?ClassReflection
     {
+        // Drupal < 10.2 has no attribute interface. Without it nothing can be
+        // told apart from an attribute class, so never report.
+        if (!$this->reflectionProvider->hasClass(self::ATTRIBUTE_INTERFACE)) {
+            return null;
+        }
         $className = ltrim($className, '\\');
         // Only report when certain: the class must be resolvable.
         if ($className === '' || !$this->reflectionProvider->hasClass($className)) {
