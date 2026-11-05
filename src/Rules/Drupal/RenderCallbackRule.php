@@ -8,9 +8,11 @@ use Drupal\Core\Render\Renderer;
 use Drupal\Core\Security\Attribute\TrustedCallback;
 use Drupal\Core\Security\TrustedCallbackInterface;
 use mglaman\PHPStanDrupal\Drupal\ServiceMap;
+use mglaman\PHPStanDrupal\Drupal\ServiceResultCacheValueExtension;
 use PhpParser\Node;
 use PhpParser\Node\ArrayItem;
 use PhpParser\Node\Name;
+use PHPStan\Analyser\DependencyTracker;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\ReflectionProvider;
@@ -65,6 +67,9 @@ final class RenderCallbackRule implements Rule
         return ArrayItem::class;
     }
 
+    /**
+     * @param Scope&DependencyTracker $scope
+     */
     public function processNode(Node $node, Scope $scope): array
     {
         $key = $node->key;
@@ -136,6 +141,7 @@ final class RenderCallbackRule implements Rule
     }
 
     /**
+     * @param Scope&DependencyTracker $scope
      * @return list<\PHPStan\Rules\IdentifierRuleError> errors
      */
     private function doProcessNode(Node\Expr $node, Scope $scope, string $keyChecked, int $pos): array
@@ -282,6 +288,9 @@ final class RenderCallbackRule implements Rule
     }
 
     // @todo move to a helper, as Drupal uses `service:method` references a lot.
+    /**
+     * @param Scope&DependencyTracker $scope
+     */
     private function getType(Node\Expr $node, Scope $scope):  Type
     {
         $type = $scope->getType($node);
@@ -311,6 +320,7 @@ final class RenderCallbackRule implements Rule
             if (substr_count($constantString->getValue(), ':') === 1) {
                 [$class_or_service, $method] = explode(':', $constantString->getValue(), 2);
 
+                $scope->trackValueDependency(ServiceResultCacheValueExtension::class, $class_or_service);
                 $serviceDefinition = $this->serviceMap->getService($class_or_service);
                 if ($serviceDefinition === null || $serviceDefinition->getClass() === null) {
                     return $type;

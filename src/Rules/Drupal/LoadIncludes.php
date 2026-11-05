@@ -5,6 +5,7 @@ namespace mglaman\PHPStanDrupal\Rules\Drupal;
 use Drupal\Core\DependencyInjection\ContainerNotInitializedException;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use PhpParser\Node;
+use PHPStan\Analyser\DependencyTracker;
 use PHPStan\Analyser\Scope;
 use PHPStan\Rules\RuleErrorBuilder;
 use PHPStan\Type\ObjectType;
@@ -24,6 +25,9 @@ final class LoadIncludes extends LoadIncludeBase
         return Node\Expr\MethodCall::class;
     }
 
+    /**
+     * @param Scope&DependencyTracker $scope
+     */
     public function processNode(Node $node, Scope $scope): array
     {
         if (!$node->name instanceof Node\Identifier) {
@@ -65,6 +69,7 @@ final class LoadIncludes extends LoadIncludeBase
         }
 
         $file = $module->getAbsolutePath() . DIRECTORY_SEPARATOR . $filename;
+        $scope->trackFileDependency($file);
         if (is_file($file)) {
             try {
                 // Load the include so its symbols are available for the rest

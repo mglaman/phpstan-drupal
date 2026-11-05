@@ -5,7 +5,9 @@ namespace mglaman\PHPStanDrupal\Type;
 use Drupal\Core\Config\Config;
 use mglaman\PHPStanDrupal\Drupal\ConfigNameResolverTrait;
 use mglaman\PHPStanDrupal\Drupal\ConfigSchemaData;
+use mglaman\PHPStanDrupal\Drupal\ConfigSchemaResultCacheValueExtension;
 use PhpParser\Node\Expr\MethodCall;
+use PHPStan\Analyser\DependencyTracker;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
@@ -33,6 +35,9 @@ class ConfigGetDynamicReturnTypeExtension implements DynamicMethodReturnTypeExte
         return $methodReflection->getName() === 'get';
     }
 
+    /**
+     * @param Scope&DependencyTracker $scope
+     */
     public function getTypeFromMethodCall(
         MethodReflection $methodReflection,
         MethodCall $methodCall,
@@ -58,6 +63,7 @@ class ConfigGetDynamicReturnTypeExtension implements DynamicMethodReturnTypeExte
             return null;
         }
 
+        $scope->trackValueDependency(ConfigSchemaResultCacheValueExtension::class, ConfigSchemaResultCacheValueExtension::KEY);
         $types = [];
         foreach ($constantStrings as $constantString) {
             $key = $constantString->getValue();
