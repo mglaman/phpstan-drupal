@@ -4,6 +4,9 @@ namespace mglaman\PHPStanDrupal\Rules\Drupal\PluginManager;
 
 use PhpParser\Node;
 use PhpParser\NodeFinder;
+use PhpParser\NodeTraverser;
+use PhpParser\NodeVisitor;
+use PhpParser\NodeVisitorAbstract;
 use PHPStan\Analyser\Scope;
 use PHPStan\Node\InClassNode;
 use PHPStan\Reflection\ClassReflection;
@@ -50,18 +53,15 @@ class PluginManagerAttributeDiscoveryDefaultRule extends AbstractPluginManagerAt
         }
 
         $classNode = $node->getOriginalNode();
-        $finder = new NodeFinder();
-        $constructor = $finder->findFirst(
-            $classNode->stmts,
-            static fn (Node $n): bool => $n instanceof Node\Stmt\ClassMethod && $n->name->toLowerString() === '__construct'
-        );
-        if (!$constructor instanceof Node\Stmt\ClassMethod) {
+        // Own methods only, so constructors of anonymous classes are never found.
+        $constructor = $classNode->getMethod('__construct');
+        if ($constructor === null) {
             return [];
         }
 
         $errors = [];
         /** @var list<Node\Expr\StaticCall> $calls */
-        $calls = $finder->find(
+        $calls = $this->findInScope(
             (array) $constructor->stmts,
             fn (Node $n): bool => $n instanceof Node\Expr\StaticCall && $this->isParentConstructorCall($n)
         );
@@ -177,7 +177,7 @@ class PluginManagerAttributeDiscoveryDefaultRule extends AbstractPluginManagerAt
         }
 
         // The parameter must not be reassigned in the constructor.
-        $writes = (new NodeFinder())->find(
+        $writes = $this->findInScope(
             (array) $constructor->stmts,
             static fn (Node $n): bool => self::isWriteTo($n, static fn (Node $target): bool => $target instanceof Node\Expr\Variable && $target->name === $name)
         );
@@ -197,6 +197,60 @@ class PluginManagerAttributeDiscoveryDefaultRule extends AbstractPluginManagerAt
             $attributeClass->getName(),
             self::ATTRIBUTE_INTERFACE
         );
+    }
+
+    /**
+     * Finds matching nodes without leaving the current variable scope.
+     *
+     * Anonymous classes, nested functions, closures and arrow functions have
+     * their own scope, so their bodies are skipped. A closure's `use` list is
+     * still inspected because `use (&$x)` can write to the outer variable.
+     *
+     * @param array<Node> $nodes
+     * @param callable(Node): bool $matches
+     * @return list<Node>
+     */
+    private function findInScope(array $nodes, callable $matches): array
+    {
+        $visitor = new class ($matches) extends NodeVisitorAbstract {
+
+            /** @var list<Node> */
+            public array $found = [];
+
+            /** @var callable(Node): bool */
+            private $matches;
+
+            /** @param callable(Node): bool $matches */
+            public function __construct(callable $matches)
+            {
+                $this->matches = $matches;
+            }
+
+            public function enterNode(Node $node): ?int
+            {
+                if (($this->matches)($node)) {
+                    $this->found[] = $node;
+                }
+                if ($node instanceof Node\Expr\Closure) {
+                    foreach ($node->uses as $use) {
+                        if (($this->matches)($use)) {
+                            $this->found[] = $use;
+                        }
+                    }
+                }
+                if ($node instanceof Node\Stmt\ClassLike
+                    || $node instanceof Node\FunctionLike
+                ) {
+                    return NodeVisitor::DONT_TRAVERSE_CHILDREN;
+                }
+                return null;
+            }
+
+        };
+        $traverser = new NodeTraverser($visitor);
+        $traverser->traverse($nodes);
+
+        return $visitor->found;
     }
 
     /**

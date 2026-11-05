@@ -53,6 +53,9 @@ final class PluginManagerAttributeDiscoveryDefaultRuleTest extends DrupalRuleTes
                 [sprintf($property, 'RedeclaredToAnnotation'), 51, $tip],
                 [sprintf($parameter, 'ParameterDefaultAnnotation', 'plugin_definition_annotation_name'), 128, $tip],
                 [sprintf($parameter, 'ParameterDefaultClassConstNamed', 'annotation'), 139, $tip],
+                [sprintf($property, 'AnonymousClassBeforeConstructorReports'), 223, $tip],
+                [sprintf($parameter, 'NestedScopesInConstructorReports', 'annotation'), 296, $tip],
+                [sprintf($parameter, 'ParameterShadowedInNestedScopes', 'annotation'), 358, $tip],
             ]
         );
     }

@@ -198,3 +198,164 @@ class NotAPluginManager
     }
 
 }
+
+// An anonymous class with its own constructor in an earlier method must not be
+// mistaken for the manager's constructor. Positive: real constructor reports.
+class AnonymousClassBeforeConstructorReports extends DefaultPluginManager
+{
+
+    protected static $annotation = 'Drupal\Component\Annotation\Plugin';
+
+    public function helper(): object
+    {
+        return new class (AttributePlugin::class) extends \ArrayObject {
+
+            public function __construct(string $input = AttributePlugin::class)
+            {
+                parent::__construct([$input]);
+            }
+
+        };
+    }
+
+    public function __construct(\Traversable $namespaces, ModuleHandlerInterface $module_handler)
+    {
+        parent::__construct('Plugin/Foo', $namespaces, $module_handler, 'FooInterface', static::$annotation);
+    }
+
+}
+
+// Negative: the real constructor uses an attribute class.
+class AnonymousClassBeforeConstructorClean extends DefaultPluginManager
+{
+
+    protected static $annotation = AttributePlugin::class;
+
+    public function helper(): object
+    {
+        return new class (AnnotationPlugin::class) extends \ArrayObject {
+
+            public function __construct(string $input = AnnotationPlugin::class)
+            {
+                parent::__construct([$input]);
+            }
+
+        };
+    }
+
+    public function __construct(\Traversable $namespaces, ModuleHandlerInterface $module_handler)
+    {
+        parent::__construct('Plugin/Foo', $namespaces, $module_handler, 'FooInterface', static::$annotation);
+    }
+
+}
+
+// Negative: no real constructor, only an anonymous class with one.
+class NoConstructorAnonymousClassOnly extends DefaultPluginManager
+{
+
+    public function helper(): object
+    {
+        return new class extends \ArrayObject {
+
+            public function __construct($annotation = 'Drupal\Component\Annotation\Plugin')
+            {
+                parent::__construct([], 0, $annotation, $annotation, $annotation);
+            }
+
+        };
+    }
+
+}
+
+// The call inside the anonymous class and closure belongs to them. Only the
+// manager's own call is reported.
+class NestedScopesInConstructorReports extends DefaultPluginManager
+{
+
+    public function __construct(\Traversable $namespaces, ModuleHandlerInterface $module_handler, $annotation = 'Drupal\Component\Annotation\Plugin')
+    {
+        $anonymous = new class ($annotation) extends \ArrayObject {
+
+            public function __construct($annotation)
+            {
+                parent::__construct([], 0, $annotation, $annotation, $annotation);
+            }
+
+        };
+        $closure = static function () use ($annotation) {
+            return new class ($annotation) extends \ArrayObject {
+
+                public function __construct($annotation)
+                {
+                    parent::__construct([], 0, $annotation, $annotation, $annotation);
+                }
+
+            };
+        };
+        parent::__construct('Plugin/Foo', $namespaces, $module_handler, 'FooInterface', $annotation);
+    }
+
+}
+
+// Negative: only a nested scope calls parent::__construct() with an annotation
+// default; the manager's own call passes an attribute class.
+class NestedScopesInConstructorClean extends DefaultPluginManager
+{
+
+    protected static $annotation = 'Drupal\Component\Annotation\Plugin';
+
+    public function __construct(\Traversable $namespaces, ModuleHandlerInterface $module_handler)
+    {
+        $anonymous = new class extends \ArrayObject {
+
+            public function __construct()
+            {
+                parent::__construct([], 0, 'x', 'y', static::$annotation);
+            }
+
+        };
+        parent::__construct('Plugin/Foo', $namespaces, $module_handler, 'FooInterface', AttributePlugin::class);
+    }
+
+}
+
+// Negative: a by-reference closure use is a real write to the parameter.
+class ParameterWrittenByClosureReference extends DefaultPluginManager
+{
+
+    public function __construct(\Traversable $namespaces, ModuleHandlerInterface $module_handler, $annotation = 'Drupal\Component\Annotation\Plugin')
+    {
+        $override = static function () use (&$annotation) {
+            $annotation = AttributePlugin::class;
+        };
+        $override();
+        parent::__construct('Plugin/Foo', $namespaces, $module_handler, 'FooInterface', $annotation);
+    }
+
+}
+
+// Positive: assignments inside an anonymous class or closure body are other
+// variables, not writes to the parameter.
+class ParameterShadowedInNestedScopes extends DefaultPluginManager
+{
+
+    public function __construct(\Traversable $namespaces, ModuleHandlerInterface $module_handler, $annotation = 'Drupal\Component\Annotation\Plugin')
+    {
+        $closure = static function () {
+            $annotation = AttributePlugin::class;
+            return $annotation;
+        };
+        $arrow = static fn () => $closure();
+        $anonymous = new class extends \ArrayObject {
+
+            public function change(): void
+            {
+                $annotation = AttributePlugin::class;
+            }
+
+        };
+        parent::__construct('Plugin/Foo', $namespaces, $module_handler, 'FooInterface', $annotation);
+    }
+
+}
