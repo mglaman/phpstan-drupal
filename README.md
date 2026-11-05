@@ -6,7 +6,8 @@ Extension for [PHPStan](https://phpstan.org/) to allow analysis of Drupal code.
 
 PHPStan is able to [discover symbols](https://phpstan.org/user-guide/discovering-symbols) by using autoloading provided 
 by Composer. However, Drupal does not provide autoloading information for modules and themes. This project registers 
-those namespaces so that PHPStan can properly discover symbols in your Drupal code base automatically.
+those namespaces so that PHPStan can properly discover symbols in your Drupal code base automatically. It also
+registers Drush's Symfony compatibility classes, such as `DrushStyle`.
 
 > [!NOTE]
 > With Drupal 11.2, Drupal core is now using PHPStan 2.0. The 1.x branch of phpstan-drupal will be supported until 
