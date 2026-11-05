@@ -27,7 +27,7 @@ use PHPStan\Rules\RuleErrorBuilder;
  *
  * @extends AbstractPluginManagerAttributeDiscoveryRule<StaticCall>
  */
-class PluginManagerAttributeDiscoveryRule extends AbstractPluginManagerAttributeDiscoveryRule
+final class PluginManagerAttributeDiscoveryRule extends AbstractPluginManagerAttributeDiscoveryRule
 {
     public function getNodeType(): string
     {

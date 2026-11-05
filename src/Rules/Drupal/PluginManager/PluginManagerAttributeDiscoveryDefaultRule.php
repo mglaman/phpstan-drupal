@@ -36,7 +36,7 @@ use Throwable;
  *
  * @extends AbstractPluginManagerAttributeDiscoveryRule<InClassNode>
  */
-class PluginManagerAttributeDiscoveryDefaultRule extends AbstractPluginManagerAttributeDiscoveryRule
+final class PluginManagerAttributeDiscoveryDefaultRule extends AbstractPluginManagerAttributeDiscoveryRule
 {
     private const TIP = 'Provide an Attribute class and keep the Annotation class for BC. See https://www.drupal.org/node/3522776 and https://www.drupal.org/node/3395582';
 
