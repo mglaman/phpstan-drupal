@@ -6,6 +6,7 @@ use Drupal;
 use Drupal\Core\DependencyInjection\ClassResolverInterface;
 use mglaman\PHPStanDrupal\Drupal\ServiceMap;
 use PhpParser\Node\Expr\StaticCall;
+use PHPStan\Analyser\DependencyTracker;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\ParametersAcceptorSelector;
@@ -32,6 +33,9 @@ class DrupalClassResolverDynamicStaticReturnTypeExtension implements DynamicStat
         return $methodReflection->getName() === 'classResolver';
     }
 
+    /**
+     * @param Scope&DependencyTracker $scope
+     */
     public function getTypeFromStaticMethodCall(
         MethodReflection $methodReflection,
         StaticCall $methodCall,

@@ -56,9 +56,9 @@ final class ExtensionMap
     }
 
     /**
-     * @param array<int, Extension> $modules
-     * @param array<int, Extension> $themes
-     * @param array<int, Extension> $profiles
+     * @param array<array-key, Extension> $modules
+     * @param array<array-key, Extension> $themes
+     * @param array<array-key, Extension> $profiles
      */
     public function setExtensions(array $modules, array $themes, array $profiles): void
     {

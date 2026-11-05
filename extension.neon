@@ -333,15 +333,29 @@ parametersSchema:
 	])
 services:
 	-
+		class: mglaman\PHPStanDrupal\Drupal\DrupalSite
+	-
 		class: mglaman\PHPStanDrupal\Drupal\ServiceMap
 	-
 		class: mglaman\PHPStanDrupal\Drupal\ExtensionMap
 	-
 		class: mglaman\PHPStanDrupal\Drupal\ConfigSchemaData
 	-
-		class: mglaman\PHPStanDrupal\Drupal\BootstrapResultCacheMetaExtension
+		class: mglaman\PHPStanDrupal\Drupal\ServiceResultCacheValueExtension
 		tags:
-			- phpstan.resultCacheMetaExtension
+			- phpstan.resultCacheValueExtension
+	-
+		class: mglaman\PHPStanDrupal\Drupal\ExtensionListResultCacheValueExtension
+		tags:
+			- phpstan.resultCacheValueExtension
+	-
+		class: mglaman\PHPStanDrupal\Drupal\ConfigSchemaResultCacheValueExtension
+		tags:
+			- phpstan.resultCacheValueExtension
+	-
+		class: mglaman\PHPStanDrupal\Rules\Drupal\ExtensionListDependencyRule
+		tags:
+			- phpstan.rules.rule
 	-
 		class: mglaman\PHPStanDrupal\Drupal\EntityDataRepository
 		arguments:

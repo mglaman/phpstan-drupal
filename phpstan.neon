@@ -6,10 +6,6 @@ parameters:
 			identifier: missingType.iterableValue
 		-
 			identifier: missingType.generics
-		-
-			# The replacement API needs PHPStan 2.3, but we support ^2.1. See #1061.
-			identifier: class.implementsDeprecatedInterface
-			path: src/Drupal/BootstrapResultCacheMetaExtension.php
 	paths:
 		- src
 		- drupal-autoloader.php
