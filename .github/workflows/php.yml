@@ -268,7 +268,9 @@ jobs:
       - name: "require phpstan-drupal"
         run: |
           cd ${{ runner.temp }}/drupal
-          composer require drupal/core-dev "phpstan/phpstan:^2.0" "phpstan/phpstan-phpunit:^2.0" mglaman/phpstan-drupal "${{ steps.branch_alias.outputs.VERSION_ALIAS }} as 2.99.99" phpstan/extension-installer --with-all-dependencies
+          # Core's require-dev already has what this job needs. Only update these
+          # packages: a wider update replaces the core checkout with a package.
+          composer require --dev "phpstan/phpstan:^2.0" "phpstan/phpstan-phpunit:^2.0" mglaman/phpstan-drupal "${{ steps.branch_alias.outputs.VERSION_ALIAS }} as 2.99.99" --with-dependencies
       - name: "Check baseline"
         run: |
           cd ${{ runner.temp }}/drupal
