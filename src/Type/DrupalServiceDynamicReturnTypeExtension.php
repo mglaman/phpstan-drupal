@@ -5,11 +5,13 @@ namespace mglaman\PHPStanDrupal\Type;
 use Drupal;
 use mglaman\PHPStanDrupal\Drupal\DrupalServiceDefinition;
 use mglaman\PHPStanDrupal\Drupal\ServiceMap;
+use mglaman\PHPStanDrupal\Drupal\ServiceResultCacheValueExtension;
 use PhpParser\Node\Arg;
 use PhpParser\Node\Expr\ClassConstFetch;
 use PhpParser\Node\Expr\StaticCall;
 use PhpParser\Node\Name\FullyQualified;
 use PhpParser\Node\Scalar\String_;
+use PHPStan\Analyser\DependencyTracker;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\ParametersAcceptorSelector;
@@ -39,6 +41,9 @@ class DrupalServiceDynamicReturnTypeExtension implements DynamicStaticMethodRetu
         return $methodReflection->getName() === 'service';
     }
 
+    /**
+     * @param Scope&DependencyTracker $scope
+     */
     public function getTypeFromStaticMethodCall(
         MethodReflection $methodReflection,
         StaticCall $methodCall,
@@ -71,11 +76,13 @@ class DrupalServiceDynamicReturnTypeExtension implements DynamicStaticMethodRetu
 
         if ($arg1 instanceof String_) {
             $serviceId = $arg1->value;
+            $scope->trackValueDependency(ServiceResultCacheValueExtension::class, $serviceId);
             return $this->getServiceType($serviceId) ?? $returnType;
         }
 
         if ($arg1 instanceof ClassConstFetch && $arg1->class instanceof FullyQualified) {
             $serviceId = (string) $arg1->class;
+            $scope->trackValueDependency(ServiceResultCacheValueExtension::class, $serviceId);
             return $this->getServiceType($serviceId) ?? $returnType;
         }
 

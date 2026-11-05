@@ -3,7 +3,9 @@
 namespace mglaman\PHPStanDrupal\Type;
 
 use mglaman\PHPStanDrupal\Drupal\ServiceMap;
+use mglaman\PHPStanDrupal\Drupal\ServiceResultCacheValueExtension;
 use PhpParser\Node\Expr\MethodCall;
+use PHPStan\Analyser\DependencyTracker;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\ParametersAcceptorSelector;
@@ -36,6 +38,9 @@ class ContainerDynamicReturnTypeExtension implements DynamicMethodReturnTypeExte
         return in_array($methodReflection->getName(), ['get', 'has'], true);
     }
 
+    /**
+     * @param Scope&DependencyTracker $scope
+     */
     public function getTypeFromMethodCall(
         MethodReflection $methodReflection,
         MethodCall $methodCall,
@@ -59,6 +64,7 @@ class ContainerDynamicReturnTypeExtension implements DynamicMethodReturnTypeExte
 
             foreach ($argType->getConstantStrings() as $constantStringType) {
                 $serviceId = $constantStringType->getValue();
+                $scope->trackValueDependency(ServiceResultCacheValueExtension::class, $serviceId);
                 $service = $this->serviceMap->getService($serviceId);
                 if (!$this->containerHasAlwaysTrue && $service !== null) {
                     $types[] = new BooleanType();
@@ -98,6 +104,7 @@ class ContainerDynamicReturnTypeExtension implements DynamicMethodReturnTypeExte
             $constantStrings = $argType->getConstantStrings();
             foreach ($constantStrings as $constantStringType) {
                 $serviceId = $constantStringType->getValue();
+                $scope->trackValueDependency(ServiceResultCacheValueExtension::class, $serviceId);
                 $service = $this->serviceMap->getService($serviceId);
                 $types[] = $service !== null ? $service->getType() : $returnType;
             }

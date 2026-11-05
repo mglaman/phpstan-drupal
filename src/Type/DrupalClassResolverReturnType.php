@@ -6,7 +6,9 @@ namespace mglaman\PHPStanDrupal\Type;
 
 use mglaman\PHPStanDrupal\Drupal\DrupalServiceDefinition;
 use mglaman\PHPStanDrupal\Drupal\ServiceMap;
+use mglaman\PHPStanDrupal\Drupal\ServiceResultCacheValueExtension;
 use PhpParser\Node\Expr\CallLike;
+use PHPStan\Analyser\DependencyTracker;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\ParametersAcceptorSelector;
@@ -17,6 +19,9 @@ use function count;
 final class DrupalClassResolverReturnType
 {
 
+    /**
+     * @param Scope&DependencyTracker $scope
+     */
     public static function getType(
         MethodReflection $methodReflection,
         CallLike $methodCall,
@@ -39,6 +44,7 @@ final class DrupalClassResolverReturnType
         }
 
         $serviceName = $arg1->getConstantStrings()[0];
+        $scope->trackValueDependency(ServiceResultCacheValueExtension::class, $serviceName->getValue());
         $serviceDefinition = $serviceMap->getService($serviceName->getValue());
         if ($serviceDefinition instanceof DrupalServiceDefinition) {
             return $serviceDefinition->getType();

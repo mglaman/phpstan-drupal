@@ -5,8 +5,10 @@ namespace mglaman\PHPStanDrupal\Rules\Drupal;
 use Drupal\Core\Config\Config;
 use mglaman\PHPStanDrupal\Drupal\ConfigNameResolverTrait;
 use mglaman\PHPStanDrupal\Drupal\ConfigSchemaData;
+use mglaman\PHPStanDrupal\Drupal\ConfigSchemaResultCacheValueExtension;
 use PhpParser\Node;
 use PhpParser\Node\Identifier;
+use PHPStan\Analyser\DependencyTracker;
 use PHPStan\Analyser\Scope;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
@@ -36,6 +38,9 @@ final class ConfigGetUnknownKeyRule implements Rule
         return Node\Expr\MethodCall::class;
     }
 
+    /**
+     * @param Scope&DependencyTracker $scope
+     */
     public function processNode(Node $node, Scope $scope): array
     {
         if (!$node->name instanceof Identifier || $node->name->name !== 'get') {
@@ -59,6 +64,7 @@ final class ConfigGetUnknownKeyRule implements Rule
             return [];
         }
 
+        $scope->trackValueDependency(ConfigSchemaResultCacheValueExtension::class, ConfigSchemaResultCacheValueExtension::KEY);
         if (!$this->configSchemaData->isFullyValidatable($configName)) {
             return [];
         }
