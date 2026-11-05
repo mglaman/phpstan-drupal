@@ -27,4 +27,15 @@ final class DrushIntegrationTest extends DrupalRuleTestCase
         ], []);
     }
 
+    public function testSymfonyCompatibilityClasses(): void
+    {
+        $reflect = new \ReflectionClass(\Drush\Drush::class);
+        $fileName = $reflect->getFileName();
+        self::assertNotFalse($fileName);
+        if (!is_dir(dirname($fileName, 2) . '/src-symfony-compatibility')) {
+            self::markTestSkipped('Drush does not ship Symfony compatibility classes.');
+        }
+        self::assertTrue($this->createReflectionProvider()->hasClass('Drush\\Symfony\\LessStrictArgvInput'));
+    }
+
 }

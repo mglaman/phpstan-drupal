@@ -22,5 +22,6 @@ parameters:
 		-  tests/src/DeprecatedScope/data/*.php
 	dynamicConstantNames:
 		- Drupal::VERSION
+		- Symfony\Component\HttpKernel\Kernel::MAJOR_VERSION
 includes:
 	- phpstan-baseline.neon

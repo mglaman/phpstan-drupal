@@ -13,6 +13,7 @@ use ReflectionClass;
 use RuntimeException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Finder\Finder;
+use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\Yaml\Yaml;
 use Throwable;
 use function array_map;
@@ -197,6 +198,13 @@ class DrupalAutoloader
                 $drushDir = dirname($reflect->getFileName(), 2);
                 foreach (Finder::create()->files()->name('*.inc')->in($drushDir . '/includes') as $file) {
                     require_once $file->getPathname();
+                }
+                // Some Drush versions map classes to a Symfony-version
+                // specific directory at runtime, mirror its preflight.
+                // @see \Drush\Preflight\Preflight::loadSymfonyCompatabilityAutoloader()
+                $compatibilityDir = $drushDir . '/src-symfony-compatibility/' . (Kernel::MAJOR_VERSION < 6 ? 'v4' : 'v6');
+                if (is_dir($compatibilityDir)) {
+                    $this->autoloader->addPsr4('Drush\\', $compatibilityDir);
                 }
             }
         }
