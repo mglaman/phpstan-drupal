@@ -254,6 +254,9 @@ jobs:
           extensions: dom, curl, libxml, mbstring, zip, pdo, mysql, pdo_mysql, gd, apcu
       - name: "Checkout Drupal core"
         run: |
+         # Drupal 12 packages don't include tests, and core's PHPStan config
+         # needs them. See https://www.drupal.org/node/3618953.
+         composer config --global preferred-install.drupal/core source
          cd ${{ runner.temp }}
          git clone https://git.drupalcode.org/project/drupal.git
          cd drupal
