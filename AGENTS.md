@@ -26,8 +26,10 @@ PHPStan extension and rules for Drupal static analysis.
 Pick the registration based on what the rule reports:
 
 - **Deprecations** (code that breaks on the next Drupal major version): add a `services:` entry in `rules.neon` and a `conditionalTags` entry with `phpstan.rules.rule: %deprecationRulesInstalled%`. Don't add a `drupal.rules.*` toggle. The rule is on by default and turns off when a project turns off `phpstan/phpstan-deprecation-rules`. See https://github.com/mglaman/phpstan-drupal/issues/1080.
-- **Practices a project can disagree with** (dependency injection, cache backends): add a `drupal.rules.*` parameter with a default and a `boolean()` schema entry in `extension.neon`, a `conditionalTags` entry in `rules.neon`, and a README entry.
-- **Code that fails at runtime on every supported Drupal version**: add it to the `rules:` list in `rules.neon`.
+- **Practices a project can disagree with** (dependency injection, cache backends): add a `drupal.rules.*` parameter with a default and a `boolean()` schema entry in `extension.neon`, a `conditionalTags` entry in `rules.neon`, and a README entry. A new rule starts opt-in: default it to `false` and set it to `true` in `bleedingEdge.neon`. To make it on by default later, change the default to `true` and remove it from `bleedingEdge.neon`.
+- **Code that fails at runtime on every supported Drupal version**: add it to the `rules:` list in `rules.neon` and to `RuleConventionsTest::ALWAYS_ON_RULES`. These rules can't be turned off, so use this only when a toggle makes no sense.
+
+`tests/src/RuleConventionsTest.php` checks these conventions. An opt-in rule that is too unreliable for bleeding edge goes in `OPT_IN_RULES_EXCLUDED_FROM_BLEEDING_EDGE` with a reason. A rule in `src/Rules/Deprecations/` that isn't a deprecation goes in `DEPRECATIONS_NAMESPACE_EXCEPTIONS` with a reason.
 
 A deprecation rule must:
 
