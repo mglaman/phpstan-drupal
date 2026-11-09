@@ -60,6 +60,16 @@ parameters:
 This project depends on `phpstan/phpstan-deprecation-rules` which adds deprecation rules. We provide Drupal-specific 
 deprecated scope resolvers.
 
+`phpstan-deprecation-rules` reports code marked with `@deprecated`. Drupal also deprecates code that has no such tag, so phpstan-drupal adds its own rules for it:
+
+| Deprecation | Identifier |
+| --- | --- |
+| Getting a service that is deprecated in a `*.services.yml` file with `\Drupal::service()` | `staticServiceDeprecatedService.deprecated` |
+| Getting a deprecated service from the container with `get()` | `getDeprecatedService.deprecated` |
+| The `context` key in a plugin annotation | `pluginAnnotationContextDefinitions.useContextDefinitionsKey` |
+
+These rules run whenever `phpstan-deprecation-rules` is loaded, and they turn off with it. They don't have `drupal.rules.*` parameters. To ignore one, use its identifier in `ignoreErrors`.
+
 To only handle deprecation testing, use a `phpstan.neon` like this:
 
 ```

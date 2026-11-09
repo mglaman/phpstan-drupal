@@ -1,14 +1,17 @@
 rules:
 	- mglaman\PHPStanDrupal\Rules\Drupal\RenderCallbackRule
-	- mglaman\PHPStanDrupal\Rules\Deprecations\StaticServiceDeprecatedServiceRule
-	- mglaman\PHPStanDrupal\Rules\Deprecations\GetDeprecatedServiceRule
 	- mglaman\PHPStanDrupal\Rules\Drupal\Tests\BrowserTestBaseDefaultThemeRule
 	- mglaman\PHPStanDrupal\Rules\Deprecations\ConfigEntityConfigExportRule
-	- mglaman\PHPStanDrupal\Rules\Deprecations\PluginAnnotationContextDefinitionsRule
 	- mglaman\PHPStanDrupal\Rules\Drupal\EntityQuery\EntityQueryHasAccessCheckRule
 	- mglaman\PHPStanDrupal\Rules\Drupal\TestClassesProtectedPropertyModulesRule
 
 conditionalTags:
+	mglaman\PHPStanDrupal\Rules\Deprecations\StaticServiceDeprecatedServiceRule:
+		phpstan.rules.rule: %deprecationRulesInstalled%
+	mglaman\PHPStanDrupal\Rules\Deprecations\GetDeprecatedServiceRule:
+		phpstan.rules.rule: %deprecationRulesInstalled%
+	mglaman\PHPStanDrupal\Rules\Deprecations\PluginAnnotationContextDefinitionsRule:
+		phpstan.rules.rule: %deprecationRulesInstalled%
 	mglaman\PHPStanDrupal\Rules\Drupal\Coder\DiscouragedFunctionsRule:
 		phpstan.rules.rule: %drupal.rules.discouragedFunctionsRule%
 	mglaman\PHPStanDrupal\Rules\Drupal\GlobalDrupalDependencyInjectionRule:
@@ -55,6 +58,12 @@ conditionalTags:
 		phpstan.rules.rule: %drupal.rules.entityOperationsCacheabilityRule%
 
 services:
+	-
+		class: mglaman\PHPStanDrupal\Rules\Deprecations\StaticServiceDeprecatedServiceRule
+	-
+		class: mglaman\PHPStanDrupal\Rules\Deprecations\GetDeprecatedServiceRule
+	-
+		class: mglaman\PHPStanDrupal\Rules\Deprecations\PluginAnnotationContextDefinitionsRule
 	-
 		class: mglaman\PHPStanDrupal\Rules\Drupal\Coder\DiscouragedFunctionsRule
 	-
