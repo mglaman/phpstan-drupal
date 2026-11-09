@@ -67,8 +67,40 @@ deprecated scope resolvers.
 | Getting a service that is deprecated in a `*.services.yml` file with `\Drupal::service()` | `staticServiceDeprecatedService.deprecated` |
 | Getting a deprecated service from the container with `get()` | `getDeprecatedService.deprecated` |
 | The `context` key in a plugin annotation | `pluginAnnotationContextDefinitions.useContextDefinitionsKey` |
+| A plugin manager that only supports annotation discovery | `pluginManager.attributeDiscoveryMissing`, `pluginManager.attributeDiscoveryMissingDefault` |
 
 These rules run whenever `phpstan-deprecation-rules` is loaded, and they turn off with it. They don't have `drupal.rules.*` parameters. To ignore one, use its identifier in `ignoreErrors`.
+
+### Plugin managers without attribute discovery
+
+Drupal 12 throws an exception for plugin managers that only support annotation discovery. Drupal 11.2 deprecated them at runtime with `@trigger_error()`. phpstan-drupal reports a `DefaultPluginManager` subclass that passes an annotation class, instead of an attribute class, as the fifth argument to `parent::__construct()`. It uses two identifiers:
+
+- `pluginManager.attributeDiscoveryMissing`: the argument is a `::class` constant, a string, or a local variable holding one.
+- `pluginManager.attributeDiscoveryMissingDefault`: the argument comes from a static property or a constructor parameter default. A subclass or caller may override the default.
+
+To fix a reported manager, pass the attribute class as the fifth argument and keep the annotation class as the sixth. This works on Drupal 10.2 and later. The rules do nothing on Drupal versions older than 10.2, which don't have attribute discovery.
+
+The rules only check the argument's value. They also report managers that pick the class at runtime, which work on Drupal 12:
+
+```php
+parent::__construct(
+  'Plugin/Example',
+  $namespaces,
+  $module_handler,
+  ExampleInterface::class,
+  class_exists(Example::class) ? Example::class : ExampleAnnotation::class,
+);
+```
+
+The same applies to a `version_compare()` branch that passes the annotation class only on older Drupal versions. Ignore these by identifier:
+
+```neon
+parameters:
+    ignoreErrors:
+        -
+            identifier: pluginManager.attributeDiscoveryMissing
+            path: src/ExamplePluginManager.php
+```
 
 To only handle deprecation testing, use a `phpstan.neon` like this:
 
@@ -181,46 +213,6 @@ parameters:
             # Validates ModuleHandlerInterface::loadInclude() calls and loads
             # the include for the rest of the analysis.
             loadIncludes: false
-```
-
-#### Plugin managers without attribute discovery
-
-Drupal 12 throws an exception for plugin managers that only support annotation discovery. Drupal 11.2 deprecated them at runtime, so the usual deprecation checks don't report them. This opt-in rule reports a `DefaultPluginManager` subclass that passes an annotation class, instead of an attribute class, as the fifth argument to `parent::__construct()`:
-
-```neon
-parameters:
-    drupal:
-        rules:
-            pluginManagerAttributeDiscoveryRule: true
-```
-
-It reports two identifiers:
-
-- `pluginManager.attributeDiscoveryMissing`: the argument is a `::class` constant, a string, or a local variable holding one.
-- `pluginManager.attributeDiscoveryMissingDefault`: the argument comes from a static property or a constructor parameter default. A subclass or caller may override the default.
-
-To fix a reported manager, pass the attribute class as the fifth argument and keep the annotation class as the sixth. This works on Drupal 10.2 and later. The rule does nothing on Drupal versions older than 10.2, which don't have attribute discovery.
-
-The rule only checks the argument's value. It also reports managers that pick the class at runtime, which work on Drupal 12:
-
-```php
-parent::__construct(
-  'Plugin/Example',
-  $namespaces,
-  $module_handler,
-  ExampleInterface::class,
-  class_exists(Example::class) ? Example::class : ExampleAnnotation::class,
-);
-```
-
-The same applies to a `version_compare()` branch that passes the annotation class only on older Drupal versions. Ignore these by identifier:
-
-```neon
-parameters:
-    ignoreErrors:
-        -
-            identifier: pluginManager.attributeDiscoveryMissing
-            path: src/ExamplePluginManager.php
 ```
 
 #### Disabling checks for extending `@internal` classes

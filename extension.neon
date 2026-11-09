@@ -62,7 +62,6 @@ parameters:
 			accessResultConditionRule: true
 			classExtendsInternalClassRule: true
 			pluginManagerInspectionRule: false
-			pluginManagerAttributeDiscoveryRule: false
 			cacheableDependencyRule: true
 			hookFormAlterRule: true
 			loggerFromFactoryPropertyAssignmentRule: true
@@ -312,7 +311,6 @@ parametersSchema:
 			accessResultConditionRule: boolean()
 			classExtendsInternalClassRule: boolean()
 			pluginManagerInspectionRule: boolean()
-			pluginManagerAttributeDiscoveryRule: boolean()
 			cacheableDependencyRule: boolean()
 			hookFormAlterRule: boolean()
 			loggerFromFactoryPropertyAssignmentRule: boolean()

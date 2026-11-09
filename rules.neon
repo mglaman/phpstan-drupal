@@ -37,9 +37,9 @@ conditionalTags:
 	mglaman\PHPStanDrupal\Rules\Classes\PluginManagerInspectionRule:
 		phpstan.rules.rule: %drupal.rules.pluginManagerInspectionRule%
 	mglaman\PHPStanDrupal\Rules\Drupal\PluginManager\PluginManagerAttributeDiscoveryRule:
-		phpstan.rules.rule: %drupal.rules.pluginManagerAttributeDiscoveryRule%
+		phpstan.rules.rule: %deprecationRulesInstalled%
 	mglaman\PHPStanDrupal\Rules\Drupal\PluginManager\PluginManagerAttributeDiscoveryDefaultRule:
-		phpstan.rules.rule: %drupal.rules.pluginManagerAttributeDiscoveryRule%
+		phpstan.rules.rule: %deprecationRulesInstalled%
 	mglaman\PHPStanDrupal\Rules\Drupal\CacheableDependencyRule:
 		phpstan.rules.rule: %drupal.rules.cacheableDependencyRule%
 	mglaman\PHPStanDrupal\Rules\Drupal\LoggerFromFactoryPropertyAssignmentRule:

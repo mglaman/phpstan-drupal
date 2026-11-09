@@ -6,6 +6,8 @@ use mglaman\PHPStanDrupal\Rules\Deprecations\ConfigEntityConfigExportRule;
 use mglaman\PHPStanDrupal\Rules\Deprecations\GetDeprecatedServiceRule;
 use mglaman\PHPStanDrupal\Rules\Deprecations\PluginAnnotationContextDefinitionsRule;
 use mglaman\PHPStanDrupal\Rules\Deprecations\StaticServiceDeprecatedServiceRule;
+use mglaman\PHPStanDrupal\Rules\Drupal\PluginManager\PluginManagerAttributeDiscoveryDefaultRule;
+use mglaman\PHPStanDrupal\Rules\Drupal\PluginManager\PluginManagerAttributeDiscoveryRule;
 use PHPStan\Testing\PHPStanTestCase;
 
 final class DeprecationRulesNotInstalledTest extends PHPStanTestCase
@@ -26,6 +28,8 @@ final class DeprecationRulesNotInstalledTest extends PHPStanTestCase
         self::assertNotContains(StaticServiceDeprecatedServiceRule::class, $registeredRules);
         self::assertNotContains(GetDeprecatedServiceRule::class, $registeredRules);
         self::assertNotContains(PluginAnnotationContextDefinitionsRule::class, $registeredRules);
+        self::assertNotContains(PluginManagerAttributeDiscoveryRule::class, $registeredRules);
+        self::assertNotContains(PluginManagerAttributeDiscoveryDefaultRule::class, $registeredRules);
         self::assertContains(ConfigEntityConfigExportRule::class, $registeredRules);
     }
 }
