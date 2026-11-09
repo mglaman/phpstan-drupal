@@ -117,6 +117,12 @@ class EntityFieldReflection implements PropertyReflection
 
     public function getDeprecatedDescription(): ?string
     {
+        // Drupal 11.2 added EntityInterface::getOriginal() and deprecated the
+        // magic property. Core triggers the deprecation on get, set, isset and
+        // unset, so every use of the property is reported.
+        if ($this->propertyName === 'original' && $this->declaringClass->hasMethod('getOriginal')) {
+            return 'in drupal:11.2.0 and is removed from drupal:12.0.0. Use \\Drupal\\Core\\Entity\\EntityInterface::getOriginal() instead. See https://www.drupal.org/node/3295826';
+        }
         return null;
     }
 
@@ -127,7 +133,7 @@ class EntityFieldReflection implements PropertyReflection
 
     public function isDeprecated(): TrinaryLogic
     {
-        return TrinaryLogic::createNo();
+        return TrinaryLogic::createFromBoolean($this->getDeprecatedDescription() !== null);
     }
 
     public function isInternal(): TrinaryLogic
