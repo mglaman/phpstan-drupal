@@ -4,7 +4,7 @@ Review changes for:
 
 - **PHPStan API correctness**: Proper use of Rule interface, Type system, Scope, node visitors
 - **Test coverage**: Every new rule or type extension must have corresponding tests
-- **Neon registration**: New services must be registered in `extension.neon` (type extensions) or `rules.neon` (rules)
+- **Neon registration**: New services must be registered in `extension.neon` (type extensions) or `rules.neon` (rules). Follow "Registering Rules" in `AGENTS.md`. Deprecation rules use the condition `%deprecationRulesInstalled%`, not a `drupal.rules.*` toggle. Flag a deprecation rule that is opt-in or always on.
 - **Drupal version compatibility**: Support Drupal 10.4+ and 11.x; avoid APIs removed in supported versions
 - **Coding standards**: PSR-2, strict types, alphabetically sorted use statements
 - **Error message quality**: Rule error messages should be clear, include deprecation version ranges where applicable, and provide tips with documentation links
