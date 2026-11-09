@@ -2,17 +2,21 @@
 
 namespace mglaman\PHPStanDrupal\Type\EntityQuery;
 
+use Drupal\Core\Entity\Query\QueryAggregateInterface;
 use Drupal\Core\Entity\Query\QueryInterface;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\ParametersAcceptorSelector;
+use PHPStan\Type\Accessory\AccessoryArrayListType;
 use PHPStan\Type\ArrayType;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
 use PHPStan\Type\IntegerRangeType;
 use PHPStan\Type\IntegerType;
+use PHPStan\Type\ObjectType;
 use PHPStan\Type\StringType;
 use PHPStan\Type\Type;
+use PHPStan\Type\TypeCombinator;
 use function in_array;
 
 class EntityQueryDynamicReturnTypeExtension implements DynamicMethodReturnTypeExtension
@@ -65,6 +69,14 @@ class EntityQueryDynamicReturnTypeExtension implements DynamicMethodReturnTypeEx
                 return $varType->hasAccessCheck()
                     ? IntegerRangeType::createAllGreaterThanOrEqualTo(0)
                     : new EntityQueryExecuteWithoutAccessCheckCountType();
+            }
+            if ((new ObjectType(QueryAggregateInterface::class))->isSuperTypeOf($varType)->yes()) {
+                // An aggregate query returns a list of result rows, each keyed
+                // by the aggregate results and the groupBy columns.
+                $rowType = new ArrayType(new StringType(), TypeCombinator::addNull(new StringType()));
+                return $varType->hasAccessCheck()
+                    ? TypeCombinator::intersect(new ArrayType(new IntegerType(), $rowType), new AccessoryArrayListType())
+                    : new EntityQueryExecuteWithoutAccessCheckType(new IntegerType(), $rowType);
             }
             if ($varType instanceof ConfigEntityQueryType) {
                 return $varType->hasAccessCheck()

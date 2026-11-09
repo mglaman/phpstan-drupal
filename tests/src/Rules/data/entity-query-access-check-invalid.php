@@ -19,4 +19,19 @@ final class EntityQueryAccessCheckInvalid
             ->execute();
     }
 
+    public function aggregate(): void
+    {
+        \Drupal::entityTypeManager()->getStorage('node')
+            ->getAggregateQuery()
+            ->groupBy('type')
+            ->execute();
+    }
+
+    public function staticAggregate(): void
+    {
+        \Drupal::entityQueryAggregate('node')
+            ->groupBy('type')
+            ->execute();
+    }
+
 }

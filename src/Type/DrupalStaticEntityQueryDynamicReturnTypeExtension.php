@@ -37,7 +37,7 @@ class DrupalStaticEntityQueryDynamicReturnTypeExtension implements DynamicStatic
 
     public function isStaticMethodSupported(MethodReflection $methodReflection): bool
     {
-        return $methodReflection->getName() === 'entityQuery';
+        return in_array($methodReflection->getName(), ['entityQuery', 'entityQueryAggregate'], true);
     }
 
     public function getTypeFromStaticMethodCall(
