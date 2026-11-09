@@ -6,7 +6,10 @@ use Nette\Neon\Neon;
 use PHPStan\Rules\Rule;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
+use function array_diff;
 use function array_key_exists;
+use function array_keys;
+use function array_values;
 use function basename;
 use function class_exists;
 use function file_get_contents;
@@ -53,18 +56,52 @@ final class RuleConventionsTest extends TestCase
         'mglaman\PHPStanDrupal\Rules\Deprecations\DeprecatedHookImplementation' => 'Not registered. See https://github.com/mglaman/phpstan-drupal/issues/963.',
     ];
 
-    public function testAlwaysOnRulesDoNotGrow(): void
+    public function testAlwaysOnRulesMatchList(): void
     {
         $rulesNeon = self::decodeNeonFile('rules.neon');
         self::assertIsArray($rulesNeon['rules'] ?? null, 'rules.neon must have a rules: section.');
 
+        $registeredClasses = [];
         foreach ($rulesNeon['rules'] as $class) {
             self::assertIsString($class);
+            $registeredClasses[] = ltrim($class, '\\');
             self::assertContains(
                 ltrim($class, '\\'),
                 self::ALWAYS_ON_RULES,
                 sprintf(
                     '%s is registered under rules: in rules.neon, so it can never be turned off. Register it under conditionalTags instead. See "Registering Rules" in AGENTS.md.',
+                    $class
+                )
+            );
+        }
+
+        self::assertSame(
+            [],
+            array_values(array_diff(self::ALWAYS_ON_RULES, $registeredClasses)),
+            'These ALWAYS_ON_RULES entries are no longer under rules: in rules.neon. Remove them from the list.'
+        );
+    }
+
+    public function testExceptionListsMatchExistingRules(): void
+    {
+        $ruleDefaults = self::extensionRuleDefaults();
+        foreach (array_keys(self::OPT_IN_RULES_EXCLUDED_FROM_BLEEDING_EDGE) as $parameter) {
+            self::assertFalse(
+                $ruleDefaults[$parameter] ?? null,
+                sprintf(
+                    'OPT_IN_RULES_EXCLUDED_FROM_BLEEDING_EDGE lists drupal.rules.%s, but it is not an opt-in rule in extension.neon. Remove it from the list.',
+                    $parameter
+                )
+            );
+        }
+
+        $deprecationsNamespaceRuleClasses = self::deprecationsNamespaceRuleClasses();
+        foreach (array_keys(self::DEPRECATIONS_NAMESPACE_EXCEPTIONS) as $class) {
+            self::assertContains(
+                $class,
+                $deprecationsNamespaceRuleClasses,
+                sprintf(
+                    'DEPRECATIONS_NAMESPACE_EXCEPTIONS lists %s, but it is not a rule in src/Rules/Deprecations. Remove it from the list.',
                     $class
                 )
             );
