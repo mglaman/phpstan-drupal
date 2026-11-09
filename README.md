@@ -164,13 +164,6 @@ parameters:
             # Flags plugin managers that do not set a cache backend.
             pluginManagerSetsCacheBackendRule: false
 
-            # Flags plugin managers that pass a non-attribute (annotation) class as
-            # the plugin definition attribute name to DefaultPluginManager::__construct().
-            # Annotation-only discovery is deprecated in drupal:11.2.0 and removed in
-            # drupal:12.0.0. Also reports static property and constructor parameter
-            # defaults. Does nothing when AttributeInterface is unavailable (Drupal < 10.2).
-            pluginManagerAttributeDiscoveryRule: false
-
             # Validates module_load_include() calls and loads the include for
             # the rest of the analysis.
             moduleLoadInclude: false
@@ -178,6 +171,46 @@ parameters:
             # Validates ModuleHandlerInterface::loadInclude() calls and loads
             # the include for the rest of the analysis.
             loadIncludes: false
+```
+
+#### Plugin managers without attribute discovery
+
+Drupal 12 throws an exception for plugin managers that only support annotation discovery. Drupal 11.2 deprecated them at runtime, so the usual deprecation checks don't report them. This opt-in rule reports a `DefaultPluginManager` subclass that passes an annotation class, instead of an attribute class, as the fifth argument to `parent::__construct()`:
+
+```neon
+parameters:
+    drupal:
+        rules:
+            pluginManagerAttributeDiscoveryRule: true
+```
+
+It reports two identifiers:
+
+- `pluginManager.attributeDiscoveryMissing`: the argument is a `::class` constant, a string, or a local variable holding one.
+- `pluginManager.attributeDiscoveryMissingDefault`: the argument comes from a static property or a constructor parameter default. A subclass or caller may override the default.
+
+To fix a reported manager, pass the attribute class as the fifth argument and keep the annotation class as the sixth. This works on Drupal 10.2 and later. The rule does nothing on Drupal versions older than 10.2, which don't have attribute discovery.
+
+The rule only checks the argument's value. It also reports managers that pick the class at runtime, which work on Drupal 12:
+
+```php
+parent::__construct(
+  'Plugin/Example',
+  $namespaces,
+  $module_handler,
+  ExampleInterface::class,
+  class_exists(Example::class) ? Example::class : ExampleAnnotation::class,
+);
+```
+
+The same applies to a `version_compare()` branch that passes the annotation class only on older Drupal versions. Ignore these by identifier:
+
+```neon
+parameters:
+    ignoreErrors:
+        -
+            identifier: pluginManager.attributeDiscoveryMissing
+            path: src/ExamplePluginManager.php
 ```
 
 #### Disabling checks for extending `@internal` classes
