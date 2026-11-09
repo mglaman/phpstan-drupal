@@ -4,3 +4,5 @@ parameters:
 			checkDeprecatedHooksInApiFiles: false
 			checkCoreDeprecatedHooksInApiFiles: true
 			checkContribDeprecatedHooksInApiFiles: true
+		rules:
+			configGetUnknownKeyRule: true

@@ -260,7 +260,7 @@ Enabled by default. When disabled, calls fall back to the declared `object` retu
 
 #### Bleeding-edge checks
 
-`bleedingEdge.neon` enables hook deprecation checks against `.api.php` files and stricter service-container checking. New rules land here first before graduating to the default ruleset in a minor release.
+`bleedingEdge.neon` enables hook deprecation checks against `.api.php` files and stricter service-container checking. New rules land here first before graduating to the default ruleset in a minor release. Deprecation rules don't: they run whenever `phpstan-deprecation-rules` is loaded.
 
 ```neon
 includes:
@@ -271,6 +271,7 @@ What it currently enables:
 
 - `checkCoreDeprecatedHooksInApiFiles` — reports hook implementations deprecated in Drupal core `.api.php` files
 - `checkContribDeprecatedHooksInApiFiles` — reports hook implementations deprecated in contrib module `.api.php` files
+- `configGetUnknownKeyRule` — reports `Config::get()` calls with a key that isn't in the config schema. See "Config schema-based checks".
 
 > [!NOTE]
 > `checkDeprecatedHooksInApiFiles` is deprecated. Use `checkCoreDeprecatedHooksInApiFiles` and `checkContribDeprecatedHooksInApiFiles` instead.
