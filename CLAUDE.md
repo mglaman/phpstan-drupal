@@ -21,6 +21,21 @@ PHPStan extension and rules for Drupal static analysis.
 - `extension.neon` - PHPStan service definitions for type extensions
 - `rules.neon` - PHPStan service definitions for rules
 
+## Registering Rules
+
+Pick the registration based on what the rule reports:
+
+- **Deprecations** (code that breaks on the next Drupal major version): add a `services:` entry in `rules.neon` and a `conditionalTags` entry with `phpstan.rules.rule: %deprecationRulesInstalled%`. Don't add a `drupal.rules.*` toggle. The rule is on by default and turns off when a project turns off `phpstan/phpstan-deprecation-rules`. See https://github.com/mglaman/phpstan-drupal/issues/1080.
+- **Practices a project can disagree with** (dependency injection, cache backends): add a `drupal.rules.*` parameter with a default and a `boolean()` schema entry in `extension.neon`, a `conditionalTags` entry in `rules.neon`, and a README entry.
+- **Code that fails at runtime on every supported Drupal version**: add it to the `rules:` list in `rules.neon`.
+
+A deprecation rule must:
+
+- Only run on Drupal versions that have the deprecation.
+- Skip code inside `DeprecationHelper::backwardsCompatibleCall()` callbacks.
+- Use core's wording: "is deprecated in drupal:X.Y.Z and is removed from drupal:A.B.C". Upgrade Status sorts errors by it.
+- Have a stable identifier. Document known false positives in the README, with an `ignoreErrors` example that uses the identifier. A known false positive is not a reason to make the rule opt-in.
+
 ## Testing Conventions
 
 - Rule tests extend `DrupalRuleTestCase` (which extends PHPStan's `RuleTestCase`)
