@@ -5,6 +5,7 @@ rules:
 	- mglaman\PHPStanDrupal\Rules\Drupal\Tests\BrowserTestBaseDefaultThemeRule
 	- mglaman\PHPStanDrupal\Rules\Deprecations\ConfigEntityConfigExportRule
 	- mglaman\PHPStanDrupal\Rules\Deprecations\PluginAnnotationContextDefinitionsRule
+	- mglaman\PHPStanDrupal\Rules\Deprecations\ConstraintNamedArgumentsRule
 	- mglaman\PHPStanDrupal\Rules\Drupal\EntityQuery\EntityQueryHasAccessCheckRule
 	- mglaman\PHPStanDrupal\Rules\Drupal\TestClassesProtectedPropertyModulesRule
 
