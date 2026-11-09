@@ -31,7 +31,7 @@ Pick the registration based on what the rule reports:
 
 A deprecation rule must:
 
-- Only run on Drupal versions that have the deprecation.
+- Only run on Drupal versions where the replacement exists, so every report can be fixed. This can be earlier than the deprecation: attribute discovery for plugin managers exists from Drupal 10.2, but core deprecated annotation-only managers in 11.2.
 - Skip code inside `DeprecationHelper::backwardsCompatibleCall()` callbacks.
 - Use core's wording: "is deprecated in drupal:X.Y.Z and is removed from drupal:A.B.C". Upgrade Status sorts errors by it.
 - Have a stable identifier. Document known false positives in the README, with an `ignoreErrors` example that uses the identifier. A known false positive is not a reason to make the rule opt-in.
