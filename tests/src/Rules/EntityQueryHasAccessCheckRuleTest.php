@@ -44,6 +44,16 @@ final class EntityQueryHasAccessCheckRuleTest extends DrupalRuleTestCase
                     17,
                     'See https://www.drupal.org/node/3201242',
                 ],
+                [
+                    'Relying on entity queries to check access by default is deprecated in drupal:9.2.0 and an error will be thrown from drupal:10.0.0. Call \\Drupal\\Core\\Entity\\Query\\QueryInterface::accessCheck() with TRUE or FALSE to specify whether access should be checked.',
+                    24,
+                    'See https://www.drupal.org/node/3201242',
+                ],
+                [
+                    'Relying on entity queries to check access by default is deprecated in drupal:9.2.0 and an error will be thrown from drupal:10.0.0. Call \\Drupal\\Core\\Entity\\Query\\QueryInterface::accessCheck() with TRUE or FALSE to specify whether access should be checked.',
+                    32,
+                    'See https://www.drupal.org/node/3201242',
+                ],
             ],
         ];
 

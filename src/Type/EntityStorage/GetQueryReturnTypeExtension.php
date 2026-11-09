@@ -59,19 +59,12 @@ final class GetQueryReturnTypeExtension implements DynamicMethodReturnTypeExtens
             return $returnType;
         }
 
-        $isAggregate = $methodReflection->getName() === 'getAggregateQuery';
-
         if ((new ObjectType(ContentEntityStorageInterface::class))->isSuperTypeOf($callerType)->yes()) {
-            $queryType = new ContentEntityQueryType($className);
-            return $isAggregate ? $queryType->asAggregate() : $queryType;
+            return new ContentEntityQueryType($className);
         }
         if ((new ObjectType(ConfigEntityStorageInterface::class))->isSuperTypeOf($callerType)->yes()) {
-            // Core throws QueryException for an aggregate query over config
-            // entities, so there is no aggregate query type to produce here.
-            // @see \Drupal\Core\Config\Entity\Query\QueryFactory::getAggregate()
             return new ConfigEntityQueryType($className);
         }
-        $queryType = new EntityQueryType($className);
-        return $isAggregate ? $queryType->asAggregate() : $queryType;
+        return new EntityQueryType($className);
     }
 }
