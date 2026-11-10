@@ -182,6 +182,10 @@ final class RenderCallbackRuleTest extends DrupalRuleTestCase {
                 ],
             ]
         ];
+        yield 'key filter outside core' => [
+            __DIR__ . '/data/render-callback-key-filter.php',
+            [],
+        ];
     }
 
 
