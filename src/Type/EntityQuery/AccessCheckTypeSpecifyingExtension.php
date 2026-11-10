@@ -53,8 +53,9 @@ final class AccessCheckTypeSpecifyingExtension implements MethodTypeSpecifyingEx
         Scope $scope,
         TypeSpecifierContext $context
     ): SpecifiedTypes {
-        // Most query statements don't call accessCheck(), so check the
-        // method names before resolving any types.
+        // This runs for every query method call, such as each separate
+        // $query->condition() statement. Only a chain that includes
+        // accessCheck() needs types, so check the method names first.
         if (!$this->chainCallsAccessCheck($node)) {
             return new SpecifiedTypes([]);
         }
