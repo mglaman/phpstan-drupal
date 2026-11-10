@@ -36,11 +36,6 @@ final class LazyBuilderRuleTest extends DrupalRuleTestCase
                 $structureTip,
             ],
             [
-                '#lazy_builder must be an array of two values: the callback, and an array of arguments for it, string given.',
-                49,
-                $structureTip,
-            ],
-            [
                 '#lazy_builder argument 0 is Drupal\Core\Entity\EntityInterface, but only scalar values and NULL are allowed.',
                 52,
                 $argumentTip,
@@ -58,6 +53,21 @@ final class LazyBuilderRuleTest extends DrupalRuleTestCase
             [
                 '#lazy_builder callback LazyBuilder\Builder::buildString() returns string, but it must return a render array.',
                 60,
+            ],
+            [
+                '#create_placeholder is TRUE, but there is no #lazy_builder callback. Drupal throws a LogicException when it renders this element.',
+                123,
+                'Add a #lazy_builder callback that builds the element, or remove #create_placeholder.',
+            ],
+            [
+                '#lazy_builder arguments contain Drupal\Core\Entity\EntityInterface, but only scalar values and NULL are allowed.',
+                126,
+                $argumentTip,
+            ],
+            [
+                'An element with #lazy_builder can only have #cache, #create_placeholder, #lazy_builder_preview, #placeholder_strategy_denylist, #preview and #weight next to it. Found: 0, 1.',
+                129,
+                'Return these properties and children from the #lazy_builder callback instead.',
             ],
         ]);
     }

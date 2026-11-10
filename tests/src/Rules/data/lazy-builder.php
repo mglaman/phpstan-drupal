@@ -110,4 +110,33 @@ final class Builder implements TrustedCallbackInterface
         ];
         return [$filtered, $build];
     }
+
+    /**
+     * @param array<int, EntityInterface> $entities
+     */
+    public function reviewCases(array $entities): array
+    {
+        return [
+            'null_lazy_builder_with_placeholder' => [
+                '#lazy_builder' => null,
+                '#markup' => 'Recent content',
+                '#create_placeholder' => true,
+            ],
+            'typed_arguments' => [
+                '#lazy_builder' => [static::class . '::build', $entities],
+            ],
+            'integer_keys' => [
+                '#lazy_builder' => [static::class . '::build', [1]],
+                0 => ['#markup' => 'First'],
+                ['#markup' => 'Second'],
+            ],
+            'null_lazy_builder' => [
+                '#lazy_builder' => null,
+                '#markup' => 'Recent content',
+            ],
+            'reversed_keys' => [
+                '#lazy_builder' => [1 => [1], 0 => static::class . '::build'],
+            ],
+        ];
+    }
 }

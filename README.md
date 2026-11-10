@@ -363,7 +363,7 @@ parameters:
 It reports:
 
 - `#create_placeholder` set to `TRUE` without `#lazy_builder` (`lazyBuilder.placeholderWithoutCallback`). Drupal throws a `LogicException` when it renders the element.
-- `#lazy_builder` that isn't `[callback, arguments]`, or whose arguments aren't an array (`lazyBuilder.invalidStructure`).
+- A `#lazy_builder` array literal that isn't `[callback, arguments]`, or whose arguments aren't an array (`lazyBuilder.invalidStructure`). A `#lazy_builder` value that isn't an array literal is reported by the always-on `RenderCallbackRule` instead.
 - An argument that isn't a scalar or `NULL` (`lazyBuilder.nonScalarArgument`).
 - Properties or children other than `#cache`, `#create_placeholder`, `#lazy_builder_preview`, `#placeholder_strategy_denylist`, `#preview` and `#weight` next to `#lazy_builder` (`lazyBuilder.unsupportedProperty`).
 - A callback method whose return type can't be an array (`lazyBuilder.nonArrayReturn`).

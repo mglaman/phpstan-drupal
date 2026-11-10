@@ -5,20 +5,29 @@ namespace mglaman\PHPStanDrupal\Rules\Drupal\RenderCallback;
 use PhpParser\Node;
 use PhpParser\Node\ArrayItem;
 use PhpParser\Node\Expr\Array_;
+use PhpParser\Node\Scalar\Int_;
+use PhpParser\Node\Scalar\String_;
 use PHPStan\Analyser\DependencyTracker;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ParametersAcceptorSelector;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
+use PHPStan\Type\Constant\ConstantIntegerType;
 use PHPStan\Type\NeverType;
+use PHPStan\Type\Type;
 use PHPStan\Type\VerbosityLevel;
 use function array_diff;
 use function array_keys;
 use function array_map;
+use function array_pop;
 use function array_values;
 use function count;
 use function implode;
+use function is_int;
+use function is_string;
+use function max;
+use function sort;
 use function sprintf;
 
 /**
@@ -75,6 +84,10 @@ final class LazyBuilderRule implements Rule
      */
     public function processNode(Node $node, Scope $scope): array
     {
+        if (!$this->mayHaveLazyBuilderKeys($node)) {
+            return [];
+        }
+
         $itemsByKey = [];
         $hasUnknownKeys = false;
         $nextIntegerKey = 0;
@@ -84,22 +97,33 @@ final class LazyBuilderRule implements Rule
                 continue;
             }
             if ($item->key === null) {
-                $itemsByKey[(string) $nextIntegerKey++] = $item;
-                continue;
+                $key = $nextIntegerKey;
+            } else {
+                $keyValues = $scope->getType($item->key)->toArrayKey()->getConstantScalarValues();
+                if (count($keyValues) !== 1 || (!is_int($keyValues[0]) && !is_string($keyValues[0]))) {
+                    $hasUnknownKeys = true;
+                    continue;
+                }
+                $key = $keyValues[0];
             }
-            $keyValues = $scope->getType($item->key)->getConstantScalarValues();
-            if (count($keyValues) !== 1) {
-                $hasUnknownKeys = true;
-                continue;
+            if (is_int($key)) {
+                $nextIntegerKey = max($nextIntegerKey, $key + 1);
             }
-            $itemsByKey[(string) $keyValues[0]] = $item;
+            $itemsByKey[$key] = $item;
         }
 
         $lazyBuilder = $itemsByKey[self::LAZY_BUILDER] ?? null;
-        // A key filter, like array_intersect_key($elements, ['#lazy_builder' => TRUE]),
-        // is not a render array.
-        if ($lazyBuilder !== null && $scope->getType($lazyBuilder->value)->isBoolean()->yes()) {
-            return [];
+        if ($lazyBuilder !== null) {
+            $lazyBuilderType = $scope->getType($lazyBuilder->value);
+            // A key filter, like array_intersect_key($elements, ['#lazy_builder' => TRUE]),
+            // is not a render array.
+            if ($lazyBuilderType->isBoolean()->yes()) {
+                return [];
+            }
+            // Renderer uses isset(), so NULL means there is no #lazy_builder.
+            if ($lazyBuilderType->isNull()->yes()) {
+                $lazyBuilder = null;
+            }
         }
         if ($lazyBuilder === null) {
             return $hasUnknownKeys ? [] : $this->checkPlaceholderWithoutCallback($itemsByKey, $scope);
@@ -110,6 +134,28 @@ final class LazyBuilderRule implements Rule
             $errors = [...$errors, ...$this->checkUnsupportedKeys($itemsByKey, $lazyBuilder)];
         }
         return [...$errors, ...$this->checkCallbackReturnType($lazyBuilder, $scope)];
+    }
+
+    /**
+     * Whether a key could be #lazy_builder or #create_placeholder.
+     *
+     * Most array literals have neither, so this skips them before resolving
+     * any key types.
+     */
+    private function mayHaveLazyBuilderKeys(Array_ $node): bool
+    {
+        foreach ($node->items as $item) {
+            if ($item->key === null || $item->key instanceof Int_) {
+                continue;
+            }
+            if (!$item->key instanceof String_) {
+                return true;
+            }
+            if ($item->key->value === self::LAZY_BUILDER || $item->key->value === self::CREATE_PLACEHOLDER) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -142,20 +188,19 @@ final class LazyBuilderRule implements Rule
     }
 
     /**
+     * Checks a #lazy_builder array literal.
+     *
+     * RenderCallbackRule already reports a #lazy_builder value that is not an
+     * array literal, so other values are skipped.
+     *
      * @return list<IdentifierRuleError>
      */
     private function checkStructure(ArrayItem $lazyBuilder, Scope $scope): array
     {
-        $type = $scope->getType($lazyBuilder->value);
-        if ($type->isArray()->no()) {
-            return [
-                $this->buildStructureError(
-                    $lazyBuilder,
-                    sprintf('#lazy_builder must be an array of two values: the callback, and an array of arguments for it, %s given.', $type->describe(VerbosityLevel::typeOnly()))
-                ),
-            ];
+        if (!$lazyBuilder->value instanceof Array_) {
+            return [];
         }
-        $constantArrays = $type->getConstantArrays();
+        $constantArrays = $scope->getType($lazyBuilder->value)->getConstantArrays();
         if (count($constantArrays) !== 1) {
             return [];
         }
@@ -164,6 +209,7 @@ final class LazyBuilderRule implements Rule
             static fn ($keyType) => $keyType->getValue(),
             $lazyBuilderArray->getKeyTypes()
         );
+        sort($keys);
         if ($keys !== [0, 1] || count($lazyBuilderArray->getOptionalKeys()) > 0) {
             return [
                 $this->buildStructureError(
@@ -173,7 +219,7 @@ final class LazyBuilderRule implements Rule
             ];
         }
 
-        $arguments = $lazyBuilderArray->getValueTypes()[1];
+        $arguments = $lazyBuilderArray->getOffsetValueType(new ConstantIntegerType(1));
         if ($arguments->isArray()->no()) {
             return [
                 $this->buildStructureError(
@@ -185,26 +231,52 @@ final class LazyBuilderRule implements Rule
 
         $argumentArrays = $arguments->getConstantArrays();
         if (count($argumentArrays) !== 1) {
-            return [];
+            $argument = $arguments->getIterableValueType();
+            if (!$this->isNonScalarArgument($argument)) {
+                return [];
+            }
+            return [
+                $this->buildNonScalarArgumentError(
+                    $lazyBuilder,
+                    sprintf('#lazy_builder arguments contain %s, but only scalar values and NULL are allowed.', $argument->describe(VerbosityLevel::typeOnly()))
+                ),
+            ];
         }
         $argumentsArray = $argumentArrays[0];
         $errors = [];
         foreach ($argumentsArray->getValueTypes() as $position => $argument) {
-            // Mixed and unions that may be scalar stay silent.
-            if (!$argument->isScalar()->no() || !$argument->isNull()->no()) {
+            if (!$this->isNonScalarArgument($argument)) {
                 continue;
             }
-            $errors[] = RuleErrorBuilder::message(sprintf(
-                '#lazy_builder argument %s is %s, but only scalar values and NULL are allowed.',
-                $argumentsArray->getKeyTypes()[$position]->describe(VerbosityLevel::value()),
-                $argument->describe(VerbosityLevel::typeOnly())
-            ))
-                ->line($lazyBuilder->getStartLine())
-                ->identifier('lazyBuilder.nonScalarArgument')
-                ->tip('Pass an ID or another scalar value, and load the object in the callback. Drupal puts the arguments in the placeholder.')
-                ->build();
+            $errors[] = $this->buildNonScalarArgumentError(
+                $lazyBuilder,
+                sprintf(
+                    '#lazy_builder argument %s is %s, but only scalar values and NULL are allowed.',
+                    $argumentsArray->getKeyTypes()[$position]->describe(VerbosityLevel::value()),
+                    $argument->describe(VerbosityLevel::typeOnly())
+                )
+            );
         }
         return $errors;
+    }
+
+    /**
+     * Mixed, never, and unions that may be scalar or NULL are not reported.
+     */
+    private function isNonScalarArgument(Type $argument): bool
+    {
+        return $argument->isScalar()->no()
+            && $argument->isNull()->no()
+            && !(new NeverType())->isSuperTypeOf($argument)->yes();
+    }
+
+    private function buildNonScalarArgumentError(ArrayItem $lazyBuilder, string $message): IdentifierRuleError
+    {
+        return RuleErrorBuilder::message($message)
+            ->line($lazyBuilder->getStartLine())
+            ->identifier('lazyBuilder.nonScalarArgument')
+            ->tip('Pass an ID or another scalar value, and load the object in the callback. Drupal puts the arguments in the placeholder.')
+            ->build();
     }
 
     private function buildStructureError(ArrayItem $lazyBuilder, string $message): IdentifierRuleError
@@ -228,7 +300,8 @@ final class LazyBuilderRule implements Rule
         }
         return [
             RuleErrorBuilder::message(sprintf(
-                'An element with #lazy_builder can only have #cache, #create_placeholder, #lazy_builder_preview, #placeholder_strategy_denylist, #preview and #weight next to it. Found: %s.',
+                'An element with #lazy_builder can only have %s next to it. Found: %s.',
+                $this->describeAllowedKeys(),
                 implode(', ', $unsupportedKeys)
             ))
                 ->line($lazyBuilder->getStartLine())
@@ -236,6 +309,18 @@ final class LazyBuilderRule implements Rule
                 ->tip('Return these properties and children from the #lazy_builder callback instead.')
                 ->build(),
         ];
+    }
+
+    /**
+     * Lists the keys allowed next to #lazy_builder, for messages.
+     *
+     * #printed is left out: only Renderer sets it.
+     */
+    private function describeAllowedKeys(): string
+    {
+        $allowedKeys = array_values(array_diff(self::SUPPORTED_KEYS, [self::LAZY_BUILDER, '#printed']));
+        $lastKey = array_pop($allowedKeys);
+        return implode(', ', $allowedKeys) . ' and ' . $lastKey;
     }
 
     /**
