@@ -29,15 +29,17 @@ class ServiceMap
         $decorators = [];
 
         foreach ($drupalServices as $serviceId => $serviceDefinition) {
+            // Read "decorates" before resolving an alias, otherwise an alias
+            // of a decorator becomes a decorator too.
+            if (isset($serviceDefinition['decorates'])) {
+                $decorators[$serviceDefinition['decorates']][$serviceId] = $serviceDefinition['decoration_on_invalid'] ?? 'exception';
+            }
+
             if (isset($serviceDefinition['alias'], $drupalServices[$serviceDefinition['alias']])) {
                 $serviceDefinition = $drupalServices[$serviceDefinition['alias']];
             }
             if (isset($serviceDefinition['parent'], $drupalServices[$serviceDefinition['parent']])) {
                 $serviceDefinition = $this->resolveParentDefinition($serviceDefinition['parent'], $serviceDefinition, $drupalServices);
-            }
-
-            if (isset($serviceDefinition['decorates'])) {
-                $decorators[$serviceDefinition['decorates']][$serviceId] = $serviceDefinition['decoration_on_invalid'] ?? 'exception';
             }
 
             // @todo support factories

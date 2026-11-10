@@ -180,6 +180,43 @@ final class ServiceMapFactoryTest extends TestCase
         self::assertCount(0, $decorated->getDecorators());
     }
 
+    /**
+     * @see https://github.com/mglaman/phpstan-drupal/issues/693
+     *
+     * @covers \mglaman\PHPStanDrupal\Drupal\ServiceMap::setDrupalServices
+     */
+    public function testAliasToDecoratorIsNotADecorator(): void
+    {
+        // The definitions DrupalAutoloader builds from this services.yml:
+        // @code
+        //   Drupal\service_map\Foo:
+        //   Drupal\service_map\BarInterface: '@Drupal\service_map\Bar'
+        //   Drupal\service_map\Bar:
+        //     decorates: Drupal\service_map\Foo
+        // @endcode
+        $service = new ServiceMap();
+        $service->setDrupalServices([
+            'Drupal\service_map\Foo' => [
+                'class' => 'Drupal\service_map\Foo',
+            ],
+            'Drupal\service_map\BarInterface' => [
+                'alias' => 'Drupal\service_map\Bar',
+            ],
+            'Drupal\service_map\Bar' => [
+                'decorates' => 'Drupal\service_map\Foo',
+                'class' => 'Drupal\service_map\Bar',
+            ],
+        ]);
+
+        $decorated = $service->getService('Drupal\service_map\Foo');
+        self::assertNotNull($decorated);
+        self::assertSame(['Drupal\service_map\Bar'], array_keys($decorated->getDecorators()));
+
+        $alias = $service->getService('Drupal\service_map\BarInterface');
+        self::assertNotNull($alias);
+        self::assertSame('Drupal\service_map\Bar', $alias->getClass());
+    }
+
     public static function getServiceProvider(): \Iterator
     {
         yield [
