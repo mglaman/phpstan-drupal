@@ -67,6 +67,7 @@ deprecated scope resolvers.
 | Getting a service that is deprecated in a `*.services.yml` file with `\Drupal::service()` | `staticServiceDeprecatedService.deprecated` |
 | Getting a deprecated service from the container with `get()` | `getDeprecatedService.deprecated` |
 | The `context` key in a plugin annotation | `pluginAnnotationContextDefinitions.useContextDefinitionsKey` |
+| A translatable `category` in a `@FieldType` annotation | `fieldTypeCategory.translatable` |
 | A plugin manager that only supports annotation discovery | `pluginManager.attributeDiscoveryMissing`, `pluginManager.attributeDiscoveryMissingDefault` |
 
 These rules run whenever `phpstan-deprecation-rules` is loaded, and they turn off with it. They don't have `drupal.rules.*` parameters. To ignore one, use its identifier in `ignoreErrors`.
