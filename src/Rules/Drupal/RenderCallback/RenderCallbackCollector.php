@@ -16,7 +16,11 @@ use function count;
 use function str_contains;
 
 /**
- * Collects render callbacks to methods of TrustedCallbackInterface classes.
+ * Collects render array callbacks whose target class implements
+ * TrustedCallbackInterface.
+ *
+ * The render array can be in any class. RenderCallbackTrustedCallbacksRule
+ * matches these callbacks against what TrustedCallbacksCollector records.
  *
  * A callback names its class when it is a string like 'Foo::bar' or an array
  * like [Foo::class, 'bar']. Drupal then calls Foo::trustedCallbacks(). A
