@@ -28,7 +28,9 @@ use function strtolower;
  * The rule only reports classes in the analyzed paths whose
  * trustedCallbacks() returns constant strings. For a callback like
  * [$this, 'method'], it checks the class and its analyzed concrete subclasses
- * that do not override the method holding the callback.
+ * that do not override the method holding the callback. For a callback on
+ * another object, it only checks the object's type when that is a concrete
+ * class.
  *
  * @phpstan-import-type TrustedCallbackClass from TrustedCallbackClassCollector
  * @phpstan-import-type RenderCallback from RenderCallbackCollector
@@ -160,10 +162,14 @@ final class RenderCallbackTrustedCallbacksRule implements Rule
         if ($classes[$callback['class']]['concrete'] ?? false) {
             $runtimeClasses[] = $callback['class'];
         }
+        // Only a callback on $this is certain to run on a subclass. An object
+        // typed as an interface or base class may never be one of the
+        // analyzed subclasses.
+        if ($callback['enclosingMethod'] === null) {
+            return $runtimeClasses;
+        }
         foreach ($concreteSubtypes[$callback['class']] ?? [] as $subtype) {
-            if ($callback['enclosingMethod'] === null
-                || $this->inheritsMethod($subtype, $callback['class'], $callback['enclosingMethod'], $classes)
-            ) {
+            if ($this->inheritsMethod($subtype, $callback['class'], $callback['enclosingMethod'], $classes)) {
                 $runtimeClasses[] = $subtype;
             }
         }

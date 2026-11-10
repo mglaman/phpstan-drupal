@@ -335,3 +335,46 @@ class ViewBuilderInheritsSite extends ViewBuilderBase {
     }
 
 }
+
+abstract class CallbackServiceBase implements TrustedCallbackInterface {
+
+    public function preRender(array $element): array {
+        return $element;
+    }
+
+}
+
+class CallbackServiceListsMethod extends CallbackServiceBase {
+
+    public static function trustedCallbacks() {
+        return ['preRender'];
+    }
+
+}
+
+class CallbackServiceMissesMethod extends CallbackServiceBase {
+
+    public static function trustedCallbacks() {
+        return [];
+    }
+
+}
+
+class CallbackServiceConsumer {
+
+    public function __construct(
+        private CallbackServiceBase $baseService,
+        private CallbackServiceMissesMethod $concreteService,
+    ) {
+    }
+
+    public function build(): array {
+        return [
+            '#pre_render' => [
+                [$this->baseService, 'preRender'],
+                [$this->concreteService, 'preRender'],
+            ],
+        ];
+    }
+
+}

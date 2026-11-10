@@ -104,6 +104,11 @@ final class RenderCallbackTrustedCallbacksRuleTest extends DrupalRuleTestCase {
                 305,
                 sprintf(self::TIP, 'buildMultiple'),
             ],
+            [
+                "#pre_render callback method 'preRender' at key '1' is not returned by Bug561\\CallbackServiceMissesMethod::trustedCallbacks().",
+                375,
+                sprintf(self::TIP, 'preRender'),
+            ],
         ]);
     }
 
