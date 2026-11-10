@@ -87,6 +87,7 @@ class DrupalAutoloader
             throw new RuntimeException("Unable to detect Drupal with webflo/drupal-finder.");
         }
         $this->drupalRoot = $drupalRoot;
+
         $this->autoloader = include $drupalVendorRoot . '/autoload.php';
 
         $this->serviceClassProviders['core'] = '\Drupal\Core\CoreServiceProvider';

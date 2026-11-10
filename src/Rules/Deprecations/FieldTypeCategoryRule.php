@@ -3,29 +3,24 @@
 namespace mglaman\PHPStanDrupal\Rules\Deprecations;
 
 use Drupal;
-use Drupal\Core\Field\Attribute\FieldType;
 use Drupal\Core\Field\FieldItemInterface;
-use Drupal\Core\StringTranslation\TranslatableMarkup;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
-use PHPStan\PhpDoc\ResolvedPhpDocBlock;
-use PHPStan\PhpDocParser\Ast\PhpDoc\PhpDocTagNode;
 use PHPStan\Reflection\ClassReflection;
-use ReflectionAttribute;
-use ReflectionClass;
-use ReflectionException;
-use function array_key_exists;
+use PHPStan\Rules\RuleErrorBuilder;
 use function preg_match;
+use function version_compare;
 
 /**
- * Defines a rule for catching translated categories on field types.
+ * Reports @FieldType annotations that use a translatable category.
+ *
+ * The FieldType attribute types $category as a string, so PHPStan already
+ * reports a TranslatableMarkup category there.
  *
  * @see https://www.drupal.org/node/3375748
  */
 final class FieldTypeCategoryRule extends DeprecatedAnnotationsRuleBase
 {
-
-    private const DEPRECATION_MESSAGE = 'Using a translatable string as a category for field type is deprecated in drupal:10.2.0 and is removed from drupal:11.0.0. See https://www.drupal.org/node/3375748';
 
     protected function getExpectedInterface(): string
     {
@@ -38,66 +33,20 @@ final class FieldTypeCategoryRule extends DeprecatedAnnotationsRuleBase
             return [];
         }
 
-        $errors = [];
-
         $phpDoc = $reflection->getResolvedPhpDoc();
-        if ($phpDoc instanceof ResolvedPhpDocBlock) {
-            if ($this->hasFieldTypeAnnotation($phpDoc) && preg_match('/category\s?=\s?@Translation/', $phpDoc->getPhpDocString()) === 1) {
-                $errors[] = self::DEPRECATION_MESSAGE;
-            }
+        if ($phpDoc === null) {
+            return [];
         }
 
-        $fieldTypeAttributes = $this->getFieldTypeAttributes($reflection);
-        if ($fieldTypeAttributes instanceof ReflectionAttribute) {
-            $arguments = $fieldTypeAttributes->getArguments();
-            if (array_key_exists('category', $arguments) && $arguments['category'] instanceof TranslatableMarkup) {
-                $errors[] = self::DEPRECATION_MESSAGE;
-            }
+        if (preg_match('/@FieldType\s*\(.*\bcategory\s*=\s*@Translation\b/s', $phpDoc->getPhpDocString()) !== 1) {
+            return [];
         }
 
-        return $errors;
-    }
-
-    /**
-     * Checks whether a PHP doc block contains a field type annotation.
-     *
-     * @param \PHPStan\PhpDoc\ResolvedPhpDocBlock $phpDoc
-     *   The PHP doc block object.
-     *
-     * @return bool
-     *   True if it does, otherwise false.
-     */
-    private function hasFieldTypeAnnotation(ResolvedPhpDocBlock $phpDoc): bool
-    {
-        foreach ($phpDoc->getPhpDocNodes() as $docNode) {
-            foreach ($docNode->children as $childNode) {
-                if (($childNode instanceof PhpDocTagNode) && $childNode->name === '@FieldType') {
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Checks whether a given class has a field type attribute.
-     *
-     * @param \PHPStan\Reflection\ClassReflection $reflection
-     *   The class reflection object.
-     *
-     * @return ReflectionAttribute|null
-     *   The attribute, or null.
-     */
-    private function getFieldTypeAttributes(ClassReflection $reflection): ?ReflectionAttribute
-    {
-        try {
-            $nativeReflection = new ReflectionClass($reflection->getName());
-            $attribute = $nativeReflection->getAttributes(FieldType::class);
-        } catch (ReflectionException $e) {
-            return null;
-        }
-
-        return $attribute[0] ?? null;
+        return [
+            RuleErrorBuilder::message('Using a translatable string as a category for field type is deprecated in drupal:10.2.0 and is removed from drupal:11.0.0. Use a field type category plugin ID instead.')
+                ->identifier('fieldTypeCategory.translatable')
+                ->tip('See https://www.drupal.org/node/3375748')
+                ->build(),
+        ];
     }
 }
