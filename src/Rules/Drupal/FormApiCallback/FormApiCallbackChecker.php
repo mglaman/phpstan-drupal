@@ -443,15 +443,26 @@ final class FormApiCallbackChecker
             return null;
         }
         $function = $scope->getFunction();
-        if ($function instanceof ExtendedMethodReflection && $this->isHookImplementation($function)) {
+        if ($function instanceof ExtendedMethodReflection && $this->isHookImplementation($classReflection, $function)) {
             return null;
         }
         return $classReflection;
     }
 
-    private function isHookImplementation(ExtendedMethodReflection $method): bool
+    /**
+     * Reads attribute names from native reflection.
+     *
+     * PHPStan's attribute reflection drops an attribute with arguments when
+     * its class does not exist. Drupal 10 has no Hook attribute class, but
+     * modules supporting Drupal 10 and 11 still use #[Hook('...')].
+     */
+    private function isHookImplementation(ClassReflection $classReflection, ExtendedMethodReflection $method): bool
     {
-        foreach ($method->getAttributes() as $attribute) {
+        $nativeClass = $classReflection->getNativeReflection();
+        if (!$nativeClass->hasMethod($method->getName())) {
+            return false;
+        }
+        foreach ($nativeClass->getMethod($method->getName())->getAttributes() as $attribute) {
             $attributeName = $attribute->getName();
             if ($attributeName === self::HOOK_ATTRIBUTE) {
                 return true;
