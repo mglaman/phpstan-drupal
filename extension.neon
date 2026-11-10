@@ -69,6 +69,7 @@ parameters:
 			symfonyYamlParseRule: true
 			entityOperationsCacheabilityRule: true
 			configGetUnknownKeyRule: false
+			formApiCallbackRule: false
 		entityMapping:
 			aggregator_feed:
 				class: Drupal\aggregator\Entity\Feed
@@ -318,6 +319,7 @@ parametersSchema:
 			symfonyYamlParseRule: boolean()
 			entityOperationsCacheabilityRule: boolean()
 			configGetUnknownKeyRule: boolean()
+			formApiCallbackRule: boolean()
 		])
 		entityMapping: arrayOf(anyOf(
 			structure([

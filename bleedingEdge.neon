@@ -6,3 +6,4 @@ parameters:
 			checkContribDeprecatedHooksInApiFiles: true
 		rules:
 			configGetUnknownKeyRule: true
+			formApiCallbackRule: true
