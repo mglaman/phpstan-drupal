@@ -144,6 +144,111 @@ final class FormApiCallbackRuleTest extends DrupalRuleTestCase
                 ],
             ];
 
+        $invokableTip = "Add a public __invoke() method, or name the method: 'Class::method' or 'service:method'.";
+        $invokableErrors = $resolvesCallableDefinitions
+            ? [
+                [
+                    "#submit callback \\FormApiCallbacks\\NotInvokable::class refers to FormApiCallbacks\\NotInvokable, which has no public __invoke() method.",
+                    216,
+                    $invokableTip,
+                ],
+                [
+                    "#submit callback 'messenger' refers to Drupal\\Core\\Messenger\\Messenger, which has no public __invoke() method.",
+                    217,
+                    $invokableTip,
+                ],
+                [
+                    "#submit callback static::class . ':missing' refers to FormApiCallbacks\\LateStaticServiceNotation::missing(), which does not exist.",
+                    229,
+                ],
+                [
+                    "#submit callback \\FormApiCallbacks\\AbstractInvokable::class refers to FormApiCallbacks\\AbstractInvokable, which is abstract, so Drupal cannot create an object of it.",
+                    251,
+                    'Use a concrete class.',
+                ],
+                [
+                    "#submit callback \\FormApiCallbacks\\CallbackInterface::class refers to FormApiCallbacks\\CallbackInterface, which is an interface, so Drupal cannot create an object of it.",
+                    252,
+                    'Use a concrete class.',
+                ],
+                [
+                    "#submit callback \\FormApiCallbacks\\AbstractInvokable::class . ':run' refers to FormApiCallbacks\\AbstractInvokable, which is abstract, so Drupal cannot create an object of it.",
+                    253,
+                    'Use a concrete class.',
+                ],
+                [
+                    "#submit callback 'service_map.abstract_service_private' refers to service service_map.abstract_service_private, which is not public. Drupal's container only returns public services.",
+                    254,
+                    'Make the service public, or use a class name.',
+                ],
+                [
+                    "#submit callback 'service_map.abstract_service_private:build' refers to service service_map.abstract_service_private, which is not public. Drupal's container only returns public services.",
+                    255,
+                    'Make the service public, or use a class name.',
+                ],
+                [
+                    "#submit callback static::class . ':privateHandler' refers to FormApiCallbacks\\LateStaticPrivateMethod::privateHandler(), which is not public.",
+                    275,
+                    'Make the method public. Drupal calls form callbacks from outside the class.',
+                ],
+            ]
+            : [
+                [
+                    "#submit callback \\FormApiCallbacks\\Invokable::class refers to function FormApiCallbacks\\Invokable(), which does not exist.",
+                    215,
+                ],
+                [
+                    "#submit callback \\FormApiCallbacks\\NotInvokable::class refers to function FormApiCallbacks\\NotInvokable(), which does not exist.",
+                    216,
+                ],
+                [
+                    "#submit callback 'messenger' refers to function messenger(), which does not exist.",
+                    217,
+                ],
+                [
+                    "#submit callback static::class . ':existing' uses the service:method notation, which Drupal supports for form callbacks in 11.3 and later.",
+                    228,
+                    self::SERVICE_NOTATION_TIP,
+                ],
+                [
+                    "#submit callback static::class . ':missing' uses the service:method notation, which Drupal supports for form callbacks in 11.3 and later.",
+                    229,
+                    self::SERVICE_NOTATION_TIP,
+                ],
+                [
+                    "#submit callback \\FormApiCallbacks\\AbstractInvokable::class refers to function FormApiCallbacks\\AbstractInvokable(), which does not exist.",
+                    251,
+                ],
+                [
+                    "#submit callback \\FormApiCallbacks\\CallbackInterface::class refers to function FormApiCallbacks\\CallbackInterface(), which does not exist.",
+                    252,
+                ],
+                [
+                    "#submit callback \\FormApiCallbacks\\AbstractInvokable::class . ':run' uses the service:method notation, which Drupal supports for form callbacks in 11.3 and later.",
+                    253,
+                    self::SERVICE_NOTATION_TIP,
+                ],
+                [
+                    "#submit callback 'service_map.abstract_service_private' refers to function service_map.abstract_service_private(), which does not exist.",
+                    254,
+                ],
+                [
+                    "#submit callback 'service_map.abstract_service_private:build' uses the service:method notation, which Drupal supports for form callbacks in 11.3 and later.",
+                    255,
+                    self::SERVICE_NOTATION_TIP,
+                ],
+                [
+                    "#submit callback static::class . ':definedInSubclass' uses the service:method notation, which Drupal supports for form callbacks in 11.3 and later.",
+                    262,
+                    self::SERVICE_NOTATION_TIP,
+                ],
+                [
+                    "#submit callback static::class . ':privateHandler' uses the service:method notation, which Drupal supports for form callbacks in 11.3 and later.",
+                    275,
+                    self::SERVICE_NOTATION_TIP,
+                ],
+            ];
+
         $this->analyse([self::FIXTURE], [
             [
                 "#validate callback '::missingValidate' refers to FormApiCallbacks\\ExampleForm::missingValidate(), which does not exist.",
@@ -194,6 +299,7 @@ final class FormApiCallbackRuleTest extends DrupalRuleTestCase
                 "#validate callback 'form_api_callbacks_missing_keyed_validate' refers to function form_api_callbacks_missing_keyed_validate(), which does not exist.",
                 150,
             ],
+            ...$invokableErrors,
         ]);
     }
 }

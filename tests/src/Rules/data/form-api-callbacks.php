@@ -195,3 +195,84 @@ class ClassLevelHookForm extends FormBase
         $form['#submit'][] = '::methodOfTheAlteredForm';
     }
 }
+
+final class Invokable
+{
+    public function __invoke(array &$form, FormStateInterface $form_state): void
+    {
+    }
+}
+
+final class NotInvokable
+{
+    public function submit(array &$form, FormStateInterface $form_state): void
+    {
+    }
+}
+
+function form_api_callbacks_invokable_alter(array &$form, FormStateInterface $form_state): void
+{
+    $form['#submit'][] = Invokable::class;
+    $form['#submit'][] = NotInvokable::class;
+    $form['#submit'][] = 'messenger';
+}
+
+class LateStaticServiceNotation
+{
+    public function existing(array &$form, FormStateInterface $form_state): void
+    {
+    }
+
+    public function build(array $form): array
+    {
+        $form['#submit'][] = static::class . ':existing';
+        $form['#submit'][] = static::class . ':missing';
+        return $form;
+    }
+}
+
+abstract class AbstractInvokable
+{
+    public function __invoke(array &$form, FormStateInterface $form_state): void
+    {
+    }
+
+    public function run(array &$form, FormStateInterface $form_state): void
+    {
+    }
+}
+
+interface CallbackInterface
+{
+}
+
+function form_api_callbacks_class_resolver_alter(array &$form, FormStateInterface $form_state): void
+{
+    $form['#submit'][] = AbstractInvokable::class;
+    $form['#submit'][] = CallbackInterface::class;
+    $form['#submit'][] = AbstractInvokable::class . ':run';
+    $form['#submit'][] = 'service_map.abstract_service_private';
+    $form['#submit'][] = 'service_map.abstract_service_private:build';
+}
+
+abstract class AbstractLateStaticServiceNotation
+{
+    public function build(array $form): array
+    {
+        $form['#submit'][] = static::class . ':definedInSubclass';
+        return $form;
+    }
+}
+
+class LateStaticPrivateMethod
+{
+    private function privateHandler(array &$form, FormStateInterface $form_state): void
+    {
+    }
+
+    public function build(array $form): array
+    {
+        $form['#submit'][] = static::class . ':privateHandler';
+        return $form;
+    }
+}
