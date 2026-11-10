@@ -273,6 +273,7 @@ What it currently enables:
 - `checkCoreDeprecatedHooksInApiFiles` — reports hook implementations deprecated in Drupal core `.api.php` files
 - `checkContribDeprecatedHooksInApiFiles` — reports hook implementations deprecated in contrib module `.api.php` files
 - `configGetUnknownKeyRule` — reports `Config::get()` calls with a key that isn't in the config schema. See "Config schema-based checks".
+- `formApiCallbackRule` — reports Form API callbacks that fail at runtime. See "Form API callback checks".
 
 > [!NOTE]
 > `checkDeprecatedHooksInApiFiles` is deprecated. Use `checkCoreDeprecatedHooksInApiFiles` and `checkContribDeprecatedHooksInApiFiles` instead.
@@ -314,6 +315,26 @@ Recognized call patterns:
 The config name and key must be literal strings. Config entity schemas with wildcard names (e.g. `block.block.*`) are not supported yet, and keys beneath dynamic type references (e.g. `mailer_dsn.options.[%parent.scheme]`) are not validated.
 
 Neither feature is included in `bleedingEdge.neon` yet.
+
+#### Form API callback checks
+
+`formApiCallbackRule` reports Form API callbacks that fail when Drupal calls them. It checks `#validate`, `#submit`, `#element_validate`, `#process`, `#after_build` and `#ajax` → `callback`, both in array literals and in assignments such as `$form['#validate'][] = 'my_validate';`. It is opt-in and enabled by `bleedingEdge.neon`.
+
+```neon
+parameters:
+    drupal:
+        rules:
+            formApiCallbackRule: true
+```
+
+It reports:
+
+- A function or method that does not exist (`formApiCallback.notFound`).
+- A method that is not public (`formApiCallback.nonPublicMethod`).
+- `[Foo::class, 'method']` or `[static::class, 'method']` for a non-static method (`formApiCallback.nonStaticMethod`). Use `'::method'` in a form class, or make the method static.
+- Before Drupal 11.3 only: `'Foo::method'` for a non-static method (`formApiCallback.nonStaticMethod`), and `'service:method'` strings (`formApiCallback.serviceNotation`). Drupal 11.3 and later resolve both through `CallableResolver`.
+
+`'::method'` is only checked in concrete classes implementing `FormInterface`, outside `#[Hook]` methods: in a form alter, `'::method'` refers to the altered form's object. Callbacks that can't be resolved statically are not reported. `#value_callback` is not checked, because Drupal falls back to the default value callback instead of failing.
 
 #### Detecting @todo comments referencing the current Drupal.org issue (contrib CI)
 

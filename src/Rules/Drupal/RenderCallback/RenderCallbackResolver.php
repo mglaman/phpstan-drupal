@@ -129,15 +129,14 @@ final class RenderCallbackResolver
             if (substr_count($constantString->getValue(), ':') === 1) {
                 [$class_or_service, $method] = explode(':', $constantString->getValue(), 2);
 
-                $scope->trackValueDependency(ServiceResultCacheValueExtension::class, $class_or_service);
-                $serviceDefinition = $this->serviceMap->getService($class_or_service);
-                if ($serviceDefinition === null || $serviceDefinition->getClass() === null) {
+                $serviceClass = $this->resolveServiceClass($class_or_service, $scope);
+                if ($serviceClass === null) {
                     return $type;
                 }
                 return new ConstantArrayType(
                     [new ConstantIntegerType(0), new ConstantIntegerType(1)],
                     [
-                        new ObjectType($serviceDefinition->getClass()),
+                        new ObjectType($serviceClass),
                         new ConstantStringType($method)
                     ]
                 );
@@ -156,6 +155,17 @@ final class RenderCallbackResolver
         }
 
         return $type;
+    }
+
+    /**
+     * Returns the class of a service in the service map, or NULL.
+     *
+     * @param Scope&DependencyTracker $scope
+     */
+    public function resolveServiceClass(string $serviceId, Scope $scope): ?string
+    {
+        $scope->trackValueDependency(ServiceResultCacheValueExtension::class, $serviceId);
+        return $this->serviceMap->getService($serviceId)?->getClass();
     }
 
     /**
