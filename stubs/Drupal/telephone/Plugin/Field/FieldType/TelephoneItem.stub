@@ -5,7 +5,7 @@ namespace Drupal\telephone\Plugin\Field\FieldType;
 use Drupal\Core\Field\FieldItemBase;
 
 /**
- * @property string $value
+ * @property ?string $value
  */
 class TelephoneItem extends FieldItemBase {
 }

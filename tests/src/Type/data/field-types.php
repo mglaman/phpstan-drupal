@@ -194,7 +194,7 @@ assertType('string|null', $path_field->langcode);
 $telephone_field = $node->get('field_telephone')->first();
 assert($telephone_field instanceof TelephoneItem);
 assertType(TelephoneItem::class, $telephone_field);
-assertType('string', $telephone_field->value);
+assertType('string|null', $telephone_field->value);
 
 // TextITem.
 $text_field = $node->get('field_text')->first();
