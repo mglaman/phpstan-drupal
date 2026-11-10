@@ -3,6 +3,8 @@
 /vendor/
 /clover.xml
 .circleci/config_local.yml
+/.claude/settings.local.json
+/.claude/worktrees/
 
 # Fix PHPUnit compatibility mutated class.
 /tests/fixtures/TestCase.php

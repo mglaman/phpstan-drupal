@@ -6,3 +6,7 @@ tests export-ignore
 build.xml export-ignore
 phpcs.xml export-ignore
 phpstan.neon export-ignore
+CLAUDE.md export-ignore
+AGENTS.md export-ignore
+.claude export-ignore
+.github export-ignore

@@ -3,9 +3,9 @@
 namespace mglaman\PHPStanDrupal\Drupal;
 
 use FilesystemIterator;
-use mglaman\PHPStanDrupal\Drupal\Extension;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
+use Symfony\Component\Finder\Finder;
 use function array_filter;
 use function array_flip;
 use function array_multisort;
@@ -13,8 +13,15 @@ use function dirname;
 use function file_exists;
 use function is_dir;
 use function preg_match;
-use function strpos;
+use function str_starts_with;
 
+/**
+ * Discovers extensions in a Drupal site.
+ *
+ * Bundled version of \Drupal\Core\Extension\ExtensionDiscovery.
+ *
+ * @internal
+ */
 class ExtensionDiscovery
 {
 
@@ -60,23 +67,21 @@ class ExtensionDiscovery
     /**
      * List of installation profile directories to additionally scan.
      *
-     * @var array
+     * @var array<int, string>
      */
-    protected $profileDirectories;
+    protected array $profileDirectories;
 
     /**
      * The app root for the current operation.
-     *
-     * @var string
      */
-    protected $root;
+    protected string $root;
 
     /**
-     * The site path.
+     * The site paths.
      *
-     * @var string
+     * @var string[]
      */
-    protected $sitePath;
+    protected array $sitePaths;
 
     /**
      * Constructs a new ExtensionDiscovery object.
@@ -84,13 +89,33 @@ class ExtensionDiscovery
      * @param string $root
      *   The app root.
      */
-    public function __construct($root)
+    public function __construct(string $root)
     {
         $this->root = $root;
         $this->profileDirectories = [
             $root . '/core/profiles/standard'
         ];
-        $this->sitePath = 'sites/default';
+        $this->sitePaths = $this->discoverSitePaths();
+    }
+
+    /**
+     * Discovers all site-specific directories under sites/.
+     *
+     * @return string[]
+     *   An array of site paths relative to the root (e.g. 'sites/default').
+     */
+    private function discoverSitePaths(): array
+    {
+        $sitesDir = $this->root . '/sites';
+        if (!is_dir($sitesDir)) {
+            return [];
+        }
+        $finder = Finder::create()->directories()->in($sitesDir)->depth(0)->exclude(['all', 'default', 'simpletest']);
+        $paths = [];
+        foreach ($finder as $dir) {
+            $paths[] = 'sites/' . $dir->getFilename();
+        }
+        return $paths;
     }
 
     /**
@@ -152,7 +177,12 @@ class ExtensionDiscovery
         // type specific directory names only.
         $searchdirs[self::ORIGIN_ROOT] = '';
 
-        $searchdirs[self::ORIGIN_SITE] = $this->sitePath;
+        // Search the default site-specific directory, plus any additional site
+        // directories discovered for multisite setups.
+        $searchdirs[self::ORIGIN_SITE] = 'sites/default';
+        foreach ($this->sitePaths as $sitePath) {
+            $searchdirs[] = $sitePath;
+        }
 
         $files = [];
         foreach ($searchdirs as $dir) {
@@ -221,13 +251,13 @@ class ExtensionDiscovery
         }
 
         return array_filter($all_files, function (Extension $file) : bool {
-            if (strpos($file->subpath, 'profiles') !== 0) {
+            if (!str_starts_with($file->subpath, 'profiles')) {
                 // This extension doesn't belong to a profile, ignore it.
                 return true;
             }
 
             foreach ($this->profileDirectories as $weight => $profile_path) {
-                if (strpos($file->getPath(), $profile_path) === 0) {
+                if (str_starts_with($file->getPath(), $profile_path)) {
                     // Parent profile found.
                     return true;
                 }
@@ -255,7 +285,7 @@ class ExtensionDiscovery
         foreach ($all_files as $key => $file) {
             // If the extension does not belong to a profile, just apply the weight
             // of the originating directory.
-            if (strpos($file->subpath, 'profiles') !== 0) {
+            if (!str_starts_with($file->subpath, 'profiles')) {
                 $origins[$key] = $weights[$file->origin];
                 $profiles[$key] = null;
             } elseif ($this->profileDirectories === []) {
@@ -267,7 +297,7 @@ class ExtensionDiscovery
             } else {
                 // Apply the weight of the originating profile directory.
                 foreach ($this->profileDirectories as $weight => $profile_path) {
-                    if (strpos($file->getPath(), $profile_path) === 0) {
+                    if (str_starts_with($file->getPath(), $profile_path)) {
                         $origins[$key] = self::ORIGIN_PROFILE;
                         $profiles[$key] = $weight;
                         continue 2;
@@ -376,13 +406,6 @@ class ExtensionDiscovery
             // All extension names in Drupal have to be valid PHP function names due
             // to the module hook architecture.
             if (preg_match(self::PHP_FUNCTION_PATTERN, $fileinfo->getBasename('.info.yml')) !== 1) {
-                continue;
-            }
-
-            // This test module has a function declaration that conflicts with another module. Explicitly skip it.
-            // @see https://www.drupal.org/project/drupal/issues/3020142
-            // @todo remove when Drupal core fixed.
-            if ($fileinfo->getBasename('.info.yml') === 'no_transitions_css') {
                 continue;
             }
 

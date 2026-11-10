@@ -4,4 +4,9 @@ namespace Drupal\Core\Entity;
 
 interface EntityTypeInterface {
 
+    /**
+     * @return string|false
+     */
+    public function getLinkTemplate(string $key);
+
 }

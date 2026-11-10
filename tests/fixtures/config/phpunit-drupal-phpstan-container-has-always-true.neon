@@ -1,0 +1,6 @@
+includes:
+	- phpunit-drupal-phpstan-no-bleedingedge.neon
+parameters:
+	drupal:
+		bleedingEdge:
+			containerHasAlwaysTrue: true

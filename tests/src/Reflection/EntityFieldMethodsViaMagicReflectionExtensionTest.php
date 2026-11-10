@@ -53,5 +53,6 @@ final class EntityFieldMethodsViaMagicReflectionExtensionTest extends PHPStanTes
             false,
         ];
     }
+    
 
 }

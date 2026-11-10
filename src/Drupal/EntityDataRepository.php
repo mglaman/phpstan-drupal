@@ -6,13 +6,14 @@ use Drupal\Core\Config\Entity\ConfigEntityStorageInterface;
 use Drupal\Core\Entity\ContentEntityStorageInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use PHPStan\Type\ObjectType;
+use PHPStan\Type\Type;
 
 final class EntityDataRepository
 {
     /**
      * @var array<string, EntityData>
      */
-    private $entityData;
+    private array $entityData = [];
 
     public function __construct(array $entityMapping)
     {
@@ -24,18 +25,23 @@ final class EntityDataRepository
         }
     }
 
-    public function get(string $entityTypeId): EntityData
+    /**
+     * @return list<string>
+     */
+    public function getAllEntityTypeIds(): array
     {
-        if (!isset($this->entityData[$entityTypeId])) {
-            $this->entityData[$entityTypeId] = new EntityData(
-                $entityTypeId,
-                []
-            );
-        }
-        return $this->entityData[$entityTypeId];
+        return array_keys($this->entityData);
     }
 
-    public function resolveFromStorage(ObjectType $callerType): ?EntityData
+    public function get(string $entityTypeId): EntityData
+    {
+        // Do not store the stub for an unknown ID: getAllEntityTypeIds() would
+        // then report it as known, and whether a later file accepts it as an
+        // entity-type-id would depend on analysis order.
+        return $this->entityData[$entityTypeId] ?? new EntityData($entityTypeId, []);
+    }
+
+    public function resolveFromStorage(Type $callerType): ?EntityData
     {
         if ($callerType->equals(new ObjectType(EntityStorageInterface::class))) {
             return null;

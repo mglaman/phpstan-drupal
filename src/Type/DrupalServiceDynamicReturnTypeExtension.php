@@ -5,11 +5,13 @@ namespace mglaman\PHPStanDrupal\Type;
 use Drupal;
 use mglaman\PHPStanDrupal\Drupal\DrupalServiceDefinition;
 use mglaman\PHPStanDrupal\Drupal\ServiceMap;
+use mglaman\PHPStanDrupal\Drupal\ServiceResultCacheValueExtension;
+use PhpParser\Node\Arg;
 use PhpParser\Node\Expr\ClassConstFetch;
 use PhpParser\Node\Expr\StaticCall;
 use PhpParser\Node\Name\FullyQualified;
 use PhpParser\Node\Scalar\String_;
-use PhpParser\Node\VariadicPlaceholder;
+use PHPStan\Analyser\DependencyTracker;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\ParametersAcceptorSelector;
@@ -39,6 +41,9 @@ class DrupalServiceDynamicReturnTypeExtension implements DynamicStaticMethodRetu
         return $methodReflection->getName() === 'service';
     }
 
+    /**
+     * @param Scope&DependencyTracker $scope
+     */
     public function getTypeFromStaticMethodCall(
         MethodReflection $methodReflection,
         StaticCall $methodCall,
@@ -54,7 +59,16 @@ class DrupalServiceDynamicReturnTypeExtension implements DynamicStaticMethodRetu
         }
 
         $arg1 = $methodCall->args[0];
-        if ($arg1 instanceof VariadicPlaceholder) {
+        // An element of $methodCall->args is one of three node types:
+        // - Arg: a regular argument such as \Drupal::service('foo'). This is
+        //   the only type that carries a value we can inspect.
+        // - VariadicPlaceholder: the "..." in first-class callable syntax,
+        //   \Drupal::service(...).
+        // - ArgPlaceholder (nikic/php-parser 5.9+): the "?" in partial function
+        //   application, \Drupal::service(?).
+        // The two placeholders create a callable instead of making a call, so
+        // PHPStan never asks this extension to resolve them.
+        if (!$arg1 instanceof Arg) {
             throw new ShouldNotHappenException();
         }
 
@@ -62,11 +76,13 @@ class DrupalServiceDynamicReturnTypeExtension implements DynamicStaticMethodRetu
 
         if ($arg1 instanceof String_) {
             $serviceId = $arg1->value;
+            $scope->trackValueDependency(ServiceResultCacheValueExtension::class, $serviceId);
             return $this->getServiceType($serviceId) ?? $returnType;
         }
 
         if ($arg1 instanceof ClassConstFetch && $arg1->class instanceof FullyQualified) {
             $serviceId = (string) $arg1->class;
+            $scope->trackValueDependency(ServiceResultCacheValueExtension::class, $serviceId);
             return $this->getServiceType($serviceId) ?? $returnType;
         }
 

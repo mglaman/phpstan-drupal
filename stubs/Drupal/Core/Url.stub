@@ -11,5 +11,11 @@ class Url implements TrustedCallbackInterface {
      */
     public function toString(bool $collect_bubbleable_metadata = FALSE) {
     }
+    
+    /**
+     * @return ($return_as_object is true ? \Drupal\Core\Access\AccessResultInterface : bool)
+     */
+    public function access(?\Drupal\Core\Session\AccountInterface $account = NULL, bool $return_as_object = FALSE): \Drupal\Core\Access\AccessResultInterface|bool {
+    }
 
 }

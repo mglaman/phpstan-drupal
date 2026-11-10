@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace mglaman\PHPStanDrupal\Reflection;
 
@@ -8,7 +8,6 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\PropertyReflection;
-use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\TrinaryLogic;
 use PHPStan\Type\MixedType;
 use PHPStan\Type\ObjectType;
@@ -22,19 +21,10 @@ use PHPStan\Type\Type;
 class EntityFieldReflection implements PropertyReflection
 {
 
-  /** @var ClassReflection */
-    private $declaringClass;
-
-  /** @var string */
-    private $propertyName;
-
-    private ReflectionProvider $reflectionProvider;
-
-    public function __construct(ClassReflection $declaringClass, string $propertyName, ReflectionProvider $reflectionProvider)
-    {
-        $this->declaringClass = $declaringClass;
-        $this->propertyName = $propertyName;
-        $this->reflectionProvider = $reflectionProvider;
+    public function __construct(
+        private readonly ClassReflection $declaringClass,
+        private readonly string $propertyName
+    ) {
     }
 
     public function getReadableType(): Type
@@ -60,12 +50,12 @@ class EntityFieldReflection implements PropertyReflection
 
     private function isContentEntityType(): bool
     {
-        return $this->declaringClass->isSubclassOfClass($this->reflectionProvider->getClass(ContentEntityInterface::class));
+        return $this->declaringClass->is(ContentEntityInterface::class);
     }
 
     private function isConfigEntityType(): bool
     {
-        return $this->declaringClass->isSubclassOfClass($this->reflectionProvider->getClass(ConfigEntityInterface::class));
+        return $this->declaringClass->is(ConfigEntityInterface::class);
     }
 
     public function getWritableType(): Type

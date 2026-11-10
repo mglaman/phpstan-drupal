@@ -12,7 +12,7 @@ function test(): void {
     $container = \Drupal::getContainer();
 
     assertType(MyService::class, $container->get('service_map.my_service'));
-    assertType('true', $container->has('service_map.my_service'));
+    assertType('bool', $container->has('service_map.my_service'));
     assertType('false', $container->has('unknown_service'));
     assertType(MyService::class, $container->get('service_map.concrete_service'));
     assertType(MyService::class, $container->get('service_map.concrete_service_with_a_parent_which_has_a_parent'));

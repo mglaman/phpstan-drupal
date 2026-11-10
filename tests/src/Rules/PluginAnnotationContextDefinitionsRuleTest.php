@@ -27,7 +27,7 @@ final class PluginAnnotationContextDefinitionsRuleTest extends DrupalRuleTestCas
     public static function pluginData(): \Generator
     {
         yield [
-            __DIR__ . '/../../fixtures/drupal/modules/phpstan_fixtures/src/Plugin/Condition/ConditionWithContext.php',
+            __DIR__ . '/data/plugin-condition-context-deprecated.php',
             [
                 [
                     'Providing context definitions via the "context" key is deprecated in Drupal 8.7.x and will be removed before Drupal 9.0.0. Use the "context_definitions" key instead.',
@@ -36,15 +36,15 @@ final class PluginAnnotationContextDefinitionsRuleTest extends DrupalRuleTestCas
             ]
         ];
         yield [
-            __DIR__ . '/../../fixtures/drupal/modules/phpstan_fixtures/src/Plugin/Condition/ConditionWithContextDefinitions.php',
+            __DIR__ . '/data/plugin-condition-context-definitions.php',
             []
         ];
         yield [
-            __DIR__ . '/../../fixtures/drupal/modules/phpstan_fixtures/src/Plugin/Action/ActionSample.php',
+            __DIR__ . '/data/plugin-action-sample.php',
             []
         ];
         yield [
-            __DIR__ . '/../../fixtures/drupal/modules/phpstan_fixtures/src/Plugin/Block/BlockWithContext.php',
+            __DIR__ . '/data/plugin-block-context-deprecated.php',
             [
                 [
                     'Providing context definitions via the "context" key is deprecated in Drupal 8.7.x and will be removed before Drupal 9.0.0. Use the "context_definitions" key instead.',

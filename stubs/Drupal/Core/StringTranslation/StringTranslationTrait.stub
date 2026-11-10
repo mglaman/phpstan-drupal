@@ -1,0 +1,27 @@
+<?php
+
+namespace Drupal\Core\StringTranslation;
+
+trait StringTranslationTrait {
+
+  /**
+   * @param string $string
+   * @param array<string, scalar|\Stringable> $args
+   * @param array<string, mixed> $options
+   * @return TranslatableMarkup
+   */
+  protected function t($string, array $args = [], array $options = []) {
+  }
+
+  /**
+   * @param int $count
+   * @param string $singular
+   * @param string $plural
+   * @param array<string, scalar|\Stringable> $args
+   * @param array<string, mixed> $options
+   * @return PluralTranslatableMarkup
+   */
+  protected function formatPlural($count, $singular, $plural, array $args = [], array $options = []) {
+  }
+
+}

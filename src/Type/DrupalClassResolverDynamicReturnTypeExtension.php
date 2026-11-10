@@ -5,6 +5,7 @@ namespace mglaman\PHPStanDrupal\Type;
 use Drupal\Core\DependencyInjection\ClassResolverInterface;
 use mglaman\PHPStanDrupal\Drupal\ServiceMap;
 use PhpParser\Node\Expr\MethodCall;
+use PHPStan\Analyser\DependencyTracker;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\ParametersAcceptorSelector;
@@ -14,14 +15,10 @@ use function count;
 
 class DrupalClassResolverDynamicReturnTypeExtension implements DynamicMethodReturnTypeExtension
 {
-    /**
-     * @var ServiceMap
-     */
-    private $serviceMap;
-
-    public function __construct(ServiceMap $serviceMap)
-    {
-        $this->serviceMap = $serviceMap;
+    public function __construct(
+        private ServiceMap $serviceMap,
+        private bool $classResolverReturnType = true,
+    ) {
     }
 
     public function getClass(): string
@@ -34,12 +31,15 @@ class DrupalClassResolverDynamicReturnTypeExtension implements DynamicMethodRetu
         return $methodReflection->getName() === 'getInstanceFromDefinition';
     }
 
+    /**
+     * @param Scope&DependencyTracker $scope
+     */
     public function getTypeFromMethodCall(
         MethodReflection $methodReflection,
         MethodCall $methodCall,
         Scope $scope
     ): Type {
-        if (0 === count($methodCall->getArgs())) {
+        if (!$this->classResolverReturnType || 0 === count($methodCall->getArgs())) {
             return ParametersAcceptorSelector::selectFromArgs(
                 $scope,
                 $methodCall->getArgs(),

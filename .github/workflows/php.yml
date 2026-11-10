@@ -1,9 +1,9 @@
 name: Tests
 on:
   push:
-    branches: [main]
+    branches: [main, 2.0.x]
   pull_request:
-    branches: [main]
+    branches: [main, 2.0.x]
   schedule:
     - cron: 0 0 * * *
 
@@ -14,13 +14,12 @@ jobs:
     strategy:
       matrix:
         php-version:
-          - "8.1"
-          - "8.2"
           - "8.3"
           - "8.4"
+          - "8.5"
     steps:
       - name: "Checkout"
-        uses: "actions/checkout@v4"
+        uses: "actions/checkout@v7"
       - name: "Install PHP"
         uses: "shivammathur/setup-php@v2"
         with:
@@ -29,7 +28,7 @@ jobs:
           tools: composer:v2
           extensions: dom, curl, libxml, mbstring, zip, pdo, mysql, pdo_mysql, gd
       - name: "Install dependencies"
-        uses: "ramsey/composer-install@v3"
+        uses: "ramsey/composer-install@v4"
       - name: "PHPCS"
         run: "php vendor/bin/phpcs"
       - name: "PHPStan"
@@ -43,9 +42,11 @@ jobs:
         experimental: [false]
         php-version:
           - "8.3"
+          - "8.4"
+          - "8.5"
         drupal:
-          - "~11.0.0"
-          - "~11.1.0"
+          - "~11.3.0"
+          - "~11.4.0"
         include:
           - php-version: "8.1"
             drupal: "^10.4"
@@ -55,7 +56,7 @@ jobs:
             experimental: true
     steps:
       - name: "Checkout"
-        uses: "actions/checkout@v4"
+        uses: "actions/checkout@v7"
       - name: "Install PHP"
         uses: "shivammathur/setup-php@v2"
         with:
@@ -63,10 +64,16 @@ jobs:
           php-version: "${{ matrix.php-version }}"
           tools: composer:v2
           extensions: dom, curl, libxml, mbstring, zip, pdo, mysql, pdo_mysql, gd
+      - run: composer config --no-plugins 'allow-plugins.drupal/core-composer-scaffold' true
+      - run: composer config --no-plugins 'allow-plugins.drupal/core-project-message' true
       - name: "Set drupal/core to ${{ matrix.drupal }}"
         run: "composer require drupal/core-recommended:${{ matrix.drupal }} --with-all-dependencies --dev --no-update"
       - name: "Install dependencies"
-        uses: "ramsey/composer-install@v3"
+        uses: "ramsey/composer-install@v4"
+      - name: "Migrate PHPUnit configuration across PHPUnit major versions"
+        run: |
+          php vendor/bin/phpunit --migrate-configuration || true
+          [ -f "phpunit.xml.bak" ] && diff -u phpunit.xml phpunit.xml.bak || true
       - name: "PHPUnit"
         run: "php vendor/bin/phpunit"
 
@@ -83,8 +90,8 @@ jobs:
         php-version:
           - "8.3"
         drupal:
-          - "~11.0.0"
-          - "~11.1.0"
+          - "~11.3.0"
+          - "~11.4.0"
         include:
           - php-version: "8.1"
             drupal: "^10.4"
@@ -94,7 +101,7 @@ jobs:
             experimental: true
     steps:
       - name: "Checkout"
-        uses: "actions/checkout@v4"
+        uses: "actions/checkout@v7"
       - name: "Install PHP"
         uses: "shivammathur/setup-php@v2"
         with:
@@ -103,7 +110,7 @@ jobs:
           tools: composer:v2
           extensions: dom, curl, libxml, mbstring, zip, pdo, mysql, pdo_mysql, bcmath, gd, exif, iconv
       - name: Setup Drupal
-        uses: bluehorndigital/setup-drupal@v1.1.0
+        uses: bluehorndigital/setup-drupal@v1.2.0
         with:
           version: ${{ matrix.drupal }}
           path: ~/drupal
@@ -124,6 +131,11 @@ jobs:
         run: |
           cd ~/drupal
           ./vendor/bin/phpstan analyze web/core/install.php --debug
+      - name: "Test legacy hook attributes are ignored"
+        run: |
+          cp $GITHUB_WORKSPACE/tests/fixtures/integration/legacy-hook-attributes.php ~/drupal/legacy-hook-attributes.php
+          cd ~/drupal
+          ./vendor/bin/phpstan analyze legacy-hook-attributes.php --no-progress
       - name: "Test BrowserTestBase is autoloaded"
         run: |
           cd ~/drupal
@@ -159,8 +171,8 @@ jobs:
         php-version:
           - "8.3"
         drupal:
-          - "~11.0.0"
-          - "~11.1.0"
+          - "~11.3.0"
+          - "~11.4.0"
         include:
           - php-version: "8.1"
             drupal: "^10.4"
@@ -170,7 +182,7 @@ jobs:
             experimental: true
     steps:
       - name: "Checkout"
-        uses: "actions/checkout@v4"
+        uses: "actions/checkout@v7"
       - name: "Install PHP"
         uses: "shivammathur/setup-php@v2"
         with:
@@ -179,7 +191,7 @@ jobs:
           tools: composer:v2
           extensions: dom, curl, libxml, mbstring, zip, pdo, mysql, pdo_mysql, bcmath, gd, exif, iconv
       - name: Setup Drupal
-        uses: bluehorndigital/setup-drupal@v1.1.0
+        uses: bluehorndigital/setup-drupal@v1.2.0
         with:
           version: ${{ matrix.drupal }}
           path: ~/drupal
@@ -196,6 +208,11 @@ jobs:
         run: |
           cd ~/drupal
           ./vendor/bin/phpstan analyze web/core/install.php --debug
+      - name: "Test legacy hook attributes are ignored"
+        run: |
+          cp $GITHUB_WORKSPACE/tests/fixtures/integration/legacy-hook-attributes.php ~/drupal/legacy-hook-attributes.php
+          cd ~/drupal
+          ./vendor/bin/phpstan analyze legacy-hook-attributes.php --no-progress
       - name: "Test no crash"
         run: |
           cd ~/drupal
@@ -210,7 +227,7 @@ jobs:
     name: "Drupal core HEAD baseline check"
     steps:
       - name: "Checkout"
-        uses: "actions/checkout@v4"
+        uses: "actions/checkout@v7"
       - name: "set the version alias for self"
         run: |
           if [ "${{ github.event_name }}" == 'pull_request' ]; then
@@ -223,7 +240,7 @@ jobs:
         run: echo PHPSTAN_TMP_DIR=$(php -r "print sys_get_temp_dir() . '/phpstan';") >> $GITHUB_OUTPUT
         id: phpstan_tmp_dir
       - name: cache phpstan
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ${{ steps.phpstan_tmp_dir.outputs.PHPSTAN_TMP_DIR }}
           key: ${{ runner.os }}-phpstan-core-baseline
@@ -232,7 +249,7 @@ jobs:
         uses: "shivammathur/setup-php@v2"
         with:
           coverage: "none"
-          php-version: "8.3"
+          php-version: "8.5"
           tools: composer:v2
           extensions: dom, curl, libxml, mbstring, zip, pdo, mysql, pdo_mysql, gd, apcu
       - name: "Checkout Drupal core"
@@ -240,16 +257,20 @@ jobs:
          cd ${{ runner.temp }}
          git clone https://git.drupalcode.org/project/drupal.git
          cd drupal
-         composer config repositories.0 composer https://packages.drupal.org/8
-         composer config repositories.1 path $GITHUB_WORKSPACE
+         # Add a repository instead of replacing one of core's. Core's path
+         # repository keeps the checkout, which has the tests its PHPStan config
+         # needs. Drupal 12 packages don't: https://www.drupal.org/node/3618953.
+         composer config repositories.phpstan-drupal path $GITHUB_WORKSPACE
       - name: "Install Drupal core dependencies"
-        uses: "ramsey/composer-install@v3"
+        uses: "ramsey/composer-install@v4"
         with:
           working-directory: "${{ runner.temp }}/drupal"
       - name: "require phpstan-drupal"
         run: |
           cd ${{ runner.temp }}/drupal
-          composer require drupal/core-dev "phpstan/phpstan:^2.0" "phpstan/phpstan-phpunit:^2.0" mglaman/phpstan-drupal "${{ steps.branch_alias.outputs.VERSION_ALIAS }} as 2.99.99" phpstan/extension-installer --with-all-dependencies
+          # Core's require-dev already has what this job needs. Only update these
+          # packages: a wider update replaces the core checkout with a package.
+          composer require --dev "phpstan/phpstan:^2.0" "phpstan/phpstan-phpunit:^2.0" mglaman/phpstan-drupal "${{ steps.branch_alias.outputs.VERSION_ALIAS }} as 2.99.99" --with-dependencies
       - name: "Check baseline"
         run: |
           cd ${{ runner.temp }}/drupal

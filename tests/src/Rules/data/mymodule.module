@@ -1,0 +1,36 @@
+<?php
+
+use Drupal\Core\Cache\CacheableMetadata;
+use Drupal\Core\Entity\EntityInterface;
+
+// Bad: missing CacheableMetadata (1 param instead of 2).
+function mymodule_entity_operation(EntityInterface $entity): array {
+    return [];
+}
+
+// Bad: entity_operation_alter missing CacheableMetadata (2 params instead of 3).
+function mymodule_entity_operation_alter(array &$operations, EntityInterface $entity): void {
+}
+
+// Not flagged: different module prefix — not from this module.
+function other_module_entity_operation(EntityInterface $entity): array {
+    return [];
+}
+
+// Good: non-nullable CacheableMetadata (canonical form).
+function mymodule_entity_operation_good(EntityInterface $entity, CacheableMetadata $cacheability): array {
+    return [];
+}
+
+// Good: nullable CacheableMetadata also accepted.
+function mymodule_entity_operation_good_nullable(EntityInterface $entity, ?CacheableMetadata $cacheability = null): array {
+    return [];
+}
+
+// Good: entity_operation_alter with non-nullable CacheableMetadata.
+function mymodule_entity_operation_alter_good(array &$operations, EntityInterface $entity, CacheableMetadata $cacheability): void {
+}
+
+// Good: entity_operation_alter with nullable CacheableMetadata also accepted.
+function mymodule_entity_operation_alter_good_nullable(array &$operations, EntityInterface $entity, ?CacheableMetadata $cacheability = null): void {
+}

@@ -20,10 +20,13 @@ use Drupal\Core\Field\Plugin\Field\FieldType\TimestampItem;
 use Drupal\Core\Field\Plugin\Field\FieldType\UriItem;
 use Drupal\Core\Field\Plugin\Field\FieldType\UuidItem;
 use Drupal\datetime\Plugin\Field\FieldType\DateTimeItem;
+use Drupal\datetime_range\Plugin\Field\FieldType\DateRangeItem;
 use Drupal\file\Plugin\Field\FieldType\FileItem;
 use Drupal\file\Plugin\Field\FieldType\FileUriItem;
 use Drupal\link\Plugin\Field\FieldType\LinkItem;
 use Drupal\node\Entity\Node;
+use Drupal\path\Plugin\Field\FieldType\PathItem;
+use Drupal\telephone\Plugin\Field\FieldType\TelephoneItem;
 use Drupal\text\Plugin\Field\FieldType\TextItem;
 use Drupal\text\Plugin\Field\FieldType\TextLongItem;
 use Drupal\text\Plugin\Field\FieldType\TextWithSummaryItem;
@@ -59,13 +62,13 @@ assertType('int', $boolean_field->value);
 $changed_field = $node->get('field_changed')->first();
 assert($changed_field instanceof ChangedItem);
 assertType(ChangedItem::class, $changed_field);
-assertType('string', $changed_field->value);
+assertType('int', $changed_field->value);
 
 // CreatedItem.
 $created_field = $node->get('field_created')->first();
 assert($created_field instanceof CreatedItem);
 assertType(CreatedItem::class, $created_field);
-assertType('string', $created_field->value);
+assertType('int', $created_field->value);
 
 // DecimalItem.
 $decimal_field = $node->get('field_decimal')->first();
@@ -135,7 +138,7 @@ assertType('string', $string_long_field->value);
 $timestamp_field = $node->get('field_timestamp')->first();
 assert($timestamp_field instanceof TimestampItem);
 assertType(TimestampItem::class, $timestamp_field);
-assertType('string', $timestamp_field->value);
+assertType('int', $timestamp_field->value);
 
 // UriItem.
 $uri_field = $node->get('field_uri')->first();
@@ -156,6 +159,16 @@ assertType(DateTimeItem::class, $datetime_field);
 assertType('string|null', $datetime_field->value);
 assertType('Drupal\Core\Datetime\DrupalDateTime|null', $datetime_field->date);
 
+// DateRangeItem.
+$daterange_field = $node->get('field_daterange')->first();
+assert($daterange_field instanceof DateRangeItem);
+assertType(DateRangeItem::class, $daterange_field);
+assertType('string|null', $daterange_field->value);
+assertType('never', $daterange_field->date);
+assertType('Drupal\Core\Datetime\DrupalDateTime|null', $daterange_field->start_date);
+assertType('string|null', $daterange_field->end_value);
+assertType('Drupal\Core\Datetime\DrupalDateTime|null', $daterange_field->end_date);
+
 // FileItem.
 $file_field = $node->get('field_file')->first();
 assert($file_field instanceof FileItem);
@@ -168,6 +181,20 @@ $file_uri_field = $node->get('field_file')->first();
 assert($file_uri_field instanceof FileUriItem);
 assertType(FileUriItem::class, $file_uri_field);
 assertType('string', $file_uri_field->url);
+
+// PathItem.
+$path_field = $node->get('path')->first();
+assert($path_field instanceof PathItem);
+assertType(PathItem::class, $path_field);
+assertType('string|null', $path_field->alias);
+assertType('int|null', $path_field->pid);
+assertType('string|null', $path_field->langcode);
+
+// TelephoneItem.
+$telephone_field = $node->get('field_telephone')->first();
+assert($telephone_field instanceof TelephoneItem);
+assertType(TelephoneItem::class, $telephone_field);
+assertType('string|null', $telephone_field->value);
 
 // TextITem.
 $text_field = $node->get('field_text')->first();

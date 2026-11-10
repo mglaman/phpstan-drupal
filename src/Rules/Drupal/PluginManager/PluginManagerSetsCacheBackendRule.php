@@ -6,15 +6,12 @@ use PhpParser\Node;
 use PhpParser\Node\Stmt\ClassMethod;
 use PHPStan\Analyser\Scope;
 use PHPStan\Rules\RuleErrorBuilder;
-use PHPStan\ShouldNotHappenException;
-use PHPStan\Type\Type;
-use function array_map;
 use function count;
 
 /**
  * @extends AbstractPluginManagerRule<ClassMethod>
  */
-class PluginManagerSetsCacheBackendRule extends AbstractPluginManagerRule
+final class PluginManagerSetsCacheBackendRule extends AbstractPluginManagerRule
 {
     public function getNodeType(): string
     {
@@ -24,7 +21,7 @@ class PluginManagerSetsCacheBackendRule extends AbstractPluginManagerRule
     public function processNode(Node $node, Scope $scope): array
     {
         if (!$scope->isInClass()) {
-            throw new ShouldNotHappenException();
+            return [];
         }
 
         if ($scope->isInTrait()) {
@@ -56,15 +53,6 @@ class PluginManagerSetsCacheBackendRule extends AbstractPluginManagerRule
                     continue;
                 }
                 $hasCacheBackendSet = true;
-
-                $cacheKey = array_map(
-                    static fn (Type $type) => $type->getValue(),
-                    $scope->getType($setCacheBackendArgs[1]->value)->getConstantStrings()
-                );
-                if (count($cacheKey) === 0) {
-                    continue;
-                }
-
                 break;
             }
         }

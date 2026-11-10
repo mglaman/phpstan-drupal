@@ -14,6 +14,7 @@ final class EntityReferenceFieldItemListGenericTest extends TypeInferenceTestCas
     public static function dataFileAsserts(): iterable
     {
         yield from self::gatherAssertTypes(__DIR__ . '/data/entity-reference-field-item-list.php');
+        yield from self::gatherAssertTypes(__DIR__ . '/data/bug-878.php');
     }
 
     /**

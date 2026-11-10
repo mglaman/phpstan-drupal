@@ -1,0 +1,4 @@
+services:
+  Drupal\service_map_broken\ExtendsMissingClass:
+    decorates: missing_module.render_converter
+    decoration_on_invalid: ignore

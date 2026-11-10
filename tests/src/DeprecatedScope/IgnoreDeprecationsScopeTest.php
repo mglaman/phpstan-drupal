@@ -32,12 +32,36 @@ final class IgnoreDeprecationsScopeTest extends DrupalRuleTestCase {
                     'Call to deprecated function Deprecated\deprecated_function().',
                     25,
                 ],
+                [
+                    'Call to deprecated function Deprecated\deprecated_function().',
+                    34,
+                ],
+                [
+                    'Call to deprecated function Deprecated\deprecated_function().',
+                    42,
+                ],
+                [
+                    'Call to deprecated function Deprecated\deprecated_function().',
+                    47,
+                ],
             ];
         } else {
             $errors = [
                 [
                     'Call to deprecated function Deprecated\deprecated_function().',
                     20,
+                ],
+                [
+                    'Call to deprecated function Deprecated\deprecated_function().',
+                    34,
+                ],
+                [
+                    'Call to deprecated function Deprecated\deprecated_function().',
+                    42,
+                ],
+                [
+                    'Call to deprecated function Deprecated\deprecated_function().',
+                    47,
                 ],
             ];
         }

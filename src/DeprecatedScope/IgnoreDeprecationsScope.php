@@ -19,7 +19,9 @@ final class IgnoreDeprecationsScope implements DeprecatedScopeResolver
 
         if ($scope->isInClass()) {
             $class = $scope->getClassReflection()->getNativeReflection();
-            if ($class->getAttributes(IgnoreDeprecations::class) !== []) {
+            $classIgnoreDeprecationAttributes = $class->getAttributes(IgnoreDeprecations::class);
+            $classIgnoreDeprecationAttribute = $classIgnoreDeprecationAttributes[0] ?? null;
+            if ($classIgnoreDeprecationAttribute !== null && $classIgnoreDeprecationAttribute->getArguments() === []) {
                 return true;
             }
 
@@ -27,9 +29,14 @@ final class IgnoreDeprecationsScope implements DeprecatedScopeResolver
             if ($function === null) {
                 return false;
             }
+            if (method_exists($function, 'isPropertyHook') && $function->isPropertyHook()) {
+                return false;
+            }
 
             $method = $class->getMethod($function->getName());
-            if ($method->getAttributes(IgnoreDeprecations::class) !== []) {
+            $methodIgnoreDeprecationAttributes = $method->getAttributes(IgnoreDeprecations::class);
+            $methodIgnoreDeprecationAttribute = $methodIgnoreDeprecationAttributes[0] ?? null;
+            if ($methodIgnoreDeprecationAttribute !== null && $methodIgnoreDeprecationAttribute->getArguments() === []) {
                 return true;
             }
         }

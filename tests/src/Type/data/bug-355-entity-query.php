@@ -17,7 +17,7 @@ $query = $typedNodeStorage->getQuery()
     ->accessCheck(TRUE);
 assertType('array<int, string>', $query->execute());
 assertType(
-    'int',
+    'int<0, max>',
     $typedNodeStorage->getQuery()
         ->accessCheck(TRUE)
         ->count()
@@ -26,7 +26,7 @@ assertType(
 $query = $typedNodeStorage->getQuery()
     ->accessCheck(TRUE)
     ->count();
-assertType('int', $query->execute());
+assertType('int<0, max>', $query->execute());
 
 /** @var \Drupal\node\NodeStorageInterface $anotherTypedNodeStorage */
 $anotherTypedNodeStorage = \Drupal::entityTypeManager()->getStorage('node');
@@ -40,7 +40,7 @@ $query = $anotherTypedNodeStorage->getQuery()
     ->accessCheck(TRUE);
 assertType('array<int, string>', $query->execute());
 assertType(
-    'int',
+    'int<0, max>',
     $anotherTypedNodeStorage->getQuery()
         ->accessCheck(TRUE)
         ->count()
@@ -49,7 +49,7 @@ assertType(
 $query = $anotherTypedNodeStorage->getQuery()
     ->accessCheck(TRUE)
     ->count();
-assertType('int', $query->execute());
+assertType('int<0, max>', $query->execute());
 
 $instanceOfNodeStorage = \Drupal::entityTypeManager()->getStorage('node');
 if ($instanceOfNodeStorage instanceof NodeStorage) {
@@ -63,7 +63,7 @@ if ($instanceOfNodeStorage instanceof NodeStorage) {
         ->accessCheck(TRUE);
     assertType('array<int, string>', $query->execute());
     assertType(
-        'int',
+        'int<0, max>',
         $instanceOfNodeStorage->getQuery()
             ->accessCheck(TRUE)
             ->count()
@@ -72,5 +72,5 @@ if ($instanceOfNodeStorage instanceof NodeStorage) {
     $query = $instanceOfNodeStorage->getQuery()
         ->accessCheck(TRUE)
         ->count();
-    assertType('int', $query->execute());
+    assertType('int<0, max>', $query->execute());
 }

@@ -4,15 +4,34 @@ namespace mglaman\PHPStanDrupal\Rules\Drupal;
 
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
-use PHPStan\Reflection\ExtendedMethodReflection;
+use PHPStan\Reflection\MethodReflection;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
 
 /**
  * @implements Rule<Node\Expr\StaticCall>
  */
-class GlobalDrupalDependencyInjectionRule implements Rule
+final class GlobalDrupalDependencyInjectionRule implements Rule
 {
+    /**
+     * Interfaces whose implementations cannot use dependency injection.
+     */
+    private const ALLOWED_INTERFACES = [
+        // Ignore tests.
+        'PHPUnit\Framework\Test',
+        // Typed data objects cannot use dependency injection.
+        'Drupal\Core\TypedData\TypedDataInterface',
+        // Entities don't use services for now
+        // @see https://www.drupal.org/project/drupal/issues/2913224
+        'Drupal\Core\Entity\EntityInterface',
+        // Stream wrappers are only registered as a service for their tags
+        // and cannot use dependency injection. Function calls like
+        // file_exists, stat, etc. will construct the class directly.
+        'Drupal\Core\StreamWrapper\StreamWrapperInterface',
+        // Ignore Nightwatch test setup classes.
+        'Drupal\TestSite\TestSetupInterface',
+    ];
+
     public function getNodeType(): string
     {
         return Node\Expr\StaticCall::class;
@@ -21,7 +40,7 @@ class GlobalDrupalDependencyInjectionRule implements Rule
     public function processNode(Node $node, Scope $scope): array
     {
         // Only check static calls to \Drupal
-        if (!($node->class instanceof Node\Name\FullyQualified) || (string) $node->class !== 'Drupal') {
+        if (!$node->class instanceof Node\Name || $scope->resolveName($node->class) !== 'Drupal') {
             return [];
         }
         // Do not raise if called inside a trait.
@@ -35,27 +54,7 @@ class GlobalDrupalDependencyInjectionRule implements Rule
             return [];
         }
 
-        $allowed_list = [
-            // Ignore tests.
-            'PHPUnit\Framework\Test',
-            // Typed data objects cannot use dependency injection.
-            'Drupal\Core\TypedData\TypedDataInterface',
-            // Render elements cannot use dependency injection.
-            'Drupal\Core\Render\Element\ElementInterface',
-            'Drupal\Core\Render\Element\FormElementInterface',
-            'Drupal\config_translation\FormElement\ElementInterface',
-            // Entities don't use services for now
-            // @see https://www.drupal.org/project/drupal/issues/2913224
-            'Drupal\Core\Entity\EntityInterface',
-            // Stream wrappers are only registered as a service for their tags
-            // and cannot use dependency injection. Function calls like
-            // file_exists, stat, etc. will construct the class directly.
-            'Drupal\Core\StreamWrapper\StreamWrapperInterface',
-            // Ignore Nightwatch test setup classes.
-            'Drupal\TestSite\TestSetupInterface',
-        ];
-
-        foreach ($allowed_list as $item) {
+        foreach (self::ALLOWED_INTERFACES as $item) {
             if ($scopeClassReflection->implementsInterface($item)) {
                 return [];
             }
@@ -65,7 +64,7 @@ class GlobalDrupalDependencyInjectionRule implements Rule
         if ($scopeFunction === null) {
             return [];
         }
-        if (!$scopeFunction instanceof ExtendedMethodReflection) {
+        if (!$scopeFunction instanceof MethodReflection) {
             return [];
         }
         if ($scopeFunction->isStatic()) {

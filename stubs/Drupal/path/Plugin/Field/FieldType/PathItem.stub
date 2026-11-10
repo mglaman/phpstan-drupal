@@ -1,0 +1,14 @@
+<?php
+
+namespace Drupal\path\Plugin\Field\FieldType;
+
+use Drupal\Core\Field\FieldItemBase;
+
+/**
+ * @property ?string $alias
+ * @property ?int $pid
+ * @property ?string $langcode
+ */
+class PathItem extends FieldItemBase {
+
+}
