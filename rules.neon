@@ -63,6 +63,8 @@ conditionalTags:
 		phpstan.rules.rule: %drupal.rules.formApiCallbackRule%
 	mglaman\PHPStanDrupal\Rules\Drupal\FormApiCallback\FormApiCallbackAssignRule:
 		phpstan.rules.rule: %drupal.rules.formApiCallbackRule%
+	mglaman\PHPStanDrupal\Rules\Drupal\RenderCallback\LazyBuilderRule:
+		phpstan.rules.rule: %drupal.rules.lazyBuilderRule%
 
 services:
 	-
@@ -73,6 +75,8 @@ services:
 		class: mglaman\PHPStanDrupal\Rules\Drupal\FormApiCallback\FormApiCallbackRule
 	-
 		class: mglaman\PHPStanDrupal\Rules\Drupal\FormApiCallback\FormApiCallbackAssignRule
+	-
+		class: mglaman\PHPStanDrupal\Rules\Drupal\RenderCallback\LazyBuilderRule
 	-
 		class: mglaman\PHPStanDrupal\Rules\Drupal\RenderCallback\RenderCallbackCollector
 		tags:

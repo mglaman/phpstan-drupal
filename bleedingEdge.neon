@@ -7,3 +7,4 @@ parameters:
 		rules:
 			configGetUnknownKeyRule: true
 			formApiCallbackRule: true
+			lazyBuilderRule: true

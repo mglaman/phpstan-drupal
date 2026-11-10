@@ -274,6 +274,7 @@ What it currently enables:
 - `checkContribDeprecatedHooksInApiFiles` — reports hook implementations deprecated in contrib module `.api.php` files
 - `configGetUnknownKeyRule` — reports `Config::get()` calls with a key that isn't in the config schema. See "Config schema-based checks".
 - `formApiCallbackRule` — reports Form API callbacks that fail at runtime. See "Form API callback checks".
+- `lazyBuilderRule` — reports `#lazy_builder` render arrays that break the renderer's rules. See "#lazy_builder checks".
 
 > [!NOTE]
 > `checkDeprecatedHooksInApiFiles` is deprecated. Use `checkCoreDeprecatedHooksInApiFiles` and `checkContribDeprecatedHooksInApiFiles` instead.
@@ -347,6 +348,29 @@ parameters:
             identifier: formApiCallback.notFound
             path: src/Form/MyForm.php
 ```
+
+#### #lazy_builder checks
+
+`lazyBuilderRule` reports `#lazy_builder` render arrays that break the rules in `Renderer::doRender()`. It is opt-in and enabled by `bleedingEdge.neon`.
+
+```neon
+parameters:
+    drupal:
+        rules:
+            lazyBuilderRule: true
+```
+
+It reports:
+
+- `#create_placeholder` set to `TRUE` without `#lazy_builder` (`lazyBuilder.placeholderWithoutCallback`). Drupal throws a `LogicException` when it renders the element.
+- `#lazy_builder` that isn't `[callback, arguments]`, or whose arguments aren't an array (`lazyBuilder.invalidStructure`).
+- An argument that isn't a scalar or `NULL` (`lazyBuilder.nonScalarArgument`).
+- Properties or children other than `#cache`, `#create_placeholder`, `#lazy_builder_preview`, `#placeholder_strategy_denylist`, `#preview` and `#weight` next to `#lazy_builder` (`lazyBuilder.unsupportedProperty`).
+- A callback method whose return type can't be an array (`lazyBuilder.nonArrayReturn`).
+
+The first one fails on every request. The others fail `assert()` calls, so they only throw with assertions on. Without assertions, Drupal renders the element wrong.
+
+Only array literals are checked. An element built across several statements, such as `$build['#lazy_builder'] = ...` followed by `$build['#title'] = ...`, is not.
 
 #### Detecting @todo comments referencing the current Drupal.org issue (contrib CI)
 

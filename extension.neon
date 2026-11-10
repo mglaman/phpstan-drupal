@@ -70,6 +70,7 @@ parameters:
 			entityOperationsCacheabilityRule: true
 			configGetUnknownKeyRule: false
 			formApiCallbackRule: false
+			lazyBuilderRule: false
 		entityMapping:
 			aggregator_feed:
 				class: Drupal\aggregator\Entity\Feed
@@ -320,6 +321,7 @@ parametersSchema:
 			entityOperationsCacheabilityRule: boolean()
 			configGetUnknownKeyRule: boolean()
 			formApiCallbackRule: boolean()
+			lazyBuilderRule: boolean()
 		])
 		entityMapping: arrayOf(anyOf(
 			structure([
