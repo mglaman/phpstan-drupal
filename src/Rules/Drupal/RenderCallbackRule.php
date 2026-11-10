@@ -9,6 +9,7 @@ use Drupal\Core\Security\Attribute\TrustedCallback;
 use Drupal\Core\Security\TrustedCallbackInterface;
 use mglaman\PHPStanDrupal\Drupal\ServiceMap;
 use mglaman\PHPStanDrupal\Drupal\ServiceResultCacheValueExtension;
+use mglaman\PHPStanDrupal\Drupal\TrustedCallbacksReader;
 use PhpParser\Node;
 use PhpParser\Node\ArrayItem;
 use PhpParser\Node\Name;
@@ -33,8 +34,10 @@ use function array_merge;
 use function class_exists;
 use function count;
 use function explode;
+use function in_array;
 use function preg_match;
 use function sprintf;
+use function str_contains;
 use function substr_count;
 
 /**
@@ -47,6 +50,8 @@ final class RenderCallbackRule implements Rule
 
     private ServiceMap $serviceMap;
 
+    private TrustedCallbacksReader $trustedCallbacksReader;
+
     private array $supportedKeys = [
         '#pre_render',
         '#post_render',
@@ -56,10 +61,14 @@ final class RenderCallbackRule implements Rule
         '#date_date_callbacks',
     ];
 
-    public function __construct(ReflectionProvider $reflectionProvider, ServiceMap $serviceMap)
-    {
+    public function __construct(
+        ReflectionProvider $reflectionProvider,
+        ServiceMap $serviceMap,
+        TrustedCallbacksReader $trustedCallbacksReader
+    ) {
         $this->reflectionProvider = $reflectionProvider;
         $this->serviceMap = $serviceMap;
+        $this->trustedCallbacksReader = $trustedCallbacksReader;
     }
 
     public function getNodeType(): string
@@ -259,6 +268,29 @@ final class RenderCallbackRule implements Rule
                         ->identifier('renderCallback.callbackNotImplementsTrustedCallbackInterface')
                         ->build();
                     }
+                } elseif (!$isTrustedCallbackAttribute->yes()) {
+                    $trustedCallbacksClass = $this->findTrustedCallbacksClass(
+                        $typeAndMethodName->getType(),
+                        $this->namesExactCallbackClass($scope->getType($node), $constantArrayType)
+                    );
+                    if ($trustedCallbacksClass === null) {
+                        continue;
+                    }
+                    $trustedCallbacks = $this->trustedCallbacksReader->read($trustedCallbacksClass, $scope);
+                    if ($trustedCallbacks === null || in_array($typeAndMethodName->getMethod(), $trustedCallbacks, true)) {
+                        continue;
+                    }
+                    $errors[] = RuleErrorBuilder::message(
+                        sprintf(
+                            "%s callback method '%s' at key '%s' is not returned by %s::trustedCallbacks().",
+                            $keyChecked,
+                            $typeAndMethodName->getMethod(),
+                            $pos,
+                            $trustedCallbacksClass->getName()
+                        )
+                    )->line($errorLine)->tip('Change record: https://www.drupal.org/node/2966725.')
+                    ->identifier('renderCallback.methodNotInTrustedCallbacks')
+                    ->build();
                 }
             }
         }
@@ -347,5 +379,50 @@ final class RenderCallbackRule implements Rule
         }
 
         return $type;
+    }
+
+    /**
+     * Whether Drupal calls trustedCallbacks() on the class the callback names.
+     *
+     * A callback like [$this, 'method'] runs on an object that may be a
+     * subclass, and a subclass may override trustedCallbacks().
+     */
+    private function namesExactCallbackClass(Type $callbackType, ConstantArrayType $callbackArray): bool
+    {
+        $callbackStrings = $callbackType->getConstantStrings();
+        if (count($callbackStrings) > 0) {
+            foreach ($callbackStrings as $callbackString) {
+                if (!str_contains($callbackString->getValue(), '::')) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        $classType = $callbackArray->getValueTypes()[0] ?? null;
+        return $classType !== null && count($classType->getConstantStrings()) > 0;
+    }
+
+    /**
+     * Finds the class whose trustedCallbacks() decides if the callback runs.
+     *
+     * Returns NULL when that class is not certain, or when Drupal trusts the
+     * callback without asking trustedCallbacks().
+     */
+    private function findTrustedCallbacksClass(Type $callbackClassType, bool $namesExactCallbackClass): ?ClassReflection
+    {
+        $classReflections = $callbackClassType->getObjectClassReflections();
+        if (count($classReflections) !== 1) {
+            return null;
+        }
+        $classReflection = $classReflections[0];
+        if (!$namesExactCallbackClass && !$classReflection->isFinal()) {
+            return null;
+        }
+        if (!$classReflection->implementsInterface(TrustedCallbackInterface::class)
+            || $classReflection->implementsInterface(RenderCallbackInterface::class)
+        ) {
+            return null;
+        }
+        return $classReflection;
     }
 }

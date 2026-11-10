@@ -4,6 +4,7 @@ namespace mglaman\PHPStanDrupal\Tests\Rules;
 
 
 use mglaman\PHPStanDrupal\Drupal\ServiceMap;
+use mglaman\PHPStanDrupal\Drupal\TrustedCallbacksReader;
 use mglaman\PHPStanDrupal\Tests\DrupalRuleTestCase;
 use mglaman\PHPStanDrupal\Rules\Drupal\RenderCallbackRule;
 use PHPStan\Rules\Rule;
@@ -14,7 +15,8 @@ final class RenderCallbackRuleTest extends DrupalRuleTestCase {
     {
         return new RenderCallbackRule(
             self::createReflectionProvider(),
-            self::getContainer()->getByType(ServiceMap::class)
+            self::getContainer()->getByType(ServiceMap::class),
+            self::getContainer()->getByType(TrustedCallbacksReader::class)
         );
     }
 
@@ -160,6 +162,56 @@ final class RenderCallbackRuleTest extends DrupalRuleTestCase {
         yield [
             __DIR__ . '/data/bug-543.php',
             []
+        ];
+        yield [
+            __DIR__ . '/data/bug-561.php',
+            [
+                [
+                    "#pre_render callback method 'unlisted' at key '0' is not returned by Bug561\\FinalCallbacks::trustedCallbacks().",
+                    100,
+                    'Change record: https://www.drupal.org/node/2966725.',
+                ],
+                [
+                    "#pre_render callback method 'unlisted' at key '0' is not returned by Bug561\\ListedCallbacks::trustedCallbacks().",
+                    123,
+                    'Change record: https://www.drupal.org/node/2966725.',
+                ],
+                [
+                    "#pre_render callback method 'unlisted' at key '0' is not returned by Bug561\\ListedCallbacks::trustedCallbacks().",
+                    124,
+                    'Change record: https://www.drupal.org/node/2966725.',
+                ],
+                [
+                    "#pre_render callback method 'unlisted' at key '0' is not returned by Bug561\\InheritedCallbacks::trustedCallbacks().",
+                    126,
+                    'Change record: https://www.drupal.org/node/2966725.',
+                ],
+                [
+                    "#pre_render callback method 'unlisted' at key '0' is not returned by Bug561\\TraitCallbacks::trustedCallbacks().",
+                    129,
+                    'Change record: https://www.drupal.org/node/2966725.',
+                ],
+                [
+                    "#lazy_builder callback method 'unlisted' at key '0' is not returned by Bug561\\ListedCallbacks::trustedCallbacks().",
+                    130,
+                    'Change record: https://www.drupal.org/node/2966725.',
+                ],
+                [
+                    "#access_callback callback method 'unlisted' at key '0' is not returned by Bug561\\ListedCallbacks::trustedCallbacks().",
+                    131,
+                    'Change record: https://www.drupal.org/node/2966725.',
+                ],
+            ],
+        ];
+        yield 'callback class PHP cannot autoload' => [
+            __DIR__ . '/../../fixtures/drupal/modules/pre_render_callback_rule/src/PlaceholderGeneratorTest.php',
+            [
+                [
+                    "#lazy_builder callback method 'unlistedCallback' at key '0' is not returned by Drupal\\pre_render_callback_rule\\PlaceholderCallbacks::trustedCallbacks().",
+                    16,
+                    'Change record: https://www.drupal.org/node/2966725.',
+                ],
+            ],
         ];
         yield [
             __DIR__ . '/data/bug-554.php',
