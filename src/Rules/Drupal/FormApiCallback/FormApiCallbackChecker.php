@@ -3,7 +3,8 @@
 namespace mglaman\PHPStanDrupal\Rules\Drupal\FormApiCallback;
 
 use Drupal;
-use mglaman\PHPStanDrupal\Rules\Drupal\RenderCallback\RenderCallbackResolver;
+use mglaman\PHPStanDrupal\Drupal\ServiceMap;
+use mglaman\PHPStanDrupal\Drupal\ServiceResultCacheValueExtension;
 use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\Array_;
 use PhpParser\Node\Expr\BinaryOp\Concat;
@@ -77,7 +78,7 @@ final class FormApiCallbackChecker
 
     private ReflectionProvider $reflectionProvider;
 
-    private RenderCallbackResolver $renderCallbackResolver;
+    private ServiceMap $serviceMap;
 
     private ExprPrinter $exprPrinter;
 
@@ -85,11 +86,11 @@ final class FormApiCallbackChecker
 
     public function __construct(
         ReflectionProvider $reflectionProvider,
-        RenderCallbackResolver $renderCallbackResolver,
+        ServiceMap $serviceMap,
         ExprPrinter $exprPrinter
     ) {
         $this->reflectionProvider = $reflectionProvider;
-        $this->renderCallbackResolver = $renderCallbackResolver;
+        $this->serviceMap = $serviceMap;
         $this->exprPrinter = $exprPrinter;
         $this->resolvesCallableDefinitions = version_compare(Drupal::VERSION, '11.2.99', '>');
     }
@@ -134,13 +135,10 @@ final class FormApiCallbackChecker
             $lateStaticCallback = $this->findLateStaticStringCallback($callback, $scope);
             if ($lateStaticCallback !== null) {
                 [$classReflection, $methodName, $usesServiceNotation] = $lateStaticCallback;
-                $methodMayBeInSubclass = $this->isAbstractOrInterface($classReflection);
-                if ($usesServiceNotation) {
-                    return $this->resolvesCallableDefinitions
-                        ? $this->checkMethodIsCallable($key, $callback, $classReflection, $methodName, false, $methodMayBeInSubclass)
-                        : [$this->buildServiceNotationError($key, $callback)];
+                if ($usesServiceNotation && !$this->resolvesCallableDefinitions) {
+                    return [$this->buildServiceNotationError($key, $callback)];
                 }
-                return $this->checkClassMethodString($key, $callback, $classReflection, $methodName, $methodMayBeInSubclass, $scope);
+                return $this->checkClassMethodString($key, $callback, $classReflection, $methodName, $this->isAbstractOrInterface($classReflection), $scope);
             }
         }
 
@@ -254,13 +252,15 @@ final class FormApiCallbackChecker
             return [$this->buildServiceNotationError($key, $callback)];
         }
         [$classOrServiceId, $methodName] = explode(':', $value, 2);
-        // ClassResolver checks the container first, then instantiates the class.
-        $serviceClass = $this->renderCallbackResolver->resolveServiceClass($classOrServiceId, $scope) ?? $classOrServiceId;
-        if (!$this->reflectionProvider->hasClass($serviceClass)) {
-            return [];
+        $definition = $this->resolveClassResolverDefinition($classOrServiceId, $scope);
+        if ($definition === null) {
+            return $this->isPrivateService($classOrServiceId) ? [$this->buildPrivateServiceError($key, $callback, $classOrServiceId)] : [];
         }
-        $classReflection = $this->reflectionProvider->getClass($serviceClass);
-        return $this->checkMethodIsCallable($key, $callback, $classReflection, $methodName, false, $this->isAbstractOrInterface($classReflection));
+        [$classReflection, $isServiceClass] = $definition;
+        if ($this->isAbstractOrInterface($classReflection)) {
+            return $isServiceClass ? [] : [$this->buildNotInstantiableError($key, $callback, $classReflection)];
+        }
+        return $this->checkMethodIsCallable($key, $callback, $classReflection, $methodName, false, false);
     }
 
     /**
@@ -275,11 +275,12 @@ final class FormApiCallbackChecker
         }
         if ($this->resolvesCallableDefinitions) {
             // CallableResolver also accepts invokable services and classes.
-            // ClassResolver checks the container first, then the class.
-            $invokableClass = $this->renderCallbackResolver->resolveServiceClass($value, $scope)
-                ?? ($this->reflectionProvider->hasClass($value) ? $value : null);
-            if ($invokableClass !== null) {
-                return $this->checkClassIsInvokable($key, $callback, $invokableClass);
+            $definition = $this->resolveClassResolverDefinition($value, $scope);
+            if ($definition !== null) {
+                return $this->checkClassIsInvokable($key, $callback, ...$definition);
+            }
+            if ($this->isPrivateService($value)) {
+                return [$this->buildPrivateServiceError($key, $callback, $value)];
             }
             if (!$isFunctionName) {
                 return [];
@@ -302,14 +303,10 @@ final class FormApiCallbackChecker
      *
      * @return list<IdentifierRuleError>
      */
-    private function checkClassIsInvokable(string $key, Expr $callback, string $className): array
+    private function checkClassIsInvokable(string $key, Expr $callback, ClassReflection $classReflection, bool $isServiceClass): array
     {
-        if (!$this->reflectionProvider->hasClass($className)) {
-            return [];
-        }
-        $classReflection = $this->reflectionProvider->getClass($className);
         if ($this->isAbstractOrInterface($classReflection)) {
-            return [];
+            return $isServiceClass ? [] : [$this->buildNotInstantiableError($key, $callback, $classReflection)];
         }
         if ($classReflection->hasNativeMethod('__invoke')
             && $classReflection->getNativeMethod('__invoke')->isPublic()
@@ -325,6 +322,67 @@ final class FormApiCallbackChecker
                 "Add a public __invoke() method, or name the method: 'Class::method' or 'service:method'."
             ),
         ];
+    }
+
+    /**
+     * Resolves a definition the way ClassResolver does.
+     *
+     * ClassResolver returns the service when the container has one, and
+     * otherwise creates an object of the class. The container only has public
+     * services. A service's object may be a subclass of its declared class, so
+     * the second value says whether the class came from a service.
+     *
+     * @param Scope&DependencyTracker $scope
+     * @return array{ClassReflection, bool}|null
+     *   NULL when the definition can't be resolved, or the service is
+     *   decorated: the container returns the outermost decorator.
+     */
+    private function resolveClassResolverDefinition(string $definition, Scope $scope): ?array
+    {
+        $scope->trackValueDependency(ServiceResultCacheValueExtension::class, $definition);
+        $service = $this->serviceMap->getService($definition);
+        if ($service !== null && $service->isPublic()) {
+            $serviceClass = $service->getClass();
+            if (count($service->getDecorators()) > 0
+                || $serviceClass === null
+                || !$this->reflectionProvider->hasClass($serviceClass)
+            ) {
+                return null;
+            }
+            return [$this->reflectionProvider->getClass($serviceClass), true];
+        }
+        if ($this->reflectionProvider->hasClass($definition)) {
+            return [$this->reflectionProvider->getClass($definition), false];
+        }
+        return null;
+    }
+
+    private function isPrivateService(string $definition): bool
+    {
+        $service = $this->serviceMap->getService($definition);
+        return $service !== null && !$service->isPublic();
+    }
+
+    private function buildPrivateServiceError(string $key, Expr $callback, string $serviceId): IdentifierRuleError
+    {
+        return $this->buildError(
+            $key,
+            $callback,
+            sprintf("refers to service %s, which is not public. Drupal's container only returns public services.", $serviceId),
+            'formApiCallback.privateService',
+            'Make the service public, or use a class name.'
+        );
+    }
+
+    private function buildNotInstantiableError(string $key, Expr $callback, ClassReflection $classReflection): IdentifierRuleError
+    {
+        return $this->buildError(
+            $key,
+            $callback,
+            sprintf('refers to %s, which is %s, so Drupal cannot create an object of it.', $classReflection->getName(), $classReflection->isInterface() ? 'an interface' : 'abstract'),
+            'formApiCallback.notInstantiable',
+            'Use a concrete class.'
+        );
     }
 
     private function buildServiceNotationError(string $key, Expr $callback): IdentifierRuleError
