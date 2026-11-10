@@ -91,7 +91,7 @@ final class FormApiCallbackChecker
         $this->reflectionProvider = $reflectionProvider;
         $this->renderCallbackResolver = $renderCallbackResolver;
         $this->exprPrinter = $exprPrinter;
-        $this->resolvesCallableDefinitions = version_compare(Drupal::VERSION, '11.3', '>=');
+        $this->resolvesCallableDefinitions = version_compare(Drupal::VERSION, '11.2.99', '>');
     }
 
     /**
@@ -430,8 +430,10 @@ final class FormApiCallbackChecker
     /**
      * Returns the class of the form object '::method' callbacks run on.
      *
-     * Returns NULL outside a concrete form class, and in hook implementations:
-     * an alter hook's '::method' refers to the altered form's object.
+     * Returns NULL outside a concrete form class, in static methods, and in hook
+     * implementations. A static method, such as a #process callback, has no
+     * form object of its own, and an alter hook's '::method' refers to the
+     * altered form's object.
      */
     private function findKnownFormClass(Scope $scope): ?ClassReflection
     {
@@ -443,37 +445,52 @@ final class FormApiCallbackChecker
             return null;
         }
         $function = $scope->getFunction();
-        if ($function instanceof ExtendedMethodReflection && $this->isHookImplementation($classReflection, $function)) {
+        if ($function instanceof ExtendedMethodReflection
+            && ($function->isStatic() || $this->isHookImplementation($classReflection, $function))
+        ) {
             return null;
         }
         return $classReflection;
     }
 
     /**
-     * Reads attribute names from native reflection.
+     * Whether the method, or its class, has the Hook attribute.
      *
-     * PHPStan's attribute reflection drops an attribute with arguments when
-     * its class does not exist. Drupal 10 has no Hook attribute class, but
-     * modules supporting Drupal 10 and 11 still use #[Hook('...')].
+     * A Hook attribute on the class can name any of its methods with the
+     * method argument, so a class-level Hook marks every method as a possible
+     * hook implementation.
+     *
+     * Attribute names come from native reflection. PHPStan's attribute
+     * reflection drops an attribute with arguments when its class does not
+     * exist. Drupal 10 has no Hook attribute class, but modules supporting
+     * Drupal 10 and 11 still use #[Hook('...')].
      */
     private function isHookImplementation(ClassReflection $classReflection, ExtendedMethodReflection $method): bool
     {
         $nativeClass = $classReflection->getNativeReflection();
+        foreach ($nativeClass->getAttributes() as $attribute) {
+            if ($this->isHookAttribute($attribute->getName())) {
+                return true;
+            }
+        }
         if (!$nativeClass->hasMethod($method->getName())) {
             return false;
         }
         foreach ($nativeClass->getMethod($method->getName())->getAttributes() as $attribute) {
-            $attributeName = $attribute->getName();
-            if ($attributeName === self::HOOK_ATTRIBUTE) {
-                return true;
-            }
-            if ($this->reflectionProvider->hasClass($attributeName)
-                && $this->reflectionProvider->getClass($attributeName)->is(self::HOOK_ATTRIBUTE)
-            ) {
+            if ($this->isHookAttribute($attribute->getName())) {
                 return true;
             }
         }
         return false;
+    }
+
+    private function isHookAttribute(string $attributeName): bool
+    {
+        if ($attributeName === self::HOOK_ATTRIBUTE) {
+            return true;
+        }
+        return $this->reflectionProvider->hasClass($attributeName)
+            && $this->reflectionProvider->getClass($attributeName)->is(self::HOOK_ATTRIBUTE);
     }
 
     private function isAbstractOrInterface(ClassReflection $classReflection): bool

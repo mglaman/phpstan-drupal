@@ -144,3 +144,54 @@ function form_api_callbacks_form_alter(array &$form, FormStateInterface $form_st
     $form['#submit'][] = Callbacks::class . ':instanceCallback';
     $form['#submit'][] = Callbacks::class . ':missing';
 }
+
+function form_api_callbacks_keyed_alter(array &$form, FormStateInterface $form_state): void
+{
+    $form['#validate']['form_api_callbacks'] = 'form_api_callbacks_missing_keyed_validate';
+}
+
+class StaticProcessForm extends FormBase
+{
+    public function getFormId(): string
+    {
+        return 'form_api_callbacks_static_process';
+    }
+
+    public function buildForm(array $form, FormStateInterface $form_state): array
+    {
+        return $form;
+    }
+
+    public function submitForm(array &$form, FormStateInterface $form_state): void
+    {
+    }
+
+    public static function processWidget(array $element, FormStateInterface $form_state, array &$complete_form): array
+    {
+        $element['#ajax']['callback'] = '::refreshOnTheBuiltForm';
+        return $element + ['#after_build' => ['::afterBuildOnTheBuiltForm']];
+    }
+}
+
+#[Hook('form_node_form_alter', method: 'alterNodeForm')]
+class ClassLevelHookForm extends FormBase
+{
+    public function getFormId(): string
+    {
+        return 'form_api_callbacks_class_level_hook';
+    }
+
+    public function buildForm(array $form, FormStateInterface $form_state): array
+    {
+        return $form;
+    }
+
+    public function submitForm(array &$form, FormStateInterface $form_state): void
+    {
+    }
+
+    public function alterNodeForm(array &$form, FormStateInterface $form_state): void
+    {
+        $form['#submit'][] = '::methodOfTheAlteredForm';
+    }
+}

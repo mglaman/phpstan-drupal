@@ -63,7 +63,7 @@ final class FormApiCallbackAssignRule implements Rule
             return [];
         }
         $parentKey = $parent->dim->value;
-        if (!$key instanceof String_ && in_array($parentKey, FormApiCallbackChecker::CALLBACK_LIST_KEYS, true)) {
+        if (in_array($parentKey, FormApiCallbackChecker::CALLBACK_LIST_KEYS, true)) {
             return $this->checker->checkCallback($parentKey, $node->expr, $scope);
         }
         if ($key instanceof String_

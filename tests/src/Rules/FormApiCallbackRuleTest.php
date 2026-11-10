@@ -35,7 +35,7 @@ final class FormApiCallbackRuleTest extends DrupalRuleTestCase
 
     public function testArrayLiterals(): void
     {
-        $resolvesCallableDefinitions = version_compare(Drupal::VERSION, '11.3', '>=');
+        $resolvesCallableDefinitions = version_compare(Drupal::VERSION, '11.2.99', '>');
 
         $errors = [
             [
@@ -122,7 +122,7 @@ final class FormApiCallbackRuleTest extends DrupalRuleTestCase
     public function testAssignments(): void
     {
         $this->testsAssignments = true;
-        $resolvesCallableDefinitions = version_compare(Drupal::VERSION, '11.3', '>=');
+        $resolvesCallableDefinitions = version_compare(Drupal::VERSION, '11.2.99', '>');
 
         $classColonMethodErrors = $resolvesCallableDefinitions
             ? [
@@ -190,6 +190,10 @@ final class FormApiCallbackRuleTest extends DrupalRuleTestCase
                     . ($resolvesCallableDefinitions ? " The string 'FormApiCallbacks\\Callbacks::instanceCallback' also works: Drupal creates the object." : ''),
             ],
             ...$classColonMethodErrors,
+            [
+                "#validate callback 'form_api_callbacks_missing_keyed_validate' refers to function form_api_callbacks_missing_keyed_validate(), which does not exist.",
+                150,
+            ],
         ]);
     }
 }
