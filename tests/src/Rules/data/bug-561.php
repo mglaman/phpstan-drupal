@@ -133,3 +133,205 @@ class Usage {
     }
 
 }
+
+abstract class AbstractBase implements TrustedCallbackInterface {
+
+    public function build(): array {
+        return [
+            '#pre_render' => [[$this, 'preRender']],
+        ];
+    }
+
+    public function preRender(array $element): array {
+        return $element;
+    }
+
+}
+
+class SubclassListsMethod extends AbstractBase {
+
+    public static function trustedCallbacks() {
+        return ['preRender'];
+    }
+
+}
+
+class SubclassMissesMethod extends AbstractBase {
+
+    public static function trustedCallbacks() {
+        return [];
+    }
+
+}
+
+class SubclassUsesAttribute extends AbstractBase {
+
+    #[TrustedCallback]
+    public function preRender(array $element): array {
+        return $element;
+    }
+
+    public static function trustedCallbacks() {
+        return [];
+    }
+
+}
+
+abstract class AbstractBaseWithoutSubclasses implements TrustedCallbackInterface {
+
+    public function build(): array {
+        return [
+            '#pre_render' => [[$this, 'preRender']],
+        ];
+    }
+
+    public function preRender(array $element): array {
+        return $element;
+    }
+
+    public static function trustedCallbacks() {
+        return [];
+    }
+
+}
+
+class AppendedCallbacks implements TrustedCallbackInterface {
+
+    public function build(): array {
+        return [
+            '#pre_render' => [[$this, 'appended'], [$this, 'unlisted']],
+        ];
+    }
+
+    public function appended(array $element): array {
+        return $element;
+    }
+
+    public function unlisted(array $element): array {
+        return $element;
+    }
+
+    public static function trustedCallbacks() {
+        $callbacks = ['build'];
+        $callbacks[] = 'appended';
+        return $callbacks;
+    }
+
+}
+
+class MergedCallbacks extends ListedCallbacks {
+
+    public static function trustedCallbacks() {
+        return array_merge(parent::trustedCallbacks(), ['other']);
+    }
+
+}
+
+class ConditionalCallbacks implements TrustedCallbackInterface {
+
+    public static function first(): array {
+        return [];
+    }
+
+    public static function second(): array {
+        return [];
+    }
+
+    public static function unlisted(): array {
+        return [];
+    }
+
+    public static function trustedCallbacks() {
+        if (random_int(0, 1) === 1) {
+            return ['first'];
+        }
+        return ['second'];
+    }
+
+}
+
+trait CallbackSiteTrait {
+
+    public function build(): array {
+        return [
+            '#pre_render' => [[$this, 'traitCallback']],
+        ];
+    }
+
+    public function traitCallback(array $element): array {
+        return $element;
+    }
+
+}
+
+class TraitSiteListsMethod implements TrustedCallbackInterface {
+
+    use CallbackSiteTrait;
+
+    public static function trustedCallbacks() {
+        return ['traitCallback'];
+    }
+
+}
+
+class TraitSiteMissesMethod implements TrustedCallbackInterface {
+
+    use CallbackSiteTrait;
+
+    public static function trustedCallbacks() {
+        return [];
+    }
+
+}
+
+class MoreUsage {
+
+    public function build(): array {
+        return [
+            'merged' => ['#pre_render' => [MergedCallbacks::class . '::unlisted']],
+            'conditional_first' => ['#pre_render' => [ConditionalCallbacks::class . '::first']],
+            'conditional_second' => ['#pre_render' => [ConditionalCallbacks::class . '::second']],
+            'conditional_unlisted' => ['#pre_render' => [ConditionalCallbacks::class . '::unlisted']],
+            'abstract_named' => ['#pre_render' => [AbstractBaseWithoutSubclasses::class . '::preRender']],
+        ];
+    }
+
+}
+
+class ViewBuilderBase implements TrustedCallbackInterface {
+
+    public function viewMultiple(): array {
+        return [
+            '#pre_render' => [[$this, 'buildMultiple']],
+        ];
+    }
+
+    public function buildMultiple(array $element): array {
+        return $element;
+    }
+
+    public static function trustedCallbacks() {
+        return ['buildMultiple'];
+    }
+
+}
+
+class ViewBuilderOverridesSite extends ViewBuilderBase {
+
+    public function viewMultiple(): array {
+        return [];
+    }
+
+    public static function trustedCallbacks() {
+        return [];
+    }
+
+}
+
+class ViewBuilderInheritsSite extends ViewBuilderBase {
+
+    public static function trustedCallbacks() {
+        return [];
+    }
+
+}

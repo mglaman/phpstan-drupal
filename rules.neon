@@ -1,5 +1,6 @@
 rules:
 	- mglaman\PHPStanDrupal\Rules\Drupal\RenderCallbackRule
+	- mglaman\PHPStanDrupal\Rules\Drupal\RenderCallback\RenderCallbackTrustedCallbacksRule
 	- mglaman\PHPStanDrupal\Rules\Drupal\Tests\BrowserTestBaseDefaultThemeRule
 	- mglaman\PHPStanDrupal\Rules\Deprecations\ConfigEntityConfigExportRule
 	- mglaman\PHPStanDrupal\Rules\Drupal\EntityQuery\EntityQueryHasAccessCheckRule
@@ -60,6 +61,18 @@ conditionalTags:
 services:
 	-
 		class: mglaman\PHPStanDrupal\Rules\Drupal\RenderCallback\RenderCallbackResolver
+	-
+		class: mglaman\PHPStanDrupal\Rules\Drupal\RenderCallback\RenderCallbackCollector
+		tags:
+			- phpstan.collector
+	-
+		class: mglaman\PHPStanDrupal\Rules\Drupal\RenderCallback\TrustedCallbackClassCollector
+		tags:
+			- phpstan.collector
+	-
+		class: mglaman\PHPStanDrupal\Rules\Drupal\RenderCallback\TrustedCallbacksCollector
+		tags:
+			- phpstan.collector
 	-
 		class: mglaman\PHPStanDrupal\Rules\Deprecations\StaticServiceDeprecatedServiceRule
 	-
