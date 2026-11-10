@@ -367,6 +367,11 @@ services:
 		tags:
 			- phpstan.phpDoc.typeNodeResolverExtension
 	-
+		class: mglaman\PHPStanDrupal\Drupal\IncludeLoader
+	-
+		class: mglaman\PHPStanDrupal\Type\ModuleHandlerLoadIncludeReturnTypeExtension
+		tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
+	-
 		class: mglaman\PHPStanDrupal\Type\EntityIdNarrowedByNew
 		tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
 	-

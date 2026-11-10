@@ -2,15 +2,13 @@
 
 namespace mglaman\PHPStanDrupal\Rules\Drupal;
 
-use Drupal\Core\DependencyInjection\ContainerNotInitializedException;
+use mglaman\PHPStanDrupal\Drupal\IncludeLoadResult;
 use PhpParser\Node;
 use PhpParser\Node\Name;
 use PHPStan\Analyser\DependencyTracker;
 use PHPStan\Analyser\Scope;
 use PHPStan\Rules\RuleErrorBuilder;
-use Throwable;
 use function count;
-use function is_file;
 use function sprintf;
 
 /**
@@ -46,57 +44,38 @@ final class ModuleLoadInclude extends LoadIncludeBase
             return [];
         }
 
-        // Try to invoke it similarly as the module handler itself.
-        [$moduleName, $filename] = $this->parseLoadIncludeArgs($args[1], $args[0], $args[2] ?? null, $scope);
-        if ($moduleName === false || $filename === false) {
-            // Couldn't determine module- nor file-name, most probably
-            // because it's a variable. Nothing to load, bail now.
+        $include = $this->includeLoader->resolve($args[1], $args[0], $args[2] ?? null, $scope);
+        if ($include === null) {
+            // Couldn't determine the module or file name, most probably
+            // because it's a variable. Nothing to load.
             return [];
         }
-        $module = $this->extensionMap->getModule($moduleName);
-        if ($module === null) {
-            return [
+        [$moduleName, $filename] = $include;
+
+        return match ($this->includeLoader->load($moduleName, $filename, $scope)) {
+            IncludeLoadResult::Loaded => [],
+            IncludeLoadResult::ModuleNotFound => [
                 RuleErrorBuilder::message(sprintf(
                     'File %s could not be loaded from module_load_include because %s module is not found.',
                     $filename,
                     $moduleName
                 ))
-                ->identifier('moduleLoadInclude.moduleNotFound')
-                ->build()
-            ];
-        }
-        $file = $module->getAbsolutePath() . DIRECTORY_SEPARATOR . $filename;
-        $scope->trackFileDependency($file);
-        if (is_file($file)) {
-            try {
-                // Load the include so its symbols are available for the rest
-                // of the analysis, mirroring what module_load_include() does
-                // at runtime. Only the require itself is guarded: a broken
-                // include must not crash the analysis, but PHPStan's own
-                // exceptions elsewhere must propagate.
-                require_once $file;
-            } catch (ContainerNotInitializedException $e) {
-                // Top-level code in the include needs a container, which does
-                // not exist during analysis. Its top-level functions are still
-                // declared. Reporting this would also be unreliable: PHP won't
-                // re-run the file, so only the first call in a process throws.
-                return [];
-            } catch (Throwable $e) {
-                return [
-                    RuleErrorBuilder::message('A file could not be loaded from module_load_include')
+                    ->identifier('moduleLoadInclude.moduleNotFound')
+                    ->build(),
+            ],
+            IncludeLoadResult::NotLoadable => [
+                RuleErrorBuilder::message('A file could not be loaded from module_load_include')
                     ->identifier('moduleLoadInclude.moduleNotLoadable')
-                    ->build()
-                ];
-            }
-            return [];
-        }
-        return [
-            RuleErrorBuilder::message(sprintf(
-                'File %s could not be loaded from module_load_include.',
-                $module->getPath() . '/' . $filename
-            ))
-            ->identifier('moduleLoadInclude.moduleNotLoadable')
-            ->build()
-        ];
+                    ->build(),
+            ],
+            IncludeLoadResult::FileNotFound => [
+                RuleErrorBuilder::message(sprintf(
+                    'File %s could not be loaded from module_load_include.',
+                    $this->getModulePath($moduleName) . '/' . $filename
+                ))
+                    ->identifier('moduleLoadInclude.moduleNotLoadable')
+                    ->build(),
+            ],
+        };
     }
 }

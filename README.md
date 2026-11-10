@@ -208,11 +208,13 @@ parameters:
             pluginManagerSetsCacheBackendRule: false
 
             # Validates module_load_include() calls and loads the include for
-            # the rest of the analysis.
+            # the rest of the analysis. module_load_include() was removed in
+            # Drupal 11.
             moduleLoadInclude: false
 
-            # Validates ModuleHandlerInterface::loadInclude() calls and loads
-            # the include for the rest of the analysis.
+            # Reports ModuleHandlerInterface::loadInclude() calls whose module
+            # or file is missing. The include is loaded either way, so the
+            # functions it declares stay known.
             loadIncludes: false
 ```
 

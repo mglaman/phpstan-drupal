@@ -3,10 +3,9 @@
 namespace mglaman\PHPStanDrupal\Rules\Drupal;
 
 use mglaman\PHPStanDrupal\Drupal\ExtensionMap;
+use mglaman\PHPStanDrupal\Drupal\IncludeLoader;
 use PhpParser\Node;
-use PHPStan\Analyser\Scope;
 use PHPStan\Rules\Rule;
-use function count;
 
 /**
  * @template TNodeType of Node
@@ -16,46 +15,13 @@ abstract class LoadIncludeBase implements Rule
 {
 
     public function __construct(
-        protected readonly ExtensionMap $extensionMap
+        protected readonly ExtensionMap $extensionMap,
+        protected readonly IncludeLoader $includeLoader
     ) {
     }
 
-    private function getStringArgValue(Node\Expr $expr, Scope $scope): ?string
+    protected function getModulePath(string $moduleName): string
     {
-        $type = $scope->getType($expr);
-        $stringTypes = $type->getConstantStrings();
-        if (count($stringTypes) > 0) {
-            return $stringTypes[0]->getValue();
-        }
-        return null;
-    }
-
-    /**
-     * @return array{string, string}|array{false, false}
-     *   The module name and file name, or [false, false] when either could
-     *   not be resolved to a constant string.
-     */
-    protected function parseLoadIncludeArgs(Node\Arg $module, Node\Arg $type, ?Node\Arg $name, Scope $scope): array
-    {
-        $moduleName = $this->getStringArgValue($module->value, $scope);
-        if ($moduleName === null) {
-            return [false, false];
-        }
-        $fileType = $this->getStringArgValue($type->value, $scope);
-        if ($fileType === null) {
-            return [false, false];
-        }
-        $baseName = null;
-        if ($name !== null) {
-            $baseName = $this->getStringArgValue($name->value, $scope);
-            if ($baseName === null) {
-                return [false, false];
-            }
-        }
-        if ($baseName === null) {
-            $baseName = $moduleName;
-        }
-
-        return [$moduleName, "$baseName.$fileType"];
+        return $this->extensionMap->getModule($moduleName)?->getPath() ?? $moduleName;
     }
 }
