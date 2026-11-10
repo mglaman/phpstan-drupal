@@ -3,10 +3,9 @@
 namespace mglaman\PHPStanDrupal\Type\EntityQuery;
 
 use Drupal\Core\Entity\Query\QueryInterface;
+use PhpParser\Node\Expr\CallLike;
 use PhpParser\Node\Expr\MethodCall;
-use PhpParser\Node\Expr\PropertyFetch;
-use PhpParser\Node\Expr\StaticPropertyFetch;
-use PhpParser\Node\Expr\Variable;
+use PhpParser\Node\Expr\NullsafeMethodCall;
 use PhpParser\Node\Identifier;
 use PHPStan\Analyser\Scope;
 use PHPStan\Analyser\SpecifiedTypes;
@@ -54,26 +53,35 @@ final class AccessCheckTypeSpecifyingExtension implements MethodTypeSpecifyingEx
         Scope $scope,
         TypeSpecifierContext $context
     ): SpecifiedTypes {
+        // Most query statements don't call accessCheck(), so check the
+        // method names before resolving any types.
+        if (!$this->chainCallsAccessCheck($node)) {
+            return new SpecifiedTypes([]);
+        }
+
         $hasAccessCheck = false;
         $call = $node;
         while (true) {
-            if ($call->name instanceof Identifier && $call->name->toLowerString() === 'accesscheck') {
+            if ($this->isAccessCheckCall($call)) {
                 $hasAccessCheck = true;
             }
-            if (!$call->var instanceof MethodCall || !$scope->getType($call->var) instanceof EntityQueryType) {
+            $receiver = $call->var;
+            if ((!$receiver instanceof MethodCall && !$receiver instanceof NullsafeMethodCall)
+                || !$scope->getType($receiver) instanceof EntityQueryType
+            ) {
                 break;
             }
-            $call = $call->var;
+            $call = $receiver;
         }
         if (!$hasAccessCheck) {
             return new SpecifiedTypes([]);
         }
 
-        // Only a variable or property keeps the query. A call like
-        // \Drupal::entityQuery('node') returns a new query each time, so
-        // narrowing it would mark later, unrelated queries as checked.
+        // A call like \Drupal::entityQuery('node') returns a new query each
+        // time, so narrowing it would mark later, unrelated queries as
+        // checked. Variables, properties and array elements keep the query.
         $query = $call->var;
-        if (!$query instanceof Variable && !$query instanceof PropertyFetch && !$query instanceof StaticPropertyFetch) {
+        if ($query instanceof CallLike) {
             return new SpecifiedTypes([]);
         }
         $queryType = $scope->getType($query);
@@ -86,5 +94,22 @@ final class AccessCheckTypeSpecifyingExtension implements MethodTypeSpecifyingEx
             TypeSpecifierContext::createTruthy(),
             $scope
         )->setAlwaysOverwriteTypes();
+    }
+
+    private function chainCallsAccessCheck(MethodCall $node): bool
+    {
+        $call = $node;
+        while ($call instanceof MethodCall || $call instanceof NullsafeMethodCall) {
+            if ($this->isAccessCheckCall($call)) {
+                return true;
+            }
+            $call = $call->var;
+        }
+        return false;
+    }
+
+    private function isAccessCheckCall(MethodCall|NullsafeMethodCall $call): bool
+    {
+        return $call->name instanceof Identifier && $call->name->toLowerString() === 'accesscheck';
     }
 }
