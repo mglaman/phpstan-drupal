@@ -133,8 +133,14 @@ final class FormApiCallbackChecker
         if ($callback instanceof Concat) {
             $lateStaticCallback = $this->findLateStaticStringCallback($callback, $scope);
             if ($lateStaticCallback !== null) {
-                [$classReflection, $methodName] = $lateStaticCallback;
-                return $this->checkClassMethodString($key, $callback, $classReflection, $methodName, $this->isAbstractOrInterface($classReflection), $scope);
+                [$classReflection, $methodName, $usesServiceNotation] = $lateStaticCallback;
+                $methodMayBeInSubclass = $this->isAbstractOrInterface($classReflection);
+                if ($usesServiceNotation) {
+                    return $this->resolvesCallableDefinitions
+                        ? $this->checkMethodIsCallable($key, $callback, $classReflection, $methodName, false, $methodMayBeInSubclass)
+                        : [$this->buildServiceNotationError($key, $callback)];
+                }
+                return $this->checkClassMethodString($key, $callback, $classReflection, $methodName, $methodMayBeInSubclass, $scope);
             }
         }
 
@@ -151,9 +157,11 @@ final class FormApiCallbackChecker
     }
 
     /**
-     * Finds the class and method of static::class . '::method'.
+     * Finds the class and method of static::class . '::method' or ':method'.
      *
-     * @return array{ClassReflection, string}|null
+     * @return array{ClassReflection, string, bool}|null
+     *   The class, the method name, and whether the callback uses the
+     *   service:method notation.
      */
     private function findLateStaticStringCallback(Concat $callback, Scope $scope): ?array
     {
@@ -168,10 +176,13 @@ final class FormApiCallbackChecker
             return null;
         }
         $methodString = $methodStrings[0]->getValue();
-        if (!str_starts_with($methodString, '::')) {
-            return null;
+        if (str_starts_with($methodString, '::')) {
+            return [$classReflections[0], substr($methodString, 2), false];
         }
-        return [$classReflections[0], substr($methodString, 2)];
+        if (str_starts_with($methodString, ':') && !str_contains(substr($methodString, 1), ':')) {
+            return [$classReflections[0], substr($methodString, 1), true];
+        }
+        return null;
     }
 
     /**
@@ -240,15 +251,7 @@ final class FormApiCallbackChecker
     private function checkServiceMethodString(string $key, Expr $callback, string $value, Scope $scope): array
     {
         if (!$this->resolvesCallableDefinitions) {
-            return [
-                $this->buildError(
-                    $key,
-                    $callback,
-                    'uses the service:method notation, which Drupal supports for form callbacks in 11.3 and later.',
-                    'formApiCallback.serviceNotation',
-                    "Use a static method, or '::method' in a form class."
-                ),
-            ];
+            return [$this->buildServiceNotationError($key, $callback)];
         }
         [$classOrServiceId, $methodName] = explode(':', $value, 2);
         // ClassResolver checks the container first, then instantiates the class.
@@ -270,13 +273,17 @@ final class FormApiCallbackChecker
         if ($isFunctionName && $this->reflectionProvider->hasFunction(new FullyQualified(ltrim($value, '\\')), null)) {
             return [];
         }
-        // CallableResolver also accepts invokable classes and services.
-        if ($this->resolvesCallableDefinitions
-            && (!$isFunctionName
-                || $this->reflectionProvider->hasClass($value)
-                || $this->renderCallbackResolver->resolveServiceClass($value, $scope) !== null)
-        ) {
-            return [];
+        if ($this->resolvesCallableDefinitions) {
+            // CallableResolver also accepts invokable services and classes.
+            // ClassResolver checks the container first, then the class.
+            $invokableClass = $this->renderCallbackResolver->resolveServiceClass($value, $scope)
+                ?? ($this->reflectionProvider->hasClass($value) ? $value : null);
+            if ($invokableClass !== null) {
+                return $this->checkClassIsInvokable($key, $callback, $invokableClass);
+            }
+            if (!$isFunctionName) {
+                return [];
+            }
         }
         return [
             $this->buildError(
@@ -286,6 +293,49 @@ final class FormApiCallbackChecker
                 'formApiCallback.notFound'
             ),
         ];
+    }
+
+    /**
+     * Reports a class or service without a public __invoke() method.
+     *
+     * CallableResolver throws when the object it creates is not callable.
+     *
+     * @return list<IdentifierRuleError>
+     */
+    private function checkClassIsInvokable(string $key, Expr $callback, string $className): array
+    {
+        if (!$this->reflectionProvider->hasClass($className)) {
+            return [];
+        }
+        $classReflection = $this->reflectionProvider->getClass($className);
+        if ($this->isAbstractOrInterface($classReflection)) {
+            return [];
+        }
+        if ($classReflection->hasNativeMethod('__invoke')
+            && $classReflection->getNativeMethod('__invoke')->isPublic()
+        ) {
+            return [];
+        }
+        return [
+            $this->buildError(
+                $key,
+                $callback,
+                sprintf('refers to %s, which has no public __invoke() method.', $classReflection->getName()),
+                'formApiCallback.notFound',
+                "Add a public __invoke() method, or name the method: 'Class::method' or 'service:method'."
+            ),
+        ];
+    }
+
+    private function buildServiceNotationError(string $key, Expr $callback): IdentifierRuleError
+    {
+        return $this->buildError(
+            $key,
+            $callback,
+            'uses the service:method notation, which Drupal supports for form callbacks in 11.3 and later.',
+            'formApiCallback.serviceNotation',
+            "Use a static method, or '::method' in a form class."
+        );
     }
 
     /**

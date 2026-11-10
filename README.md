@@ -329,10 +329,10 @@ parameters:
 
 It reports:
 
-- A function or method that does not exist (`formApiCallback.notFound`).
+- A function or method that does not exist (`formApiCallback.notFound`). On Drupal 11.3 and later, this includes a class or service name whose class has no public `__invoke()` method.
 - A method that is not public (`formApiCallback.nonPublicMethod`).
 - `[Foo::class, 'method']` or `[static::class, 'method']` for a non-static method (`formApiCallback.nonStaticMethod`). Use `'::method'` in a form class, or make the method static.
-- Before Drupal 11.3 only: `'Foo::method'` for a non-static method (`formApiCallback.nonStaticMethod`), and `'service:method'` strings (`formApiCallback.serviceNotation`). Drupal 11.3 and later resolve both through `CallableResolver`.
+- Before Drupal 11.3 only: `'Foo::method'` for a non-static method (`formApiCallback.nonStaticMethod`), and `'service:method'` strings, including `static::class . ':method'` (`formApiCallback.serviceNotation`). Drupal 11.3 and later resolve both through `CallableResolver`.
 
 `'::method'` is only checked in concrete classes implementing `FormInterface`, outside `#[Hook]` methods: in a form alter, `'::method'` refers to the altered form's object. Callbacks that can't be resolved statically are not reported. `#value_callback` is not checked, because Drupal falls back to the default value callback instead of failing.
 

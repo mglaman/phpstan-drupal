@@ -144,6 +144,49 @@ final class FormApiCallbackRuleTest extends DrupalRuleTestCase
                 ],
             ];
 
+        $invokableTip = "Add a public __invoke() method, or name the method: 'Class::method' or 'service:method'.";
+        $invokableErrors = $resolvesCallableDefinitions
+            ? [
+                [
+                    "#submit callback \\FormApiCallbacks\\NotInvokable::class refers to FormApiCallbacks\\NotInvokable, which has no public __invoke() method.",
+                    216,
+                    $invokableTip,
+                ],
+                [
+                    "#submit callback 'messenger' refers to Drupal\\Core\\Messenger\\Messenger, which has no public __invoke() method.",
+                    217,
+                    $invokableTip,
+                ],
+                [
+                    "#submit callback static::class . ':missing' refers to FormApiCallbacks\\LateStaticServiceNotation::missing(), which does not exist.",
+                    229,
+                ],
+            ]
+            : [
+                [
+                    "#submit callback \\FormApiCallbacks\\Invokable::class refers to function FormApiCallbacks\\Invokable(), which does not exist.",
+                    215,
+                ],
+                [
+                    "#submit callback \\FormApiCallbacks\\NotInvokable::class refers to function FormApiCallbacks\\NotInvokable(), which does not exist.",
+                    216,
+                ],
+                [
+                    "#submit callback 'messenger' refers to function messenger(), which does not exist.",
+                    217,
+                ],
+                [
+                    "#submit callback static::class . ':existing' uses the service:method notation, which Drupal supports for form callbacks in 11.3 and later.",
+                    228,
+                    self::SERVICE_NOTATION_TIP,
+                ],
+                [
+                    "#submit callback static::class . ':missing' uses the service:method notation, which Drupal supports for form callbacks in 11.3 and later.",
+                    229,
+                    self::SERVICE_NOTATION_TIP,
+                ],
+            ];
+
         $this->analyse([self::FIXTURE], [
             [
                 "#validate callback '::missingValidate' refers to FormApiCallbacks\\ExampleForm::missingValidate(), which does not exist.",
@@ -194,6 +237,7 @@ final class FormApiCallbackRuleTest extends DrupalRuleTestCase
                 "#validate callback 'form_api_callbacks_missing_keyed_validate' refers to function form_api_callbacks_missing_keyed_validate(), which does not exist.",
                 150,
             ],
+            ...$invokableErrors,
         ]);
     }
 }

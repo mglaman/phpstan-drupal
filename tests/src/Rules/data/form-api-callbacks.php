@@ -195,3 +195,38 @@ class ClassLevelHookForm extends FormBase
         $form['#submit'][] = '::methodOfTheAlteredForm';
     }
 }
+
+final class Invokable
+{
+    public function __invoke(array &$form, FormStateInterface $form_state): void
+    {
+    }
+}
+
+final class NotInvokable
+{
+    public function submit(array &$form, FormStateInterface $form_state): void
+    {
+    }
+}
+
+function form_api_callbacks_invokable_alter(array &$form, FormStateInterface $form_state): void
+{
+    $form['#submit'][] = Invokable::class;
+    $form['#submit'][] = NotInvokable::class;
+    $form['#submit'][] = 'messenger';
+}
+
+class LateStaticServiceNotation
+{
+    public function existing(array &$form, FormStateInterface $form_state): void
+    {
+    }
+
+    public function build(array $form): array
+    {
+        $form['#submit'][] = static::class . ':existing';
+        $form['#submit'][] = static::class . ':missing';
+        return $form;
+    }
+}
