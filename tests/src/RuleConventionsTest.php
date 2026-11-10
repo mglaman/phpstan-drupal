@@ -35,6 +35,7 @@ final class RuleConventionsTest extends TestCase
      */
     private const ALWAYS_ON_RULES = [
         'mglaman\PHPStanDrupal\Rules\Drupal\RenderCallbackRule',
+        'mglaman\PHPStanDrupal\Rules\Drupal\RenderCallback\RenderCallbackTrustedCallbacksRule',
         'mglaman\PHPStanDrupal\Rules\Drupal\Tests\BrowserTestBaseDefaultThemeRule',
         'mglaman\PHPStanDrupal\Rules\Deprecations\ConfigEntityConfigExportRule',
         'mglaman\PHPStanDrupal\Rules\Drupal\EntityQuery\EntityQueryHasAccessCheckRule',

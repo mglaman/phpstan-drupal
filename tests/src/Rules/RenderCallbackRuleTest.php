@@ -3,7 +3,7 @@
 namespace mglaman\PHPStanDrupal\Tests\Rules;
 
 
-use mglaman\PHPStanDrupal\Drupal\ServiceMap;
+use mglaman\PHPStanDrupal\Rules\Drupal\RenderCallback\RenderCallbackResolver;
 use mglaman\PHPStanDrupal\Tests\DrupalRuleTestCase;
 use mglaman\PHPStanDrupal\Rules\Drupal\RenderCallbackRule;
 use PHPStan\Rules\Rule;
@@ -14,7 +14,7 @@ final class RenderCallbackRuleTest extends DrupalRuleTestCase {
     {
         return new RenderCallbackRule(
             self::createReflectionProvider(),
-            self::getContainer()->getByType(ServiceMap::class)
+            self::getContainer()->getByType(RenderCallbackResolver::class)
         );
     }
 
@@ -160,6 +160,14 @@ final class RenderCallbackRuleTest extends DrupalRuleTestCase {
         yield [
             __DIR__ . '/data/bug-543.php',
             []
+        ];
+        yield [
+            __DIR__ . '/data/bug-561.php',
+            [],
+        ];
+        yield 'callback class PHP cannot autoload' => [
+            __DIR__ . '/../../fixtures/drupal/modules/pre_render_callback_rule/src/PlaceholderGeneratorTest.php',
+            [],
         ];
         yield [
             __DIR__ . '/data/bug-554.php',
