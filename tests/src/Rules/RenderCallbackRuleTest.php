@@ -186,6 +186,15 @@ final class RenderCallbackRuleTest extends DrupalRuleTestCase {
             __DIR__ . '/data/render-callback-key-filter.php',
             [],
         ];
+        yield 'bug-457.php' => [
+            __DIR__ . '/data/bug-457.php',
+            [
+                [
+                    "#pre_render callback array{'Drupal\\\\Core\\\\Render\\\\Element\\\\Checkboxes'|'Drupal\\\\Core\\\\Render\\\\Element\\\\Radios', 'processCheckboxes'} at key '0' is not callable.",
+                    24,
+                ],
+            ],
+        ];
     }
 
 
