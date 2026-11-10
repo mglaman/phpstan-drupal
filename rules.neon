@@ -59,6 +59,8 @@ conditionalTags:
 
 services:
 	-
+		class: mglaman\PHPStanDrupal\Rules\Drupal\RenderCallback\RenderCallbackResolver
+	-
 		class: mglaman\PHPStanDrupal\Rules\Deprecations\StaticServiceDeprecatedServiceRule
 	-
 		class: mglaman\PHPStanDrupal\Rules\Deprecations\GetDeprecatedServiceRule

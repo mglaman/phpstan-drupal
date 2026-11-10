@@ -3,13 +3,9 @@
 namespace mglaman\PHPStanDrupal\Rules\Drupal;
 
 use Drupal\Core\Render\Element\RenderCallbackInterface;
-use Drupal\Core\Render\PlaceholderGenerator;
-use Drupal\Core\Render\Renderer;
 use Drupal\Core\Security\Attribute\TrustedCallback;
 use Drupal\Core\Security\TrustedCallbackInterface;
-use mglaman\PHPStanDrupal\Drupal\ServiceMap;
-use mglaman\PHPStanDrupal\Drupal\ServiceResultCacheValueExtension;
-use mglaman\PHPStanDrupal\Drupal\TrustedCallbacksReader;
+use mglaman\PHPStanDrupal\Rules\Drupal\RenderCallback\RenderCallbackResolver;
 use PhpParser\Node;
 use PhpParser\Node\ArrayItem;
 use PhpParser\Node\Name;
@@ -21,11 +17,7 @@ use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
 use PHPStan\TrinaryLogic;
 use PHPStan\Type\ClosureType;
-use PHPStan\Type\Constant\ConstantArrayType;
-use PHPStan\Type\Constant\ConstantIntegerType;
-use PHPStan\Type\Constant\ConstantStringType;
 use PHPStan\Type\ObjectType;
-use PHPStan\Type\StaticType;
 use PHPStan\Type\Type;
 use PHPStan\Type\UnionType;
 use PHPStan\Type\VerbosityLevel;
@@ -33,12 +25,8 @@ use function array_map;
 use function array_merge;
 use function class_exists;
 use function count;
-use function explode;
-use function in_array;
 use function preg_match;
 use function sprintf;
-use function str_contains;
-use function substr_count;
 
 /**
  * @implements Rule<Node\Expr\ArrayItem>
@@ -48,27 +36,12 @@ final class RenderCallbackRule implements Rule
 
     private ReflectionProvider $reflectionProvider;
 
-    private ServiceMap $serviceMap;
+    private RenderCallbackResolver $renderCallbackResolver;
 
-    private TrustedCallbacksReader $trustedCallbacksReader;
-
-    private array $supportedKeys = [
-        '#pre_render',
-        '#post_render',
-        '#access_callback',
-        '#lazy_builder',
-        '#date_time_callbacks',
-        '#date_date_callbacks',
-    ];
-
-    public function __construct(
-        ReflectionProvider $reflectionProvider,
-        ServiceMap $serviceMap,
-        TrustedCallbacksReader $trustedCallbacksReader
-    ) {
+    public function __construct(ReflectionProvider $reflectionProvider, RenderCallbackResolver $renderCallbackResolver)
+    {
         $this->reflectionProvider = $reflectionProvider;
-        $this->serviceMap = $serviceMap;
-        $this->trustedCallbacksReader = $trustedCallbacksReader;
+        $this->renderCallbackResolver = $renderCallbackResolver;
     }
 
     public function getNodeType(): string
@@ -81,57 +54,22 @@ final class RenderCallbackRule implements Rule
      */
     public function processNode(Node $node, Scope $scope): array
     {
-        $key = $node->key;
-        if (!$key instanceof Node\Scalar\String_) {
+        $keyChecked = $this->renderCallbackResolver->findRenderKey($node, $scope);
+        if ($keyChecked === null) {
             return [];
         }
 
-        // @see https://www.drupal.org/node/2966725
-        $keySearch = array_search($key->value, $this->supportedKeys, true);
-        if ($keySearch === false) {
-            return [];
+        // @todo take the #lazy_builder arguments and validate parameters against the callback.
+        $callbacks = $this->renderCallbackResolver->findCallbackExpressions($keyChecked, $node->value);
+        if ($callbacks === null && $keyChecked === '#lazy_builder') {
+            return [
+                RuleErrorBuilder::message(sprintf('The "%s" expects a callable array with arguments.', $keyChecked))
+                    ->line($node->getStartLine())
+                    ->identifier('renderCallback.expectsCallableArrayWithArguments')
+                    ->build()
+            ];
         }
-        $keyChecked = $this->supportedKeys[$keySearch];
-        $value = $node->value;
-
-        if ($keyChecked === '#access_callback') {
-            return $this->doProcessNode($node->value, $scope, $keyChecked, 0);
-        }
-
-        if ($keyChecked === '#lazy_builder') {
-            if ($scope->isInClass()) {
-                $classReflection = $scope->getClassReflection();
-                $classType = new ObjectType($classReflection->getName());
-                // These classes use #lazy_builder in array_intersect_key. With
-                // PHPStan 1.6, nodes do not track their parent/next/prev which
-                // saves a lot of memory. But makes it harder to detect if we're
-                // in a call to array_intersect_key. This is an easier workaround.
-                $allowedTypes = new UnionType([
-                    new ObjectType(PlaceholderGenerator::class),
-                    new ObjectType(Renderer::class),
-                    new ObjectType('Drupal\Tests\Core\Render\RendererPlaceholdersTest'),
-                ]);
-                if ($allowedTypes->isSuperTypeOf($classType)->yes()) {
-                    return [];
-                }
-            }
-
-            if (!$value instanceof Node\Expr\Array_) {
-                return [
-                    RuleErrorBuilder::message(sprintf('The "%s" expects a callable array with arguments.', $keyChecked))
-                        ->line($node->getStartLine())
-                        ->identifier('renderCallback.expectsCallableArrayWithArguments')
-                        ->build()
-                ];
-            }
-            if (count($value->items) === 0) {
-                return [];
-            }
-            // @todo take $value->items[1] and validate parameters against the callback.
-            return $this->doProcessNode($value->items[0]->value, $scope, $keyChecked, 0);
-        }
-
-        if (!$value instanceof Node\Expr\Array_) {
+        if ($callbacks === null) {
             return [
                 RuleErrorBuilder::message(sprintf('The "%s" render array value expects an array of callbacks.', $keyChecked))
                     ->line($node->getStartLine())
@@ -139,12 +77,9 @@ final class RenderCallbackRule implements Rule
                     ->build()
             ];
         }
-        if (count($value->items) === 0) {
-            return [];
-        }
         $errors = [];
-        foreach ($value->items as $pos => $item) {
-            $errors[] = $this->doProcessNode($item->value, $scope, $keyChecked, $pos);
+        foreach ($callbacks as $pos => $callback) {
+            $errors[] = $this->doProcessNode($callback, $scope, $keyChecked, $pos);
         }
         return array_merge(...$errors);
     }
@@ -164,7 +99,7 @@ final class RenderCallbackRule implements Rule
 
         $errors = [];
         $errorLine = $node->getStartLine();
-        $type = $this->getType($node, $scope);
+        $type = $this->renderCallbackResolver->resolveType($node, $scope);
 
         foreach ($type->getConstantStrings() as $constantStringType) {
             if (!$constantStringType->isCallable()->yes()) {
@@ -268,29 +203,6 @@ final class RenderCallbackRule implements Rule
                         ->identifier('renderCallback.callbackNotImplementsTrustedCallbackInterface')
                         ->build();
                     }
-                } elseif (!$isTrustedCallbackAttribute->yes()) {
-                    $trustedCallbacksClass = $this->findTrustedCallbacksClass(
-                        $typeAndMethodName->getType(),
-                        $this->namesExactCallbackClass($scope->getType($node), $constantArrayType)
-                    );
-                    if ($trustedCallbacksClass === null) {
-                        continue;
-                    }
-                    $trustedCallbacks = $this->trustedCallbacksReader->read($trustedCallbacksClass, $scope);
-                    if ($trustedCallbacks === null || in_array($typeAndMethodName->getMethod(), $trustedCallbacks, true)) {
-                        continue;
-                    }
-                    $errors[] = RuleErrorBuilder::message(
-                        sprintf(
-                            "%s callback method '%s' at key '%s' is not returned by %s::trustedCallbacks().",
-                            $keyChecked,
-                            $typeAndMethodName->getMethod(),
-                            $pos,
-                            $trustedCallbacksClass->getName()
-                        )
-                    )->line($errorLine)->tip('Change record: https://www.drupal.org/node/2966725.')
-                    ->identifier('renderCallback.methodNotInTrustedCallbacks')
-                    ->build();
                 }
             }
         }
@@ -317,112 +229,5 @@ final class RenderCallbackRule implements Rule
         }
 
         return $errors;
-    }
-
-    // @todo move to a helper, as Drupal uses `service:method` references a lot.
-    /**
-     * @param Scope&DependencyTracker $scope
-     */
-    private function getType(Node\Expr $node, Scope $scope):  Type
-    {
-        $type = $scope->getType($node);
-        // Covers concatenation of static::class . '::methodName'.
-        if ($node instanceof Node\Expr\BinaryOp\Concat) {
-            $leftType = $scope->getType($node->left);
-            $rightType = $scope->getType($node->right);
-            $rightConstantStrings = $rightType->getConstantStrings();
-            if (count($rightConstantStrings) > 0 && $leftType->isClassString()->yes() && $leftType->getClassStringObjectType() instanceof StaticType) {
-                return new ConstantArrayType(
-                    [new ConstantIntegerType(0), new ConstantIntegerType(1)],
-                    [
-                        $leftType->getClassStringObjectType(),
-                        new ConstantStringType(ltrim($rightConstantStrings[0]->getValue(), ':'))
-                    ]
-                );
-            }
-        }
-
-        $constantStrings = $type->getConstantStrings();
-        if (count($constantStrings) > 0) {
-            $constantString = $constantStrings[0];
-            if ($constantString->isClassString()->yes()) {
-                return $type;
-            }
-            // Covers \Drupal\Core\Controller\ControllerResolver::createController.
-            if (substr_count($constantString->getValue(), ':') === 1) {
-                [$class_or_service, $method] = explode(':', $constantString->getValue(), 2);
-
-                $scope->trackValueDependency(ServiceResultCacheValueExtension::class, $class_or_service);
-                $serviceDefinition = $this->serviceMap->getService($class_or_service);
-                if ($serviceDefinition === null || $serviceDefinition->getClass() === null) {
-                    return $type;
-                }
-                return new ConstantArrayType(
-                    [new ConstantIntegerType(0), new ConstantIntegerType(1)],
-                    [
-                        new ObjectType($serviceDefinition->getClass()),
-                        new ConstantStringType($method)
-                    ]
-                );
-            }
-            // @see \PHPStan\Type\Constant\ConstantStringType::isCallable
-            preg_match('#^([a-zA-Z_\\x7f-\\xff\\\\][a-zA-Z0-9_\\x7f-\\xff\\\\]*)::([a-zA-Z_\\x7f-\\xff][a-zA-Z0-9_\\x7f-\\xff]*)\\z#', $constantString->getValue(), $matches);
-            if (count($matches) === 3) {
-                return new ConstantArrayType(
-                    [new ConstantIntegerType(0), new ConstantIntegerType(1)],
-                    [
-                        new StaticType($this->reflectionProvider->getClass($matches[1])),
-                        new ConstantStringType($matches[2])
-                    ]
-                );
-            }
-        }
-
-        return $type;
-    }
-
-    /**
-     * Whether Drupal calls trustedCallbacks() on the class the callback names.
-     *
-     * A callback like [$this, 'method'] runs on an object that may be a
-     * subclass, and a subclass may override trustedCallbacks().
-     */
-    private function namesExactCallbackClass(Type $callbackType, ConstantArrayType $callbackArray): bool
-    {
-        $callbackStrings = $callbackType->getConstantStrings();
-        if (count($callbackStrings) > 0) {
-            foreach ($callbackStrings as $callbackString) {
-                if (!str_contains($callbackString->getValue(), '::')) {
-                    return false;
-                }
-            }
-            return true;
-        }
-        $classType = $callbackArray->getValueTypes()[0] ?? null;
-        return $classType !== null && count($classType->getConstantStrings()) > 0;
-    }
-
-    /**
-     * Finds the class whose trustedCallbacks() decides if the callback runs.
-     *
-     * Returns NULL when that class is not certain, or when Drupal trusts the
-     * callback without asking trustedCallbacks().
-     */
-    private function findTrustedCallbacksClass(Type $callbackClassType, bool $namesExactCallbackClass): ?ClassReflection
-    {
-        $classReflections = $callbackClassType->getObjectClassReflections();
-        if (count($classReflections) !== 1) {
-            return null;
-        }
-        $classReflection = $classReflections[0];
-        if (!$namesExactCallbackClass && !$classReflection->isFinal()) {
-            return null;
-        }
-        if (!$classReflection->implementsInterface(TrustedCallbackInterface::class)
-            || $classReflection->implementsInterface(RenderCallbackInterface::class)
-        ) {
-            return null;
-        }
-        return $classReflection;
     }
 }

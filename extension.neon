@@ -339,8 +339,6 @@ services:
 	-
 		class: mglaman\PHPStanDrupal\Drupal\ConfigSchemaData
 	-
-		class: mglaman\PHPStanDrupal\Drupal\TrustedCallbacksReader
-	-
 		class: mglaman\PHPStanDrupal\Drupal\ServiceResultCacheValueExtension
 		tags:
 			- phpstan.resultCacheValueExtension
