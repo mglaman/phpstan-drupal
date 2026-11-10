@@ -26,6 +26,7 @@ use Drupal\file\Plugin\Field\FieldType\FileUriItem;
 use Drupal\link\Plugin\Field\FieldType\LinkItem;
 use Drupal\node\Entity\Node;
 use Drupal\path\Plugin\Field\FieldType\PathItem;
+use Drupal\telephone\Plugin\Field\FieldType\TelephoneItem;
 use Drupal\text\Plugin\Field\FieldType\TextItem;
 use Drupal\text\Plugin\Field\FieldType\TextLongItem;
 use Drupal\text\Plugin\Field\FieldType\TextWithSummaryItem;
@@ -188,6 +189,12 @@ assertType(PathItem::class, $path_field);
 assertType('string|null', $path_field->alias);
 assertType('int|null', $path_field->pid);
 assertType('string|null', $path_field->langcode);
+
+// TelephoneItem.
+$telephone_field = $node->get('field_telephone')->first();
+assert($telephone_field instanceof TelephoneItem);
+assertType(TelephoneItem::class, $telephone_field);
+assertType('string|null', $telephone_field->value);
 
 // TextITem.
 $text_field = $node->get('field_text')->first();
