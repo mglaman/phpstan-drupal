@@ -64,7 +64,11 @@ final class RenderCallbackResolver
         if (!$key instanceof String_ || !in_array($key->value, self::RENDER_KEYS, true)) {
             return null;
         }
-        if ($key->value === '#lazy_builder' && $this->isInLazyBuilderKeyFilter($scope)) {
+        // A key filter, like array_intersect_key($elements, ['#lazy_builder' => TRUE]),
+        // is not a render array.
+        if ($key->value === '#lazy_builder'
+            && ($this->isInLazyBuilderKeyFilter($scope) || $scope->getType($node->value)->isBoolean()->yes())
+        ) {
             return null;
         }
         return $key->value;
