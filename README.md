@@ -25,18 +25,18 @@ When you are using [`phpstan/extension-installer`](https://github.com/phpstan/ex
 <details>
   <summary>Manual installation</summary>
 
-If you don't want to use `phpstan/extension-installer`, include `extension.neon` in your project's PHPStan config:
+If you don't want to use `phpstan/extension-installer`, include both files in your project's PHPStan config:
 
-```
+```neon
 includes:
     - vendor/mglaman/phpstan-drupal/extension.neon
-```
-
-To include Drupal specific analysis rules, include this file:
-
-```
-includes:
     - vendor/mglaman/phpstan-drupal/rules.neon
+```
+
+`extension.neon` adds Drupal's types and services. `rules.neon` adds the Drupal rules. Two of those rules also load files for the rest of the analysis: `LoadIncludes` loads the file a `ModuleHandlerInterface::loadInclude()` call includes, and `ModuleLoadInclude` does the same for `module_load_include()`. Without `rules.neon`, functions from those files are reported as not found:
+
+```
+Function locale_translation_flush_projects not found.
 ```
 </details>
 
