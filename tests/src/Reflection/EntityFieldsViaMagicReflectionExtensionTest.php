@@ -69,6 +69,18 @@ final class EntityFieldsViaMagicReflectionExtensionTest extends PHPStanTestCase 
             'foobar',
             false
         ];
+        // All entities have the original property.
+        yield 'original on entity interface supported' => [
+            EntityInterface::class,
+            'original',
+            true
+        ];
+        yield 'original on config entity supported' => [
+            // @phpstan-ignore class.notFound
+            TestConfigType::class,
+            'original',
+            true
+        ];
         yield 'annotated properties are skipped on content entities' => [
             // @phpstan-ignore class.notFound
             ReflectionEntityTest::class,
@@ -132,6 +144,16 @@ final class EntityFieldsViaMagicReflectionExtensionTest extends PHPStanTestCase 
         $readableType = $originalPropertyReflection->getReadableType();
         self::assertInstanceOf(ObjectType::class, $readableType);
         self::assertEquals(ContentEntityInterface::class, $readableType->getClassName());
+
+        // Fields are not deprecated. The original property is deprecated since
+        // Drupal 11.2, which added EntityInterface::getOriginal().
+        self::assertTrue($propertyReflection->isDeprecated()->no());
+        self::assertNull($propertyReflection->getDeprecatedDescription());
+        $deprecated = version_compare(\Drupal::VERSION, '11.2', '>=');
+        self::assertSame($deprecated, $originalPropertyReflection->isDeprecated()->yes());
+        if ($deprecated) {
+            self::assertStringStartsWith('in drupal:11.2.0 and is removed from drupal:12.0.0.', (string) $originalPropertyReflection->getDeprecatedDescription());
+        }
     }
 
     public function testGetPropertyContentEntityInterface(): void

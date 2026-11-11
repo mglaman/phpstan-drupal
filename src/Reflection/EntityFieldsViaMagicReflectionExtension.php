@@ -41,6 +41,11 @@ class EntityFieldsViaMagicReflectionExtension implements PropertiesClassReflecti
         // We need to find a way to parse the entity annotation so that at the minimum the `entity_keys` are
         // supported. The real fix is Drupal developers _really_ need to start writing @property definitions in the
         // class doc if they don't get `get` methods.
+        // All entities have the original property during saving, and it is
+        // deprecated since Drupal 11.2. See EntityFieldReflection.
+        if ($propertyName === 'original' && $classReflection->is(EntityInterface::class)) {
+            return true;
+        }
         if ($classReflection->is(ContentEntityInterface::class)) {
             // @todo revisit if it's a good idea to be true.
             // Content entities have magical __get... so it is kind of true.
