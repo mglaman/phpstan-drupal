@@ -15,6 +15,8 @@ interface FieldableEntityInterface extends EntityInterface {
     public static function baseFieldDefinitions(EntityTypeInterface $entity_type): array;
 
     /**
+     * @param \Drupal\Core\Entity\EntityTypeInterface $entity_type
+     * @param string $bundle
      * @param array<string, \Drupal\Core\Field\FieldDefinitionInterface> $base_field_definitions
      * @return array<string, \Drupal\Core\Field\FieldDefinitionInterface>
      */

@@ -1,0 +1,14 @@
+<?php
+
+namespace Drupal\Core\Form;
+
+interface FormInterface {
+
+  /**
+   * @param array<array-key, mixed> $form
+   *
+   * @return array<array-key, mixed>
+   */
+  public function buildForm(array $form, FormStateInterface $form_state);
+
+}

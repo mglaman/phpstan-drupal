@@ -1,0 +1,7 @@
+<?php
+
+namespace Drupal\views\Plugin\views;
+
+interface ViewsHandlerInterface extends ViewsPluginInterface {
+
+}

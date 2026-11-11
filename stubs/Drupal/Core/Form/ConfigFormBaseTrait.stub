@@ -1,0 +1,12 @@
+<?php
+
+namespace Drupal\Core\Form;
+
+trait ConfigFormBaseTrait {
+
+  /**
+   * @return array<array-key, mixed>
+   */
+  abstract protected function getEditableConfigNames();
+
+}

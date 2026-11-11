@@ -1,0 +1,22 @@
+<?php
+
+namespace Drupal\Component\Plugin\Derivative;
+
+interface DeriverInterface {
+
+  /**
+   * @param string $derivative_id
+   * @param array<array-key, mixed>|\Drupal\Component\Plugin\Definition\PluginDefinitionInterface $base_plugin_definition
+   *
+   * @return array<array-key, mixed>|null
+   */
+  public function getDerivativeDefinition($derivative_id, $base_plugin_definition);
+
+  /**
+   * @param array<array-key, mixed>|\Drupal\Component\Plugin\Definition\PluginDefinitionInterface $base_plugin_definition
+   *
+   * @return array<array-key, mixed>
+   */
+  public function getDerivativeDefinitions($base_plugin_definition);
+
+}

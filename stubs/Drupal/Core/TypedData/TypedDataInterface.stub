@@ -3,4 +3,19 @@
 namespace Drupal\Core\TypedData;
 
 interface TypedDataInterface {
+
+  /**
+   * @param \Drupal\Core\TypedData\DataDefinitionInterface $definition
+   * @param string|null $name
+   * @param \Drupal\Core\TypedData\TraversableTypedDataInterface<int|string, \Drupal\Core\TypedData\TypedDataInterface>|null $parent
+   *
+   * @return static
+   */
+  public static function createInstance($definition, $name = NULL, ?TraversableTypedDataInterface $parent = NULL);
+
+  /**
+   * @return array<array-key, \Symfony\Component\Validator\Constraint>
+   */
+  public function getConstraints();
+
 }

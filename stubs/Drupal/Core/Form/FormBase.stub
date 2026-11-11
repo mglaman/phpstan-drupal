@@ -1,0 +1,7 @@
+<?php
+
+namespace Drupal\Core\Form;
+
+abstract class FormBase implements FormInterface {
+
+}

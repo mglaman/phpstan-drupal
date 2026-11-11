@@ -1,0 +1,28 @@
+<?php
+
+namespace Drupal\views\Plugin\views;
+
+use Drupal\Component\Plugin\DerivativeInspectionInterface;
+use Drupal\Component\Plugin\PluginInspectionInterface;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\views\Plugin\views\display\DisplayPluginBase;
+use Drupal\views\ViewExecutable;
+
+interface ViewsPluginInterface extends PluginInspectionInterface, DerivativeInspectionInterface, ContainerFactoryPluginInterface {
+
+  /**
+   * @param array<array-key, mixed> $form
+   *
+   * @return void
+   */
+  public function buildOptionsForm(&$form, FormStateInterface $form_state);
+
+  /**
+   * @param array<array-key, mixed>|null $options
+   *
+   * @return void
+   */
+  public function init(ViewExecutable $view, DisplayPluginBase $display, ?array &$options = NULL);
+
+}

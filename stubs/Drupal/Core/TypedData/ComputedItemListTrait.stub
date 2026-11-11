@@ -1,0 +1,12 @@
+<?php
+
+namespace Drupal\Core\TypedData;
+
+trait ComputedItemListTrait {
+
+  /**
+   * @return void
+   */
+  abstract protected function computeValue();
+
+}

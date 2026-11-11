@@ -1,0 +1,17 @@
+<?php
+
+namespace Drupal\Core\Render\MainContent;
+
+use Drupal\Core\Routing\RouteMatchInterface;
+use Symfony\Component\HttpFoundation\Request;
+
+interface MainContentRendererInterface {
+
+  /**
+   * @param array<array-key, mixed> $main_content
+   *
+   * @return \Symfony\Component\HttpFoundation\Response
+   */
+  public function renderResponse(array $main_content, Request $request, RouteMatchInterface $route_match);
+
+}
