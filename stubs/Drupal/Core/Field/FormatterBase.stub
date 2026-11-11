@@ -31,4 +31,14 @@ abstract class FormatterBase extends PluginSettingsBase implements FormatterInte
    */
   public function viewElements(FieldItemListInterface $items, $langcode) {}
 
+  /**
+   * @param string $plugin_id
+   * @param mixed $plugin_definition
+   * @param array<array-key, mixed> $settings
+   * @param string $label
+   * @param string $view_mode
+   * @param array<array-key, mixed> $third_party_settings
+   */
+  public function __construct($plugin_id, $plugin_definition, FieldDefinitionInterface $field_definition, array $settings, $label, $view_mode, array $third_party_settings) {}
+
 }

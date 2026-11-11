@@ -1,0 +1,27 @@
+<?php
+
+namespace Drupal\views\Plugin\views;
+
+use Drupal\Component\Plugin\DependentPluginInterface;
+use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\Core\Plugin\PluginBase as ComponentPluginBase;
+use Drupal\Core\Security\TrustedCallbackInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+
+abstract class PluginBase extends ComponentPluginBase implements ContainerFactoryPluginInterface, ViewsPluginInterface, DependentPluginInterface, TrustedCallbackInterface {
+
+  /**
+   * @return array<array-key, mixed>
+   */
+  protected function defineOptions() {}
+
+  /**
+   * @param array<array-key, mixed> $configuration
+   * @param string $plugin_id
+   * @param mixed $plugin_definition
+   *
+   * @return static
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {}
+
+}

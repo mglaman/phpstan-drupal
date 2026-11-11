@@ -1,0 +1,30 @@
+<?php
+
+namespace Drupal\Core\Plugin;
+
+use Drupal\Core\Form\FormStateInterface;
+
+interface PluginFormInterface {
+
+  /**
+   * @param array<array-key, mixed> $form
+   *
+   * @return array<array-key, mixed>
+   */
+  public function buildConfigurationForm(array $form, FormStateInterface $form_state);
+
+  /**
+   * @param array<array-key, mixed> $form
+   *
+   * @return void
+   */
+  public function validateConfigurationForm(array &$form, FormStateInterface $form_state);
+
+  /**
+   * @param array<array-key, mixed> $form
+   *
+   * @return void
+   */
+  public function submitConfigurationForm(array &$form, FormStateInterface $form_state);
+
+}

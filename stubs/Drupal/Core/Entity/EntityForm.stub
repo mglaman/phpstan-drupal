@@ -1,0 +1,17 @@
+<?php
+
+namespace Drupal\Core\Entity;
+
+use Drupal\Core\Form\FormBase;
+use Drupal\Core\Form\FormStateInterface;
+
+class EntityForm extends FormBase implements EntityFormInterface {
+
+  /**
+   * @param array<array-key, mixed> $form
+   *
+   * @return array<array-key, mixed>
+   */
+  public function form(array $form, FormStateInterface $form_state) {}
+
+}

@@ -1,0 +1,24 @@
+<?php
+
+namespace Drupal\Component\Plugin;
+
+interface ConfigurableInterface {
+
+  /**
+   * @return array<array-key, mixed>
+   */
+  public function getConfiguration();
+
+  /**
+   * @param array<array-key, mixed> $configuration
+   *
+   * @return void|static
+   */
+  public function setConfiguration(array $configuration);
+
+  /**
+   * @return array<array-key, mixed>
+   */
+  public function defaultConfiguration();
+
+}

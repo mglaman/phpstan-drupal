@@ -1,0 +1,27 @@
+<?php
+
+namespace Drupal\Core\Entity;
+
+use Drupal\Core\Session\AccountInterface;
+
+class EntityAccessControlHandler extends EntityHandlerBase implements EntityAccessControlHandlerInterface {
+
+  /**
+   * @var array<array-key, mixed>
+   */
+  protected $accessCache = [];
+
+  /**
+   * @param array<array-key, mixed> $context
+   * @param string|null $entity_bundle
+   *
+   * @return \Drupal\Core\Access\AccessResultInterface
+   */
+  protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL) {}
+
+  /**
+   * @param array<array-key, mixed> $context
+   */
+  protected function buildCreateAccessCid(array $context, ?string $entity_bundle): ?string {}
+
+}

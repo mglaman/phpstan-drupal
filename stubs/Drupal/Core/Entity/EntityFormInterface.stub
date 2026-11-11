@@ -1,0 +1,24 @@
+<?php
+
+namespace Drupal\Core\Entity;
+
+use Drupal\Core\Form\BaseFormIdInterface;
+use Drupal\Core\Form\FormStateInterface;
+
+interface EntityFormInterface extends BaseFormIdInterface {
+
+  /**
+   * @param array<array-key, mixed> $form
+   *
+   * @return \Drupal\Core\Entity\EntityInterface
+   */
+  public function buildEntity(array $form, FormStateInterface $form_state);
+
+  /**
+   * @param array<array-key, mixed> $form
+   *
+   * @return int
+   */
+  public function save(array $form, FormStateInterface $form_state);
+
+}

@@ -1,0 +1,10 @@
+<?php
+
+namespace Drupal\views\Plugin\views\display;
+
+use Drupal\Component\Plugin\DependentPluginInterface;
+use Drupal\views\Plugin\views\PluginBase;
+
+abstract class DisplayPluginBase extends PluginBase implements DependentPluginInterface {
+
+}

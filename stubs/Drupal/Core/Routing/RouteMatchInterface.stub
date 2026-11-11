@@ -1,0 +1,7 @@
+<?php
+
+namespace Drupal\Core\Routing;
+
+interface RouteMatchInterface {
+
+}

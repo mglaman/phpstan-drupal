@@ -7,4 +7,9 @@ use Drupal\Core\Config\Entity\ThirdPartySettingsInterface;
 
 interface PluginSettingsInterface extends PluginInspectionInterface, ThirdPartySettingsInterface {
 
+  /**
+   * @return array<array-key, mixed>
+   */
+  public static function defaultSettings();
+
 }

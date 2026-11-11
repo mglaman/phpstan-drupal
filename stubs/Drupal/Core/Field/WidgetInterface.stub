@@ -1,0 +1,48 @@
+<?php
+
+namespace Drupal\Core\Field;
+
+use Drupal\Core\Form\FormStateInterface;
+use Symfony\Component\Validator\ConstraintViolationInterface;
+
+interface WidgetInterface extends WidgetBaseInterface {
+
+  /**
+   * @param array<array-key, mixed> $form
+   *
+   * @return array<array-key, mixed>
+   */
+  public function settingsForm(array $form, FormStateInterface $form_state);
+
+  /**
+   * @return array<array-key, mixed>
+   */
+  public function settingsSummary();
+
+  /**
+   * @param \Drupal\Core\Field\FieldItemListInterface<\Drupal\Core\Field\FieldItemInterface> $items
+   * @param int $delta
+   * @param array<array-key, mixed> $element
+   * @param array<array-key, mixed> $form
+   *
+   * @return array<array-key, mixed>
+   */
+  public function formElement(FieldItemListInterface $items, $delta, array $element, array &$form, FormStateInterface $form_state);
+
+  /**
+   * @param array<array-key, mixed> $element
+   * @param array<array-key, mixed> $form
+   *
+   * @return array<array-key, mixed>|false
+   */
+  public function errorElement(array $element, ConstraintViolationInterface $violation, array $form, FormStateInterface $form_state);
+
+  /**
+   * @param array<array-key, mixed> $values
+   * @param array<array-key, mixed> $form
+   *
+   * @return array<array-key, mixed>
+   */
+  public function massageFormValues(array $values, array $form, FormStateInterface $form_state);
+
+}
