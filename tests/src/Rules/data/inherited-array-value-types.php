@@ -30,15 +30,12 @@ final class ExampleForm extends FormBase {
   }
 
   /**
-   * {@inheritdoc}
+   * Core returns values from some submit handlers, so the stub leaves this
+   * method's types to the implementation.
+   *
+   * @param array<array-key, mixed> $form
    */
-  public function validateForm(array &$form, FormStateInterface $form_state) {
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function submitForm(array &$form, FormStateInterface $form_state) {
+  public function submitForm(array &$form, FormStateInterface $form_state): void {
   }
 
 }
@@ -84,9 +81,12 @@ final class ExamplePlugin extends PluginBase implements ContainerFactoryPluginIn
   }
 
   /**
-   * {@inheritdoc}
+   * Core returns values from some submit handlers, so the stub leaves this
+   * method's types to the implementation.
+   *
+   * @param array<array-key, mixed> $form
    */
-  public function submitConfigurationForm(array &$form, FormStateInterface $form_state) {
+  public function submitConfigurationForm(array &$form, FormStateInterface $form_state): void {
   }
 
 }

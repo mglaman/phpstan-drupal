@@ -11,18 +11,4 @@ interface FormInterface {
    */
   public function buildForm(array $form, FormStateInterface $form_state);
 
-  /**
-   * @param array<array-key, mixed> $form
-   *
-   * @return void
-   */
-  public function validateForm(array &$form, FormStateInterface $form_state);
-
-  /**
-   * @param array<array-key, mixed> $form
-   *
-   * @return void
-   */
-  public function submitForm(array &$form, FormStateInterface $form_state);
-
 }

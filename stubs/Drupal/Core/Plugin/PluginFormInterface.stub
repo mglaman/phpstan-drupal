@@ -20,11 +20,4 @@ interface PluginFormInterface {
    */
   public function validateConfigurationForm(array &$form, FormStateInterface $form_state);
 
-  /**
-   * @param array<array-key, mixed> $form
-   *
-   * @return void
-   */
-  public function submitConfigurationForm(array &$form, FormStateInterface $form_state);
-
 }
