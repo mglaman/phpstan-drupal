@@ -6,7 +6,7 @@ use Drupal\Core\Field\FieldItemBase;
 use Drupal\Core\TypedData\OptionsProviderInterface;
 
 /**
- * @property string $value
+ * @property ?string $value
  * @property \Drupal\Core\Language\LanguageInterface $language
  */
 class LanguageItem extends FieldItemBase implements OptionsProviderInterface {

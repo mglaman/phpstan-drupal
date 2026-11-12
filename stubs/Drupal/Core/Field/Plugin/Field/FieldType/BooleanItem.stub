@@ -6,7 +6,7 @@ use Drupal\Core\Field\FieldItemBase;
 use Drupal\Core\TypedData\OptionsProviderInterface;
 
 /**
- * @property int $value
+ * @property ?int $value
  */
 class BooleanItem extends FieldItemBase implements OptionsProviderInterface {
 }
