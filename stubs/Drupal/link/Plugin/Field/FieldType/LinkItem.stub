@@ -6,8 +6,8 @@ use Drupal\Core\Field\FieldItemBase;
 use Drupal\link\LinkItemInterface;
 
 /**
- * @property string $uri
- * @property string $title
+ * @property ?string $uri
+ * @property ?string $title
  * @property array<string, mixed> $options
  */
 class LinkItem extends FieldItemBase implements LinkItemInterface {

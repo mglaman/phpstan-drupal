@@ -7,8 +7,8 @@ use Drupal\file\FileInterface;
 
 /**
  * @extends EntityReferenceItem<FileInterface>
- * @property bool $display
- * @property string $description
+ * @property ?bool $display
+ * @property ?string $description
  */
 class FileItem extends EntityReferenceItem {
 
