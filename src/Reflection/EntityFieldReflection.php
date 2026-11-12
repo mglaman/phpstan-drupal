@@ -71,12 +71,8 @@ class EntityFieldReflection implements PropertyReflection
             return new ObjectType($objectType);
         }
 
-        // @todo Drupal allows $entity->field_myfield = 'string'; does this break that?
-        if ($this->isContentEntityType()) {
-            // Assume the property is a field.
-            return new ObjectType(FieldItemListInterface::class);
-        }
-
+        // ContentEntityBase::__set() passes the value to the field's
+        // setValue(), so $entity->field_myfield = 'string' is valid.
         return new MixedType();
     }
 
