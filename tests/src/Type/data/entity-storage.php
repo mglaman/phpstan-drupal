@@ -15,6 +15,10 @@ assertType('array<int, Drupal\node\Entity\Node>', $nodeStorage->loadMultiple([42
 assertType('array<int, Drupal\node\Entity\Node>', $nodeStorage->loadMultiple(['42', '29']));
 assertType('array<int, Drupal\node\Entity\Node>', $nodeStorage->loadMultiple(NULL));
 assertType('array<int, Drupal\node\Entity\Node>', $nodeStorage->loadByProperties([]));
+assertType('Drupal\node\Entity\Node|null', $nodeStorage->loadRevision(42));
+assertType('Drupal\node\Entity\Node|null', $nodeStorage->loadRevision('42'));
+assertType('Drupal\node\Entity\Node|null', $nodeStorage->loadRevisionUnchanged(42));
+assertType('array<int, Drupal\node\Entity\Node>', $nodeStorage->loadMultipleRevisions([42, 29]));
 assertType('Drupal\node\Entity\Node', \Drupal::entityTypeManager()->getStorage('node')->create(['type' => 'page', 'title' => 'foo']));
 assertType('Drupal\node\Entity\Node|null', \Drupal::entityTypeManager()->getStorage('node')->load(42));
 assertType('Drupal\node\Entity\Node|null', \Drupal::entityTypeManager()->getStorage('node')->load('42'));
@@ -24,6 +28,10 @@ assertType('array<int, Drupal\node\Entity\Node>', \Drupal::entityTypeManager()->
 assertType('array<int, Drupal\node\Entity\Node>', \Drupal::entityTypeManager()->getStorage('node')->loadMultiple(['42', '29']));
 assertType('array<int, Drupal\node\Entity\Node>', \Drupal::entityTypeManager()->getStorage('node')->loadMultiple(NULL));
 assertType('array<int, Drupal\node\Entity\Node>', \Drupal::entityTypeManager()->getStorage('node')->loadByProperties([]));
+assertType('Drupal\node\Entity\Node|null', \Drupal::entityTypeManager()->getStorage('node')->loadRevision(42));
+assertType('Drupal\node\Entity\Node|null', \Drupal::entityTypeManager()->getStorage('node')->loadRevision('42'));
+assertType('Drupal\node\Entity\Node|null', \Drupal::entityTypeManager()->getStorage('node')->loadRevisionUnchanged(42));
+assertType('array<int, Drupal\node\Entity\Node>', \Drupal::entityTypeManager()->getStorage('node')->loadMultipleRevisions([42, 29]));
 
 $termStorage = \Drupal::entityTypeManager()->getStorage('taxonomy_term');
 assertType('Drupal\taxonomy\Entity\Term', $termStorage->create(['vid' => 'tag', 'name' => 'foo']));
@@ -35,6 +43,10 @@ assertType('array<int, Drupal\taxonomy\Entity\Term>', $termStorage->loadMultiple
 assertType('array<int, Drupal\taxonomy\Entity\Term>', $termStorage->loadMultiple(['42', '29']));
 assertType('array<int, Drupal\taxonomy\Entity\Term>', $termStorage->loadMultiple(NULL));
 assertType('array<int, Drupal\taxonomy\Entity\Term>', $termStorage->loadByProperties([]));
+assertType('Drupal\taxonomy\Entity\Term|null', $termStorage->loadRevision(42));
+assertType('Drupal\taxonomy\Entity\Term|null', $termStorage->loadRevision('42'));
+assertType('Drupal\taxonomy\Entity\Term|null', $termStorage->loadRevisionUnchanged(42));
+assertType('array<int, Drupal\taxonomy\Entity\Term>', $termStorage->loadMultipleRevisions([42, 29]));
 
 $userStorage = \Drupal::entityTypeManager()->getStorage('user');
 assertType('Drupal\user\Entity\User', $userStorage->create(['name' => 'foo']));
@@ -46,6 +58,10 @@ assertType('array<int, Drupal\user\Entity\User>', $userStorage->loadMultiple([42
 assertType('array<int, Drupal\user\Entity\User>', $userStorage->loadMultiple(['42', '29']));
 assertType('array<int, Drupal\user\Entity\User>', $userStorage->loadMultiple(NULL));
 assertType('array<int, Drupal\user\Entity\User>', $userStorage->loadByProperties([]));
+assertType('Drupal\user\Entity\User|null', $userStorage->loadRevision(42));
+assertType('Drupal\user\Entity\User|null', $userStorage->loadRevision('42'));
+assertType('Drupal\user\Entity\User|null', $userStorage->loadRevisionUnchanged(42));
+assertType('array<int, Drupal\user\Entity\User>', $userStorage->loadMultipleRevisions([42, 29]));
 
 $defaultStorage = \Drupal::entityTypeManager()->getStorage('content_entity_using_default_storage');
 assertType('Drupal\phpstan_fixtures\Entity\ContentEntityUsingDefaultStorage', $defaultStorage->create([ 'title' => 'foo']));
@@ -133,3 +149,10 @@ assertType('array<int, Drupal\node\Entity\Node>', $storage->loadMultiple([42, 29
 assertType('array<int, Drupal\node\Entity\Node>', $storage->loadMultiple(['42', '29']));
 assertType('array<int, Drupal\node\Entity\Node>', $storage->loadMultiple(NULL));
 assertType('array<int, Drupal\node\Entity\Node>', $storage->loadByProperties([]));
+
+// A storage typed as RevisionableStorageInterface could hold any revisionable entity type.
+/** @var \Drupal\Core\Entity\RevisionableStorageInterface $revisionableStorage */
+$revisionableStorage = \Drupal::entityTypeManager()->getStorage('node');
+assertType('Drupal\Core\Entity\RevisionableInterface|null', $revisionableStorage->loadRevision(42));
+assertType('Drupal\Core\Entity\EntityInterface|null', $revisionableStorage->loadRevisionUnchanged(42));
+assertType('array<Drupal\Core\Entity\RevisionableInterface>', $revisionableStorage->loadMultipleRevisions([42, 29]));

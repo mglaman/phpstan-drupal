@@ -47,6 +47,9 @@ class EntityStorageDynamicReturnTypeExtension implements DynamicMethodReturnType
                 'loadMultiple',
                 'loadByProperties',
                 'loadUnchanged',
+                'loadRevision',
+                'loadRevisionUnchanged',
+                'loadMultipleRevisions',
             ],
             true
         );
@@ -85,6 +88,11 @@ class EntityStorageDynamicReturnTypeExtension implements DynamicMethodReturnType
     {
         if ($storageType instanceof EntityStorageType) {
             $type = $this->entityDataRepository->get($storageType->getEntityTypeId())->getClassType();
+        } elseif (in_array($methodReflection->getName(), ['loadRevision', 'loadRevisionUnchanged', 'loadMultipleRevisions'], true)) {
+            // Revisions are usually loaded from a storage typed as
+            // RevisionableStorageInterface, which resolveFromStorage() matches
+            // to whichever mapped entity type comes first, such as block_content.
+            return $declaredReturnType;
         } else {
             $type = $this->entityDataRepository->resolveFromStorage($storageType)?->getClassType();
         }
@@ -93,7 +101,7 @@ class EntityStorageDynamicReturnTypeExtension implements DynamicMethodReturnType
         }
 
         $methodName = $methodReflection->getName();
-        if (in_array($methodName, ['load', 'loadUnchanged'], true)) {
+        if (in_array($methodName, ['load', 'loadUnchanged', 'loadRevision', 'loadRevisionUnchanged'], true)) {
             return TypeCombinator::addNull($type);
         }
 
@@ -102,6 +110,10 @@ class EntityStorageDynamicReturnTypeExtension implements DynamicMethodReturnType
                 return new ArrayType(new StringType(), $type);
             }
 
+            return new ArrayType(new IntegerType(), $type);
+        }
+
+        if ($methodName === 'loadMultipleRevisions') {
             return new ArrayType(new IntegerType(), $type);
         }
 
