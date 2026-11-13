@@ -27,7 +27,7 @@ final class Builder implements TrustedCallbackInterface
         return '';
     }
 
-    public static function buildUntyped($id)
+    public static function buildUntyped($id, $label = null, $weight = null, $enabled = null)
     {
         return [];
     }
@@ -138,5 +138,96 @@ final class Builder implements TrustedCallbackInterface
                 '#lazy_builder' => [1 => [1], 0 => static::class . '::build'],
             ],
         ];
+    }
+
+    public static function buildTwo(int $node_id, string $view_mode): array
+    {
+        return [];
+    }
+
+    public static function buildOptional(int $node_id, string $view_mode = 'full'): array
+    {
+        return [];
+    }
+
+    public static function buildVariadic(int $node_id, int ...$ids): array
+    {
+        return [];
+    }
+
+    /**
+     * @param positive-int $node_id
+     */
+    public static function buildPhpDocType(int $node_id): array
+    {
+        return [];
+    }
+
+    public function argumentErrors(): array
+    {
+        return [
+            'too_few' => [
+                '#lazy_builder' => [static::class . '::buildTwo', [1]],
+            ],
+            'too_few_with_optional' => [
+                '#lazy_builder' => [static::class . '::buildOptional', []],
+            ],
+            'too_many' => [
+                '#lazy_builder' => [static::class . '::build', [1, 2]],
+            ],
+            'too_many_with_optional' => [
+                '#lazy_builder' => [static::class . '::buildOptional', [1, 'full', 3]],
+            ],
+            'not_coercible' => [
+                '#lazy_builder' => [static::class . '::buildTwo', ['teaser', 1]],
+            ],
+            'null_for_int' => [
+                '#lazy_builder' => [static::class . '::build', [null]],
+            ],
+            'variadic_type' => [
+                '#lazy_builder' => [static::class . '::buildVariadic', [1, 2, 'three']],
+            ],
+            'string_keys' => [
+                '#lazy_builder' => [static::class . '::buildTwo', ['view_mode' => 'teaser', 'node_id' => 1]],
+            ],
+        ];
+    }
+
+    public function validArguments(?int $maybeId, mixed $unknown): array
+    {
+        return [
+            'numeric_string' => [
+                '#lazy_builder' => [static::class . '::build', ['5']],
+            ],
+            'coerced_to_string' => [
+                '#lazy_builder' => [static::class . '::buildTwo', [1, 2]],
+            ],
+            'optional_omitted' => [
+                '#lazy_builder' => [static::class . '::buildOptional', [1]],
+            ],
+            'variadic_extra' => [
+                '#lazy_builder' => [static::class . '::buildVariadic', [1, 2, 3]],
+            ],
+            'string_keys_in_order' => [
+                '#lazy_builder' => [static::class . '::buildTwo', ['node_id' => 1, 'view_mode' => 'teaser']],
+            ],
+            'maybe_null' => [
+                '#lazy_builder' => [static::class . '::build', [$maybeId]],
+            ],
+            'mixed' => [
+                '#lazy_builder' => [static::class . '::buildTwo', [$unknown, $unknown]],
+            ],
+            'phpdoc_type_only' => [
+                '#lazy_builder' => [static::class . '::buildPhpDocType', [0]],
+            ],
+            'func_get_args' => [
+                '#lazy_builder' => [static::class . '::buildFromAllArguments', [1, 2]],
+            ],
+        ];
+    }
+
+    public static function buildFromAllArguments(): array
+    {
+        return ['#markup' => implode(',', func_get_args())];
     }
 }
