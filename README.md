@@ -367,8 +367,12 @@ It reports:
 - An argument that isn't a scalar or `NULL` (`lazyBuilder.nonScalarArgument`).
 - Properties or children other than `#cache`, `#create_placeholder`, `#lazy_builder_preview`, `#placeholder_strategy_denylist`, `#preview` and `#weight` next to `#lazy_builder` (`lazyBuilder.unsupportedProperty`).
 - A callback method whose return type can't be an array (`lazyBuilder.nonArrayReturn`).
+- Fewer arguments than the callback method requires, or more than it accepts when it isn't variadic (`lazyBuilder.argumentCount`).
+- An argument that the callback method's native parameter type doesn't accept (`lazyBuilder.argumentType`). Drupal calls the callback without `strict_types`, so an argument PHP can coerce, like `'5'` for an `int` parameter, isn't reported.
 
-The first one fails on every request. The others fail `assert()` calls, so they only throw with assertions on. Without assertions, Drupal renders the element wrong.
+Drupal passes the arguments by position, after `array_values()`, so string keys in the arguments array don't name parameters.
+
+The first one fails on every request. So do too few arguments and arguments of the wrong type: Drupal throws an `ArgumentCountError` or a `TypeError` when it renders the placeholder. PHP ignores extra arguments. The others fail `assert()` calls, so they only throw with assertions on. Without assertions, Drupal renders the element wrong.
 
 Only array literals are checked. An element built across several statements, such as `$build['#lazy_builder'] = ...` followed by `$build['#title'] = ...`, is not.
 

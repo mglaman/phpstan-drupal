@@ -59,7 +59,6 @@ final class RenderCallbackRule implements Rule
             return [];
         }
 
-        // @todo take the #lazy_builder arguments and validate parameters against the callback.
         $callbacks = $this->renderCallbackResolver->findCallbackExpressions($keyChecked, $node->value);
         if ($callbacks === null && $keyChecked === '#lazy_builder') {
             return [

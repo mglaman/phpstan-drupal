@@ -9,6 +9,7 @@ use PhpParser\Node\Scalar\Int_;
 use PhpParser\Node\Scalar\String_;
 use PHPStan\Analyser\DependencyTracker;
 use PHPStan\Analyser\Scope;
+use PHPStan\Reflection\ExtendedMethodReflection;
 use PHPStan\Reflection\ParametersAcceptorSelector;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\Rule;
@@ -18,6 +19,7 @@ use PHPStan\Type\NeverType;
 use PHPStan\Type\Type;
 use PHPStan\Type\VerbosityLevel;
 use function array_diff;
+use function array_filter;
 use function array_keys;
 use function array_map;
 use function array_pop;
@@ -133,7 +135,7 @@ final class LazyBuilderRule implements Rule
         if (!$hasUnknownKeys) {
             $errors = [...$errors, ...$this->checkUnsupportedKeys($itemsByKey, $lazyBuilder)];
         }
-        return [...$errors, ...$this->checkCallbackReturnType($lazyBuilder, $scope)];
+        return [...$errors, ...$this->checkCallback($lazyBuilder, $scope)];
     }
 
     /**
@@ -333,15 +335,18 @@ final class LazyBuilderRule implements Rule
     }
 
     /**
+     * Checks the callback method's return type and parameters.
+     *
      * @param Scope&DependencyTracker $scope
      * @return list<IdentifierRuleError>
      */
-    private function checkCallbackReturnType(ArrayItem $lazyBuilder, Scope $scope): array
+    private function checkCallback(ArrayItem $lazyBuilder, Scope $scope): array
     {
         $callbackExpressions = $this->renderCallbackResolver->findCallbackExpressions(self::LAZY_BUILDER, $lazyBuilder->value);
         if ($callbackExpressions === null || count($callbackExpressions) === 0) {
             return [];
         }
+        $arguments = $this->findArguments($lazyBuilder, $scope);
         $errors = [];
         foreach ($this->renderCallbackResolver->resolveType($callbackExpressions[0], $scope)->getConstantArrays() as $callbackArray) {
             if (!$callbackArray->isCallable()->yes()) {
@@ -354,22 +359,156 @@ final class LazyBuilderRule implements Rule
                     continue;
                 }
                 $method = $type->getMethod($methodName, $scope);
-                $returnType = ParametersAcceptorSelector::combineAcceptors($method->getVariants())->getReturnType();
-                // A method that always throws never returns.
-                if (!$returnType->isArray()->no() || (new NeverType())->isSuperTypeOf($returnType)->yes()) {
-                    continue;
+                $errors = [...$errors, ...$this->checkReturnType($lazyBuilder, $method)];
+                if ($arguments !== null) {
+                    $errors = [...$errors, ...$this->checkArguments($lazyBuilder, $method, $arguments)];
                 }
-                $errors[] = RuleErrorBuilder::message(sprintf(
-                    '#lazy_builder callback %s::%s() returns %s, but it must return a render array.',
-                    $method->getDeclaringClass()->getName(),
-                    $method->getName(),
-                    $returnType->describe(VerbosityLevel::typeOnly())
-                ))
-                    ->line($lazyBuilder->getStartLine())
-                    ->identifier('lazyBuilder.nonArrayReturn')
-                    ->build();
             }
         }
         return $errors;
+    }
+
+    /**
+     * @return list<IdentifierRuleError>
+     */
+    private function checkReturnType(ArrayItem $lazyBuilder, ExtendedMethodReflection $method): array
+    {
+        $returnType = ParametersAcceptorSelector::combineAcceptors($method->getVariants())->getReturnType();
+        // A method that always throws never returns.
+        if (!$returnType->isArray()->no() || (new NeverType())->isSuperTypeOf($returnType)->yes()) {
+            return [];
+        }
+        return [
+            RuleErrorBuilder::message(sprintf(
+                '#lazy_builder callback %s() returns %s, but it must return a render array.',
+                $this->describeMethod($method),
+                $returnType->describe(VerbosityLevel::typeOnly())
+            ))
+                ->line($lazyBuilder->getStartLine())
+                ->identifier('lazyBuilder.nonArrayReturn')
+                ->build(),
+        ];
+    }
+
+    /**
+     * Finds the #lazy_builder arguments, in the order Drupal passes them.
+     *
+     * Drupal calls array_values() on the arguments, so string keys don't name
+     * parameters. Returns NULL when the arguments aren't one constant array.
+     *
+     * @return list<Type>|null
+     */
+    private function findArguments(ArrayItem $lazyBuilder, Scope $scope): ?array
+    {
+        $constantArrays = $scope->getType($lazyBuilder->value)->getConstantArrays();
+        if (count($constantArrays) !== 1) {
+            return null;
+        }
+        $argumentsOffset = new ConstantIntegerType(1);
+        if (!$constantArrays[0]->hasOffsetValueType($argumentsOffset)->yes()) {
+            return null;
+        }
+        $argumentArrays = $constantArrays[0]->getOffsetValueType($argumentsOffset)->getConstantArrays();
+        if (count($argumentArrays) !== 1 || count($argumentArrays[0]->getOptionalKeys()) > 0) {
+            return null;
+        }
+        return array_values($argumentArrays[0]->getValueTypes());
+    }
+
+    /**
+     * Checks the #lazy_builder arguments against the callback's parameters.
+     *
+     * Drupal calls the callback with call_user_func_array() from a file that
+     * doesn't declare strict_types, so PHP coerces scalar arguments. Only
+     * native parameter types are checked, because they cause the TypeError.
+     *
+     * @see \Drupal\Core\Security\DoTrustedCallbackTrait::doTrustedCallback()
+     *
+     * @param list<Type> $arguments
+     * @return list<IdentifierRuleError>
+     */
+    private function checkArguments(ArrayItem $lazyBuilder, ExtendedMethodReflection $method, array $arguments): array
+    {
+        $variants = $method->getVariants();
+        if (count($variants) !== 1) {
+            return [];
+        }
+        $parameters = $variants[0]->getParameters();
+        $requiredCount = count(array_filter($parameters, static fn ($parameter) => !$parameter->isOptional()));
+        $lastParameter = $parameters[count($parameters) - 1] ?? null;
+        $variadicParameter = $lastParameter !== null && $lastParameter->isVariadic() ? $lastParameter : null;
+        // PHPStan also treats a method that calls func_get_args() as variadic.
+        $maxCount = $variants[0]->isVariadic() ? null : count($parameters);
+        $argumentCount = count($arguments);
+
+        if ($argumentCount < $requiredCount) {
+            return [
+                RuleErrorBuilder::message(sprintf(
+                    '#lazy_builder callback %s() requires %s%s, but %s given. Drupal throws an ArgumentCountError when it renders this element.',
+                    $this->describeMethod($method),
+                    $requiredCount === $maxCount ? '' : 'at least ',
+                    $this->describeArgumentCount($requiredCount),
+                    $this->describeGivenCount($argumentCount)
+                ))
+                    ->line($lazyBuilder->getStartLine())
+                    ->identifier('lazyBuilder.argumentCount')
+                    ->build(),
+            ];
+        }
+
+        $errors = [];
+        if ($maxCount !== null && $argumentCount > $maxCount) {
+            $errors[] = RuleErrorBuilder::message(sprintf(
+                '#lazy_builder callback %s() accepts %s%s, but %s given. PHP ignores the extra arguments.',
+                $this->describeMethod($method),
+                $requiredCount === $maxCount ? '' : 'at most ',
+                $this->describeArgumentCount($maxCount),
+                $this->describeGivenCount($argumentCount)
+            ))
+                ->line($lazyBuilder->getStartLine())
+                ->identifier('lazyBuilder.argumentCount')
+                ->build();
+        }
+
+        foreach ($arguments as $position => $argument) {
+            $parameter = $parameters[$position] ?? $variadicParameter;
+            // Non-scalar arguments are already reported.
+            if ($parameter === null || $this->isNonScalarArgument($argument)) {
+                continue;
+            }
+            $parameterType = $parameter->getNativeType();
+            if (!$parameterType->accepts($argument->toCoercedArgumentType(false), false)->no()) {
+                continue;
+            }
+            $verbosityLevel = VerbosityLevel::getRecommendedLevelByType($parameterType, $argument);
+            $errors[] = RuleErrorBuilder::message(sprintf(
+                'Parameter #%d %s$%s of #lazy_builder callback %s() expects %s, %s given. Drupal throws a TypeError when it renders this element.',
+                $position + 1,
+                $parameter->isVariadic() ? '...' : '',
+                $parameter->getName(),
+                $this->describeMethod($method),
+                $parameterType->describe($verbosityLevel),
+                $argument->describe($verbosityLevel)
+            ))
+                ->line($lazyBuilder->getStartLine())
+                ->identifier('lazyBuilder.argumentType')
+                ->build();
+        }
+        return $errors;
+    }
+
+    private function describeMethod(ExtendedMethodReflection $method): string
+    {
+        return $method->getDeclaringClass()->getName() . '::' . $method->getName();
+    }
+
+    private function describeArgumentCount(int $count): string
+    {
+        return $count === 1 ? '1 argument' : sprintf('%d arguments', $count);
+    }
+
+    private function describeGivenCount(int $count): string
+    {
+        return $count === 1 ? '1 is' : sprintf('%d are', $count);
     }
 }

@@ -46,6 +46,10 @@ final class LazyBuilderRuleTest extends DrupalRuleTestCase
                 $argumentTip,
             ],
             [
+                '#lazy_builder callback LazyBuilder\Builder::build() accepts 1 argument, but 4 are given. PHP ignores the extra arguments.',
+                52,
+            ],
+            [
                 'An element with #lazy_builder can only have #cache, #create_placeholder, #lazy_builder_preview, #placeholder_strategy_denylist, #preview and #weight next to it. Found: #title, child.',
                 55,
                 'Return these properties and children from the #lazy_builder callback instead.',
@@ -68,6 +72,38 @@ final class LazyBuilderRuleTest extends DrupalRuleTestCase
                 'An element with #lazy_builder can only have #cache, #create_placeholder, #lazy_builder_preview, #placeholder_strategy_denylist, #preview and #weight next to it. Found: 0, 1.',
                 129,
                 'Return these properties and children from the #lazy_builder callback instead.',
+            ],
+            [
+                '#lazy_builder callback LazyBuilder\Builder::buildTwo() requires 2 arguments, but 1 is given. Drupal throws an ArgumentCountError when it renders this element.',
+                170,
+            ],
+            [
+                '#lazy_builder callback LazyBuilder\Builder::buildOptional() requires at least 1 argument, but 0 are given. Drupal throws an ArgumentCountError when it renders this element.',
+                173,
+            ],
+            [
+                '#lazy_builder callback LazyBuilder\Builder::build() accepts 1 argument, but 2 are given. PHP ignores the extra arguments.',
+                176,
+            ],
+            [
+                '#lazy_builder callback LazyBuilder\Builder::buildOptional() accepts at most 2 arguments, but 3 are given. PHP ignores the extra arguments.',
+                179,
+            ],
+            [
+                'Parameter #1 $node_id of #lazy_builder callback LazyBuilder\Builder::buildTwo() expects int, string given. Drupal throws a TypeError when it renders this element.',
+                182,
+            ],
+            [
+                'Parameter #1 $id of #lazy_builder callback LazyBuilder\Builder::build() expects int, null given. Drupal throws a TypeError when it renders this element.',
+                185,
+            ],
+            [
+                'Parameter #3 ...$ids of #lazy_builder callback LazyBuilder\Builder::buildVariadic() expects int, string given. Drupal throws a TypeError when it renders this element.',
+                188,
+            ],
+            [
+                'Parameter #1 $node_id of #lazy_builder callback LazyBuilder\Builder::buildTwo() expects int, string given. Drupal throws a TypeError when it renders this element.',
+                191,
             ],
         ]);
     }
