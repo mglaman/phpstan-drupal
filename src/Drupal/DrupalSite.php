@@ -40,6 +40,9 @@ class DrupalSite
     /** @var array<string, mixed>|null */
     private ?array $serviceDefinitions = null;
 
+    /** @var array<string, list<mixed>> */
+    private array $serviceParameters = [];
+
     public function getRoot(): string
     {
         if ($this->root === null) {
@@ -90,20 +93,23 @@ class DrupalSite
      */
     public function getServiceDefinitions(): array
     {
-        if ($this->serviceDefinitions === null) {
-            $this->serviceDefinitions = [];
-            foreach ($this->getServiceYamlPaths() as $path) {
-                $yaml = Yaml::parseFile($path, Yaml::PARSE_CUSTOM_TAGS);
-                // Weed out service files which only provide parameters.
-                if (!isset($yaml['services']) || !is_array($yaml['services'])) {
-                    continue;
-                }
-                foreach ($yaml['services'] as $serviceId => $definition) {
-                    $this->serviceDefinitions[(string) $serviceId] = $definition;
-                }
-            }
-        }
-        return $this->serviceDefinitions;
+        $this->parseServiceYamls();
+        return $this->serviceDefinitions ?? [];
+    }
+
+    /**
+     * The values services.yml files give each container parameter, keyed by name.
+     *
+     * Unlike services, every value is kept, in file order. The modules are the
+     * ones on disk, not the installed ones, so two modules that define the same
+     * parameter may never run on the same site.
+     *
+     * @return array<string, list<mixed>>
+     */
+    public function getServiceParameters(): array
+    {
+        $this->parseServiceYamls();
+        return $this->serviceParameters;
     }
 
     /**
@@ -123,6 +129,27 @@ class DrupalSite
             }
         }
         return $directories;
+    }
+
+    private function parseServiceYamls(): void
+    {
+        if ($this->serviceDefinitions !== null) {
+            return;
+        }
+        $this->serviceDefinitions = [];
+        foreach ($this->getServiceYamlPaths() as $path) {
+            $yaml = Yaml::parseFile($path, Yaml::PARSE_CUSTOM_TAGS);
+            if (isset($yaml['parameters']) && is_array($yaml['parameters'])) {
+                foreach ($yaml['parameters'] as $name => $value) {
+                    $this->serviceParameters[(string) $name][] = $value;
+                }
+            }
+            if (isset($yaml['services']) && is_array($yaml['services'])) {
+                foreach ($yaml['services'] as $serviceId => $definition) {
+                    $this->serviceDefinitions[(string) $serviceId] = $definition;
+                }
+            }
+        }
     }
 
     /**

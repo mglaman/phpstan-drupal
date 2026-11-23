@@ -343,7 +343,13 @@ services:
 	-
 		class: mglaman\PHPStanDrupal\Drupal\ConfigSchemaData
 	-
+		class: mglaman\PHPStanDrupal\Drupal\ContainerParameterMap
+	-
 		class: mglaman\PHPStanDrupal\Drupal\ServiceResultCacheValueExtension
+		tags:
+			- phpstan.resultCacheValueExtension
+	-
+		class: mglaman\PHPStanDrupal\Drupal\ContainerParameterResultCacheValueExtension
 		tags:
 			- phpstan.resultCacheValueExtension
 	-
