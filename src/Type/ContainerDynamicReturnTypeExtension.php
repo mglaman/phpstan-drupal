@@ -2,6 +2,8 @@
 
 namespace mglaman\PHPStanDrupal\Type;
 
+use mglaman\PHPStanDrupal\Drupal\ContainerParameterMap;
+use mglaman\PHPStanDrupal\Drupal\ContainerParameterResultCacheValueExtension;
 use mglaman\PHPStanDrupal\Drupal\ServiceMap;
 use mglaman\PHPStanDrupal\Drupal\ServiceResultCacheValueExtension;
 use PhpParser\Node\Expr\MethodCall;
@@ -24,6 +26,7 @@ class ContainerDynamicReturnTypeExtension implements DynamicMethodReturnTypeExte
 
     public function __construct(
         private ServiceMap $serviceMap,
+        private ContainerParameterMap $parameterMap,
         private bool $containerHasAlwaysTrue,
     ) {
     }
@@ -35,7 +38,7 @@ class ContainerDynamicReturnTypeExtension implements DynamicMethodReturnTypeExte
 
     public function isMethodSupported(MethodReflection $methodReflection): bool
     {
-        return in_array($methodReflection->getName(), ['get', 'has'], true);
+        return in_array($methodReflection->getName(), ['get', 'has', 'getParameter'], true);
     }
 
     /**
@@ -114,6 +117,25 @@ class ContainerDynamicReturnTypeExtension implements DynamicMethodReturnTypeExte
             // while keeping any null added for NULL_ON_INVALID_REFERENCE.
             if ($constantStrings === []) {
                 $types[] = $returnType;
+            }
+
+            return TypeCombinator::union(...$types);
+        } elseif ($methodName === 'getParameter') {
+            $args = $methodCall->getArgs();
+            if (count($args) === 0) {
+                return $returnType;
+            }
+
+            $constantStrings = $scope->getType($args[0]->value)->getConstantStrings();
+            if ($constantStrings === []) {
+                return $returnType;
+            }
+
+            $types = [];
+            foreach ($constantStrings as $constantStringType) {
+                $name = $constantStringType->getValue();
+                $scope->trackValueDependency(ContainerParameterResultCacheValueExtension::class, $name);
+                $types[] = $this->parameterMap->getType($name) ?? $returnType;
             }
 
             return TypeCombinator::union(...$types);

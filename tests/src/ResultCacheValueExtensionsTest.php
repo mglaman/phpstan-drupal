@@ -3,6 +3,8 @@
 namespace mglaman\PHPStanDrupal\Tests;
 
 use mglaman\PHPStanDrupal\Drupal\ConfigSchemaResultCacheValueExtension;
+use mglaman\PHPStanDrupal\Drupal\ContainerParameterMap;
+use mglaman\PHPStanDrupal\Drupal\ContainerParameterResultCacheValueExtension;
 use mglaman\PHPStanDrupal\Drupal\DrupalSite;
 use mglaman\PHPStanDrupal\Drupal\Extension;
 use mglaman\PHPStanDrupal\Drupal\ExtensionListResultCacheValueExtension;
@@ -17,27 +19,35 @@ final class ResultCacheValueExtensionsTest extends TestCase
      * @param list<Extension> $modules
      * @param array<string, Extension> $themes
      * @param list<string> $schemaDirectories
+     * @param array<string, list<mixed>> $parameters
      */
-    private function createSite(array $services = [], array $modules = [], array $themes = [], array $schemaDirectories = []): DrupalSite
+    private function createSite(array $services = [], array $modules = [], array $themes = [], array $schemaDirectories = [], array $parameters = []): DrupalSite
     {
-        return new class ($services, $modules, $themes, $schemaDirectories) extends DrupalSite {
+        return new class ($services, $modules, $themes, $schemaDirectories, $parameters) extends DrupalSite {
             /**
              * @param array<string, mixed> $services
              * @param list<Extension> $moduleList
              * @param array<string, Extension> $themeList
              * @param list<string> $schemaDirectories
+             * @param array<string, list<mixed>> $parameters
              */
             public function __construct(
                 private array $services,
                 private array $moduleList,
                 private array $themeList,
-                private array $schemaDirectories
+                private array $schemaDirectories,
+                private array $parameters
             ) {
             }
 
             public function getServiceDefinitions(): array
             {
                 return $this->services;
+            }
+
+            public function getServiceParameters(): array
+            {
+                return $this->parameters;
             }
 
             public function getModules(): array
@@ -250,5 +260,44 @@ final class ResultCacheValueExtensionsTest extends TestCase
     public function testMissingSchemaDirectoryIsStable(): void
     {
         self::assertSame($this->schemaValue(['/nonexistent/schema']), $this->schemaValue([]));
+    }
+
+    /**
+     * @param list<mixed> $values
+     */
+    private function parameterValue(array $values): string
+    {
+        $parameters = $values === [] ? [] : ['foo' => $values];
+        $map = new ContainerParameterMap($this->createSite([], [], [], [], $parameters));
+        return (new ContainerParameterResultCacheValueExtension($map))->getValue('foo');
+    }
+
+    /**
+     * @dataProvider parameterValues
+     *
+     * @param list<mixed> $values
+     */
+    public function testParameterValue(array $values, string $expected): void
+    {
+        self::assertSame($expected, $this->parameterValue($values));
+    }
+
+    public static function parameterValues(): \Generator
+    {
+        yield 'missing' => [[], 'unknown'];
+        yield 'string' => [[''], 'string'];
+        yield 'int' => [[1000], 'int'];
+        yield 'float' => [[0.5], 'float'];
+        yield 'bool' => [[true], 'bool'];
+        yield 'empty array' => [[[]], 'array'];
+        yield 'array' => [[['debug' => false]], 'array'];
+        yield 'null' => [[null], 'unknown'];
+        yield 'defined by two modules' => [[1, 'one'], 'int|string'];
+        yield 'null in one module' => [[1, null], 'unknown'];
+    }
+
+    public function testParameterValueIgnoresTheDefault(): void
+    {
+        self::assertSame($this->parameterValue([604800]), $this->parameterValue([3600]));
     }
 }
