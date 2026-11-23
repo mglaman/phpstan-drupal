@@ -8,7 +8,7 @@ use function PHPStan\Testing\assertType;
 function test(ContainerInterface $container, string $name, bool $flag): void {
     // Kept as the kind of value, not the value: the kernel sets app.root.
     assertType('string', $container->getParameter('app.root'));
-    assertType('int', $container->getParameter('entity.memory_cache.slots'));
+    assertType('int', $container->getParameter('tempstore.expire'));
     assertType('bool', $container->getParameter('security.enable_super_user'));
     assertType('array', $container->getParameter('renderer.config'));
     assertType('array', $container->getParameter('cache_default_bin_backends'));
@@ -21,7 +21,7 @@ function test(ContainerInterface $container, string $name, bool $flag): void {
     assertType('array|bool|float|int|string|UnitEnum|null', $container->getParameter('unknown.parameter'));
     assertType('array|bool|float|int|string|UnitEnum|null', $container->getParameter($name));
 
-    assertType('int|string', $container->getParameter($flag ? 'app.root' : 'entity.memory_cache.slots'));
+    assertType('int|string', $container->getParameter($flag ? 'app.root' : 'tempstore.expire'));
     assertType('array|bool|float|int|string|UnitEnum|null', $container->getParameter($flag ? 'app.root' : 'unknown.parameter'));
 }
 
